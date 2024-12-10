@@ -1,6 +1,12 @@
 {
-  "helloWorld": "Hello World!",
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
-  }
+  "appTitle": "Whisky Hikes",
+  "login": "Login",
+  "logout": "Logout",
+  "signup": "Sign Up",
+  "password": "Password",
+  "passwordConfirm": "Confirm Password",
+  "email": "Email",
+  "passwordNotMatch": "Passwords do not match",
+  "legalAgeInfo": "You must be of legal drinking age to use this app",
+  "iAmLegalAge": "I am of legal drinking age"
 }

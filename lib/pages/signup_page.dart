@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../services/auth/auth_service.dart';
 
@@ -25,9 +26,9 @@ class _SignupPageState extends State<SignupPage> {
 
     try {
       if(password != confirmPassword){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Passwords do not match")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.passwordNotMatch)));
       } else if(!is_legal_age){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("You must be of legal age to sign up")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.legalAgeInfo)));
       }
       else{
         await authService.signUpWithEmailPassword(email, password, {"is_legal_age": is_legal_age});
@@ -48,15 +49,15 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Sign Up'),
+          title: Text(AppLocalizations.of(context)!.signup),
         ),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 100),
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.email,
               ),
             ),
 
@@ -64,8 +65,8 @@ class _SignupPageState extends State<SignupPage> {
 
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.password,
 
               ),
               obscureText: true,
@@ -75,8 +76,8 @@ class _SignupPageState extends State<SignupPage> {
 
             TextField(
               controller: _confirmPasswordController,
-              decoration: const InputDecoration(
-                labelText: 'Confirm Password',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.passwordConfirm,
 
               ),
               obscureText: true,
@@ -85,7 +86,7 @@ class _SignupPageState extends State<SignupPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('I am of legal age'),
+                Text(AppLocalizations.of(context)!.iAmLegalAge),
                 Checkbox(value: is_legal_age, onChanged: (bool? value){
                   setState(() {
                     is_legal_age = value!;
@@ -96,7 +97,7 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: signUp,
-              child: const Text('Sign Up'),
+              child: Text(AppLocalizations.of(context)!.signup),
             ),
 
           ],

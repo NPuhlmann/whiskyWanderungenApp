@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/auth/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -40,8 +40,8 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           TextField(
             controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.email,
             ),
           ),
 
@@ -49,8 +49,8 @@ class _LoginPageState extends State<LoginPage> {
 
           TextField(
             controller: _passwordController,
-            decoration: const InputDecoration(
-              labelText: 'Password',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.password,
 
             ),
             obscureText: true,
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
 
           ElevatedButton(
             onPressed: login,
-            child: const Text('Login'),
+            child: Text(AppLocalizations.of(context)!.login),
           ),
 
           const SizedBox(height: 16),
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.pushNamed(context, '/signup');
               },
-              child: const Text('Sign Up'),
+              child: Text(AppLocalizations.of(context)!.signup),
             ),
           )
         ],

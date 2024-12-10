@@ -1,3 +1,12 @@
 {
-  "hello_world": "Hallo Welt"
+  "appTitle": "Whisky Wanderungen",
+  "login": "Einloggen",
+  "logout": "Ausloggen",
+  "signup": "Registrieren",
+  "password": "Passwort",
+  "passwordConfirm": "Passwort bestätigen",
+  "email": "E-Mail",
+  "passwordNotMatch": "Passwörter stimmen nicht überein",
+  "legalAgeInfo": "Sie müssen das gesetzliche Mindestalter zum Trinken erreicht haben, um diese App zu verwenden",
+  "iAmLegalAge": "Ich bin alt genug zum Trinken"
 }
