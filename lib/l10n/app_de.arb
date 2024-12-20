@@ -8,5 +8,8 @@
   "email": "E-Mail",
   "passwordNotMatch": "Passwörter stimmen nicht überein",
   "legalAgeInfo": "Sie müssen das gesetzliche Mindestalter zum Trinken erreicht haben, um diese App zu verwenden",
-  "iAmLegalAge": "Ich bin alt genug zum Trinken"
+  "iAmLegalAge": "Ich bin alt genug zum Trinken",
+  "hikes": "Wanderungen",
+  "myHikes": "Meine Wanderungen",
+  "profile": "Profil"
 }

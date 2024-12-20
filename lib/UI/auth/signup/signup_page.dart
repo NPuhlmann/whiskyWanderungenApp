@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../services/auth/auth_service.dart';
+import '../../../../services/auth/auth_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -58,6 +58,7 @@ class _SignupPageState extends State<SignupPage> {
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.email,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
 
@@ -67,7 +68,7 @@ class _SignupPageState extends State<SignupPage> {
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.password,
-
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
               obscureText: true,
             ),
@@ -78,7 +79,7 @@ class _SignupPageState extends State<SignupPage> {
               controller: _confirmPasswordController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.passwordConfirm,
-
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
               obscureText: true,
             ),
@@ -87,7 +88,7 @@ class _SignupPageState extends State<SignupPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(AppLocalizations.of(context)!.iAmLegalAge),
-                Checkbox(value: is_legal_age, onChanged: (bool? value){
+                Checkbox(value: is_legal_age, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),onChanged: (bool? value){
                   setState(() {
                     is_legal_age = value!;
                   });

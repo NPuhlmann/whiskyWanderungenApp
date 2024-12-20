@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../services/auth/auth_service.dart';
+import '../../../services/auth/auth_service.dart';
+import '../core/bottom_navigation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text(AppLocalizations.of(context)!.hikes),
         actions: [
           IconButton(
             onPressed: () {
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: Text('Welcome to the Home Page'),
       ),
+      bottomNavigationBar: BottomNavigation(selectedIndex: 0,),
     );
   }
 }

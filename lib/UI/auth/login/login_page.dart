@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../services/auth/auth_service.dart';
+import '../../../../services/auth/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,7 +21,6 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await authService.signInWithEmailPassword(email, password);
-      Navigator.pushNamed(context, "/home");
     } catch (e) {
       if(mounted){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -38,9 +37,13 @@ class _LoginPageState extends State<LoginPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 100),
         children: [
+          Image.asset('assets/logo.png', height: 250, width: 250),
+          Center(child: Text(AppLocalizations.of(context)!.appTitle, style: Theme.of(context).textTheme.headlineMedium)),
+          const SizedBox(height: 16),
           TextField(
             controller: _emailController,
             decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               labelText: AppLocalizations.of(context)!.email,
             ),
           ),
@@ -49,7 +52,9 @@ class _LoginPageState extends State<LoginPage> {
 
           TextField(
             controller: _passwordController,
+
             decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               labelText: AppLocalizations.of(context)!.password,
 
             ),

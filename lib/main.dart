@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:whisky_hikes/pages/signup_page.dart';
-import 'package:whisky_hikes/pages/home_page.dart';
-import 'package:whisky_hikes/pages/login_page.dart';
+import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
+import 'package:whisky_hikes/UI/home/home_page.dart';
+import 'package:whisky_hikes/UI/auth/login/login_page.dart';
 import 'package:whisky_hikes/services/auth/auth_gate.dart';
+
+import 'UI/my_hikes/my_hikes_page.dart';
+import 'UI/profile/profile_page.dart';
 
 void main() async {
   // supabase setup
   await Supabase.initialize(
+    // TODO: Check how to make more secure by not hardcoding the url and anonKey
     url: 'https://demmmqwxuoirwwnwijcx.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlbW1tcXd4dW9pcnd3bndpamN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzMTg4OTgsImV4cCI6MjA0ODg5NDg5OH0.Hs_jRvVxgw1BPSJS5wSqLwrSZeN4Nw76m-XLVFn_MeY',
     debug: true,
@@ -37,7 +41,7 @@ class MyApp extends StatelessWidget {
         Locale('de', 'DE'),
       ],
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
       home: AuthGate(),
@@ -45,6 +49,8 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) => const LoginPage(),
         '/home': (BuildContext context) => const HomePage(),
         '/signup': (BuildContext context) => const SignupPage(),
+        '/myhikes': (BuildContext context) => const MyHikesPage(),
+        '/profile': (BuildContext context) => const ProfilePage(),
       },
     );
   }
