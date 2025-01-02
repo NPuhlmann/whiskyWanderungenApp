@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../../../services/auth/auth_service.dart';
+import 'package:go_router/go_router.dart';
+import 'login_page_view_model.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, required this.viewModel});
+
+  final LoginPageViewModel viewModel;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final authService= AuthService();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -20,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
     final password = _passwordController.text;
 
     try {
-      await authService.signInWithEmailPassword(email, password);
+      await widget.viewModel.loginWithEmailAndPassword(email, password);
     } catch (e) {
       if(mounted){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
           Center(
             child: TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signup');
+                context.go("/signUp");
               },
               child: Text(AppLocalizations.of(context)!.signup),
             ),

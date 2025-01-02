@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService{
@@ -22,5 +24,18 @@ class AuthService{
     final session = client.auth.currentSession;
     final user = session?.user;
     return user?.email;
+  }
+
+  String? getCurrentUserId() {
+    final session = client.auth.currentSession;
+    final user = session?.user;
+    return user?.id;
+  }
+
+  bool isUserLoggedIn(){
+    final session = client.auth.currentSession;
+    final user = session?.user;
+
+    return user == null ? false : true;
   }
 }

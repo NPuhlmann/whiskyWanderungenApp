@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
-import 'package:whisky_hikes/UI/home/home_page.dart';
-import 'package:whisky_hikes/UI/auth/login/login_page.dart';
-import 'package:whisky_hikes/services/auth/auth_gate.dart';
+import 'package:whisky_hikes/config/routing/router.dart';
+import 'config/dependencies.dart';
 
-import 'UI/my_hikes/my_hikes_page.dart';
-import 'UI/profile/profile_page.dart';
 
 void main() async {
   // supabase setup
@@ -19,7 +16,12 @@ void main() async {
     debug: true,
   );
 
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: providers,
+    child: const MyApp(
+    ),
+  ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +30,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: router(context.read()),
       title: 'Flutter Demo',
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -44,14 +47,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: AuthGate(),
-      routes: <String, WidgetBuilder>{
-        '/login': (BuildContext context) => const LoginPage(),
-        '/home': (BuildContext context) => const HomePage(),
-        '/signup': (BuildContext context) => const SignupPage(),
-        '/myhikes': (BuildContext context) => const MyHikesPage(),
-        '/profile': (BuildContext context) => const ProfilePage(),
-      },
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
+      ),
+      themeMode: ThemeMode.system,
     );
   }
 }

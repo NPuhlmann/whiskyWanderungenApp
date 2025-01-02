@@ -1,4 +1,4 @@
 # this is needed for localization
-arb-dir: lib/l10n
+arb-dir: lib/config/l10n
 template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart

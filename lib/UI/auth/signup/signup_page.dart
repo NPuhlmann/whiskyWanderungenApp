@@ -1,41 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+import 'package:whisky_hikes/UI/auth/signup/SignUpPageViewModel.dart';
 
-import '../../../../services/auth/auth_service.dart';
+import '../../../data/services/auth/auth_service.dart';
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+  const SignupPage({super.key, required this.viewModel});
+
+  final SignUpPageViewModel viewModel;
 
   @override
   State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
-
-  final authService= AuthService();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool is_legal_age = false;
+  bool isLegalAge = false;
 
-  void signUp() async{
+  void signUp() async {
     final email = _emailController.text;
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
     try {
-      if(password != confirmPassword){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.passwordNotMatch)));
-      } else if(!is_legal_age){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.legalAgeInfo)));
-      }
-      else{
-        await authService.signUpWithEmailPassword(email, password, {"is_legal_age": is_legal_age});
-        Navigator.pushNamed(context, '/login');
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.passwordNotMatch)));
+      } else if (!isLegalAge) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.legalAgeInfo)));
+      } else {
+        await widget.viewModel.signUpWithEmailPassword(
+            email, password, {"is_legal_age": isLegalAge});
       }
     } catch (e) {
-      if(mounted){
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -58,28 +60,27 @@ class _SignupPageState extends State<SignupPage> {
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.email,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
-
             const SizedBox(height: 16),
-
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.password,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
               obscureText: true,
             ),
-
             const SizedBox(height: 16),
-
             TextField(
               controller: _confirmPasswordController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.passwordConfirm,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
               obscureText: true,
             ),
@@ -88,11 +89,15 @@ class _SignupPageState extends State<SignupPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(AppLocalizations.of(context)!.iAmLegalAge),
-                Checkbox(value: is_legal_age, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),onChanged: (bool? value){
-                  setState(() {
-                    is_legal_age = value!;
-                  });
-                }),
+                Checkbox(
+                    value: isLegalAge,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        isLegalAge = value!;
+                      });
+                    }),
               ],
             ),
             const SizedBox(height: 16),
@@ -100,10 +105,13 @@ class _SignupPageState extends State<SignupPage> {
               onPressed: signUp,
               child: Text(AppLocalizations.of(context)!.signup),
             ),
-
+            const SizedBox(
+              height: 16,
+            ),
+            TextButton(
+                onPressed: () => context.go('/login'),
+                child: Text(AppLocalizations.of(context)!.login))
           ],
-        )
-    );
+        ));
   }
-
 }
