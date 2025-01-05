@@ -2,11 +2,9 @@
 
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:whisky_hikes/UI/auth/signup/SignUpPageViewModel.dart';
-import 'package:whisky_hikes/UI/home/home_view_model.dart';
 
-import '../UI/profile/profile_view_model.dart';
+import 'package:whisky_hikes/data/repositories/hike_repository.dart';
+
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
@@ -27,18 +25,10 @@ List<SingleChildWidget> get providers {
         context.read<BackendApiService>(),
       ),
     ),
-    Provider<UserRepository>(
+    ChangeNotifierProvider<UserRepository>(
         create: (context) => UserRepository(context.read<AuthService>())),
-    ChangeNotifierProvider<ProfilePageViewModel>(
-      create: (context) => ProfilePageViewModel(
-          profileRepository: context.read<ProfileRepository>(),
-          userRepository: context.read<UserRepository>()),
+    Provider<HikeRepository>(
+      create: (context) => HikeRepository(context.read<BackendApiService>()),
     ),
-    ChangeNotifierProvider<HomePageViewModel>(
-        create: (context) =>
-            HomePageViewModel(userRepository: context.read<UserRepository>())),
-    ChangeNotifierProvider(
-        create: (context) =>
-            SignUpPageViewModel(userRepository: context.read<UserRepository>()))
   ];
 }

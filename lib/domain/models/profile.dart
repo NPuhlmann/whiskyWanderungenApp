@@ -12,6 +12,7 @@ class Profile with _$Profile {
     @Default('') String last_name,  // Standardwert: leerer String
     @Default(null) DateTime? date_of_birth,
     @Default('') String email,      // Standardwert: leerer String
+
     @Default('') String imageUrl,   // Standardwert: leerer String
   }) = _Profile;
 

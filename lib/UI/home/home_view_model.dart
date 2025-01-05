@@ -1,17 +1,25 @@
-import 'package:flutter/cupertino.dart';
-import 'package:whisky_hikes/data/repositories/user_repository.dart';
+
+import 'package:flutter/material.dart';
+import 'package:whisky_hikes/data/repositories/hike_repository.dart';
+
+import '../../domain/models/hike.dart';
 
 class HomePageViewModel extends ChangeNotifier{
 
-  HomePageViewModel({
-    required UserRepository userRepository,
-}): _userRepository = userRepository;
+  HomePageViewModel({required HikeRepository hikeRepository}): _hikeRepository = hikeRepository;
 
-  final UserRepository _userRepository;
+  final HikeRepository _hikeRepository;
 
-  void signOut(){
-    _userRepository.signUserOut();
-    notifyListeners();
+  List<Hike> _hikes = [];
+  List<Hike> get hikes => _hikes;
+
+  Future<List<Hike>> loadHikes() async {
+    try {
+      _hikes = await _hikeRepository.getAllAvailableHikes();
+      return _hikes;
+    } finally {
+      notifyListeners();
+    }
   }
 
 }

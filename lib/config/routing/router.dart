@@ -6,7 +6,6 @@ import 'package:whisky_hikes/UI/auth/login/login_page.dart';
 import 'package:whisky_hikes/UI/auth/login/login_page_view_model.dart';
 import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/UI/home/home_page.dart';
-import 'package:whisky_hikes/UI/home/home_view_model.dart';
 import 'package:whisky_hikes/UI/my_hikes/my_hikes_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_view_model.dart';
@@ -40,8 +39,8 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                 GoRoute(
                     path: Routes.home,
                     builder: (context, state) {
-                      final viewModel = HomePageViewModel(userRepository: context.read());
-                      return HomePage(viewModel: viewModel,);
+                      // final viewModel = HomePageViewModel(userRepository: context.read());
+                      return HomePage();
                     }),
 
               ]),

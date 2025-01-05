@@ -11,5 +11,6 @@
   "iAmLegalAge": "Ich bin alt genug zum Trinken",
   "hikes": "Wanderungen",
   "myHikes": "Meine Wanderungen",
-  "profile": "Profil"
+  "profile": "Profil",
+  "greeting_home_page": "Hallo, {name}! Bereit für ein Abenteuer?"
 }
