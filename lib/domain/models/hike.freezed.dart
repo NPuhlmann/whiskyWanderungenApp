@@ -32,6 +32,10 @@ mixin _$Hike {
   set description(String value) => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
   set price(double value) => throw _privateConstructorUsedError;
+  Difficulty get difficulty => throw _privateConstructorUsedError;
+  set difficulty(Difficulty value) => throw _privateConstructorUsedError;
+  String? get thumbnail_image_url => throw _privateConstructorUsedError;
+  set thumbnail_image_url(String? value) => throw _privateConstructorUsedError;
 
   /// Serializes this Hike to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,7 +57,9 @@ abstract class $HikeCopyWith<$Res> {
       double steep,
       int elevation,
       String description,
-      double price});
+      double price,
+      Difficulty difficulty,
+      String? thumbnail_image_url});
 }
 
 /// @nodoc
@@ -77,6 +83,8 @@ class _$HikeCopyWithImpl<$Res, $Val extends Hike>
     Object? elevation = null,
     Object? description = null,
     Object? price = null,
+    Object? difficulty = null,
+    Object? thumbnail_image_url = freezed,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -103,6 +111,14 @@ class _$HikeCopyWithImpl<$Res, $Val extends Hike>
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
               as double,
+      difficulty: null == difficulty
+          ? _value.difficulty
+          : difficulty // ignore: cast_nullable_to_non_nullable
+              as Difficulty,
+      thumbnail_image_url: freezed == thumbnail_image_url
+          ? _value.thumbnail_image_url
+          : thumbnail_image_url // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -120,7 +136,9 @@ abstract class _$$HikeImplCopyWith<$Res> implements $HikeCopyWith<$Res> {
       double steep,
       int elevation,
       String description,
-      double price});
+      double price,
+      Difficulty difficulty,
+      String? thumbnail_image_url});
 }
 
 /// @nodoc
@@ -141,6 +159,8 @@ class __$$HikeImplCopyWithImpl<$Res>
     Object? elevation = null,
     Object? description = null,
     Object? price = null,
+    Object? difficulty = null,
+    Object? thumbnail_image_url = freezed,
   }) {
     return _then(_$HikeImpl(
       name: null == name
@@ -167,6 +187,14 @@ class __$$HikeImplCopyWithImpl<$Res>
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
               as double,
+      difficulty: null == difficulty
+          ? _value.difficulty
+          : difficulty // ignore: cast_nullable_to_non_nullable
+              as Difficulty,
+      thumbnail_image_url: freezed == thumbnail_image_url
+          ? _value.thumbnail_image_url
+          : thumbnail_image_url // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -180,7 +208,9 @@ class _$HikeImpl implements _Hike {
       this.steep = 0.2,
       this.elevation = 100,
       this.description = '',
-      this.price = 1.0});
+      this.price = 1.0,
+      this.difficulty = Difficulty.mid,
+      this.thumbnail_image_url});
 
   factory _$HikeImpl.fromJson(Map<String, dynamic> json) =>
       _$$HikeImplFromJson(json);
@@ -203,10 +233,15 @@ class _$HikeImpl implements _Hike {
   @override
   @JsonKey()
   double price;
+  @override
+  @JsonKey()
+  Difficulty difficulty;
+  @override
+  String? thumbnail_image_url;
 
   @override
   String toString() {
-    return 'Hike(name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price)';
+    return 'Hike(name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnail_image_url: $thumbnail_image_url)';
   }
 
   /// Create a copy of Hike
@@ -232,7 +267,9 @@ abstract class _Hike implements Hike {
       double steep,
       int elevation,
       String description,
-      double price}) = _$HikeImpl;
+      double price,
+      Difficulty difficulty,
+      String? thumbnail_image_url}) = _$HikeImpl;
 
   factory _Hike.fromJson(Map<String, dynamic> json) = _$HikeImpl.fromJson;
 
@@ -254,6 +291,12 @@ abstract class _Hike implements Hike {
   @override
   double get price;
   set price(double value);
+  @override
+  Difficulty get difficulty;
+  set difficulty(Difficulty value);
+  @override
+  String? get thumbnail_image_url;
+  set thumbnail_image_url(String? value);
 
   /// Create a copy of Hike
   /// with the given fields replaced by the non-null parameter values.

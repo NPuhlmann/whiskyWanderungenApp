@@ -1,12 +1,14 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:whisky_hikes/UI/home/widgets/card_widget.dart';
 
+import '../../domain/models/hike.dart';
+import 'home_view_model.dart';
+
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.viewModel});
 
-
+  final HomePageViewModel viewModel;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,20 +17,43 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   @override
+  void initState() {
+    super.initState();
+    widget.viewModel.loadHikes();
+    widget.viewModel.getUserFirstName();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.hikes),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(AppLocalizations.of(context)!.greeting_home_page("Nico"), style: TextStyle(fontSize: 27, ), textAlign: TextAlign.left, ),
-            ),
-            HikeCard(title: "Hike1", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius.',),
-          ],
-        ),
+    return ListenableBuilder(
+      listenable: widget.viewModel,
+      builder: (context, _) {
+        return Scaffold(
+          body: CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                pinned: true,
+                expandedHeight: 150,
+                flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
+                  collapseMode: CollapseMode.pin,
+                  title: Text(AppLocalizations.of(context)!.greeting_home_page(widget.viewModel.firstName), style: Theme.of(context).textTheme.headlineSmall),
+                  titlePadding: const EdgeInsets.only(bottom: 16, left: 16),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    Hike hike = widget.viewModel.hikes[index];
+                    return HikeCard(id: index, hike: hike);
+                  },
+                  childCount: widget.viewModel.hikes.length,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

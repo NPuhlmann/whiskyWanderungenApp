@@ -12,5 +12,9 @@
   "hikes": "Hikes",
   "myHikes": "My Hikes",
   "profile": "Profile",
-  "greeting_home_page": "Hello, {name}! Ready for an adventure?"
+  "greeting_home_page": "Hello, {name}! Ready for an adventure?",
+  "hard": "hard",
+  "middle": "middle",
+  "easy": "easy",
+  "very_hard": "very hard"
 }
