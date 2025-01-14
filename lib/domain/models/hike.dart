@@ -7,6 +7,8 @@ enum Difficulty { easy, mid, hard, very_hard }
 @unfreezed
 class Hike with _$Hike {
   factory Hike({
+    // die id des hikes
+    required int id,
     @Default('') String name,
     @Default(1.0) double length,
     @Default(0.2) double steep,

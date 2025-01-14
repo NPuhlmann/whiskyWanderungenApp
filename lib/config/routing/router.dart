@@ -15,6 +15,7 @@ import 'package:whisky_hikes/domain/models/hike.dart';
 
 import '../../UI/auth/signup/SignUpPageViewModel.dart';
 import '../../UI/core/ScaffoldWithNavigationBar.dart';
+import '../../UI/hike_details/hike_details_view_model.dart';
 import '../../UI/home/home_view_model.dart';
 
 GoRouter router(UserRepository authRepository) => GoRouter(
@@ -55,7 +56,8 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                     },
                     routes: [GoRoute(path: Routes.hikeDetails, builder: (context, state) {
                       final hikeData = state.extra as Hike;
-                      return HikeDetailsPage(hikeData: hikeData);
+                      final viewModel = context.watch<HikeDetailsPageViewModel>();
+                      return HikeDetailsPage(hikeData: hikeData, viewModel: viewModel);
                     })],
                   ),
                 ]),

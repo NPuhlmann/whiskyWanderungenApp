@@ -20,6 +20,9 @@ Hike _$HikeFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Hike {
+// die id des hikes
+  int get id => throw _privateConstructorUsedError; // die id des hikes
+  set id(int value) => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   set name(String value) => throw _privateConstructorUsedError;
   double get length => throw _privateConstructorUsedError;
@@ -52,7 +55,8 @@ abstract class $HikeCopyWith<$Res> {
       _$HikeCopyWithImpl<$Res, Hike>;
   @useResult
   $Res call(
-      {String name,
+      {int id,
+      String name,
       double length,
       double steep,
       int elevation,
@@ -77,6 +81,7 @@ class _$HikeCopyWithImpl<$Res, $Val extends Hike>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
     Object? length = null,
     Object? steep = null,
@@ -87,6 +92,10 @@ class _$HikeCopyWithImpl<$Res, $Val extends Hike>
     Object? thumbnail_image_url = freezed,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -131,7 +140,8 @@ abstract class _$$HikeImplCopyWith<$Res> implements $HikeCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String name,
+      {int id,
+      String name,
       double length,
       double steep,
       int elevation,
@@ -153,6 +163,7 @@ class __$$HikeImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
     Object? length = null,
     Object? steep = null,
@@ -163,6 +174,10 @@ class __$$HikeImplCopyWithImpl<$Res>
     Object? thumbnail_image_url = freezed,
   }) {
     return _then(_$HikeImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -203,7 +218,8 @@ class __$$HikeImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$HikeImpl implements _Hike {
   _$HikeImpl(
-      {this.name = '',
+      {required this.id,
+      this.name = '',
       this.length = 1.0,
       this.steep = 0.2,
       this.elevation = 100,
@@ -215,6 +231,9 @@ class _$HikeImpl implements _Hike {
   factory _$HikeImpl.fromJson(Map<String, dynamic> json) =>
       _$$HikeImplFromJson(json);
 
+// die id des hikes
+  @override
+  int id;
   @override
   @JsonKey()
   String name;
@@ -241,7 +260,7 @@ class _$HikeImpl implements _Hike {
 
   @override
   String toString() {
-    return 'Hike(name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnail_image_url: $thumbnail_image_url)';
+    return 'Hike(id: $id, name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnail_image_url: $thumbnail_image_url)';
   }
 
   /// Create a copy of Hike
@@ -262,7 +281,8 @@ class _$HikeImpl implements _Hike {
 
 abstract class _Hike implements Hike {
   factory _Hike(
-      {String name,
+      {required int id,
+      String name,
       double length,
       double steep,
       int elevation,
@@ -273,6 +293,10 @@ abstract class _Hike implements Hike {
 
   factory _Hike.fromJson(Map<String, dynamic> json) = _$HikeImpl.fromJson;
 
+// die id des hikes
+  @override
+  int get id; // die id des hikes
+  set id(int value);
   @override
   String get name;
   set name(String value);

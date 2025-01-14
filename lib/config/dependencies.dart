@@ -2,6 +2,8 @@
 
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:whisky_hikes/UI/hike_details/hike_details_view_model.dart';
+import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 
 import 'package:whisky_hikes/data/repositories/hike_repository.dart';
 
@@ -31,6 +33,9 @@ List<SingleChildWidget> get providers {
     Provider<HikeRepository>(
       create: (context) => HikeRepository(context.read<BackendApiService>()),
     ),
+    Provider<HikeImagesRepository>(
+      create: (context) => HikeImagesRepository(context.read<BackendApiService>()),
+    ),
     ChangeNotifierProvider<HomePageViewModel>(
       create: (context) => HomePageViewModel(
         hikeRepository: context.read(),
@@ -38,5 +43,8 @@ List<SingleChildWidget> get providers {
         userRepository: context.read(),
       ),
     ),
+    ChangeNotifierProvider<HikeDetailsPageViewModel>(create: (context) =>
+      HikeDetailsPageViewModel(hikeImagesRepository: context.read())
+    )
   ];
 }

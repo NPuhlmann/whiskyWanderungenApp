@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../domain/models/hike.dart';
@@ -19,6 +21,33 @@ class BackendApiService {
     final List<dynamic> hikeData = response as List<dynamic>;
 
     return hikeData.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
+  }
+
+
+  // Section for Hike Images
+  // Table Structure: hike_images
+  // id: int
+  // hike_id: int
+  // image_url: text
+  // created_at: timestamp
+
+
+  // get images for a hike by hike.id
+  Future<List<String>> getHikeImages(int hikeId) async {
+    final response = await client.from('hike_images').select().eq('hike_id', hikeId);
+    final List<dynamic> hikeImageData = response as List<dynamic>;
+
+    return hikeImageData.map((element) => element['image_url'] as String).toList();
+  }
+
+  // upload images for a hike with hike id and image urls
+  Future<void> uploadHikeImages(int hikeId, List<String> imageUrls) async {
+    final List<Map<String, dynamic>> imageRecords = imageUrls.map((imageUrl) => {
+      'hike_id': hikeId,
+      'image_url': imageUrl,
+    }).toList();
+
+    await client.from('hike_images').upsert(imageRecords);
   }
 
 }

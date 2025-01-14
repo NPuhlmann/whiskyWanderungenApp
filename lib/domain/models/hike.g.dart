@@ -7,6 +7,7 @@ part of 'hike.dart';
 // **************************************************************************
 
 _$HikeImpl _$$HikeImplFromJson(Map<String, dynamic> json) => _$HikeImpl(
+      id: (json['id'] as num).toInt(),
       name: json['name'] as String? ?? '',
       length: (json['length'] as num?)?.toDouble() ?? 1.0,
       steep: (json['steep'] as num?)?.toDouble() ?? 0.2,
@@ -21,6 +22,7 @@ _$HikeImpl _$$HikeImplFromJson(Map<String, dynamic> json) => _$HikeImpl(
 
 Map<String, dynamic> _$$HikeImplToJson(_$HikeImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'length': instance.length,
       'steep': instance.steep,
