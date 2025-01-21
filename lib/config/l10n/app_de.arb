@@ -16,5 +16,6 @@
   "hard": "schwer",
   "middle": "mittel",
   "easy": "leicht",
-  "very_hard": "sehr schwer"
+  "very_hard": "sehr schwer",
+  "buyButtonText": "Kaufen"
 }

@@ -18,6 +18,7 @@ class HikeDetailsPage extends StatefulWidget {
 
 class _HikeDetailsPageState extends State<HikeDetailsPage> {
   final PageController _pageController = PageController();
+
   // wenn das Widget erstellt wird, sollen die Bilder des Hikes geladen werden
   @override
   void initState() {
@@ -39,7 +40,6 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
     _pageController.dispose();
     super.dispose();
   }
-
 
   String getDifficultyString(BuildContext context, Difficulty difficulty) {
     switch (difficulty) {
@@ -84,54 +84,61 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
               child: widget.viewModel.hikeImages.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : Stack(
-                children: [
-                  PageView.builder(
-                    controller: _pageController,
-                    itemCount: widget.viewModel.hikeImages.length,
-                    itemBuilder: (context, index) {
-                      return Image.network(widget.viewModel.hikeImages[index]);
-                    },
-                    onPageChanged: (index) {
-                      if (index == widget.viewModel.hikeImages.length - 1) {
-                        _pageController.jumpToPage(0);
-                      }
-                    },
-                  ),
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () {
-                        _pageController.previousPage(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
+                      children: [
+                        PageView.builder(
+                          controller: _pageController,
+                          itemCount: widget.viewModel.hikeImages.length,
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                                widget.viewModel.hikeImages[index]);
+                          },
+                          onPageChanged: (index) {
+                            if (index ==
+                                widget.viewModel.hikeImages.length - 1) {
+                              _pageController.jumpToPage(0);
+                            }
+                          },
+                        ),
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: IconButton(
+                            icon:
+                                Icon(Icons.arrow_back_ios, color: Colors.white),
+                            onPressed: () {
+                              _pageController.previousPage(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_forward_ios,
+                                color: Colors.white,
+                                size: 30,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 2.0,
+                                    color: Colors.black,
+                                    offset: Offset(0, 0),
+                                  )
+                                ]),
+                            onPressed: () {
+                              _pageController.nextPage(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 30, shadows: [
-                        Shadow(
-                        blurRadius: 2.0,
-                        color: Colors.black,
-                        offset: Offset(0, 0),
-                      )]),
-                      onPressed: () {
-                        _pageController.nextPage(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
             ),
             // hier sollen die Details des Hikes angezeigt werden
             // die Details sollen aus dem Hike Objekt geholt werden
@@ -145,46 +152,74 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(Icons.terrain), // Icon für Schwierigkeit
-                            SizedBox(width: 4),
-                            Text(getDifficultyString(context, widget.hikeData.difficulty),
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.bold)),
-                          ],
+                  Center(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(Icons.terrain), // Icon für Schwierigkeit
+                              SizedBox(width: 2),
+                              Text(
+                                  getDifficultyString(
+                                      context, widget.hikeData.difficulty),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(Icons.straighten), // Icon für Länge
-                            SizedBox(width: 4),
-                            Text('${widget.hikeData.length} km',
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.bold)),
-                          ],
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(Icons.straighten), // Icon für Länge
+                              SizedBox(width: 2),
+                              Text('${widget.hikeData.length}km',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(Icons.keyboard_arrow_up_rounded), // Icon für Höhenmeter
-                            SizedBox(width: 4),
-                            Text('${widget.hikeData.elevation} m',
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.bold)),
-                          ],
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(Icons.keyboard_arrow_up_rounded),
+                              // Icon für Höhenmeter
+                              SizedBox(width: 2),
+                              Text('${widget.hikeData.elevation}m',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                            child: Row(children: [
+                          Icon(Icons.euro_rounded),
+                          SizedBox(width: 2),
+                          Text(widget.hikeData.price.toString(),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold))
+                        ]))
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 8),
-
                   Text(widget.hikeData.description),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => print("pressed"),
+                          child: Text(
+                            AppLocalizations.of(context)!.buyButtonText,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
