@@ -18,6 +18,7 @@
   "easy": "easy",
   "very_hard": "very hard",
   "buyButtonText": "Buy",
+  "startHikeButtonText": "Start Hike",
   "firstName": "First Name",
   "lastName": "Last Name",
   "address": "Address",

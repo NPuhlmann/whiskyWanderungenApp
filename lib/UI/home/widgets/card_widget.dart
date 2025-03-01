@@ -37,7 +37,17 @@ class HikeCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         // Handle card tap
-        GoRouter.of(context).go('/hikeDetails', extra: hike);
+        final Map<String, dynamic> extraData = {
+          'hike': hike,
+          'isFromMyHikes': !isInGeneralList
+        };
+        
+        // Wenn wir von der MyHikes-Seite kommen, verwenden wir die Unterroute
+        if (!isInGeneralList) {
+          GoRouter.of(context).go('/myHikes/hikeDetails', extra: extraData);
+        } else {
+          GoRouter.of(context).go('/hikeDetails', extra: extraData);
+        }
       },
       child: Card.outlined(
         elevation: 5,

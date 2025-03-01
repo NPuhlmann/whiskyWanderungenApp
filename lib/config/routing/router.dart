@@ -56,9 +56,11 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                       );
                     },
                     routes: [GoRoute(path: Routes.hikeDetails, builder: (context, state) {
-                      final hikeData = state.extra as Hike;
+                      final Map<String, dynamic> extraData = state.extra as Map<String, dynamic>;
+                      final hikeData = extraData['hike'] as Hike;
+                      final isFromMyHikes = extraData['isFromMyHikes'] as bool;
                       final viewModel = context.watch<HikeDetailsPageViewModel>();
-                      return HikeDetailsPage(hikeData: hikeData, viewModel: viewModel);
+                      return HikeDetailsPage(hikeData: hikeData, viewModel: viewModel, isFromMyHikes: isFromMyHikes);
                     })],
                   ),
                 ]),
@@ -68,7 +70,20 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                       builder: (context, state) {
                         final viewModel = context.watch<MyHikesViewModel>();
                         return MyHikesPage(viewModel: viewModel);
-                      })
+                      },
+                      routes: [
+                        GoRoute(
+                          path: Routes.hikeDetails.substring(1), // Entferne den führenden Slash
+                          builder: (context, state) {
+                            final Map<String, dynamic> extraData = state.extra as Map<String, dynamic>;
+                            final hikeData = extraData['hike'] as Hike;
+                            final isFromMyHikes = extraData['isFromMyHikes'] as bool;
+                            final viewModel = context.watch<HikeDetailsPageViewModel>();
+                            return HikeDetailsPage(hikeData: hikeData, viewModel: viewModel, isFromMyHikes: isFromMyHikes);
+                          }
+                        )
+                      ]
+                  )
                 ]),
                 StatefulShellBranch(routes: <RouteBase>[
                   GoRoute(
