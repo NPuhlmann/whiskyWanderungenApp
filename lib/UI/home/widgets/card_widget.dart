@@ -4,11 +4,18 @@ import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HikeCard extends StatelessWidget {
-  const HikeCard(
-      {super.key, required this.id, required this.hike});
+  const HikeCard({
+    super.key, 
+    required this.id, 
+    required this.hike,
+    required this.isInGeneralList,
+    required this.onFavoriteToggle,
+  });
 
   final int id;
   final Hike hike;
+  final bool isInGeneralList;
+  final Function(Hike) onFavoriteToggle;
 
   String getDifficultyString(BuildContext context, Difficulty difficulty) {
     switch (difficulty) {
@@ -49,22 +56,28 @@ class HikeCard extends StatelessWidget {
                       ? Image.network(hike.thumbnail_image_url!, height: 250, width: double.infinity, fit: BoxFit.cover)
                       : Image.asset('assets/logo.png', height: 250, width: double.infinity, fit: BoxFit.cover),
                 ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: IconButton(
-                    icon: Icon(Icons.favorite_border, color: Colors.white, size: 30, shadows: [
-                      Shadow(
-                        blurRadius: 2.0,
-                        color: Colors.black,
-                        offset: Offset(0, 0),
+                if (isInGeneralList)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      icon: Icon(
+                        hike.isFavorite ? Icons.favorite : Icons.favorite_border, 
+                        color: hike.isFavorite ? Theme.of(context).colorScheme.primary : Colors.white, 
+                        size: 30, 
+                        shadows: [
+                          Shadow(
+                            blurRadius: 2.0,
+                            color: Colors.black,
+                            offset: Offset(0, 0),
+                          ),
+                        ],
                       ),
-                    ],),
-                    onPressed: () {
-                      // Handle favorite button press
-                    },
+                      onPressed: () {
+                        onFavoriteToggle(hike);
+                      },
+                    ),
                   ),
-                ),
               ],
             ),
             ListTile(

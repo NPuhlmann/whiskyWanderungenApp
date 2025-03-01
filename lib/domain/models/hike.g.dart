@@ -18,6 +18,7 @@ _$HikeImpl _$$HikeImplFromJson(Map<String, dynamic> json) => _$HikeImpl(
           $enumDecodeNullable(_$DifficultyEnumMap, json['difficulty']) ??
               Difficulty.mid,
       thumbnail_image_url: json['thumbnail_image_url'] as String?,
+      isFavorite: json['isFavorite'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$HikeImplToJson(_$HikeImpl instance) =>
@@ -31,6 +32,7 @@ Map<String, dynamic> _$$HikeImplToJson(_$HikeImpl instance) =>
       'price': instance.price,
       'difficulty': _$DifficultyEnumMap[instance.difficulty]!,
       'thumbnail_image_url': instance.thumbnail_image_url,
+      'isFavorite': instance.isFavorite,
     };
 
 const _$DifficultyEnumMap = {

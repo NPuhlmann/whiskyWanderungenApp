@@ -21,5 +21,13 @@
   "firstName": "First Name",
   "lastName": "Last Name",
   "address": "Address",
-  "save": "Save"
-}
+  "save": "Save",
+  "refresh": "refresh", 
+  "tryAgain": "try again",
+  "noHikesFound": "No hikes found",
+  "noHikesPurchased": "You did not purchase any hikes, yet.",
+  "loginRequiredForHikes": "Please log in to see your purchased hikes.",
+  "errorLoadingHikes": "An error occurred. Please try again later.",
+  "show_favorites": "Show favorites",
+  "show_all_hikes": "Show all hikes"
+} 

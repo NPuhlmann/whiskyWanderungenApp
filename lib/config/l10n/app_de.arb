@@ -21,5 +21,13 @@
   "firstName": "Vorname",
   "lastName": "Nachname",
   "address": "Adresse",
-  "save": "Speichern"
+  "save": "Speichern", 
+  "refresh": "Aktualisieren", 
+  "tryAgain": "Nochmal",
+  "noHikesFound": "Keine Wanderungen gefunden",
+  "noHikesPurchased": "Sie haben noch keine Wanderungen gekauft.",
+  "loginRequiredForHikes": "Bitte melden Sie sich an, um Ihre gekauften Wanderungen zu sehen.",
+  "errorLoadingHikes": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+  "show_favorites": "Favoriten anzeigen",
+  "show_all_hikes": "Alle Wanderungen anzeigen"
 }

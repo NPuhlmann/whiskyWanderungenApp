@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../domain/models/hike.dart';
@@ -23,6 +21,60 @@ class BackendApiService {
     return hikeData.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
   }
 
+  // get a list of hikes purchased by a user
+  Future<List<Hike>> fetchUserHikes(String userId) async {
+    try {
+      // Verwende die korrekte Tabelle 'purchased_hikes'
+      final response = await client
+          .from('purchased_hikes')
+          .select('hike_id')
+          .eq('user_id', userId);
+      
+      final List<dynamic> userHikeData = response as List<dynamic>;
+      if (userHikeData.isEmpty) {
+        return [];
+      }
+
+      // Extrahiere die Hike-IDs und behandle mögliche Typprobleme
+      final List<int> hikeIds = [];
+      for (final element in userHikeData) {
+        if (element['hike_id'] != null) {
+          // Konvertiere zu int, unabhängig davon, ob es als String oder int gespeichert ist
+          hikeIds.add(int.parse(element['hike_id'].toString()));
+        }
+      }
+      
+      if (hikeIds.isEmpty) {
+        return [];
+      }
+
+      // Holen Sie sich die vollständigen Hike-Objekte für die IDs
+      List<Hike> userHikes = [];
+      for (final hikeId in hikeIds) {
+        try {
+          final hikeResponse = await client
+              .from('hikes')
+              .select()
+              .eq('id', hikeId);
+          
+          final List<dynamic> hikeDataList = hikeResponse as List<dynamic>;
+          if (hikeDataList.isNotEmpty) {
+            final hikeData = hikeDataList.first as Map<String, dynamic>;
+            userHikes.add(Hike.fromJson(hikeData));
+          }
+        } catch (e) {
+          print('Fehler beim Laden der Hike mit ID $hikeId: $e');
+          // Fahre mit der nächsten Hike fort
+          continue;
+        }
+      }
+      
+      return userHikes;
+    } catch (e) {
+      print('Fehler beim Laden der Benutzer-Hikes: $e');
+      return [];
+    }
+  }
 
   // Section for Hike Images
   // Table Structure: hike_images

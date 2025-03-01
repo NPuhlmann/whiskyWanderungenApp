@@ -17,6 +17,7 @@ class Hike with _$Hike {
     @Default(1.0) double price,
     @Default(Difficulty.mid) Difficulty difficulty,
     String? thumbnail_image_url,
+    @Default(false) bool isFavorite,
 }) = _Hike;
 
   factory Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);

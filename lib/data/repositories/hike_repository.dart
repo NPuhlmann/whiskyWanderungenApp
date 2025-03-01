@@ -10,4 +10,8 @@ class HikeRepository {
   Future<List<Hike>> getAllAvailableHikes() async {
     return await _backendApiService.fetchHikes();
   }
+
+  Future<List<Hike>> getUserHikes(String userId) async {
+    return await _backendApiService.fetchUserHikes(userId);
+  }
 }

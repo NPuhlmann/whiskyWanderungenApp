@@ -17,6 +17,7 @@ import '../../UI/auth/signup/SignUpPageViewModel.dart';
 import '../../UI/core/ScaffoldWithNavigationBar.dart';
 import '../../UI/hike_details/hike_details_view_model.dart';
 import '../../UI/home/home_view_model.dart';
+import '../../UI/my_hikes/my_hikes_view_model.dart';
 
 GoRouter router(UserRepository authRepository) => GoRouter(
         initialLocation: Routes.home,
@@ -65,7 +66,8 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                   GoRoute(
                       path: Routes.myHikes,
                       builder: (context, state) {
-                        return MyHikesPage();
+                        final viewModel = context.watch<MyHikesViewModel>();
+                        return MyHikesPage(viewModel: viewModel);
                       })
                 ]),
                 StatefulShellBranch(routes: <RouteBase>[
