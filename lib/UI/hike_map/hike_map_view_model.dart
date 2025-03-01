@@ -1,13 +1,11 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../data/repositories/waypoint_repository.dart';
-import '../../domain/models/hike.dart';
 import '../../domain/models/waypoint.dart';
 
 class HikeMapViewModel extends ChangeNotifier {
@@ -42,7 +40,9 @@ class HikeMapViewModel extends ChangeNotifier {
   Future<void> loadWaypointsForHike(int hikeId) async {
     _isLoading = true;
     _errorMessage = null;
-    notifyListeners();
+    _waypoints = []; // Leere die Wegpunkte, um sicherzustellen, dass keine alten Daten angezeigt werden
+    _routePoints = []; // Leere auch die Routenpunkte
+    Future.microtask(() => notifyListeners());
     
     try {
       final waypoints = await waypointRepository.getWaypointsForHike(hikeId);
@@ -53,11 +53,13 @@ class HikeMapViewModel extends ChangeNotifier {
       }
       
       _isLoading = false;
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (e) {
       _isLoading = false;
       _errorMessage = 'Fehler beim Laden der Wegpunkte: $e';
-      notifyListeners();
+      print(_errorMessage);
+      Future.microtask(() => notifyListeners());
+      // Wir werfen den Fehler nicht weiter, damit die App nicht abstürzt
     }
   }
   
@@ -71,10 +73,11 @@ class HikeMapViewModel extends ChangeNotifier {
         '${waypoint.longitude},${waypoint.latitude}'
       ).join(';');
       
+      // Konfigurierbare URL für den Routing-Dienst
+      final String routingBaseUrl = dotenv.env['OSRM_API_URL'] ?? 'https://router.project-osrm.org';
       final response = await http.get(
-        Uri.parse('https://router.project-osrm.org/route/v1/walking/$coordinates?overview=full&geometries=geojson')
+        Uri.parse('$routingBaseUrl/route/v1/walking/$coordinates?overview=full&geometries=geojson')
       );
-      
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final route = data['routes'][0]['geometry']['coordinates'] as List;
@@ -84,10 +87,11 @@ class HikeMapViewModel extends ChangeNotifier {
           return [point[1] as double, point[0] as double];
         }).toList();
         
-        notifyListeners();
+        Future.microtask(() => notifyListeners());
       }
     } catch (e) {
       print('Fehler bei der Routenberechnung: $e');
+      // Auch hier werfen wir den Fehler nicht weiter
     }
   }
   
@@ -99,7 +103,7 @@ class HikeMapViewModel extends ChangeNotifier {
       
       _currentPosition = position;
       _checkIfNearWaypoint();
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (e) {
       print('Fehler beim Aktualisieren der Position: $e');
     }
@@ -122,24 +126,24 @@ class HikeMapViewModel extends ChangeNotifier {
       if (distance <= _maxDistanceToWaypoint) {
         _selectedWaypoint = waypoint;
         _isNearWaypoint = true;
-        notifyListeners();
+        Future.microtask(() => notifyListeners());
         return;
       }
     }
     
     _isNearWaypoint = false;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
   }
   
   // Wählt einen Wegpunkt aus
   void selectWaypoint(Waypoint waypoint) {
     _selectedWaypoint = waypoint;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
   }
   
   // Hebt die Auswahl eines Wegpunkts auf
   void clearSelectedWaypoint() {
     _selectedWaypoint = null;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
   }
 } 

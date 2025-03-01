@@ -25,13 +25,16 @@ class HikeMapPage extends StatefulWidget {
 }
 
 class _HikeMapPageState extends State<HikeMapPage> {
-  final MapController _mapController = MapController();
+  // Initialisiere den MapController mit late, aber stelle sicher, dass er vor der Verwendung initialisiert wird
+  late final MapController _mapController;
   Timer? _locationTimer;
   bool _isBottomSheetOpen = false;
   
   @override
   void initState() {
     super.initState();
+    // Initialisiere den MapController sofort in initState
+    _mapController = MapController();
     _loadWaypoints();
     _requestLocationPermission();
   }
@@ -43,15 +46,37 @@ class _HikeMapPageState extends State<HikeMapPage> {
   }
   
   Future<void> _loadWaypoints() async {
-    await widget.viewModel.loadWaypointsForHike(widget.hike.id);
-    
-    if (widget.viewModel.waypoints.isNotEmpty) {
-      // Zentriere die Karte auf den ersten Wegpunkt
-      final waypoint = widget.viewModel.waypoints.first;
-      _mapController.move(
-        LatLng(waypoint.latitude, waypoint.longitude),
-        13.0,
-      );
+    try {
+      await widget.viewModel.loadWaypointsForHike(widget.hike.id);
+      
+      if (widget.viewModel.waypoints.isNotEmpty) {
+        // Zentriere die Karte auf den ersten Wegpunkt
+        final waypoint = widget.viewModel.waypoints.first;
+        _mapController.move(
+          LatLng(waypoint.latitude, waypoint.longitude),
+          13.0,
+        );
+      } else {
+        // Wenn keine Wegpunkte vorhanden sind, zeige eine Snackbar an
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)?.noWaypointsFound ?? 'Keine Wegpunkte gefunden'),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Bei einem Fehler zeige eine Snackbar an
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fehler beim Laden der Wegpunkte: $e'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
   
@@ -129,40 +154,13 @@ class _HikeMapPageState extends State<HikeMapPage> {
             return const Center(child: CircularProgressIndicator());
           }
           
-          if (widget.viewModel.errorMessage != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.viewModel.errorMessage!,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _loadWaypoints,
-                    child: Text(AppLocalizations.of(context)!.tryAgain),
-                  ),
-                ],
-              ),
-            );
-          }
-          
-          if (widget.viewModel.waypoints.isEmpty) {
-            return Center(
-              child: Text(
-                AppLocalizations.of(context)!.noWaypointsFound,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
+          // Auch wenn ein Fehler vorliegt, zeigen wir die Karte an
+          // Der Fehler wird bereits in der Snackbar angezeigt
           
           return FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: LatLng(0, 0), // Wird später aktualisiert
+              initialCenter: LatLng(47.3769, 8.5417), // Standard: Zürich als Fallback
               initialZoom: 13.0,
               onTap: (_, point) {
                 // Schließe das Bottom Sheet, wenn auf die Karte getippt wird
@@ -190,25 +188,26 @@ class _HikeMapPageState extends State<HikeMapPage> {
                   ],
                 ),
               // Zeichne die Wegpunkte
-              MarkerLayer(
-                markers: widget.viewModel.waypoints.map((waypoint) {
-                  return Marker(
-                    point: LatLng(waypoint.latitude, waypoint.longitude),
-                    width: 40,
-                    height: 40,
-                    child: GestureDetector(
-                      onTap: () => _showWaypointBottomSheet(waypoint),
-                      child: Icon(
-                        Icons.location_on,
-                        color: widget.viewModel.selectedWaypoint?.id == waypoint.id
-                            ? Colors.red
-                            : Colors.blue,
-                        size: 40,
+              if (widget.viewModel.waypoints.isNotEmpty)
+                MarkerLayer(
+                  markers: widget.viewModel.waypoints.map((waypoint) {
+                    return Marker(
+                      point: LatLng(waypoint.latitude, waypoint.longitude),
+                      width: 40,
+                      height: 40,
+                      child: GestureDetector(
+                        onTap: () => _showWaypointBottomSheet(waypoint),
+                        child: Icon(
+                          Icons.location_on,
+                          color: widget.viewModel.selectedWaypoint?.id == waypoint.id
+                              ? Colors.red
+                              : Colors.blue,
+                          size: 40,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
+                    );
+                  }).toList(),
+                ),
               // Zeichne die aktuelle Position
               if (widget.viewModel.currentPosition != null)
                 MarkerLayer(

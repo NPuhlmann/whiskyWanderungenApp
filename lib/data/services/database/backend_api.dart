@@ -259,10 +259,12 @@ class BackendApiService {
             // Waypoint erstellen und zur Liste hinzufügen
             final waypoint = Waypoint(
               id: waypointId,
+              hikeId: hikeId,
               name: waypointData['name'] ?? '',
               description: waypointData['description'] ?? '',
               latitude: double.parse(waypointData['location'].toString().split(',')[0]),
               longitude: double.parse(waypointData['location'].toString().split(',')[1]),
+              orderIndex: waypointData['order_index'] ?? 0,
               images: images,
             );
             

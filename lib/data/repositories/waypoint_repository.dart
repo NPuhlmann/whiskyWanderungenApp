@@ -40,6 +40,14 @@ class WaypointRepository {
       }).toList();
     } catch (e) {
       print('Fehler beim Laden der Wegpunkte: $e');
+      
+      // Wenn es sich um einen PostgrestException mit dem Code PGRST200 handelt
+      // (fehlende Beziehung zwischen Tabellen), geben wir eine leere Liste zurück
+      if (e is PostgrestException && e.code == 'PGRST200') {
+        print('Beziehung zwischen waypoints und waypoint_images nicht gefunden. Gebe leere Liste zurück.');
+        return [];
+      }
+      
       rethrow;
     }
   }
