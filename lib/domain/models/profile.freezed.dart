@@ -20,7 +20,11 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Profile {
-  String get first_name => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
+  set id(String value) =>
+      throw _privateConstructorUsedError; // ID des Benutzers
+  String get first_name =>
+      throw _privateConstructorUsedError; // ID des Benutzers
   set first_name(String value) =>
       throw _privateConstructorUsedError; // Standardwert: leerer String
   String get last_name =>
@@ -52,7 +56,8 @@ abstract class $ProfileCopyWith<$Res> {
       _$ProfileCopyWithImpl<$Res, Profile>;
   @useResult
   $Res call(
-      {String first_name,
+      {String id,
+      String first_name,
       String last_name,
       DateTime? date_of_birth,
       String email,
@@ -74,6 +79,7 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? first_name = null,
     Object? last_name = null,
     Object? date_of_birth = freezed,
@@ -81,6 +87,10 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
     Object? imageUrl = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       first_name: null == first_name
           ? _value.first_name
           : first_name // ignore: cast_nullable_to_non_nullable
@@ -113,7 +123,8 @@ abstract class _$$ProfileImplCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String first_name,
+      {String id,
+      String first_name,
       String last_name,
       DateTime? date_of_birth,
       String email,
@@ -133,6 +144,7 @@ class __$$ProfileImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? first_name = null,
     Object? last_name = null,
     Object? date_of_birth = freezed,
@@ -140,6 +152,10 @@ class __$$ProfileImplCopyWithImpl<$Res>
     Object? imageUrl = null,
   }) {
     return _then(_$ProfileImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       first_name: null == first_name
           ? _value.first_name
           : first_name // ignore: cast_nullable_to_non_nullable
@@ -168,7 +184,8 @@ class __$$ProfileImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ProfileImpl with DiagnosticableTreeMixin implements _Profile {
   _$ProfileImpl(
-      {this.first_name = '',
+      {this.id = '',
+      this.first_name = '',
       this.last_name = '',
       this.date_of_birth = null,
       this.email = '',
@@ -177,6 +194,10 @@ class _$ProfileImpl with DiagnosticableTreeMixin implements _Profile {
   factory _$ProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProfileImplFromJson(json);
 
+  @override
+  @JsonKey()
+  String id;
+// ID des Benutzers
   @override
   @JsonKey()
   String first_name;
@@ -198,7 +219,7 @@ class _$ProfileImpl with DiagnosticableTreeMixin implements _Profile {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Profile(first_name: $first_name, last_name: $last_name, date_of_birth: $date_of_birth, email: $email, imageUrl: $imageUrl)';
+    return 'Profile(id: $id, first_name: $first_name, last_name: $last_name, date_of_birth: $date_of_birth, email: $email, imageUrl: $imageUrl)';
   }
 
   @override
@@ -206,6 +227,7 @@ class _$ProfileImpl with DiagnosticableTreeMixin implements _Profile {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'Profile'))
+      ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('first_name', first_name))
       ..add(DiagnosticsProperty('last_name', last_name))
       ..add(DiagnosticsProperty('date_of_birth', date_of_birth))
@@ -231,7 +253,8 @@ class _$ProfileImpl with DiagnosticableTreeMixin implements _Profile {
 
 abstract class _Profile implements Profile {
   factory _Profile(
-      {String first_name,
+      {String id,
+      String first_name,
       String last_name,
       DateTime? date_of_birth,
       String email,
@@ -240,7 +263,10 @@ abstract class _Profile implements Profile {
   factory _Profile.fromJson(Map<String, dynamic> json) = _$ProfileImpl.fromJson;
 
   @override
-  String get first_name;
+  String get id;
+  set id(String value); // ID des Benutzers
+  @override
+  String get first_name; // ID des Benutzers
   set first_name(String value); // Standardwert: leerer String
   @override
   String get last_name; // Standardwert: leerer String

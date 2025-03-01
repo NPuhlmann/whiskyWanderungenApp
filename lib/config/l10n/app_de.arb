@@ -30,5 +30,14 @@
   "loginRequiredForHikes": "Bitte melden Sie sich an, um Ihre gekauften Wanderungen zu sehen.",
   "errorLoadingHikes": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
   "show_favorites": "Favoriten anzeigen",
-  "show_all_hikes": "Alle Wanderungen anzeigen"
+  "show_all_hikes": "Alle Wanderungen anzeigen",
+  "dateOfBirth": "Geburtsdatum",
+  "selectDate": "Datum auswählen",
+  "mustBeAtLeast18": "Sie müssen mindestens 18 Jahre alt sein",
+  "cancel": "Abbrechen",
+  "done": "Fertig",
+  "changeProfilePicture": "Profilbild ändern",
+  "takePhoto": "Foto aufnehmen",
+  "chooseFromGallery": "Aus Galerie wählen",
+  "errorUploadingImage": "Fehler beim Hochladen des Bildes"
 }

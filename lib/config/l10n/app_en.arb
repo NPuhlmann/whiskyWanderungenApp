@@ -30,5 +30,14 @@
   "loginRequiredForHikes": "Please log in to see your purchased hikes.",
   "errorLoadingHikes": "An error occurred. Please try again later.",
   "show_favorites": "Show favorites",
-  "show_all_hikes": "Show all hikes"
+  "show_all_hikes": "Show all hikes",
+  "dateOfBirth": "Date of Birth",
+  "selectDate": "Select date",
+  "mustBeAtLeast18": "You must be at least 18 years old",
+  "cancel": "Cancel",
+  "done": "Done",
+  "changeProfilePicture": "Change profile picture",
+  "takePhoto": "Take photo",
+  "chooseFromGallery": "Choose from gallery",
+  "errorUploadingImage": "Error uploading image"
 } 

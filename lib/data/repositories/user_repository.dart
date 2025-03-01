@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -40,5 +39,15 @@ class UserRepository extends ChangeNotifier{
   String? getUserId() {
     return _authService.getCurrentUserId();
   }
-
+  
+  // E-Mail-Adresse des aktuellen Benutzers abrufen
+  String? getUserEmail() {
+    return _authService.getCurrentUserEmail();
+  }
+  
+  // E-Mail-Adresse des Benutzers aktualisieren
+  Future<void> updateUserEmail(String newEmail) async {
+    await _authService.updateUserEmail(newEmail);
+    notifyListeners();
+  }
 }

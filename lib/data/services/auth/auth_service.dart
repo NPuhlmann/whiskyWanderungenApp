@@ -36,4 +36,15 @@ class AuthService{
 
     return user == null ? false : true;
   }
+  
+  // E-Mail-Adresse des Benutzers aktualisieren
+  Future<void> updateUserEmail(String newEmail) async {
+    try {
+      await client.auth.updateUser(UserAttributes(email: newEmail));
+    } catch (e) {
+      // Fehlerbehandlung
+      print('Fehler beim Aktualisieren der E-Mail-Adresse: $e');
+      throw Exception('Fehler beim Aktualisieren der E-Mail-Adresse: $e');
+    }
+  }
 }

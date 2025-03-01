@@ -1,4 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:typed_data';
+import 'dart:developer' as dev;
 
 import '../../../domain/models/hike.dart';
 import '../../../domain/models/profile.dart';
@@ -10,7 +12,16 @@ class BackendApiService {
   // get User Profile by id
   Future<Profile> getUserProfileById(String id) async {
     final response = await client.from('profiles').select().eq('id', id);
-    return (response as List<dynamic>).map<Profile>((element) => Profile.fromJson(element)).first;
+    if ((response as List<dynamic>).isEmpty) {
+      // Wenn kein Profil gefunden wurde, erstelle ein neues mit der ID
+      return Profile();
+    }
+    
+    // Konvertiere die Antwort in ein Profil-Objekt
+    final Map<String, dynamic> profileData = response.first;
+    
+    // Erstelle ein neues Profil mit den Daten aus der Datenbank
+    return Profile.fromJson(profileData);
   }
   
   // get a list of hikes from the 'hikes' table
@@ -104,7 +115,97 @@ class BackendApiService {
 
   // update user profile
   Future<void> updateUserProfile(Profile profile) async {
-    await client.from('profiles').upsert([profile.toJson()]);
+    // Konvertiere das Profil in JSON und entferne Felder, die in der Datenbank nicht existieren
+    final Map<String, dynamic> profileJson = profile.toJson();
+    profileJson.remove('email'); // Email-Feld entfernen, da es in der auth.users Tabelle gespeichert wird
+    profileJson.remove('imageUrl'); // imageUrl-Feld entfernen, da es in der Datenbank nicht existiert
+    
+    // Stelle sicher, dass die ID gesetzt ist
+    if (profileJson['id'] == null || profileJson['id'].isEmpty) {
+      final String? userId = client.auth.currentUser?.id;
+      if (userId != null) {
+        profileJson['id'] = userId;
+      } else {
+        throw Exception('Benutzer-ID konnte nicht ermittelt werden');
+      }
+    }
+    
+    await client.from('profiles').upsert([profileJson]);
   }
 
+  // Methode zum Hochladen eines Profilbilds
+  Future<String> uploadProfileImage(String userId, Uint8List fileBytes, String fileExt) async {
+    final String path = 'profile_images/$userId.$fileExt';
+    
+    dev.log("Beginne Upload nach $path mit ${fileBytes.length} Bytes");
+    
+    try {
+      // Prüfen, ob der Bucket existiert, bevor wir hochladen
+      try {
+        final List<Bucket> buckets = await client.storage.listBuckets();
+        final bool bucketExists = buckets.any((bucket) => bucket.name == 'avatars');
+        if (!bucketExists) {
+          dev.log("Der Bucket 'avatars' existiert nicht!");
+          throw Exception("Der Storage-Bucket 'avatars' existiert nicht. Bitte erstellen Sie ihn in Supabase.");
+        }
+        dev.log("Bucket 'avatars' gefunden, fahre mit Upload fort");
+      } catch (bucketError) {
+        dev.log("Fehler beim Prüfen der Buckets: $bucketError", error: bucketError);
+        // Wir versuchen trotzdem hochzuladen, falls es nur ein Berechtigungsproblem war
+      }
+      
+      // Bild in den Storage hochladen
+      await client.storage.from('avatars').uploadBinary(
+        path,
+        fileBytes,
+        fileOptions: FileOptions(
+          cacheControl: '3600',
+          upsert: true,
+        ),
+      );
+      
+      dev.log("Upload erfolgreich abgeschlossen");
+      
+      // Öffentliche URL des Bildes zurückgeben
+      final String imageUrl = client.storage.from('avatars').getPublicUrl(path);
+      dev.log("Generierte öffentliche URL: $imageUrl");
+      return imageUrl;
+    } catch (e) {
+      dev.log("Fehler beim Hochladen des Profilbilds: $e", error: e);
+      
+      // Detaillierte Fehleranalyse
+      if (e.toString().contains('permission denied')) {
+        throw Exception("Keine Berechtigung zum Hochladen in den 'avatars' Bucket. Bitte überprüfen Sie die Supabase-Berechtigungen.");
+      } else if (e.toString().contains('network')) {
+        throw Exception("Netzwerkfehler beim Hochladen. Bitte überprüfen Sie Ihre Internetverbindung.");
+      } else if (e.toString().contains('PlatformException')) {
+        throw Exception("Plattformspezifischer Fehler: $e. Dies kann im Simulator auftreten.");
+      }
+      
+      rethrow;
+    }
+  }
+
+  // Methode zum Abrufen der Profilbild-URL
+  Future<String?> getProfileImageUrl(String userId) async {
+    try {
+      // Suche nach Dateien im Storage, die mit der Benutzer-ID beginnen
+      final List<FileObject> files = await client.storage.from('avatars')
+          .list(path: 'profile_images');
+      
+      // Filtere die Dateien nach der Benutzer-ID
+      final List<FileObject> userFiles = files.where(
+        (file) => file.name.startsWith(userId)
+      ).toList();
+      
+      if (userFiles.isNotEmpty) {
+        // Öffentliche URL des ersten gefundenen Bildes zurückgeben
+        return client.storage.from('avatars').getPublicUrl('profile_images/${userFiles.first.name}');
+      }
+      return null;
+    } catch (e) {
+      print('Fehler beim Abrufen des Profilbilds: $e');
+      return null;
+    }
+  }
 }
