@@ -4,15 +4,18 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/config/routing/router.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'config/dependencies.dart';
 
 
 void main() async {
+  // Load env variables
+  await dotenv.load();
+  
   // supabase setup
   await Supabase.initialize(
-    // TODO: Check how to make more secure by not hardcoding the url and anonKey
-    url: 'https://demmmqwxuoirwwnwijcx.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlbW1tcXd4dW9pcnd3bndpamN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzMTg4OTgsImV4cCI6MjA0ODg5NDg5OH0.Hs_jRvVxgw1BPSJS5wSqLwrSZeN4Nw76m-XLVFn_MeY',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     debug: true,
   );
 
