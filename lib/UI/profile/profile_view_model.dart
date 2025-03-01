@@ -47,8 +47,6 @@ class ProfilePageViewModel extends ChangeNotifier{
         profile.imageUrl = imageUrl;
       }
       
-      log("Profil geladen: $profile");
-      
       _profile = profile;
       return profile;
     } finally {

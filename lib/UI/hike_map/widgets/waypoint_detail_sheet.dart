@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/models/waypoint.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class WaypointDetailSheet extends StatefulWidget {
   const WaypointDetailSheet({
@@ -96,24 +97,33 @@ class _WaypointDetailSheetState extends State<WaypointDetailSheet> {
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    widget.waypoint.images[index],
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.waypoint.images[index],
                                     fit: BoxFit.cover,
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) {
+                                      print('Fehler beim Laden des Bildes: $error');
                                       return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress.expectedTotalBytes != null
-                                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                              : null,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.error, color: Colors.red, size: 48),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Bild konnte nicht geladen werden',
+                                              style: TextStyle(color: Colors.red),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
                                         ),
                                       );
                                     },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Center(
-                                        child: Icon(Icons.error, color: Colors.red, size: 48),
-                                      );
-                                    },
+                                    // Verbesserte Caching-Strategie
+                                    memCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                                    maxHeightDiskCache: 1000,
+                                    maxWidthDiskCache: 1000,
                                   ),
                                 ),
                               );

@@ -42,10 +42,20 @@ class HikeMapViewModel extends ChangeNotifier {
     _errorMessage = null;
     _waypoints = []; // Leere die Wegpunkte, um sicherzustellen, dass keine alten Daten angezeigt werden
     _routePoints = []; // Leere auch die Routenpunkte
-    Future.microtask(() => notifyListeners());
+    _selectedWaypoint = null; // Setze den ausgewählten Wegpunkt zurück
+    _isNearWaypoint = false; // Setze den Nähe-Status zurück
     
     try {
+      // Sichere Benachrichtigung über UI-Änderungen
+      if (hasListeners) {
+        notifyListeners();
+      }
+      
       final waypoints = await waypointRepository.getWaypointsForHike(hikeId);
+      
+      // Prüfe, ob das ViewModel noch aktiv ist
+      if (!hasListeners) return;
+      
       _waypoints = waypoints;
       
       if (_waypoints.isNotEmpty) {
@@ -53,13 +63,23 @@ class HikeMapViewModel extends ChangeNotifier {
       }
       
       _isLoading = false;
-      Future.microtask(() => notifyListeners());
+      
+      // Sichere Benachrichtigung über UI-Änderungen
+      if (hasListeners) {
+        notifyListeners();
+      }
     } catch (e) {
+      // Prüfe, ob das ViewModel noch aktiv ist
+      if (!hasListeners) return;
+      
       _isLoading = false;
-      _errorMessage = 'Fehler beim Laden der Wegpunkte: $e';
+      _errorMessage = 'Fehler beim Laden der Wegpunkte - loadWaypointsForHike: $e';
       print(_errorMessage);
-      Future.microtask(() => notifyListeners());
-      // Wir werfen den Fehler nicht weiter, damit die App nicht abstürzt
+      
+      // Sichere Benachrichtigung über UI-Änderungen
+      if (hasListeners) {
+        notifyListeners();
+      }
     }
   }
   
@@ -78,6 +98,10 @@ class HikeMapViewModel extends ChangeNotifier {
       final response = await http.get(
         Uri.parse('$routingBaseUrl/route/v1/walking/$coordinates?overview=full&geometries=geojson')
       );
+      
+      // Prüfe, ob das ViewModel noch aktiv ist
+      if (!hasListeners) return;
+      
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final route = data['routes'][0]['geometry']['coordinates'] as List;
@@ -87,11 +111,14 @@ class HikeMapViewModel extends ChangeNotifier {
           return [point[1] as double, point[0] as double];
         }).toList();
         
-        Future.microtask(() => notifyListeners());
+        // Sichere Benachrichtigung über UI-Änderungen
+        if (hasListeners) {
+          notifyListeners();
+        }
       }
     } catch (e) {
       print('Fehler bei der Routenberechnung: $e');
-      // Auch hier werfen wir den Fehler nicht weiter
+      // Wir werfen den Fehler nicht weiter, damit die App nicht abstürzt
     }
   }
   
@@ -101,9 +128,16 @@ class HikeMapViewModel extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.high,
       );
       
+      // Prüfe, ob das ViewModel noch aktiv ist
+      if (!hasListeners) return;
+      
       _currentPosition = position;
       _checkIfNearWaypoint();
-      Future.microtask(() => notifyListeners());
+      
+      // Sichere Benachrichtigung über UI-Änderungen
+      if (hasListeners) {
+        notifyListeners();
+      }
     } catch (e) {
       print('Fehler beim Aktualisieren der Position: $e');
     }
@@ -112,8 +146,11 @@ class HikeMapViewModel extends ChangeNotifier {
   void _checkIfNearWaypoint() {
     if (_currentPosition == null || _waypoints.isEmpty) {
       _isNearWaypoint = false;
+      _selectedWaypoint = null;
       return;
     }
+    
+    bool foundNearbyWaypoint = false;
     
     for (final waypoint in _waypoints) {
       final distance = Geolocator.distanceBetween(
@@ -126,24 +163,38 @@ class HikeMapViewModel extends ChangeNotifier {
       if (distance <= _maxDistanceToWaypoint) {
         _selectedWaypoint = waypoint;
         _isNearWaypoint = true;
-        Future.microtask(() => notifyListeners());
-        return;
+        foundNearbyWaypoint = true;
+        break;
       }
     }
     
-    _isNearWaypoint = false;
-    Future.microtask(() => notifyListeners());
+    // Wenn kein Wegpunkt in der Nähe gefunden wurde, setze die Werte zurück
+    if (!foundNearbyWaypoint) {
+      _isNearWaypoint = false;
+      // Wir setzen _selectedWaypoint nicht zurück, damit der Benutzer den zuletzt ausgewählten Wegpunkt weiterhin sehen kann
+    }
+    
+    // Sichere Benachrichtigung über UI-Änderungen
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
   
   // Wählt einen Wegpunkt aus
   void selectWaypoint(Waypoint waypoint) {
     _selectedWaypoint = waypoint;
-    Future.microtask(() => notifyListeners());
+    // Sichere Benachrichtigung über UI-Änderungen
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
   
   // Hebt die Auswahl eines Wegpunkts auf
   void clearSelectedWaypoint() {
     _selectedWaypoint = null;
-    Future.microtask(() => notifyListeners());
+    // Sichere Benachrichtigung über UI-Änderungen
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 } 

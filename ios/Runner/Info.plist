@@ -51,5 +51,10 @@
 	<string>Diese App benötigt Zugriff auf deinen Standort, um dich auf der Wanderkarte zu zeigen und dich zu benachrichtigen, wenn du einen Wegpunkt erreichst.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Diese App benötigt Zugriff auf deinen Standort, um dich auf der Wanderkarte zu zeigen und dich zu benachrichtigen, wenn du einen Wegpunkt erreichst.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

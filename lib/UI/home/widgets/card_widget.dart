@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HikeCard extends StatelessWidget {
   const HikeCard({
@@ -61,7 +62,36 @@ class HikeCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   child: hike.thumbnail_image_url != null
-                      ? Image.network(hike.thumbnail_image_url!, height: 250, width: double.infinity, fit: BoxFit.cover)
+                      ? CachedNetworkImage(
+                          imageUrl: hike.thumbnail_image_url!,
+                          height: 250,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorWidget: (context, url, error) {
+                            print('Fehler beim Laden des Thumbnails: $error');
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.error, color: Colors.red, size: 48),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Bild konnte nicht geladen werden',
+                                    style: TextStyle(color: Colors.red),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          // Verbesserte Caching-Strategie
+                          memCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                          maxHeightDiskCache: 500,
+                          maxWidthDiskCache: 1000,
+                        )
                       : Image.asset('assets/logo.png', height: 250, width: double.infinity, fit: BoxFit.cover),
                 ),
                 if (isInGeneralList)

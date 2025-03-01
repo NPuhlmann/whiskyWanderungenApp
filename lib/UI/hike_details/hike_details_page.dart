@@ -5,6 +5,7 @@ import '../hike_map/hike_map_page.dart';
 import '../hike_map/hike_map_view_model.dart';
 import 'hike_details_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HikeDetailsPage extends StatefulWidget {
   const HikeDetailsPage(
@@ -113,24 +114,33 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                               controller: _pageController,
                               itemCount: widget.viewModel.hikeImages.length,
                               itemBuilder: (context, index) {
-                                return Image.network(
-                                  widget.viewModel.hikeImages[index],
+                                return CachedNetworkImage(
+                                  imageUrl: widget.viewModel.hikeImages[index],
                                   fit: BoxFit.cover,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
+                                  placeholder: (context, url) => Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) {
+                                    print('Fehler beim Laden des Bildes: $error');
                                     return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress.expectedTotalBytes != null
-                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                            : null,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.error, color: Colors.red, size: 48),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Bild konnte nicht geladen werden',
+                                            style: TextStyle(color: Colors.red),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
                                       ),
                                     );
                                   },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Center(
-                                      child: Icon(Icons.error, color: Colors.red, size: 48),
-                                    );
-                                  },
+                                  // Verbesserte Caching-Strategie
+                                  memCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                                  maxHeightDiskCache: 1000,
+                                  maxWidthDiskCache: 1000,
                                 );
                               },
                               onPageChanged: (index) {
