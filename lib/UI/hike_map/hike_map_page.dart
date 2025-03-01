@@ -26,8 +26,8 @@ class HikeMapPage extends StatefulWidget {
 }
 
 class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
-  // MapController wird erst bei Bedarf initialisiert
-  MapController? _mapController;
+  // Wir verwenden eine Referenz, um den Controller zu speichern, der von der Karte erstellt wird
+  final _mapControllerRef = MapController();
   Timer? _locationTimer;
   bool _isBottomSheetOpen = false;
   bool _isDisposed = false;
@@ -37,11 +37,9 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     
-    // Verzögere das Laden der Wegpunkte
-    Future.microtask(() {
-      if (!_isDisposed) {
-        _mapController = MapController();
-        _loadWaypoints();
+    // Verzögere nur das Anfordern der Standortberechtigung
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (!_isDisposed && mounted) {
         _requestLocationPermission();
       }
     });
@@ -52,24 +50,24 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
     _isDisposed = true;
     WidgetsBinding.instance.removeObserver(this);
     _locationTimer?.cancel();
-    // Entsorge den Controller nur, wenn er existiert
-    _mapController?.dispose();
-    _mapController = null;
     super.dispose();
   }
   
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // App wurde wieder in den Vordergrund gebracht
-      if (_mapController == null && !_isDisposed) {
-        _mapController = MapController();
-      }
-    }
+    // Wir müssen hier nichts tun, da der Controller von der Karte verwaltet wird
+  }
+  
+  // Diese Methode wird aufgerufen, wenn die Karte bereit ist
+  void _onMapReady() {
+    if (_isDisposed || !mounted) return;
+    
+    // Lade die Wegpunkte, nachdem die Karte erstellt wurde
+    _loadWaypoints();
   }
   
   Future<void> _loadWaypoints() async {
-    if (_isDisposed) return;
+    if (_isDisposed || !mounted) return;
     
     try {
       await widget.viewModel.loadWaypointsForHike(widget.hike.id);
@@ -79,11 +77,13 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
       if (widget.viewModel.waypoints.isNotEmpty) {
         // Zentriere die Karte auf den ersten Wegpunkt
         final waypoint = widget.viewModel.waypoints.first;
-        if (mounted && _mapController != null && !_isDisposed) { // Prüfe, ob der Controller existiert
-          _mapController!.move(
+        try {
+          _mapControllerRef.move(
             LatLng(waypoint.latitude, waypoint.longitude),
             13.0,
           );
+        } catch (e) {
+          developer.log("Fehler beim Bewegen der Karte: $e");
         }
       } else {
         // Wenn keine Wegpunkte vorhanden sind, zeige eine Snackbar an
@@ -114,39 +114,74 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
   Future<void> _requestLocationPermission() async {
     if (_isDisposed || !mounted) return;
     
-    bool serviceEnabled;
-    LocationPermission permission;
-
     try {
-      // Überprüfe, ob der Standortdienst aktiviert ist
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled || _isDisposed || !mounted) {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (_isDisposed || !mounted) return;
+        
+        // Standortdienste sind deaktiviert, zeige eine Meldung an
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Standortdienste sind deaktiviert'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
         return;
       }
-
-      // Überprüfe die Standortberechtigung
-      permission = await Geolocator.checkPermission();
+      
+      LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        if (_isDisposed || !mounted) return;
+        
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied || _isDisposed || !mounted) {
+        if (permission == LocationPermission.denied) {
+          if (_isDisposed || !mounted) return;
+          
+          // Berechtigung verweigert, zeige eine Meldung an
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Standortberechtigung verweigert'),
+              duration: const Duration(seconds: 3),
+            ),
+          );
           return;
         }
       }
       
-      if (permission == LocationPermission.deniedForever || _isDisposed || !mounted) {
+      if (permission == LocationPermission.deniedForever) {
+        if (_isDisposed || !mounted) return;
+        
+        // Berechtigung dauerhaft verweigert, zeige eine Meldung an
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Standortberechtigung dauerhaft verweigert'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
         return;
       }
-
-      // Starte die regelmäßige Positionsaktualisierung
+      
+      // Berechtigung erteilt, starte Standortupdates
       if (!_isDisposed && mounted) {
         _startLocationUpdates();
       }
     } catch (e) {
       developer.log("Fehler bei der Standortberechtigung: $e");
+      if (!_isDisposed && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fehler bei der Standortberechtigung: $e'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
   
   void _startLocationUpdates() {
+    if (_isDisposed || !mounted) return;
+    
+    // Starte einen Timer, der alle 5 Sekunden den Standort aktualisiert
     _locationTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       if (_isDisposed) {
         timer.cancel();
@@ -154,17 +189,27 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
       }
       
       try {
-        await widget.viewModel.updateCurrentPosition();
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
         
         if (_isDisposed || !mounted) return;
         
+        // Aktualisiere den Standort im ViewModel
+        widget.viewModel.updateCurrentPosition(position);
+        
+        // Die Methode _checkIfNearWaypoint wird automatisch in updateCurrentPosition aufgerufen
+        
+        // Wenn ein Wegpunkt ausgewählt ist und der Benutzer in der Nähe ist, zeige das Bottom Sheet an
         if (widget.viewModel.isNearWaypoint && 
-            !_isBottomSheetOpen && 
-            widget.viewModel.selectedWaypoint != null) {
+            widget.viewModel.selectedWaypoint != null && 
+            !_isBottomSheetOpen &&
+            !_isDisposed && 
+            mounted) {
           _showWaypointBottomSheet(widget.viewModel.selectedWaypoint!);
         }
       } catch (e) {
-        developer.log("Fehler beim Aktualisieren der Position: $e");
+        developer.log("Fehler bei der Standortaktualisierung: $e");
       }
     });
   }
@@ -179,31 +224,27 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => WaypointDetailSheet(
         waypoint: waypoint,
         onClose: () {
-          if (_isDisposed || !mounted) return;
-          setState(() {
-            _isBottomSheetOpen = false;
-          });
+          if (!_isDisposed && mounted) {
+            setState(() {
+              _isBottomSheetOpen = false;
+            });
+          }
         },
       ),
     ).then((_) {
-      if (_isDisposed || !mounted) return;
-      setState(() {
-        _isBottomSheetOpen = false;
-      });
+      if (!_isDisposed && mounted) {
+        setState(() {
+          _isBottomSheetOpen = false;
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Wenn der Controller entsorgt wurde, erstelle einen neuen
-    if (_mapController == null && !_isDisposed) {
-      _mapController = MapController();
-    }
-    
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.hike.name),
@@ -215,18 +256,8 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
             return const Center(child: CircularProgressIndicator());
           }
           
-          // Auch wenn ein Fehler vorliegt, zeigen wir die Karte an
-          // Der Fehler wird bereits in der Snackbar angezeigt
-          
-          // Wenn der Controller entsorgt wurde, zeige eine Fehlermeldung
-          if (_mapController == null) {
-            return const Center(
-              child: Text('Karte konnte nicht geladen werden. Bitte versuchen Sie es erneut.'),
-            );
-          }
-          
           return FlutterMap(
-            mapController: _mapController!,
+            mapController: _mapControllerRef,
             options: MapOptions(
               initialCenter: LatLng(47.3769, 8.5417), // Standard: Zürich als Fallback
               initialZoom: 13.0,
@@ -236,6 +267,7 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
                   Navigator.of(context).pop();
                 }
               },
+              onMapReady: _onMapReady,
             ),
             children: [
               TileLayer(
@@ -307,13 +339,13 @@ class _HikeMapPageState extends State<HikeMapPage> with WidgetsBindingObserver {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (widget.viewModel.currentPosition != null && _mapController != null && !_isDisposed) {
-            _mapController!.move(
+          if (widget.viewModel.currentPosition != null && !_isDisposed) {
+            _mapControllerRef.move(
               LatLng(
                 widget.viewModel.currentPosition!.latitude,
                 widget.viewModel.currentPosition!.longitude,
               ),
-              15.0,
+              13.0,
             );
           }
         },

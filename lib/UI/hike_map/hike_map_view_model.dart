@@ -122,24 +122,16 @@ class HikeMapViewModel extends ChangeNotifier {
     }
   }
   
-  Future<void> updateCurrentPosition() async {
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      
-      // Prüfe, ob das ViewModel noch aktiv ist
-      if (!hasListeners) return;
-      
-      _currentPosition = position;
-      _checkIfNearWaypoint();
-      
-      // Sichere Benachrichtigung über UI-Änderungen
-      if (hasListeners) {
-        notifyListeners();
-      }
-    } catch (e) {
-      print('Fehler beim Aktualisieren der Position: $e');
+  Future<void> updateCurrentPosition(Position position) async {
+    // Prüfe, ob das ViewModel noch aktiv ist
+    if (!hasListeners) return;
+    
+    _currentPosition = position;
+    _checkIfNearWaypoint();
+    
+    // Sichere Benachrichtigung über UI-Änderungen
+    if (hasListeners) {
+      notifyListeners();
     }
   }
   
