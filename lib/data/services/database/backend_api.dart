@@ -4,6 +4,7 @@ import 'dart:developer' as dev;
 
 import '../../../domain/models/hike.dart';
 import '../../../domain/models/profile.dart';
+import '../../../domain/models/waypoint.dart';
 
 class BackendApiService {
   final SupabaseClient client = Supabase.instance.client;
@@ -210,6 +211,89 @@ class BackendApiService {
     } catch (e) {
       print('Fehler beim Abrufen des Profilbilds: $e');
       return null;
+    }
+  }
+
+  // Methode zum Abrufen der Wegpunkte für eine Wanderung
+  Future<List<Waypoint>> fetchWaypointsForHike(int hikeId) async {
+    try {
+      // Zuerst die Verknüpfungen zwischen Hike und Waypoints abrufen
+      final response = await client
+          .from('hikes_waypoints')
+          .select('waypoint_id')
+          .eq('hike_id', hikeId);
+      
+      final List<dynamic> waypointLinks = response as List<dynamic>;
+      if (waypointLinks.isEmpty) {
+        return [];
+      }
+
+      // Extrahiere die Waypoint-IDs
+      final List<int> waypointIds = [];
+      for (final element in waypointLinks) {
+        if (element['waypoint_id'] != null) {
+          waypointIds.add(int.parse(element['waypoint_id'].toString()));
+        }
+      }
+      
+      if (waypointIds.isEmpty) {
+        return [];
+      }
+
+      // Hole die Wegpunkte für die IDs
+      List<Waypoint> waypoints = [];
+      for (final waypointId in waypointIds) {
+        try {
+          final waypointResponse = await client
+              .from('waypoints')
+              .select()
+              .eq('id', waypointId);
+          
+          final List<dynamic> waypointDataList = waypointResponse as List<dynamic>;
+          if (waypointDataList.isNotEmpty) {
+            final waypointData = waypointDataList.first as Map<String, dynamic>;
+            
+            // Bilder für den Wegpunkt abrufen
+            final List<String> images = await getWaypointImages(waypointId);
+            
+            // Waypoint erstellen und zur Liste hinzufügen
+            final waypoint = Waypoint(
+              id: waypointId,
+              name: waypointData['name'] ?? '',
+              description: waypointData['description'] ?? '',
+              latitude: double.parse(waypointData['location'].toString().split(',')[0]),
+              longitude: double.parse(waypointData['location'].toString().split(',')[1]),
+              images: images,
+            );
+            
+            waypoints.add(waypoint);
+          }
+        } catch (e) {
+          dev.log('Fehler beim Laden des Wegpunkts mit ID $waypointId: $e');
+          continue;
+        }
+      }
+      
+      return waypoints;
+    } catch (e) {
+      dev.log('Fehler beim Laden der Wegpunkte für Hike $hikeId: $e');
+      return [];
+    }
+  }
+  
+  // Methode zum Abrufen der Bilder für einen Wegpunkt
+  Future<List<String>> getWaypointImages(int waypointId) async {
+    try {
+      final response = await client
+          .from('waypoint_images')
+          .select('image_url')
+          .eq('waypoint_id', waypointId);
+      
+      final List<dynamic> imageData = response as List<dynamic>;
+      return imageData.map((element) => element['image_url'] as String).toList();
+    } catch (e) {
+      dev.log('Fehler beim Laden der Bilder für Wegpunkt $waypointId: $e');
+      return [];
     }
   }
 }

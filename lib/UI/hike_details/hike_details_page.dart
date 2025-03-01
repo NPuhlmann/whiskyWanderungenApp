@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../domain/models/hike.dart';
+import '../hike_map/hike_map_page.dart';
+import '../hike_map/hike_map_view_model.dart';
 import 'hike_details_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -263,8 +266,15 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                 if (widget.isFromMyHikes) {
                                   // Hier die Logik zum Starten der Wanderung
                                   print("Wanderung starten");
-                                  // TODO: Implementiere die Logik zum Starten der Wanderung
-                                  // z.B. Navigation zu einer Karte oder einem Tracker
+                                  // Navigation zur Karte mit der Wanderung
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => HikeMapPage(
+                                        hike: widget.hikeData,
+                                        viewModel: context.read<HikeMapViewModel>(),
+                                      ),
+                                    ),
+                                  );
                                 } else {
                                   // Hier die Logik zum Kaufen der Wanderung
                                   print("Wanderung kaufen");

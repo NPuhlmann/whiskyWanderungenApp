@@ -5,6 +5,8 @@ import 'package:whisky_hikes/UI/auth/login/login_page.dart';
 import 'package:whisky_hikes/UI/auth/login/login_page_view_model.dart';
 import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/UI/hike_details/hike_details_page.dart';
+import 'package:whisky_hikes/UI/hike_map/hike_map_page.dart';
+import 'package:whisky_hikes/UI/hike_map/hike_map_view_model.dart';
 import 'package:whisky_hikes/UI/home/home_page.dart';
 import 'package:whisky_hikes/UI/my_hikes/my_hikes_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_page.dart';
@@ -61,7 +63,18 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                       final isFromMyHikes = extraData['isFromMyHikes'] as bool;
                       final viewModel = context.watch<HikeDetailsPageViewModel>();
                       return HikeDetailsPage(hikeData: hikeData, viewModel: viewModel, isFromMyHikes: isFromMyHikes);
-                    })],
+                    },
+                    routes: [
+                      GoRoute(
+                        path: Routes.hikeMap.substring(1), // Entferne den führenden Slash
+                        builder: (context, state) {
+                          final Map<String, dynamic> extraData = state.extra as Map<String, dynamic>;
+                          final hike = extraData['hike'] as Hike;
+                          final viewModel = context.watch<HikeMapViewModel>();
+                          return HikeMapPage(hike: hike, viewModel: viewModel);
+                        }
+                      )
+                    ])],
                   ),
                 ]),
                 StatefulShellBranch(routes: <RouteBase>[
@@ -80,7 +93,18 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                             final isFromMyHikes = extraData['isFromMyHikes'] as bool;
                             final viewModel = context.watch<HikeDetailsPageViewModel>();
                             return HikeDetailsPage(hikeData: hikeData, viewModel: viewModel, isFromMyHikes: isFromMyHikes);
-                          }
+                          },
+                          routes: [
+                            GoRoute(
+                              path: Routes.hikeMap.substring(1), // Entferne den führenden Slash
+                              builder: (context, state) {
+                                final Map<String, dynamic> extraData = state.extra as Map<String, dynamic>;
+                                final hike = extraData['hike'] as Hike;
+                                final viewModel = context.watch<HikeMapViewModel>();
+                                return HikeMapPage(hike: hike, viewModel: viewModel);
+                              }
+                            )
+                          ]
                         )
                       ]
                   )

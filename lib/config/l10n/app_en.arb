@@ -39,5 +39,11 @@
   "changeProfilePicture": "Change profile picture",
   "takePhoto": "Take photo",
   "chooseFromGallery": "Choose from gallery",
-  "errorUploadingImage": "Error uploading image"
+  "errorUploadingImage": "Error uploading image",
+  
+  "noWaypointsFound": "No waypoints found for this hike",
+  "errorLoadingWaypoints": "Error loading waypoints",
+  "errorCalculatingRoute": "Error calculating route",
+  "waypointReached": "Waypoint reached!",
+  "continueHike": "Continue hike"
 } 

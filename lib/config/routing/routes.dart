@@ -5,4 +5,5 @@ abstract final class Routes {
   static const profile = '/profile';
   static const myHikes = '/myHikes';
   static const hikeDetails = '/hikeDetails';
+  static const hikeMap = '/hikeMap';
 }

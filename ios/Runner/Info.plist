@@ -41,9 +41,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Diese App benötigt Zugriff auf deinen Standort, um dich auf der Wanderkarte zu zeigen und dich zu benachrichtigen, wenn du einen Wegpunkt erreichst.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Diese App benötigt Zugriff auf deinen Standort, um dich auf der Wanderkarte zu zeigen und dich zu benachrichtigen, wenn du einen Wegpunkt erreichst.</string>
 </dict>
 </plist>
