@@ -9,4 +9,8 @@ class ProfileRepository {
   Future<Profile> getUserProfileById(String id) async {
     return await _backendApiService.getUserProfileById(id);
   }
+
+  Future<void> updateUserProfile(Profile profile) async {
+    await _backendApiService.updateUserProfile(profile);
+  }
 }

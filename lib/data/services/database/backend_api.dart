@@ -50,4 +50,9 @@ class BackendApiService {
     await client.from('hike_images').upsert(imageRecords);
   }
 
+  // update user profile
+  Future<void> updateUserProfile(Profile profile) async {
+    await client.from('profiles').upsert([profile.toJson()]);
+  }
+
 }

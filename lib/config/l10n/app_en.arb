@@ -17,5 +17,9 @@
   "middle": "middle",
   "easy": "easy",
   "very_hard": "very hard",
-  "buyButtonText": "Buy"
+  "buyButtonText": "Buy",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "address": "Address",
+  "save": "Save"
 }

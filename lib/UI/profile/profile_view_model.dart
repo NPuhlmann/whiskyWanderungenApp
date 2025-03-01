@@ -35,6 +35,15 @@ class ProfilePageViewModel extends ChangeNotifier{
     }
   }
 
+  void updateProfile(Profile profile) async {
+    try{
+      await _profileRepository.updateUserProfile(profile);
+      _profile = profile;
+    } finally {
+      notifyListeners();
+    }
+  }
+
   void signOut(){
     _userRepository.signUserOut();
     notifyListeners();

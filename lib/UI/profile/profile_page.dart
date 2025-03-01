@@ -40,15 +40,35 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (context, _) {
             final String firstName;
             if (widget.viewModel.profile.first_name == "") {
-              firstName = "Kein Name";
+              return const CircularProgressIndicator();
             } else {
-              firstName = widget.viewModel.profile.first_name;
+              // Textfelder um Namen und Adresse des Users zu ändern
+              return Column(
+                children: [
+                  Text(AppLocalizations.of(context)!.firstName),
+                  TextField(
+                    controller: TextEditingController(text: widget.viewModel.profile.first_name),
+                    onChanged: (value) {
+                      widget.viewModel.profile.first_name = value;
+                    },
+                  ),
+                  Text(AppLocalizations.of(context)!.lastName),
+                  TextField(
+                    controller: TextEditingController(text: widget.viewModel.profile.last_name),
+                    onChanged: (value) {
+                      widget.viewModel.profile.last_name = value;
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      widget.viewModel.updateProfile(widget.viewModel.profile);
+                    },
+                    child: Text(AppLocalizations.of(context)!.save),
+                  ),
+                ],
+              );
             }
-            return SafeArea(
-                child: Center(
-                  child: Text("First Name: $firstName"),
-                )
-            );
+
           }
       ),
     );
