@@ -130,7 +130,11 @@ class BackendApiService {
       }
     }
     
-    await client.from('profiles').upsert([profileJson]);
+    // Verwende update statt upsert, um die RLS-Policy zu respektieren
+    final String userId = profileJson['id'];
+    await client.from('profiles')
+        .update(profileJson)
+        .eq('id', userId);
   }
 
   // Methode zum Hochladen eines Profilbilds

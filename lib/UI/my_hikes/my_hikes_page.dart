@@ -29,15 +29,6 @@ class _MyHikesPageState extends State<MyHikesPage> {
         return Scaffold(
           appBar: AppBar(
             title: Text(AppLocalizations.of(context)!.myHikes),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: widget.viewModel.isLoading 
-                    ? null 
-                    : () => widget.viewModel.refresh(),
-                tooltip: AppLocalizations.of(context)!.refresh,
-              ),
-            ],
           ),
           body: _buildBody(),
         );
@@ -90,17 +81,22 @@ class _MyHikesPageState extends State<MyHikesPage> {
       );
     }
     
-    return ListView.builder(
-      itemCount: widget.viewModel.userHikes.length,
-      itemBuilder: (context, index) {
-        Hike hike = widget.viewModel.userHikes[index];
-        return HikeCard(
-          id: index, 
-          hike: hike,
-          isInGeneralList: false,
-          onFavoriteToggle: (_) {}, // Leere Funktion, da der Button nicht angezeigt wird
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        await widget.viewModel.refresh();
       },
+      child: ListView.builder(
+        itemCount: widget.viewModel.userHikes.length,
+        itemBuilder: (context, index) {
+          Hike hike = widget.viewModel.userHikes[index];
+          return HikeCard(
+            id: index, 
+            hike: hike,
+            isInGeneralList: false,
+            onFavoriteToggle: (_) {}, // Leere Funktion, da der Button nicht angezeigt wird
+          );
+        },
+      ),
     );
   }
   
