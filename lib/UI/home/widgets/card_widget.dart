@@ -27,8 +27,6 @@ class HikeCard extends StatelessWidget {
         return AppLocalizations.of(context)!.hard;
       case Difficulty.very_hard:
         return AppLocalizations.of(context)!.very_hard;
-      default:
-        return AppLocalizations.of(context)!.middle;
     }
   }
 

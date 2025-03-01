@@ -3,8 +3,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:whisky_hikes/UI/auth/signup/SignUpPageViewModel.dart';
 
-import '../../../data/services/auth/auth_service.dart';
-
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key, required this.viewModel});
 

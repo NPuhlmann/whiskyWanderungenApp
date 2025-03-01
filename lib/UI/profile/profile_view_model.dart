@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -25,9 +23,9 @@ class ProfilePageViewModel extends ChangeNotifier{
     try{
       final String? userId = _userRepository.getUserId();
       final Profile profile = await _profileRepository.getUserProfileById(userId!);
-      if(profile == null){
-        log("Can't load Profile! $profile");
-      }
+      
+      log("Profil geladen: $profile");
+      
       _profile = profile;
       return profile;
     } finally {

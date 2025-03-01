@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../domain/models/hike.dart';
 import 'hike_details_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -72,8 +70,6 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
         return AppLocalizations.of(context)!.hard;
       case Difficulty.very_hard:
         return AppLocalizations.of(context)!.very_hard;
-      default:
-        return AppLocalizations.of(context)!.middle;
     }
   }
 
