@@ -61,8 +61,12 @@ class HomePageViewModel extends ChangeNotifier{
   void toggleFavorite(Hike hike) {
     final index = _hikes.indexWhere((h) => h.id == hike.id);
     if (index != -1) {
-      _hikes[index] = hike.copyWith(isFavorite: !hike.isFavorite);
+      final newFavoriteState = !hike.isFavorite;
+      _hikes[index] = hike.copyWith(isFavorite: newFavoriteState);
       _saveFavorites();
+      
+      // Wenn wir gerade Favoriten anzeigen und ein Favorit wird entfernt,
+      // müssen wir die UI aktualisieren, bevor das Element aus der Liste verschwindet
       notifyListeners();
     }
   }

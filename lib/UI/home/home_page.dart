@@ -34,17 +34,14 @@ class _HomePageState extends State<HomePage> {
               SliverAppBar(
                 pinned: true,
                 expandedHeight: 150,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  collapseMode: CollapseMode.pin,
-                  title: Text(AppLocalizations.of(context)!.greeting_home_page(widget.viewModel.firstName), style: Theme.of(context).textTheme.headlineSmall),
-                  titlePadding: const EdgeInsets.only(bottom: 16, left: 16),
-                ),
+                title: widget.viewModel.firstName.isNotEmpty 
+                    ? null 
+                    : Text(AppLocalizations.of(context)!.appTitle),
                 actions: [
                   IconButton(
                     icon: Icon(
                       widget.viewModel.showFavorites ? Icons.favorite : Icons.favorite_border,
-                      color: widget.viewModel.showFavorites ? Colors.red : null,
+                      color: widget.viewModel.showFavorites ? Theme.of(context).colorScheme.primary : null,
                     ),
                     onPressed: () {
                       widget.viewModel.toggleShowFavorites();
@@ -54,6 +51,16 @@ class _HomePageState extends State<HomePage> {
                       : AppLocalizations.of(context)!.show_favorites,
                   ),
                 ],
+                flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: false,
+                  titlePadding: const EdgeInsets.only(bottom: 16, left: 16),
+                  title: widget.viewModel.firstName.isNotEmpty 
+                      ? Text(
+                          AppLocalizations.of(context)!.greeting_home_page(widget.viewModel.firstName), 
+                          style: Theme.of(context).textTheme.titleMedium,
+                        )
+                      : null,
+                ),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
