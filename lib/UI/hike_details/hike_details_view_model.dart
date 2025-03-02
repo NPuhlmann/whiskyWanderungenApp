@@ -17,12 +17,17 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
 
   HikeDetailsPageViewModel({
     required HikeImagesRepository hikeImagesRepository,
-    required WaypointRepository waypointRepository,
-  }) : _hikeImagesRepository = hikeImagesRepository,
-       _waypointRepository = waypointRepository;
+    required WaypointRepository? waypointRepository,
+  }) : _hikeImagesRepository = hikeImagesRepository {
+    // Sicherstellen, dass das WaypointRepository nicht null ist
+    _waypointRepository = waypointRepository;
+    if (_waypointRepository == null) {
+      dev.log("WARNUNG: WaypointRepository ist null im HikeDetailsPageViewModel");
+    }
+  }
 
   final HikeImagesRepository _hikeImagesRepository;
-  final WaypointRepository _waypointRepository;
+  WaypointRepository? _waypointRepository;
 
   List<String> _hikeImages = [];
   List<String> get hikeImages => _hikeImages;
@@ -96,10 +101,21 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
       }
       
       // 4. Wegpunkte der Wanderung laden und speichern
-      final waypoints = await _waypointRepository.getWaypointsForHike(hike.id);
-      final waypointsJsonList = waypoints.map((wp) => jsonEncode(wp.toJson())).toList();
-      await prefs.setStringList('offline_hike_waypoints_${hike.id}', waypointsJsonList);
-      dev.log("${waypoints.length} Wegpunkte für Wanderung gespeichert");
+      if (_waypointRepository != null) {
+        try {
+          final waypoints = await _waypointRepository!.getWaypointsForHike(hike.id);
+          final waypointsJsonList = waypoints.map((wp) => jsonEncode(wp.toJson())).toList();
+          await prefs.setStringList('offline_hike_waypoints_${hike.id}', waypointsJsonList);
+          dev.log("${waypoints.length} Wegpunkte für Wanderung gespeichert");
+        } catch (e) {
+          dev.log("Fehler beim Laden der Wegpunkte: $e", error: e);
+          // Wir setzen eine leere Liste, damit die App nicht abstürzt
+          await prefs.setStringList('offline_hike_waypoints_${hike.id}', []);
+        }
+      } else {
+        dev.log("WaypointRepository ist null, überspringe Wegpunkte");
+        await prefs.setStringList('offline_hike_waypoints_${hike.id}', []);
+      }
       
       // 5. Liste der offline verfügbaren Wanderungen aktualisieren
       final offlineHikes = prefs.getStringList('offline_hikes') ?? [];

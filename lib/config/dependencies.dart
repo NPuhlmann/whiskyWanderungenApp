@@ -1,5 +1,6 @@
 // dependencies for repositories and services
 
+import 'dart:developer' as dev;
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:whisky_hikes/UI/hike_details/hike_details_view_model.dart';
@@ -16,14 +17,15 @@ import '../data/services/database/backend_api.dart';
 
 List<SingleChildWidget> get providers {
   return [
-    // BackendApiService bereitstellen
+    // Services zuerst bereitstellen
     Provider<AuthService>(
       create: (_) => AuthService(),
     ),
     Provider<BackendApiService>(
       create: (_) => BackendApiService(),
     ),
-    // ProfileRepository registrieren, mit BackendApiService als Abhängigkeit
+    
+    // Dann alle Repositories
     Provider<ProfileRepository>(
       create: (context) => ProfileRepository(
         context.read<BackendApiService>(),
@@ -37,10 +39,13 @@ List<SingleChildWidget> get providers {
     Provider<HikeImagesRepository>(
       create: (context) => HikeImagesRepository(context.read<BackendApiService>()),
     ),
-    // WaypointRepository hinzufügen
+    // WaypointRepository explizit vor den ViewModels registrieren
     Provider<WaypointRepository>(
       create: (context) => WaypointRepository(context.read<BackendApiService>()),
+      lazy: false, // Sofort initialisieren, nicht erst bei Bedarf
     ),
+    
+    // Dann alle ViewModels
     ChangeNotifierProvider<HomePageViewModel>(
       create: (context) => HomePageViewModel(
         hikeRepository: context.read(),
@@ -49,10 +54,16 @@ List<SingleChildWidget> get providers {
       ),
     ),
     ChangeNotifierProvider<HikeDetailsPageViewModel>(
-      create: (context) => HikeDetailsPageViewModel(
-        hikeImagesRepository: context.read(),
-        waypointRepository: context.read(),
-      )
+      create: (context) {
+        final waypointRepo = context.read<WaypointRepository>();
+        if (waypointRepo == null) {
+          dev.log("FEHLER: WaypointRepository ist null in dependencies.dart");
+        }
+        return HikeDetailsPageViewModel(
+          hikeImagesRepository: context.read<HikeImagesRepository>(),
+          waypointRepository: waypointRepo,
+        );
+      }
     ),
     ChangeNotifierProvider<MyHikesViewModel>(
       create: (context) => MyHikesViewModel(
