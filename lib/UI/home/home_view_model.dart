@@ -46,10 +46,6 @@ class HomePageViewModel extends ChangeNotifier{
         return;
       }
       final Profile profile = await _profileRepository.getUserProfileById(userId);
-      if (profile == null) {
-        log("Can't load Profile! $profile");
-        return;
-      }
       _firstName = profile.first_name;
     } catch (e) {
       log("Error loading user first name: $e");

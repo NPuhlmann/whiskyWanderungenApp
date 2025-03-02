@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../domain/models/hike.dart';
 import '../hike_map/hike_map_page.dart';
 import 'hike_details_view_model.dart';
