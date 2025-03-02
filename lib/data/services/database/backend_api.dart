@@ -214,88 +214,119 @@ class BackendApiService {
     }
   }
 
-  // Methode zum Abrufen der Wegpunkte für eine Wanderung
-  Future<List<Waypoint>> fetchWaypointsForHike(int hikeId) async {
+  // get waypoints for a hike by hike.id from the 'hikes_waypoints' table
+  Future<List<int>> _getWaypointIdsForHike(int hikeId) async {
     try {
-      // Zuerst die Verknüpfungen zwischen Hike und Waypoints abrufen
-      final response = await client
-          .from('hikes_waypoints')
-          .select('waypoint_id')
-          .eq('hike_id', hikeId);
+      final response = await client.from('hikes_waypoints').select('waypoint_id').eq('hike_id', hikeId);
+      final List<dynamic> waypointData = response as List<dynamic>;
       
-      final List<dynamic> waypointLinks = response as List<dynamic>;
-      if (waypointLinks.isEmpty) {
-        return [];
-      }
+      return waypointData.map((element) => int.parse(element['waypoint_id'].toString())).toList();
+    } catch (e) {
+      dev.log('Fehler beim Abrufen der Wegpunkt-IDs: $e', error: e);
+      throw Exception('Fehler beim Abrufen der Wegpunkt-IDs für Wanderung $hikeId: $e');
+    }
+  }
 
-      // Extrahiere die Waypoint-IDs
-      final List<int> waypointIds = [];
-      for (final element in waypointLinks) {
-        if (element['waypoint_id'] != null) {
-          waypointIds.add(int.parse(element['waypoint_id'].toString()));
-        }
-      }
+  // get waypoints for for a hike by hike.id from the waypoints table
+  Future<List<Waypoint>> getWaypointsForHike(int hikeId) async {
+    try {
+      // Zuerst die Wegpunkt-IDs für die Wanderung abrufen
+      final List<int> waypointIds = await _getWaypointIdsForHike(hikeId);
       
       if (waypointIds.isEmpty) {
         return [];
       }
-
-      // Hole die Wegpunkte für die IDs
-      List<Waypoint> waypoints = [];
-      for (final waypointId in waypointIds) {
-        try {
-          final waypointResponse = await client
-              .from('waypoints')
-              .select()
-              .eq('id', waypointId);
-          
-          final List<dynamic> waypointDataList = waypointResponse as List<dynamic>;
-          if (waypointDataList.isNotEmpty) {
-            final waypointData = waypointDataList.first as Map<String, dynamic>;
-            
-            // Bilder für den Wegpunkt abrufen
-            final List<String> images = await getWaypointImages(waypointId);
-            
-            // Waypoint erstellen und zur Liste hinzufügen
-            final waypoint = Waypoint(
-              id: waypointId,
-              hikeId: hikeId,
-              name: waypointData['name'] ?? '',
-              description: waypointData['description'] ?? '',
-              latitude: double.parse(waypointData['location'].toString().split(',')[0]),
-              longitude: double.parse(waypointData['location'].toString().split(',')[1]),
-              orderIndex: waypointData['order_index'] ?? 0,
-              images: images,
-            );
-            
-            waypoints.add(waypoint);
-          }
-        } catch (e) {
-          dev.log('Fehler beim Laden des Wegpunkts mit ID $waypointId: $e');
-          continue;
-        }
-      }
       
-      return waypoints;
+      // Dann die Wegpunkte für diese IDs abrufen
+      final response = await client
+          .from('waypoints')
+          .select()
+          .inFilter('id', waypointIds);
+      
+      final List<dynamic> waypointData = response as List<dynamic>;
+      
+      return waypointData.map((element) {
+        // Sicherstellen, dass alle erforderlichen Felder vorhanden und vom richtigen Typ sind
+        Map<String, dynamic> safeElement = Map<String, dynamic>.from(element);
+        
+        // Überprüfen und konvertieren der numerischen Werte
+        if (safeElement['latitude'] == null) safeElement['latitude'] = 0.0;
+        if (safeElement['longitude'] == null) safeElement['longitude'] = 0.0;
+        
+        // Sicherstellen, dass die Werte den richtigen Typ haben
+        safeElement['latitude'] = double.parse(safeElement['latitude'].toString());
+        safeElement['longitude'] = double.parse(safeElement['longitude'].toString());
+        
+        // Füge hikeId hinzu, da diese in der waypoints Tabelle nicht enthalten ist
+        safeElement['hikeId'] = hikeId;
+        
+        return Waypoint.fromJson(safeElement);
+      }).toList();
     } catch (e) {
-      dev.log('Fehler beim Laden der Wegpunkte für Hike $hikeId: $e');
-      return [];
+      dev.log('Fehler beim Abrufen der Wegpunkte: $e', error: e);
+      throw Exception('Fehler beim Abrufen der Wegpunkte für Wanderung $hikeId: $e');
+    }
+  }
+
+  // Methode zum Hinzufügen eines neuen Wegpunkts
+  Future<void> addWaypoint(Waypoint waypoint, int hikeId) async {
+    try {
+      // Zuerst den Wegpunkt in die 'waypoints' Tabelle einfügen
+      final waypointResponse = await client.from('waypoints').insert({
+        'name': waypoint.name,
+        'description': waypoint.description,
+        'latitude': waypoint.latitude,
+        'longitude': waypoint.longitude,
+      }).select('id').single();
+      
+      // Die ID des neu erstellten Wegpunkts abrufen
+      final int newWaypointId = waypointResponse['id'];
+      
+      // Verknüpfung zwischen Wanderung und Wegpunkt in der 'hikes_waypoints' Tabelle erstellen
+      await client.from('hikes_waypoints').insert({
+        'hike_id': hikeId,
+        'waypoint_id': newWaypointId,
+      });
+      
+    } catch (e) {
+      dev.log('Fehler beim Hinzufügen des Wegpunkts: $e', error: e);
+      throw Exception('Fehler beim Hinzufügen des Wegpunkts: $e');
     }
   }
   
-  // Methode zum Abrufen der Bilder für einen Wegpunkt
-  Future<List<String>> getWaypointImages(int waypointId) async {
+  // Methode zum Aktualisieren eines bestehenden Wegpunkts
+  Future<void> updateWaypoint(Waypoint waypoint) async {
     try {
-      final response = await client
-          .from('waypoint_images')
-          .select('image_url')
-          .eq('waypoint_id', waypointId);
+      await client.from('waypoints').update({
+        'name': waypoint.name,
+        'description': waypoint.description,
+        'latitude': waypoint.latitude,
+        'longitude': waypoint.longitude,
+      }).eq('id', waypoint.id);
       
-      final List<dynamic> imageData = response as List<dynamic>;
-      return imageData.map((element) => element['image_url'] as String).toList();
     } catch (e) {
-      dev.log('Fehler beim Laden der Bilder für Wegpunkt $waypointId: $e');
-      return [];
+      dev.log('Fehler beim Aktualisieren des Wegpunkts: $e', error: e);
+      throw Exception('Fehler beim Aktualisieren des Wegpunkts: $e');
+    }
+  }
+  
+  // Methode zum Löschen eines Wegpunkts
+  Future<void> deleteWaypoint(int waypointId, int hikeId) async {
+    try {
+      // Zuerst die Verknüpfung in der 'hikes_waypoints' Tabelle löschen
+      await client.from('hikes_waypoints')
+          .delete()
+          .eq('waypoint_id', waypointId)
+          .eq('hike_id', hikeId);
+      
+      // Dann den Wegpunkt selbst aus der 'waypoints' Tabelle löschen
+      await client.from('waypoints')
+          .delete()
+          .eq('id', waypointId);
+      
+    } catch (e) {
+      dev.log('Fehler beim Löschen des Wegpunkts: $e', error: e);
+      throw Exception('Fehler beim Löschen des Wegpunkts: $e');
     }
   }
 }

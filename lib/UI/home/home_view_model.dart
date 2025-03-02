@@ -45,7 +45,7 @@ class HomePageViewModel extends ChangeNotifier{
         log("User ID is null");
         return;
       }
-      final Profile? profile = await _profileRepository.getUserProfileById(userId);
+      final Profile profile = await _profileRepository.getUserProfileById(userId);
       if (profile == null) {
         log("Can't load Profile! $profile");
         return;

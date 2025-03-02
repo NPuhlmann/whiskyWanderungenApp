@@ -14,7 +14,6 @@ _$WaypointImpl _$$WaypointImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
-      orderIndex: (json['orderIndex'] as num).toInt(),
       images: (json['images'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -30,7 +29,6 @@ Map<String, dynamic> _$$WaypointImplToJson(_$WaypointImpl instance) =>
       'description': instance.description,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
-      'orderIndex': instance.orderIndex,
       'images': instance.images,
       'isVisited': instance.isVisited,
     };

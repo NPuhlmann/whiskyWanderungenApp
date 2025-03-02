@@ -6,7 +6,6 @@ import 'package:whisky_hikes/UI/auth/login/login_page_view_model.dart';
 import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/UI/hike_details/hike_details_page.dart';
 import 'package:whisky_hikes/UI/hike_map/hike_map_page.dart';
-import 'package:whisky_hikes/UI/hike_map/hike_map_view_model.dart';
 import 'package:whisky_hikes/UI/home/home_page.dart';
 import 'package:whisky_hikes/UI/my_hikes/my_hikes_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_page.dart';
@@ -70,8 +69,7 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                         builder: (context, state) {
                           final Map<String, dynamic> extraData = state.extra as Map<String, dynamic>;
                           final hike = extraData['hike'] as Hike;
-                          final viewModel = context.watch<HikeMapViewModel>();
-                          return HikeMapPage(hike: hike, viewModel: viewModel);
+                          return HikeMapPage(hikeId: hike.id);
                         }
                       )
                     ])],
@@ -100,8 +98,7 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                               builder: (context, state) {
                                 final Map<String, dynamic> extraData = state.extra as Map<String, dynamic>;
                                 final hike = extraData['hike'] as Hike;
-                                final viewModel = context.watch<HikeMapViewModel>();
-                                return HikeMapPage(hike: hike, viewModel: viewModel);
+                                return HikeMapPage(hikeId: hike.id);
                               }
                             )
                           ]

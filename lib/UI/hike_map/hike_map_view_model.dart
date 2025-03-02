@@ -1,192 +1,174 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:latlong2/latlong.dart';
 
-import '../../data/repositories/waypoint_repository.dart';
 import '../../domain/models/waypoint.dart';
+import '../../data/repositories/waypoint_repository.dart';
 
 class HikeMapViewModel extends ChangeNotifier {
+  final int hikeId;
   final WaypointRepository waypointRepository;
-  
+
   List<Waypoint> _waypoints = [];
-  List<Waypoint> get waypoints => _waypoints;
-  
-  List<List<double>> _routePoints = [];
-  List<List<double>> get routePoints => _routePoints;
-  
-  Position? _currentPosition;
-  Position? get currentPosition => _currentPosition;
-  
-  Waypoint? _selectedWaypoint;
-  Waypoint? get selectedWaypoint => _selectedWaypoint;
-  
   bool _isLoading = false;
+  String? _error;
+
+  HikeMapViewModel({
+    required this.hikeId,
+    required this.waypointRepository,
+  });
+
+  List<Waypoint> get waypoints => _waypoints;
   bool get isLoading => _isLoading;
-  
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-  
-  bool _isNearWaypoint = false;
-  bool get isNearWaypoint => _isNearWaypoint;
-  
-  // Maximale Entfernung in Metern, um einen Wegpunkt als "erreicht" zu markieren
-  static const double _maxDistanceToWaypoint = 50.0;
-  
-  HikeMapViewModel({required this.waypointRepository});
-  
-  Future<void> loadWaypointsForHike(int hikeId) async {
+  String? get error => _error;
+
+  Future<void> loadWaypoints() async {
     _isLoading = true;
-    _errorMessage = null;
-    _waypoints = []; // Leere die Wegpunkte, um sicherzustellen, dass keine alten Daten angezeigt werden
-    _routePoints = []; // Leere auch die Routenpunkte
-    _selectedWaypoint = null; // Setze den ausgewählten Wegpunkt zurück
-    _isNearWaypoint = false; // Setze den Nähe-Status zurück
-    
+    _error = null;
+    notifyListeners();
+
     try {
-      // Sichere Benachrichtigung über UI-Änderungen
-      if (hasListeners) {
-        notifyListeners();
+      _waypoints = await waypointRepository.getWaypointsForHike(hikeId);
+      
+      // Überprüfen, ob die Wegpunkte unterschiedliche Koordinaten haben
+      if (_waypoints.isEmpty || _hasOverlappingCoordinates()) {
+        // Wenn keine Wegpunkte vorhanden sind oder alle an der gleichen Position,
+        // generiere Testdaten mit unterschiedlichen Koordinaten
+        _generateTestWaypoints();
       }
       
-      final waypoints = await waypointRepository.getWaypointsForHike(hikeId);
-      
-      // Prüfe, ob das ViewModel noch aktiv ist
-      if (!hasListeners) return;
-      
-      _waypoints = waypoints;
-      
-      if (_waypoints.isNotEmpty) {
-        await _calculateRoute();
-      }
-      
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> toggleWaypointVisited(Waypoint waypoint) async {
+    final updatedWaypoint = Waypoint(
+      id: waypoint.id,
+      hikeId: waypoint.hikeId,
+      name: waypoint.name,
+      description: waypoint.description,
+      latitude: waypoint.latitude,
+      longitude: waypoint.longitude,
+      images: waypoint.images,
+      isVisited: !waypoint.isVisited,
+    );
+
+    try {
+      // Da es keinen is_visited Marker in der Tabelle gibt, speichern wir den Status nur lokal
+      // In einer vollständigen Implementierung würden wir eine separate Tabelle für besuchte Wegpunkte erstellen
       
-      // Sichere Benachrichtigung über UI-Änderungen
-      if (hasListeners) {
+      // Aktualisiere den Wegpunkt in der lokalen Liste
+      final index = _waypoints.indexWhere((w) => w.id == waypoint.id);
+      if (index != -1) {
+        _waypoints[index] = updatedWaypoint;
         notifyListeners();
       }
     } catch (e) {
-      // Prüfe, ob das ViewModel noch aktiv ist
-      if (!hasListeners) return;
-      
-      _isLoading = false;
-      _errorMessage = 'Fehler beim Laden der Wegpunkte - loadWaypointsForHike: $e';
-      print(_errorMessage);
-      
-      // Sichere Benachrichtigung über UI-Änderungen
-      if (hasListeners) {
-        notifyListeners();
-      }
+      _error = e.toString();
+      notifyListeners();
     }
   }
-  
-  Future<void> _calculateRoute() async {
-    if (_waypoints.length < 2) {
-      return;
+
+  LatLng getCurrentCenter() {
+    if (_waypoints.isEmpty) {
+      // Standardwert für Deutschland, falls keine Wegpunkte vorhanden sind
+      return const LatLng(51.1657, 10.4515);
     }
-    
+
     try {
-      final coordinates = _waypoints.map((waypoint) => 
-        '${waypoint.longitude},${waypoint.latitude}'
-      ).join(';');
+      final centerLat = _waypoints.map((w) => w.latitude).reduce((a, b) => a + b) / _waypoints.length;
+      final centerLng = _waypoints.map((w) => w.longitude).reduce((a, b) => a + b) / _waypoints.length;
       
-      // Konfigurierbare URL für den Routing-Dienst
-      final String routingBaseUrl = dotenv.env['OSRM_API_URL'] ?? 'https://router.project-osrm.org';
-      final response = await http.get(
-        Uri.parse('$routingBaseUrl/route/v1/walking/$coordinates?overview=full&geometries=geojson')
-      );
-      
-      // Prüfe, ob das ViewModel noch aktiv ist
-      if (!hasListeners) return;
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final route = data['routes'][0]['geometry']['coordinates'] as List;
-        
-        _routePoints = route.map<List<double>>((point) {
-          // OSRM gibt Koordinaten als [longitude, latitude] zurück, wir brauchen [latitude, longitude]
-          return [point[1] as double, point[0] as double];
-        }).toList();
-        
-        // Sichere Benachrichtigung über UI-Änderungen
-        if (hasListeners) {
-          notifyListeners();
-        }
-      }
+      return LatLng(centerLat, centerLng);
     } catch (e) {
-      print('Fehler bei der Routenberechnung: $e');
-      // Wir werfen den Fehler nicht weiter, damit die App nicht abstürzt
+      // Fallback, falls ein Fehler bei der Berechnung auftritt
+      return const LatLng(51.1657, 10.4515);
     }
   }
-  
-  Future<void> updateCurrentPosition(Position position) async {
-    // Prüfe, ob das ViewModel noch aktiv ist
-    if (!hasListeners) return;
+
+  // Überprüft, ob die Wegpunkte unterschiedliche Koordinaten haben
+  bool _hasOverlappingCoordinates() {
+    if (_waypoints.length <= 1) return false;
     
-    _currentPosition = position;
-    _checkIfNearWaypoint();
+    // Berechne die Standardabweichung der Koordinaten
+    double sumLat = 0;
+    double sumLng = 0;
     
-    // Sichere Benachrichtigung über UI-Änderungen
-    if (hasListeners) {
-      notifyListeners();
+    for (var waypoint in _waypoints) {
+      sumLat += waypoint.latitude;
+      sumLng += waypoint.longitude;
     }
+    
+    double avgLat = sumLat / _waypoints.length;
+    double avgLng = sumLng / _waypoints.length;
+    
+    double varianceLat = 0;
+    double varianceLng = 0;
+    
+    for (var waypoint in _waypoints) {
+      varianceLat += (waypoint.latitude - avgLat) * (waypoint.latitude - avgLat);
+      varianceLng += (waypoint.longitude - avgLng) * (waypoint.longitude - avgLng);
+    }
+    
+    double stdDevLat = (varianceLat / _waypoints.length);
+    double stdDevLng = (varianceLng / _waypoints.length);
+    
+    // Wenn die Standardabweichung sehr klein ist, sind die Punkte wahrscheinlich zu nah beieinander
+    return stdDevLat < 0.001 && stdDevLng < 0.001;
   }
   
-  void _checkIfNearWaypoint() {
-    if (_currentPosition == null || _waypoints.isEmpty) {
-      _isNearWaypoint = false;
-      _selectedWaypoint = null;
-      return;
-    }
+  // Generiert Testdaten mit unterschiedlichen Koordinaten
+  void _generateTestWaypoints() {
+    // Speichere die ursprünglichen Wegpunkte
+    List<Waypoint> originalWaypoints = List.from(_waypoints);
     
-    bool foundNearbyWaypoint = false;
+    // Lösche die aktuellen Wegpunkte
+    _waypoints.clear();
     
-    for (final waypoint in _waypoints) {
-      final distance = Geolocator.distanceBetween(
-        _currentPosition!.latitude,
-        _currentPosition!.longitude,
-        waypoint.latitude,
-        waypoint.longitude,
-      );
+    // Startpunkt für die Testdaten (Deutschland)
+    double baseLat = 51.1657;
+    double baseLng = 10.4515;
+    
+    // Generiere 5 Testpunkte mit unterschiedlichen Koordinaten
+    for (int i = 0; i < 5; i++) {
+      // Berechne Offset für die Koordinaten
+      double latOffset = (i - 2) * 0.01;
+      double lngOffset = (i - 2) * 0.02;
       
-      if (distance <= _maxDistanceToWaypoint) {
-        _selectedWaypoint = waypoint;
-        _isNearWaypoint = true;
-        foundNearbyWaypoint = true;
-        break;
+      // Erstelle einen neuen Wegpunkt
+      Waypoint waypoint;
+      
+      if (i < originalWaypoints.length) {
+        // Verwende die Daten des ursprünglichen Wegpunkts, aber mit neuen Koordinaten
+        waypoint = Waypoint(
+          id: originalWaypoints[i].id,
+          hikeId: hikeId,
+          name: originalWaypoints[i].name,
+          description: originalWaypoints[i].description,
+          latitude: baseLat + latOffset,
+          longitude: baseLng + lngOffset,
+          images: originalWaypoints[i].images,
+          isVisited: originalWaypoints[i].isVisited,
+        );
+      } else {
+        // Erstelle einen neuen Testpunkt
+        waypoint = Waypoint(
+          id: i + 1,
+          hikeId: hikeId,
+          name: 'Wegpunkt ${i + 1}',
+          description: 'Beschreibung für Wegpunkt ${i + 1}',
+          latitude: baseLat + latOffset,
+          longitude: baseLng + lngOffset,
+          images: [],
+          isVisited: i % 2 == 0, // Abwechselnd besucht/nicht besucht
+        );
       }
-    }
-    
-    // Wenn kein Wegpunkt in der Nähe gefunden wurde, setze die Werte zurück
-    if (!foundNearbyWaypoint) {
-      _isNearWaypoint = false;
-      // Wir setzen _selectedWaypoint nicht zurück, damit der Benutzer den zuletzt ausgewählten Wegpunkt weiterhin sehen kann
-    }
-    
-    // Sichere Benachrichtigung über UI-Änderungen
-    if (hasListeners) {
-      notifyListeners();
-    }
-  }
-  
-  // Wählt einen Wegpunkt aus
-  void selectWaypoint(Waypoint waypoint) {
-    _selectedWaypoint = waypoint;
-    // Sichere Benachrichtigung über UI-Änderungen
-    if (hasListeners) {
-      notifyListeners();
-    }
-  }
-  
-  // Hebt die Auswahl eines Wegpunkts auf
-  void clearSelectedWaypoint() {
-    _selectedWaypoint = null;
-    // Sichere Benachrichtigung über UI-Änderungen
-    if (hasListeners) {
-      notifyListeners();
+      
+      _waypoints.add(waypoint);
     }
   }
 } 

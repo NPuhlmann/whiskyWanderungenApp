@@ -3,7 +3,6 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:whisky_hikes/UI/hike_details/hike_details_view_model.dart';
-import 'package:whisky_hikes/UI/hike_map/hike_map_view_model.dart';
 import 'package:whisky_hikes/UI/my_hikes/my_hikes_view_model.dart';
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 import 'package:whisky_hikes/data/repositories/hike_repository.dart';
@@ -58,11 +57,6 @@ List<SingleChildWidget> get providers {
         userRepository: context.read(),
       ),
     ),
-    // HikeMapViewModel hinzufügen
-    ChangeNotifierProvider<HikeMapViewModel>(
-      create: (context) => HikeMapViewModel(
-        waypointRepository: context.read(),
-      ),
-    ),
+    // HikeMapViewModel wird in HikeMapScreen erstellt
   ];
 }

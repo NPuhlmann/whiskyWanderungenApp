@@ -26,7 +26,6 @@ mixin _$Waypoint {
   String get description => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
-  int get orderIndex => throw _privateConstructorUsedError;
   List<String> get images => throw _privateConstructorUsedError;
   bool get isVisited => throw _privateConstructorUsedError;
 
@@ -52,7 +51,6 @@ abstract class $WaypointCopyWith<$Res> {
       String description,
       double latitude,
       double longitude,
-      int orderIndex,
       List<String> images,
       bool isVisited});
 }
@@ -78,7 +76,6 @@ class _$WaypointCopyWithImpl<$Res, $Val extends Waypoint>
     Object? description = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? orderIndex = null,
     Object? images = null,
     Object? isVisited = null,
   }) {
@@ -107,10 +104,6 @@ class _$WaypointCopyWithImpl<$Res, $Val extends Waypoint>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      orderIndex: null == orderIndex
-          ? _value.orderIndex
-          : orderIndex // ignore: cast_nullable_to_non_nullable
-              as int,
       images: null == images
           ? _value.images
           : images // ignore: cast_nullable_to_non_nullable
@@ -138,7 +131,6 @@ abstract class _$$WaypointImplCopyWith<$Res>
       String description,
       double latitude,
       double longitude,
-      int orderIndex,
       List<String> images,
       bool isVisited});
 }
@@ -162,7 +154,6 @@ class __$$WaypointImplCopyWithImpl<$Res>
     Object? description = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? orderIndex = null,
     Object? images = null,
     Object? isVisited = null,
   }) {
@@ -191,10 +182,6 @@ class __$$WaypointImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      orderIndex: null == orderIndex
-          ? _value.orderIndex
-          : orderIndex // ignore: cast_nullable_to_non_nullable
-              as int,
       images: null == images
           ? _value._images
           : images // ignore: cast_nullable_to_non_nullable
@@ -217,7 +204,6 @@ class _$WaypointImpl implements _Waypoint {
       required this.description,
       required this.latitude,
       required this.longitude,
-      required this.orderIndex,
       final List<String> images = const [],
       this.isVisited = false})
       : _images = images;
@@ -237,8 +223,6 @@ class _$WaypointImpl implements _Waypoint {
   final double latitude;
   @override
   final double longitude;
-  @override
-  final int orderIndex;
   final List<String> _images;
   @override
   @JsonKey()
@@ -254,7 +238,7 @@ class _$WaypointImpl implements _Waypoint {
 
   @override
   String toString() {
-    return 'Waypoint(id: $id, hikeId: $hikeId, name: $name, description: $description, latitude: $latitude, longitude: $longitude, orderIndex: $orderIndex, images: $images, isVisited: $isVisited)';
+    return 'Waypoint(id: $id, hikeId: $hikeId, name: $name, description: $description, latitude: $latitude, longitude: $longitude, images: $images, isVisited: $isVisited)';
   }
 
   @override
@@ -271,8 +255,6 @@ class _$WaypointImpl implements _Waypoint {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
-            (identical(other.orderIndex, orderIndex) ||
-                other.orderIndex == orderIndex) &&
             const DeepCollectionEquality().equals(other._images, _images) &&
             (identical(other.isVisited, isVisited) ||
                 other.isVisited == isVisited));
@@ -288,7 +270,6 @@ class _$WaypointImpl implements _Waypoint {
       description,
       latitude,
       longitude,
-      orderIndex,
       const DeepCollectionEquality().hash(_images),
       isVisited);
 
@@ -316,7 +297,6 @@ abstract class _Waypoint implements Waypoint {
       required final String description,
       required final double latitude,
       required final double longitude,
-      required final int orderIndex,
       final List<String> images,
       final bool isVisited}) = _$WaypointImpl;
 
@@ -335,8 +315,6 @@ abstract class _Waypoint implements Waypoint {
   double get latitude;
   @override
   double get longitude;
-  @override
-  int get orderIndex;
   @override
   List<String> get images;
   @override

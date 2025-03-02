@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'waypoint.freezed.dart';
 part 'waypoint.g.dart';
@@ -13,7 +12,6 @@ class Waypoint with _$Waypoint {
     required String description,
     required double latitude,
     required double longitude,
-    required int orderIndex,
     @Default([]) List<String> images,
     @Default(false) bool isVisited,
   }) = _Waypoint;

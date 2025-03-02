@@ -228,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // Detaillierte Fehlerbehandlung
       print('Fehler beim Hochladen des Bildes: $e');
       if (mounted) {
-        String errorMessage = '${AppLocalizations.of(context)!.errorUploadingImage}';
+        String errorMessage = AppLocalizations.of(context)!.errorUploadingImage;
         
         // Spezifische Fehlermeldungen für bekannte Probleme
         if (e.toString().contains('Simulator')) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../domain/models/hike.dart';
 import '../hike_map/hike_map_page.dart';
-import '../hike_map/hike_map_view_model.dart';
 import 'hike_details_view_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -103,7 +102,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                 // hier sollen die Bilder des Hikes angezeigt werden, sie sollen wischbar sein um mehrere anzeigen zu können wir in einem Carousel
                 // die Bilder sollen aus dem ViewModel geholt werden
                 // wenn keine Bilder vorhanden sind, soll ein Ladecircle angezeigt werden
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height / 3,
                   child: widget.viewModel.hikeImages.isEmpty
                       ? Center(child: CircularProgressIndicator())
@@ -280,8 +279,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => HikeMapPage(
-                                        hike: widget.hikeData,
-                                        viewModel: context.read<HikeMapViewModel>(),
+                                        hikeId: widget.hikeData.id,
                                       ),
                                     ),
                                   );
