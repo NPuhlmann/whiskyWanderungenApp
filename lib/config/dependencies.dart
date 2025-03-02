@@ -48,8 +48,11 @@ List<SingleChildWidget> get providers {
         userRepository: context.read(),
       ),
     ),
-    ChangeNotifierProvider<HikeDetailsPageViewModel>(create: (context) =>
-      HikeDetailsPageViewModel(hikeImagesRepository: context.read())
+    ChangeNotifierProvider<HikeDetailsPageViewModel>(
+      create: (context) => HikeDetailsPageViewModel(
+        hikeImagesRepository: context.read(),
+        waypointRepository: context.read(),
+      )
     ),
     ChangeNotifierProvider<MyHikesViewModel>(
       create: (context) => MyHikesViewModel(

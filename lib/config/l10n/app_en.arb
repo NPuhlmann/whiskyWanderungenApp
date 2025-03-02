@@ -45,5 +45,17 @@
   "errorLoadingWaypoints": "Error loading waypoints",
   "errorCalculatingRoute": "Error calculating route",
   "waypointReached": "Waypoint reached!",
-  "continueHike": "Continue hike"
+  "continueHike": "Continue hike",
+  
+  "saveMapOffline": "Save map offline",
+  "savingMapOfflineMessage": "Saving map for offline use...",
+  "rebuyHike": "Rebuy hike",
+  "rebuyingHikeMessage": "Rebuying hike...",
+  
+  "removeOfflineData": "Remove offline data",
+  "removingOfflineData": "Removing offline data...",
+  "hikeOfflineSaved": "Hike saved for offline use",
+  "errorSavingOffline": "Error saving hike for offline use",
+  "offlineDataRemoved": "Offline data removed",
+  "errorRemovingOfflineData": "Error removing offline data"
 } 

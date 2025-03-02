@@ -45,5 +45,17 @@
   "errorLoadingWaypoints": "Fehler beim Laden der Wegpunkte",
   "errorCalculatingRoute": "Fehler bei der Routenberechnung",
   "waypointReached": "Wegpunkt erreicht!",
-  "continueHike": "Wanderung fortsetzen"
+  "continueHike": "Wanderung fortsetzen",
+  
+  "saveMapOffline": "Karte offline speichern",
+  "savingMapOfflineMessage": "Karte wird für die Offline-Nutzung gespeichert...",
+  "rebuyHike": "Wanderung erneut kaufen",
+  "rebuyingHikeMessage": "Wanderung wird erneut gekauft...",
+  
+  "removeOfflineData": "Offline-Daten entfernen",
+  "removingOfflineData": "Offline-Daten werden entfernt...",
+  "hikeOfflineSaved": "Wanderung wurde für die Offline-Nutzung gespeichert",
+  "errorSavingOffline": "Fehler beim Speichern der Wanderung für die Offline-Nutzung",
+  "offlineDataRemoved": "Offline-Daten wurden entfernt",
+  "errorRemovingOfflineData": "Fehler beim Entfernen der Offline-Daten"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
 import '../../domain/models/hike.dart';
 import '../hike_map/hike_map_page.dart';
 import 'hike_details_view_model.dart';
@@ -19,6 +20,7 @@ class HikeDetailsPage extends StatefulWidget {
 
 class _HikeDetailsPageState extends State<HikeDetailsPage> {
   final PageController _pageController = PageController();
+  bool _isOfflineAvailable = false;
 
   // wenn das Widget erstellt wird, sollen die Bilder des Hikes geladen werden
   @override
@@ -28,6 +30,18 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
     widget.viewModel.clearImagesForUI();
     // Dann die Bilder für die aktuelle Hike-ID laden
     widget.viewModel.getHikeImages(widget.hikeData.id);
+    // Prüfen, ob die Wanderung offline verfügbar ist
+    _checkOfflineAvailability();
+  }
+
+  // Prüfen, ob die Wanderung offline verfügbar ist
+  Future<void> _checkOfflineAvailability() async {
+    final isAvailable = await widget.viewModel.isHikeAvailableOffline(widget.hikeData.id);
+    if (mounted) {
+      setState(() {
+        _isOfflineAvailable = isAvailable;
+      });
+    }
   }
 
   //wenn das Widget aktualisiert wird, sollen die Bilder des Hikes nur neu geladen werden, wenn sich die Hike-ID geändert hat
@@ -50,6 +64,9 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
       
       // Bilder für die neue Hike-ID laden
       widget.viewModel.getHikeImages(widget.hikeData.id);
+      
+      // Offline-Status für die neue Hike-ID prüfen
+      _checkOfflineAvailability();
     }
   }
 
@@ -119,7 +136,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                     child: CircularProgressIndicator(),
                                   ),
                                   errorWidget: (context, url, error) {
-                                    print('Fehler beim Laden des Bildes: $error');
+                                    dev.log('Fehler beim Laden des Bildes: $error');
                                     return Center(
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
@@ -267,35 +284,100 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (widget.isFromMyHikes) {
-                                  // Hier die Logik zum Starten der Wanderung
-                                  print("Wanderung starten");
-                                  // Navigation zur Karte mit der Wanderung
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => HikeMapPage(
-                                        hikeId: widget.hikeData.id,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (widget.isFromMyHikes) {
+                                      // Hier die Logik zum Starten der Wanderung
+                                      dev.log("Wanderung starten");
+                                      // Navigation zur Karte mit der Wanderung
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => HikeMapPage(
+                                            hikeId: widget.hikeData.id,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      // Hier die Logik zum Kaufen der Wanderung
+                                      dev.log("Wanderung kaufen");
+                                      // TODO: Implementiere die Logik zum Kaufen der Wanderung
+                                      // z.B. Navigation zu einer Zahlungsseite
+                                    }
+                                  },
+                                  child: Text(
+                                    widget.isFromMyHikes 
+                                      ? AppLocalizations.of(context)!.startHikeButtonText 
+                                      : AppLocalizations.of(context)!.buyButtonText,
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              if (widget.isFromMyHikes) 
+                                const SizedBox(width: 8),
+                              if (widget.isFromMyHikes)
+                                PopupMenuButton<String>(
+                                  icon: const Icon(Icons.more_vert),
+                                  onSelected: (String value) {
+                                    if (value == 'offline') {
+                                      // Logik zum Offline-Speichern der Karte
+                                      dev.log("Karte offline speichern");
+                                      _saveHikeOffline();
+                                    } else if (value == 'rebuy') {
+                                      // Logik zum erneuten Kauf
+                                      dev.log("Wanderung erneut kaufen");
+                                      // TODO: Implementiere die Logik zum erneuten Kauf
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            AppLocalizations.of(context)!.rebuyingHikeMessage,
+                                          ),
+                                        ),
+                                      );
+                                    } else if (value == 'remove_offline') {
+                                      // Logik zum Entfernen der Offline-Daten
+                                      dev.log("Offline-Daten entfernen");
+                                      _removeOfflineHike();
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                    if (!_isOfflineAvailable)
+                                      PopupMenuItem<String>(
+                                        value: 'offline',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.download),
+                                            SizedBox(width: 8),
+                                            Text(AppLocalizations.of(context)!.saveMapOffline),
+                                          ],
+                                        ),
+                                      )
+                                    else
+                                      PopupMenuItem<String>(
+                                        value: 'remove_offline',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.delete_outline),
+                                            SizedBox(width: 8),
+                                            Text(AppLocalizations.of(context)!.removeOfflineData),
+                                          ],
+                                        ),
+                                      ),
+                                    PopupMenuItem<String>(
+                                      value: 'rebuy',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.shopping_cart),
+                                          SizedBox(width: 8),
+                                          Text(AppLocalizations.of(context)!.rebuyHike),
+                                        ],
                                       ),
                                     ),
-                                  );
-                                } else {
-                                  // Hier die Logik zum Kaufen der Wanderung
-                                  print("Wanderung kaufen");
-                                  // TODO: Implementiere die Logik zum Kaufen der Wanderung
-                                  // z.B. Navigation zu einer Zahlungsseite
-                                }
-                              },
-                              child: Text(
-                                widget.isFromMyHikes 
-                                  ? AppLocalizations.of(context)!.startHikeButtonText 
-                                  : AppLocalizations.of(context)!.buyButtonText,
-                                style: const TextStyle(fontSize: 20),
-                              ),
-                            ),
+                                  ],
+                                ),
+                            ],
                           ),
                         ),
                       ),
@@ -308,5 +390,129 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
         },
       ),
     );
+  }
+
+  // Methode zum Speichern der Wanderung für die Offline-Nutzung
+  Future<void> _saveHikeOffline() async {
+    // Zuerst alle vorherigen Snackbars schließen
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    
+    // Zeige einen Ladeindikator an
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 2,
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Text(AppLocalizations.of(context)!.savingMapOfflineMessage),
+            ),
+          ],
+        ),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    // Speichere die Wanderung offline
+    final success = await widget.viewModel.saveHikeForOfflineUse(widget.hikeData);
+
+    if (mounted) {
+      // Zuerst alle vorherigen Snackbars schließen
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
+      if (success) {
+        // Aktualisiere den UI-Status
+        setState(() {
+          _isOfflineAvailable = true;
+        });
+
+        // Zeige eine Erfolgsmeldung an
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.hikeOfflineSaved),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // Zeige eine Fehlermeldung an
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.errorSavingOffline),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
+  // Methode zum Entfernen der Offline-Daten
+  Future<void> _removeOfflineHike() async {
+    // Zuerst alle vorherigen Snackbars schließen
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    
+    // Zeige einen Ladeindikator an
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 2,
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Text(AppLocalizations.of(context)!.removingOfflineData),
+            ),
+          ],
+        ),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    // Entferne die Offline-Daten
+    final success = await widget.viewModel.removeOfflineHike(widget.hikeData.id);
+
+    if (mounted) {
+      // Zuerst alle vorherigen Snackbars schließen
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
+      if (success) {
+        // Aktualisiere den UI-Status
+        setState(() {
+          _isOfflineAvailable = false;
+        });
+
+        // Zeige eine Erfolgsmeldung an
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.offlineDataRemoved),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // Zeige eine Fehlermeldung an
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.errorRemovingOfflineData),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 }
