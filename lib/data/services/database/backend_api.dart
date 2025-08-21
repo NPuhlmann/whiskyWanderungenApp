@@ -14,8 +14,9 @@ class BackendApiService {
   Future<Profile> getUserProfileById(String id) async {
     final response = await client.from('profiles').select().eq('id', id);
     if ((response as List<dynamic>).isEmpty) {
-      // Profil sollte automatisch durch Supabase-Trigger erstellt werden
-      throw Exception('Profil nicht gefunden für Benutzer-ID: $id. Möglicherweise ist der Supabase-Trigger nicht korrekt konfiguriert.');
+      // Profil nicht gefunden - erstelle ein leeres Profil für die UI
+      dev.log('Profil nicht gefunden für Benutzer-ID: $id. Erstelle leeres Profil.');
+      return Profile(id: id);
     }
     
     // Konvertiere die Antwort in ein Profil-Objekt

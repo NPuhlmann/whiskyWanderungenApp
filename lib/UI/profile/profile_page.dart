@@ -287,10 +287,6 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, _) {
           if (widget.viewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (widget.viewModel.profile.firstName == "" && !widget.viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
           } else {
             // Textfelder um Namen und Adresse des Users zu ändern
             return SingleChildScrollView(
