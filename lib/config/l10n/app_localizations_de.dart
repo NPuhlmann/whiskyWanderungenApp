@@ -184,4 +184,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get errorRemovingOfflineData =>
       'Fehler beim Entfernen der Offline-Daten';
+
+  @override
+  String get signupSuccess => 'Registrierung erfolgreich!';
 }

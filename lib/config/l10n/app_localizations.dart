@@ -433,6 +433,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error removing offline data'**
   String get errorRemovingOfflineData;
+
+  /// No description provided for @signupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration successful!'**
+  String get signupSuccess;
 }
 
 class _AppLocalizationsDelegate

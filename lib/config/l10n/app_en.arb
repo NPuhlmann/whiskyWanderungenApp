@@ -57,5 +57,6 @@
   "hikeOfflineSaved": "Hike saved for offline use",
   "errorSavingOffline": "Error saving hike for offline use",
   "offlineDataRemoved": "Offline data removed",
-  "errorRemovingOfflineData": "Error removing offline data"
+  "errorRemovingOfflineData": "Error removing offline data",
+  "signupSuccess": "Registration successful!"
 } 

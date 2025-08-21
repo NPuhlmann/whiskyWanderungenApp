@@ -11,12 +11,17 @@ ALTER TABLE public.user_waypoint_visits ENABLE ROW LEVEL SECURITY;
 
 -- Profiles Policies
 -- Benutzer können nur ihr eigenes Profil lesen und bearbeiten
-CREATE POLICY "Users can view own profile" ON public.profiles
+-- Diese Policies werden für die automatische Profilerstellung benötigt
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can read own profile" ON public.profiles;
+CREATE POLICY "Users can read own profile" ON public.profiles
     FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles
     FOR UPDATE USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 CREATE POLICY "Users can insert own profile" ON public.profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
 

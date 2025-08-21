@@ -57,5 +57,6 @@
   "hikeOfflineSaved": "Wanderung wurde für die Offline-Nutzung gespeichert",
   "errorSavingOffline": "Fehler beim Speichern der Wanderung für die Offline-Nutzung",
   "offlineDataRemoved": "Offline-Daten wurden entfernt",
-  "errorRemovingOfflineData": "Fehler beim Entfernen der Offline-Daten"
+  "errorRemovingOfflineData": "Fehler beim Entfernen der Offline-Daten",
+  "signupSuccess": "Registrierung erfolgreich!"
 }

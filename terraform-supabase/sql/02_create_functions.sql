@@ -1,11 +1,26 @@
 -- Hilfsfunktionen für die Whisky Hikes App
 
 -- Funktion zum Erstellen eines Profils für neue Benutzer
+-- Diese Funktion wird automatisch ausgeführt, wenn sich ein neuer Benutzer registriert
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.profiles (id, email)
-    VALUES (NEW.id, NEW.email);
+    -- Erstelle ein neues Profil mit der Benutzer-ID und E-Mail aus auth.users
+    INSERT INTO public.profiles (
+        id,
+        first_name,
+        last_name,
+        email,
+        created_at,
+        updated_at
+    ) VALUES (
+        NEW.id,           -- Verwende die ID aus auth.users
+        '',               -- Leerer Vorname (wird später vom Benutzer ausgefüllt)
+        '',               -- Leerer Nachname (wird später vom Benutzer ausgefüllt)
+        NEW.email,        -- E-Mail aus auth.users
+        NOW(),            -- Aktueller Zeitstempel für created_at
+        NOW()             -- Aktueller Zeitstempel für updated_at
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

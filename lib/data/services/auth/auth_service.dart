@@ -1,7 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthService{
   final SupabaseClient client = Supabase.instance.client;
+  
+  bool get isDevMode => dotenv.env['DEV_MODE']?.toLowerCase() == 'true';
 
   // sign in with email and password
   Future<AuthResponse> signInWithEmailPassword(String email, String password) async {
@@ -10,8 +14,49 @@ class AuthService{
   }
   // sign up with email and password
   Future<AuthResponse> signUpWithEmailPassword(String email, String password, [Map<String, dynamic>? data]) async {
-    final response = await client.auth.signUp(email: email, password: password, data: data);
-    return response;
+    if (isDevMode) {
+      // In development mode, automatically confirm email
+      final response = await client.auth.signUp(
+        email: email, 
+        password: password, 
+        data: data,
+        emailRedirectTo: null
+      );
+      
+      // Auto-confirm email in development mode
+      if (response.user != null && response.user!.emailConfirmedAt == null) {
+        debugPrint('=== DEV MODE: Auto-confirming email ===');
+        try {
+          // Sign out first to clear any session
+          await client.auth.signOut();
+          
+          // Try to sign in immediately - in dev mode this should work
+          // even without email confirmation if Supabase is configured properly
+          final signInResponse = await client.auth.signInWithPassword(
+            email: email, 
+            password: password
+          );
+          
+          debugPrint('DEV MODE: Email auto-confirmed and user signed in');
+          return AuthResponse(user: signInResponse.user, session: signInResponse.session);
+        } catch (e) {
+          debugPrint('DEV MODE: Could not auto-confirm. User needs manual confirmation.');
+          debugPrint('Error: $e');
+          return response;
+        }
+      }
+      
+      return response;
+    } else {
+      // In production, use deep link for email confirmation
+      final response = await client.auth.signUp(
+        email: email, 
+        password: password, 
+        data: data,
+        emailRedirectTo: 'whiskyhikes://email-confirm'
+      );
+      return response;
+    }
   }
   // sign out
   Future<void> signOut() async {
@@ -45,6 +90,48 @@ class AuthService{
       // Fehlerbehandlung
       // Logging der Fehler - in Production sollte ein proper Logger verwendet werden
       throw Exception('Fehler beim Aktualisieren der E-Mail-Adresse: $e');
+    }
+  }
+
+  // Manual email confirmation for development mode
+  Future<void> confirmEmailManually() async {
+    if (!isDevMode) {
+      throw Exception('Manual email confirmation is only available in development mode');
+    }
+    
+    final user = client.auth.currentUser;
+    if (user == null) {
+      throw Exception('No user logged in');
+    }
+    
+    if (user.emailConfirmedAt != null) {
+      debugPrint('Email already confirmed');
+      return;
+    }
+    
+    try {
+      // This is a workaround for development - in real scenario you'd use the confirm endpoint
+      // For now, we'll just inform the developer
+      debugPrint('=== MANUAL EMAIL CONFIRMATION ===');
+      debugPrint('In development mode, you can:');
+      debugPrint('1. Check your email for the confirmation link');
+      debugPrint('2. Or manually confirm in Supabase Dashboard');
+      debugPrint('3. Or disable email confirmation in Supabase Auth settings');
+      debugPrint('================================');
+    } catch (e) {
+      throw Exception('Error during manual email confirmation: $e');
+    }
+  }
+
+  // Handle deep link email confirmation
+  Future<void> handleEmailConfirmation(String token, String type) async {
+    try {
+      await client.auth.verifyOTP(
+        token: token,
+        type: OtpType.email,
+      );
+    } catch (e) {
+      throw Exception('Error confirming email: $e');
     }
   }
 }

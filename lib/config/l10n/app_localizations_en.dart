@@ -179,4 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorRemovingOfflineData => 'Error removing offline data';
+
+  @override
+  String get signupSuccess => 'Registration successful!';
 }

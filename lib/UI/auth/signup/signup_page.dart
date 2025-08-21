@@ -31,8 +31,38 @@ class _SignupPageState extends State<SignupPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(AppLocalizations.of(context)!.legalAgeInfo)));
       } else {
-        await widget.viewModel.signUpWithEmailPassword(
+        final response = await widget.viewModel.signUpWithEmailPassword(
             email, password, {"is_legal_age": isLegalAge});
+        
+        // Show success message with dev mode specific info
+        if (mounted) {
+          String message = AppLocalizations.of(context)!.signupSuccess;
+          
+          // Add dev mode specific info
+          final authService = widget.viewModel.authService;
+          if (authService.isDevMode) {
+            message += '\n\nDEV MODE: Email confirmation bypassed for development.';
+            if (response.user?.emailConfirmedAt == null) {
+              message += ' Check console for confirmation instructions.';
+            }
+          } else {
+            message += ' Please check your email to confirm your account.';
+          }
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          
+          // Navigate to login after successful signup
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) {
+              context.go('/login');
+            }
+          });
+        }
       }
     } catch (e) {
       if (mounted) {

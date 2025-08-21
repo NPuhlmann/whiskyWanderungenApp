@@ -60,5 +60,17 @@
 		<false/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<!-- URL Schemes for Deep Links -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLName</key>
+				<string>whiskyhikes.deeplink</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>whiskyhikes</string>
+				</array>
+			</dict>
+		</array>
 	</dict>
 </plist>

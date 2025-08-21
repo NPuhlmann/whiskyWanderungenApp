@@ -36,8 +36,10 @@ GoRouter router(UserRepository authRepository) => GoRouter(
           GoRoute(
               path: Routes.signUp,
               builder: (context, state) {
-                final viewModel =
-                    SignUpPageViewModel(userRepository: context.read());
+                final viewModel = SignUpPageViewModel(
+                  userRepository: context.read(),
+                  authService: context.read(),
+                );
                 return SignupPage(viewModel: viewModel);
               }),
           StatefulShellRoute.indexedStack(
