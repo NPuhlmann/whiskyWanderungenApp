@@ -3,35 +3,39 @@ output "project_id" {
   value       = supabase_project.whisky_hikes.id
 }
 
-output "project_url" {
-  description = "Supabase Project URL"
-  value       = supabase_project.whisky_hikes.api_url
+output "project_name" {
+  description = "Supabase Project Name"
+  value       = supabase_project.whisky_hikes.name
 }
 
-output "database_url" {
-  description = "Database connection URL"
-  value       = supabase_project.whisky_hikes.database_url
-  sensitive   = true
+output "organization_id" {
+  description = "Organization ID"
+  value       = supabase_project.whisky_hikes.organization_id
+}
+
+output "region" {
+  description = "Project Region"
+  value       = supabase_project.whisky_hikes.region
 }
 
 output "anon_key" {
-  description = "Supabase Anon Key"
-  value       = supabase_project.whisky_hikes.anon_key
+  description = "Supabase Anonymous Key"
+  value       = data.supabase_apikeys.whisky_hikes.anon_key
   sensitive   = true
 }
 
 output "service_role_key" {
   description = "Supabase Service Role Key"
-  value       = supabase_project.whisky_hikes.service_role_key
+  value       = data.supabase_apikeys.whisky_hikes.service_role_key
   sensitive   = true
 }
 
-output "storage_bucket_name" {
-  description = "Storage bucket name for avatars"
-  value       = supabase_storage_bucket.avatars.name
+output "project_url" {
+  description = "Supabase Project URL"
+  value       = "https://${supabase_project.whisky_hikes.id}.supabase.co"
 }
 
-output "project_status" {
-  description = "Project deployment status"
-  value       = supabase_project.whisky_hikes.status
-} 
+output "deployment_status" {
+  description = "Deployment completion status"
+  value       = "Supabase project created successfully - run 'make schema && make policies' to setup database"
+}
