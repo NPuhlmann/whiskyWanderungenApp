@@ -1,0 +1,17 @@
+# Beispiel-Konfiguration für das Whisky Hikes Supabase Projekt
+# Kopiere diese Datei zu terraform.tfvars und passe die Werte an
+
+# Supabase Organization ID (finde sie in deinem Supabase Dashboard)
+organization_id = "your-organization-id"
+
+# Supabase Region (wähle eine Region in deiner Nähe)
+region = "us-east-1"
+
+# Datenbank-Passwort (sollte sicher und komplex sein)
+database_password = "your-secure-database-password"
+
+# Projektname (optional, Standard ist "whisky-hikes")
+project_name = "whisky-hikes"
+
+# Umgebung (dev, staging, prod)
+environment = "dev" 
