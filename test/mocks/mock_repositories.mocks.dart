@@ -133,6 +133,42 @@ class MockProfileRepository extends _i1.Mock implements _i8.ProfileRepository {
             returnValue: _i6.Future<String?>.value(),
           )
           as _i6.Future<String?>);
+
+  @override
+  _i6.Future<void> clearUserCache(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#clearUserCache, [userId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> clearAllCache() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearAllCache, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<Map<String, dynamic>> getCacheStats() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCacheStats, []),
+            returnValue: _i6.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
+          )
+          as _i6.Future<Map<String, dynamic>>);
+
+  @override
+  _i6.Future<bool> hasNetworkConnection() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasNetworkConnection, []),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
 }
 
 /// A class which mocks [UserRepository].

@@ -12,6 +12,7 @@ import '../UI/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
+import '../data/services/cache/local_cache_service.dart';
 import '../data/services/database/backend_api.dart';
 
 List<SingleChildWidget> get providers {
@@ -23,11 +24,15 @@ List<SingleChildWidget> get providers {
     Provider<BackendApiService>(
       create: (_) => BackendApiService(),
     ),
+    Provider<LocalCacheService>(
+      create: (_) => LocalCacheService(),
+    ),
     
     // Dann alle Repositories
     Provider<ProfileRepository>(
       create: (context) => ProfileRepository(
         context.read<BackendApiService>(),
+        context.read<LocalCacheService>(),
       ),
     ),
     ChangeNotifierProvider<UserRepository>(
