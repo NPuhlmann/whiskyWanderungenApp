@@ -164,38 +164,45 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
   
+  // Hilfsfunktion zur Simulator-Erkennung
+  bool get _isRunningOnSimulator {
+    if (Platform.isIOS) {
+      // Zuverlässige iOS-Simulator-Erkennung
+      return Platform.environment['SIMULATOR_DEVICE_NAME'] != null ||
+             Platform.environment['SIMULATOR_MODEL_IDENTIFIER'] != null ||
+             Platform.environment['SIMULATOR_ROOT'] != null;
+    }
+    return false;
+  }
+
   // Funktion zum Auswählen und Hochladen eines Bildes
   Future<void> _pickImage(ImageSource source) async {
     try {
-      // Prüfen, ob wir im Simulator sind
-      bool isSimulator = false;
-      if (Platform.isIOS) {
-        try {
-          // Versuche, auf die Galerie zuzugreifen - dies schlägt im Simulator oft fehl
-          await _imagePicker.pickImage(
-            source: ImageSource.gallery,
-            maxWidth: 1,
-            maxHeight: 1,
-            imageQuality: 1,
-          );
-        } catch (e) {
-          // Wenn ein Fehler auftritt, sind wahrscheinlich im Simulator
-          isSimulator = true;
-          // Debug info: Simulator erkannt
+      // Simulator-spezifische Behandlung
+      if (_isRunningOnSimulator) {
+        if (source == ImageSource.camera) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('🚫 Kamera ist im iOS-Simulator nicht verfügbar. Bitte verwenden Sie die Galerie oder ein echtes Gerät.'),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 4),
+              ),
+            );
+          }
+          return;
         }
-      }
-      
-      if (isSimulator) {
+        
+        // Auch Galerie kann im Simulator problematisch sein
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Im iOS-Simulator ist der Zugriff auf Bilder eingeschränkt. Bitte verwenden Sie ein echtes Gerät für diese Funktion.'),
-              backgroundColor: Colors.orange,
-              duration: Duration(seconds: 5),
+              content: Text('⚠️ Sie nutzen den iOS-Simulator. Bei Problemen verwenden Sie bitte ein echtes Gerät.'),
+              backgroundColor: Colors.blue,
+              duration: Duration(seconds: 3),
             ),
           );
         }
-        return;
       }
       
       final XFile? pickedFile = await _imagePicker.pickImage(
@@ -212,50 +219,120 @@ class _ProfilePageState extends State<ProfilePage> {
         // Dateiendung ermitteln
         final String fileExt = pickedFile.path.split('.').last.toLowerCase();
         
+        // Loading-Anzeige für den Upload
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text('📤 Bild wird hochgeladen...'),
+                ],
+              ),
+              backgroundColor: Colors.blue,
+              duration: Duration(seconds: 10),
+            ),
+          );
+        }
+        
         // Bild hochladen
         await widget.viewModel.uploadProfileImage(fileBytes, fileExt);
         
         if (mounted) {
+          // Vorherige SnackBar entfernen
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          
+          // Erfolgsmeldung anzeigen
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profilbild erfolgreich aktualisiert'),
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('✅ Profilbild erfolgreich aktualisiert!'),
+                ],
+              ),
               backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
             ),
           );
         }
       }
     } catch (e) {
-      // Detaillierte Fehlerbehandlung
-      // Error handling: Image upload failed
+      // Vorherige Loading-SnackBar entfernen
       if (mounted) {
-        String errorMessage = AppLocalizations.of(context)!.errorUploadingImage;
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      }
+      
+      // Detaillierte Fehlerbehandlung mit verbessertem UI-Feedback
+      if (mounted) {
+        String errorMessage;
+        Color backgroundColor;
+        IconData errorIcon;
         
         // Spezifische Fehlermeldungen für bekannte Probleme
-        if (e.toString().contains('Simulator')) {
-          errorMessage = 'Diese Funktion ist im iOS-Simulator eingeschränkt. Bitte verwenden Sie ein echtes Gerät.';
-        } else if (e.toString().contains('permission')) {
-          errorMessage = 'Keine Berechtigung zum Zugriff auf Kamera oder Galerie. Bitte überprüfen Sie die App-Einstellungen.';
-        } else if (e.toString().contains('network')) {
-          errorMessage = 'Netzwerkfehler beim Hochladen. Bitte überprüfen Sie Ihre Internetverbindung.';
-        } else if (e.toString().contains('PlatformException')) {
-          errorMessage = 'Fehler beim Zugriff auf die Kamera oder Galerie. Dies kann im Simulator auftreten.';
+        if (e.toString().contains('Simulator') || e.toString().contains('PlatformException')) {
+          errorMessage = '📱 iOS-Simulator Limitierung: Bitte verwenden Sie ein echtes Gerät für optimale Ergebnisse.';
+          backgroundColor = Colors.orange;
+          errorIcon = Icons.devices;
+        } else if (e.toString().contains('permission') || e.toString().contains('denied')) {
+          errorMessage = '🔐 Berechtigung verweigert: Bitte erlauben Sie den Zugriff auf Kamera/Galerie in den Einstellungen.';
+          backgroundColor = Colors.red[700]!;
+          errorIcon = Icons.security;
+        } else if (e.toString().contains('network') || e.toString().contains('timeout') || e.toString().contains('connection')) {
+          errorMessage = '🌐 Netzwerkfehler: Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+          backgroundColor = Colors.red[600]!;
+          errorIcon = Icons.wifi_off;
+        } else if (e.toString().contains('groß') || e.toString().contains('size')) {
+          errorMessage = '📏 ${e.toString()}';
+          backgroundColor = Colors.orange[700]!;
+          errorIcon = Icons.photo_size_select_large;
+        } else if (e.toString().contains('storage') || e.toString().contains('bucket')) {
+          errorMessage = '💾 Upload-Service Problem: Bitte versuchen Sie es später erneut.';
+          backgroundColor = Colors.red[800]!;
+          errorIcon = Icons.cloud_off;
         } else {
-          // Allgemeine Fehlermeldung mit Details
-          errorMessage = '$errorMessage: ${e.toString().split(':').last}';
+          // Allgemeine Fehlermeldung mit mehr Details
+          final String errorDetail = e.toString().length > 100 
+              ? e.toString().substring(0, 100) + '...'
+              : e.toString();
+          errorMessage = '❌ Upload fehlgeschlagen: $errorDetail';
+          backgroundColor = Colors.red;
+          errorIcon = Icons.error;
         }
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
+            content: Row(
+              children: [
+                Icon(errorIcon, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: backgroundColor,
+            duration: const Duration(seconds: 8),
             action: SnackBarAction(
-              label: 'OK',
+              label: 'VERSTANDEN',
               textColor: Colors.white,
               onPressed: () {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
               },
             ),
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -301,15 +378,69 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Stack(
                         alignment: Alignment.bottomRight,
                         children: [
-                          CircleAvatar(
-                            radius: 60,
-                            backgroundColor: Colors.grey[300],
-                            backgroundImage: widget.viewModel.profile.imageUrl.isNotEmpty
-                                ? NetworkImage(widget.viewModel.profile.imageUrl)
-                                : null,
-                            child: widget.viewModel.profile.imageUrl.isEmpty
-                                ? const Icon(Icons.person, size: 60, color: Colors.grey)
-                                : null,
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.grey[300],
+                                backgroundImage: widget.viewModel.profile.imageUrl.isNotEmpty
+                                    ? NetworkImage(widget.viewModel.profile.imageUrl)
+                                    : null,
+                                child: widget.viewModel.profile.imageUrl.isEmpty
+                                    ? const Icon(Icons.person, size: 60, color: Colors.grey)
+                                    : null,
+                              ),
+                              // Debug-Info für Entwicklung (kann später entfernt werden)
+                              if (widget.viewModel.profile.imageUrl.isNotEmpty)
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green[50],
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.green[200]!, width: 1),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.check_circle, color: Colors.green[600], size: 14),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '✅ Bild geladen',
+                                        style: TextStyle(
+                                          fontSize: 11, 
+                                          color: Colors.green[700],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              else
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey[300]!, width: 1),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.add_photo_alternate, color: Colors.grey[600], size: 14),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '📷 Kein Profilbild',
+                                        style: TextStyle(
+                                          fontSize: 11, 
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
                           ),
                           Container(
                             padding: const EdgeInsets.all(4),
@@ -397,17 +528,71 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () {
-                        // Überprüfen, ob der Benutzer mindestens 18 Jahre alt ist
-                        if (widget.viewModel.profile.dateOfBirth != null &&
-                            !_isAtLeast18YearsOld(widget.viewModel.profile.dateOfBirth!)) {
+                        // Erweiterte Validierung mit benutzerfreundlichen SnackBars
+                        
+                        // 1. Prüfen ob Geburtsdatum überhaupt gesetzt ist
+                        if (widget.viewModel.profile.dateOfBirth == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(AppLocalizations.of(context)!.mustBeAtLeast18),
-                              backgroundColor: Colors.red,
+                              content: Row(
+                                children: [
+                                  Icon(Icons.calendar_today, color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      '📅 Bitte tragen Sie Ihr Geburtsdatum ein, um Ihr Profil zu speichern.',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: Colors.orange[600],
+                              duration: Duration(seconds: 5),
+                              action: SnackBarAction(
+                                label: 'VERSTANDEN',
+                                textColor: Colors.white,
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                },
+                              ),
+                              behavior: SnackBarBehavior.floating,
                             ),
                           );
                           return;
                         }
+                        
+                        // 2. Prüfen ob Benutzer mindestens 18 Jahre alt ist
+                        if (!_isAtLeast18YearsOld(widget.viewModel.profile.dateOfBirth!)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(Icons.block, color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      '🔞 Sie müssen mindestens 18 Jahre alt sein, um diese App zu nutzen.',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: Colors.red[700],
+                              duration: Duration(seconds: 6),
+                              action: SnackBarAction(
+                                label: 'VERSTANDEN',
+                                textColor: Colors.white,
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                },
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                        
+                        // 3. Alles OK - Profil speichern
                         widget.viewModel.updateProfile(widget.viewModel.profile);
                       },
                       style: ElevatedButton.styleFrom(

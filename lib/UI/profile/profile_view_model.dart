@@ -29,11 +29,13 @@ class ProfilePageViewModel extends ChangeNotifier{
     
     try{
       final String? userId = _userRepository.getUserId();
+      log("🔍 LoadProfile: UserId = $userId");
       if (userId == null) {
         throw Exception('Benutzer-ID konnte nicht ermittelt werden');
       }
       
       final Profile profile = await _profileRepository.getUserProfileById(userId);
+      log("📝 LoadProfile: Basis-Profil geladen");
       
       // E-Mail-Adresse aus dem UserRepository laden
       final String? email = _userRepository.getUserEmail();
@@ -42,12 +44,18 @@ class ProfilePageViewModel extends ChangeNotifier{
       }
       
       // Profilbild-URL laden
+      log("🖼️ LoadProfile: Lade Profilbild-URL...");
       final String? imageUrl = await _profileRepository.getProfileImageUrl(userId);
+      log("🖼️ LoadProfile: Geladene Profilbild-URL: $imageUrl");
       if (imageUrl != null) {
         profile.imageUrl = imageUrl;
+        log("✅ LoadProfile: Setze imageUrl im Profil: ${profile.imageUrl}");
+      } else {
+        log("❌ LoadProfile: Keine Profilbild-URL gefunden");
       }
       
       _profile = profile;
+      log("🎯 LoadProfile: Finales Profil imageUrl: ${_profile.imageUrl}");
       return profile;
     } finally {
       _isLoading = false;
@@ -78,10 +86,12 @@ class ProfilePageViewModel extends ChangeNotifier{
     }
   }
   
-  // Profilbild hochladen
+  // Profilbild hochladen mit Retry-Logik
   Future<void> uploadProfileImage(Uint8List imageBytes, String fileExt) async {
     _isLoading = true;
     notifyListeners();
+    
+    const int maxRetries = 3;
     
     try {
       final String? userId = _userRepository.getUserId();
@@ -89,40 +99,93 @@ class ProfilePageViewModel extends ChangeNotifier{
         throw Exception('Benutzer-ID konnte nicht ermittelt werden');
       }
       
-      log("Starte Upload des Profilbilds für Benutzer $userId mit Dateigröße ${imageBytes.length} Bytes");
+      log("🚀 Upload-Start: Benutzer $userId, Größe: ${imageBytes.length} Bytes, Format: $fileExt");
       
-      // Prüfen, ob wir im Simulator sind (anhand der Fehlermeldung)
+      // Validierungen
       if (imageBytes.isEmpty) {
-        throw Exception('Leere Bilddaten - möglicherweise ein Problem mit dem Simulator');
+        throw Exception('Leere Bilddaten - Bildauswahl fehlgeschlagen');
       }
       
-      final String imageUrl = await _profileRepository.uploadProfileImage(
-        userId, 
-        imageBytes, 
-        fileExt
-      );
+      if (imageBytes.length > 10 * 1024 * 1024) { // 10MB Limit
+        throw Exception('Bild zu groß (${(imageBytes.length / 1024 / 1024).toStringAsFixed(1)}MB). Maximal 10MB erlaubt.');
+      }
       
-      log("Profilbild erfolgreich hochgeladen: $imageUrl");
+      // Upload mit Retry-Logik
+      String? imageUrl;
+      Exception? lastException;
       
-      // Profilbild-URL im Profil aktualisieren
+      for (int attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          log("📤 Upload-Versuch $attempt/$maxRetries");
+          
+          imageUrl = await _profileRepository.uploadProfileImage(
+            userId, 
+            imageBytes, 
+            fileExt
+          );
+          
+          log("✅ Upload erfolgreich: $imageUrl");
+          break; // Erfolg, schleife verlassen
+          
+        } catch (e) {
+          lastException = e is Exception ? e : Exception(e.toString());
+          log("❌ Upload-Versuch $attempt fehlgeschlagen: $e");
+          
+          if (attempt < maxRetries && _isRetryableError(e)) {
+            log("🔄 Wiederholung in ${attempt * 2} Sekunden...");
+            await Future.delayed(Duration(seconds: attempt * 2));
+          } else {
+            log("🚫 Upload endgültig fehlgeschlagen");
+            break;
+          }
+        }
+      }
+      
+      if (imageUrl == null) {
+        throw lastException ?? Exception('Upload fehlgeschlagen nach $maxRetries Versuchen');
+      }
+      
+      // Profil aktualisieren
+      log("📝 Aktualisiere Profil mit neuer Bild-URL...");
       _profile.imageUrl = imageUrl;
       
-      // Profil in der Datenbank aktualisieren
       await _profileRepository.updateUserProfile(_profile);
       
-      log("Profil mit neuer Bild-URL aktualisiert");
+      log("🎯 Upload-Prozess komplett abgeschlossen!");
+      
     } catch (e) {
-      log("Fehler beim Hochladen des Profilbilds: $e", error: e);
-      
-      // Spezifische Fehlerbehandlung für bekannte Probleme
-      if (e.toString().contains('PlatformException') && e.toString().contains('image_picker_ios')) {
-        throw Exception('Fehler beim Zugriff auf die Kamera oder Galerie. Dies ist ein bekanntes Problem im iOS-Simulator. Bitte verwenden Sie ein echtes Gerät.');
-      }
-      
-      rethrow; // Fehler weiterleiten, damit er in der UI behandelt werden kann
+      log("💥 Upload-Fehler: $e", error: e);
+      _handleUploadError(e);
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+  
+  // Hilfsmethode: Prüft ob Fehler retry-fähig ist
+  bool _isRetryableError(dynamic error) {
+    final String errorString = error.toString().toLowerCase();
+    return errorString.contains('network') ||
+           errorString.contains('timeout') ||
+           errorString.contains('connection') ||
+           errorString.contains('503') ||
+           errorString.contains('502') ||
+           errorString.contains('500');
+  }
+  
+  // Hilfsmethode: Spezifische Fehlerbehandlung
+  void _handleUploadError(dynamic error) {
+    final String errorString = error.toString();
+    
+    if (errorString.contains('PlatformException') && errorString.contains('image_picker')) {
+      log("🔍 iOS Simulator Problem erkannt");
+    } else if (errorString.contains('permission')) {
+      log("🔐 Berechtigungs-Problem erkannt");
+    } else if (errorString.contains('network') || errorString.contains('timeout')) {
+      log("🌐 Netzwerk-Problem erkannt");
+    } else if (errorString.contains('storage')) {
+      log("💾 Supabase Storage Problem erkannt");
     }
   }
 

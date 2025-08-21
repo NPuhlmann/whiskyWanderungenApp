@@ -35,6 +35,12 @@
 		<string>Diese App benötigt Zugriff auf deinen Standort, um dich auf der Wanderkarte zu zeigen und dich zu benachrichtigen, wenn du einen Wegpunkt erreichst.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>Diese App benötigt Zugriff auf deinen Standort, um dich auf der Wanderkarte zu zeigen und dich zu benachrichtigen, wenn du einen Wegpunkt erreichst.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Diese App benötigt Zugriff auf die Kamera, um Fotos für dein Profilbild aufzunehmen.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Diese App benötigt Zugriff auf deine Fotomediathek, um ein Bild für dein Profilbild auszuwählen.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Diese App benötigt Zugriff auf das Mikrofon für Videofunktionen.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

@@ -141,7 +141,7 @@ class BackendApiService {
 
   // Methode zum Hochladen eines Profilbilds
   Future<String> uploadProfileImage(String userId, Uint8List fileBytes, String fileExt) async {
-    final String path = 'profile_images/$userId.$fileExt';
+    final String path = '$userId/profile.$fileExt';
     
     dev.log("Beginne Upload nach $path mit ${fileBytes.length} Bytes");
     
@@ -195,22 +195,45 @@ class BackendApiService {
   // Methode zum Abrufen der Profilbild-URL
   Future<String?> getProfileImageUrl(String userId) async {
     try {
-      // Suche nach Dateien im Storage, die mit der Benutzer-ID beginnen
-      final List<FileObject> files = await client.storage.from('avatars')
-          .list(path: 'profile_images');
+      dev.log("🔍 Suche Profilbild für User: $userId");
       
-      // Filtere die Dateien nach der Benutzer-ID
+      // Suche nach Dateien im Benutzer-spezifischen Ordner
+      final List<FileObject> files = await client.storage.from('avatars')
+          .list(path: userId);
+      
+      dev.log("📁 Gefundene Dateien in $userId/: ${files.length}");
+      
+      if (files.isNotEmpty) {
+        for (var file in files) {
+          dev.log("📄 Datei: ${file.name}, Größe: ${file.metadata?['size']}, Typ: ${file.metadata?['mimetype']}");
+        }
+      }
+      
+      // Filtere die Dateien nach "profile.*" Dateien
       final List<FileObject> userFiles = files.where(
-        (file) => file.name.startsWith(userId)
+        (file) => file.name.startsWith('profile.')
       ).toList();
       
       if (userFiles.isNotEmpty) {
-        // Öffentliche URL des ersten gefundenen Bildes zurückgeben
-        return client.storage.from('avatars').getPublicUrl('profile_images/${userFiles.first.name}');
+        final String filePath = '$userId/${userFiles.first.name}';
+        final String publicUrl = client.storage.from('avatars').getPublicUrl(filePath);
+        
+        dev.log("✅ Profilbild-URL gefunden: $publicUrl");
+        return publicUrl;
+      } else {
+        dev.log("❌ Kein Profilbild für User $userId gefunden");
+        return null;
       }
-      return null;
     } catch (e) {
-      // logging: 'Fehler beim Abrufen des Profilbilds: $e');
+      dev.log("💥 Fehler beim Abrufen des Profilbilds für $userId: $e", error: e);
+      
+      // Spezifische Fehlerbehandlung
+      if (e.toString().contains('permission')) {
+        dev.log("🔐 Storage Permission Problem");
+      } else if (e.toString().contains('network')) {
+        dev.log("🌐 Network Problem beim Storage-Zugriff");
+      }
+      
       return null;
     }
   }

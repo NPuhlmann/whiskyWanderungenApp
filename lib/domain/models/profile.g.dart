@@ -8,21 +8,21 @@ part of 'profile.dart';
 
 _Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
   id: json['id'] as String? ?? '',
-  firstName: json['firstName'] as String? ?? '',
-  lastName: json['lastName'] as String? ?? '',
+  firstName: json['first_name'] as String? ?? '',
+  lastName: json['last_name'] as String? ?? '',
   dateOfBirth:
-      json['dateOfBirth'] == null
+      json['date_of_birth'] == null
           ? null
-          : DateTime.parse(json['dateOfBirth'] as String),
+          : DateTime.parse(json['date_of_birth'] as String),
   email: json['email'] as String? ?? '',
   imageUrl: json['imageUrl'] as String? ?? '',
 );
 
 Map<String, dynamic> _$ProfileToJson(_Profile instance) => <String, dynamic>{
   'id': instance.id,
-  'firstName': instance.firstName,
-  'lastName': instance.lastName,
-  'dateOfBirth': instance.dateOfBirth?.toIso8601String(),
+  'first_name': instance.firstName,
+  'last_name': instance.lastName,
+  'date_of_birth': instance.dateOfBirth?.toIso8601String(),
   'email': instance.email,
   'imageUrl': instance.imageUrl,
 };

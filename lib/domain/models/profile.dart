@@ -9,9 +9,9 @@ part 'profile.g.dart';
 abstract class Profile with _$Profile {
   factory Profile({
     @Default('') String id, // ID des Benutzers
-    @Default('') String firstName, // Standardwert: leerer String
-    @Default('') String lastName, // Standardwert: leerer String
-    @Default(null) DateTime? dateOfBirth,
+    @JsonKey(name: 'first_name') @Default('') String firstName, // Standardwert: leerer String
+    @JsonKey(name: 'last_name') @Default('') String lastName, // Standardwert: leerer String
+    @JsonKey(name: 'date_of_birth') @Default(null) DateTime? dateOfBirth,
     @Default('') String email, // Standardwert: leerer String
 
     @Default('') String imageUrl, // Standardwert: leerer String
