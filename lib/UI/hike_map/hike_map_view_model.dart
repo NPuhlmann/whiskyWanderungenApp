@@ -53,6 +53,7 @@ class HikeMapViewModel extends ChangeNotifier {
       description: waypoint.description,
       latitude: waypoint.latitude,
       longitude: waypoint.longitude,
+      orderIndex: waypoint.orderIndex,
       images: waypoint.images,
       isVisited: !waypoint.isVisited,
     );
@@ -151,6 +152,7 @@ class HikeMapViewModel extends ChangeNotifier {
           description: originalWaypoints[i].description,
           latitude: baseLat + latOffset,
           longitude: baseLng + lngOffset,
+          orderIndex: originalWaypoints[i].orderIndex,
           images: originalWaypoints[i].images,
           isVisited: originalWaypoints[i].isVisited,
         );
@@ -163,6 +165,7 @@ class HikeMapViewModel extends ChangeNotifier {
           description: 'Beschreibung für Wegpunkt ${i + 1}',
           latitude: baseLat + latOffset,
           longitude: baseLng + lngOffset,
+          orderIndex: i + 1,
           images: [],
           isVisited: i % 2 == 0, // Abwechselnd besucht/nicht besucht
         );

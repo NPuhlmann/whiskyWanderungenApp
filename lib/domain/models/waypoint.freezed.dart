@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Waypoint {
 
- int get id; int get hikeId; String get name; String get description; double get latitude; double get longitude; List<String> get images; bool get isVisited;
+ int get id; int get hikeId; String get name; String get description; double get latitude; double get longitude; int get orderIndex; List<String> get images; bool get isVisited;
 /// Create a copy of Waypoint
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WaypointCopyWith<Waypoint> get copyWith => _$WaypointCopyWithImpl<Waypoint>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Waypoint&&(identical(other.id, id) || other.id == id)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.isVisited, isVisited) || other.isVisited == isVisited));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Waypoint&&(identical(other.id, id) || other.id == id)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.orderIndex, orderIndex) || other.orderIndex == orderIndex)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.isVisited, isVisited) || other.isVisited == isVisited));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,hikeId,name,description,latitude,longitude,const DeepCollectionEquality().hash(images),isVisited);
+int get hashCode => Object.hash(runtimeType,id,hikeId,name,description,latitude,longitude,orderIndex,const DeepCollectionEquality().hash(images),isVisited);
 
 @override
 String toString() {
-  return 'Waypoint(id: $id, hikeId: $hikeId, name: $name, description: $description, latitude: $latitude, longitude: $longitude, images: $images, isVisited: $isVisited)';
+  return 'Waypoint(id: $id, hikeId: $hikeId, name: $name, description: $description, latitude: $latitude, longitude: $longitude, orderIndex: $orderIndex, images: $images, isVisited: $isVisited)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WaypointCopyWith<$Res>  {
   factory $WaypointCopyWith(Waypoint value, $Res Function(Waypoint) _then) = _$WaypointCopyWithImpl;
 @useResult
 $Res call({
- int id, int hikeId, String name, String description, double latitude, double longitude, List<String> images, bool isVisited
+ int id, int hikeId, String name, String description, double latitude, double longitude, int orderIndex, List<String> images, bool isVisited
 });
 
 
@@ -65,7 +65,7 @@ class _$WaypointCopyWithImpl<$Res>
 
 /// Create a copy of Waypoint
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? hikeId = null,Object? name = null,Object? description = null,Object? latitude = null,Object? longitude = null,Object? images = null,Object? isVisited = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? hikeId = null,Object? name = null,Object? description = null,Object? latitude = null,Object? longitude = null,Object? orderIndex = null,Object? images = null,Object? isVisited = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,hikeId: null == hikeId ? _self.hikeId : hikeId // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nu
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
+as double,orderIndex: null == orderIndex ? _self.orderIndex : orderIndex // ignore: cast_nullable_to_non_nullable
+as int,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,isVisited: null == isVisited ? _self.isVisited : isVisited // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  List<String> images,  bool isVisited)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  int orderIndex,  List<String> images,  bool isVisited)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Waypoint() when $default != null:
-return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.images,_that.isVisited);case _:
+return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.orderIndex,_that.images,_that.isVisited);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitud
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  List<String> images,  bool isVisited)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  int orderIndex,  List<String> images,  bool isVisited)  $default,) {final _that = this;
 switch (_that) {
 case _Waypoint():
-return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.images,_that.isVisited);}
+return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.orderIndex,_that.images,_that.isVisited);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -195,10 +196,10 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitud
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  List<String> images,  bool isVisited)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  int orderIndex,  List<String> images,  bool isVisited)?  $default,) {final _that = this;
 switch (_that) {
 case _Waypoint() when $default != null:
-return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.images,_that.isVisited);case _:
+return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.orderIndex,_that.images,_that.isVisited);case _:
   return null;
 
 }
@@ -210,7 +211,7 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitud
 @JsonSerializable()
 
 class _Waypoint implements Waypoint {
-  const _Waypoint({required this.id, required this.hikeId, required this.name, required this.description, required this.latitude, required this.longitude, final  List<String> images = const [], this.isVisited = false}): _images = images;
+  const _Waypoint({required this.id, required this.hikeId, required this.name, required this.description, required this.latitude, required this.longitude, this.orderIndex = 0, final  List<String> images = const [], this.isVisited = false}): _images = images;
   factory _Waypoint.fromJson(Map<String, dynamic> json) => _$WaypointFromJson(json);
 
 @override final  int id;
@@ -219,6 +220,7 @@ class _Waypoint implements Waypoint {
 @override final  String description;
 @override final  double latitude;
 @override final  double longitude;
+@override@JsonKey() final  int orderIndex;
  final  List<String> _images;
 @override@JsonKey() List<String> get images {
   if (_images is EqualUnmodifiableListView) return _images;
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Waypoint&&(identical(other.id, id) || other.id == id)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.isVisited, isVisited) || other.isVisited == isVisited));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Waypoint&&(identical(other.id, id) || other.id == id)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.orderIndex, orderIndex) || other.orderIndex == orderIndex)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.isVisited, isVisited) || other.isVisited == isVisited));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,hikeId,name,description,latitude,longitude,const DeepCollectionEquality().hash(_images),isVisited);
+int get hashCode => Object.hash(runtimeType,id,hikeId,name,description,latitude,longitude,orderIndex,const DeepCollectionEquality().hash(_images),isVisited);
 
 @override
 String toString() {
-  return 'Waypoint(id: $id, hikeId: $hikeId, name: $name, description: $description, latitude: $latitude, longitude: $longitude, images: $images, isVisited: $isVisited)';
+  return 'Waypoint(id: $id, hikeId: $hikeId, name: $name, description: $description, latitude: $latitude, longitude: $longitude, orderIndex: $orderIndex, images: $images, isVisited: $isVisited)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$WaypointCopyWith<$Res> implements $WaypointCopyWith<$Res>
   factory _$WaypointCopyWith(_Waypoint value, $Res Function(_Waypoint) _then) = __$WaypointCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int hikeId, String name, String description, double latitude, double longitude, List<String> images, bool isVisited
+ int id, int hikeId, String name, String description, double latitude, double longitude, int orderIndex, List<String> images, bool isVisited
 });
 
 
@@ -278,7 +280,7 @@ class __$WaypointCopyWithImpl<$Res>
 
 /// Create a copy of Waypoint
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? hikeId = null,Object? name = null,Object? description = null,Object? latitude = null,Object? longitude = null,Object? images = null,Object? isVisited = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? hikeId = null,Object? name = null,Object? description = null,Object? latitude = null,Object? longitude = null,Object? orderIndex = null,Object? images = null,Object? isVisited = null,}) {
   return _then(_Waypoint(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,hikeId: null == hikeId ? _self.hikeId : hikeId // ignore: cast_nullable_to_non_nullable
@@ -286,7 +288,8 @@ as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nu
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
+as double,orderIndex: null == orderIndex ? _self.orderIndex : orderIndex // ignore: cast_nullable_to_non_nullable
+as int,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,isVisited: null == isVisited ? _self.isVisited : isVisited // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

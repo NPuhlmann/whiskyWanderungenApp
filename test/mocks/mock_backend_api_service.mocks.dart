@@ -162,9 +162,17 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
           as _i6.Future<List<_i10.Waypoint>>);
 
   @override
-  _i6.Future<void> addWaypoint(_i10.Waypoint? waypoint, int? hikeId) =>
+  _i6.Future<void> addWaypoint(
+    _i10.Waypoint? waypoint,
+    int? hikeId, {
+    int? orderIndex,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#addWaypoint, [waypoint, hikeId]),
+            Invocation.method(
+              #addWaypoint,
+              [waypoint, hikeId],
+              {#orderIndex: orderIndex},
+            ),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )
@@ -183,6 +191,23 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
   _i6.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateWaypointOrder(
+    int? hikeId,
+    int? waypointId,
+    int? newOrderIndex,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWaypointOrder, [
+              hikeId,
+              waypointId,
+              newOrderIndex,
+            ]),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )

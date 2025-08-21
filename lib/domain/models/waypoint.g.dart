@@ -13,6 +13,7 @@ _Waypoint _$WaypointFromJson(Map<String, dynamic> json) => _Waypoint(
   description: json['description'] as String,
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
+  orderIndex: (json['orderIndex'] as num?)?.toInt() ?? 0,
   images:
       (json['images'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -26,6 +27,7 @@ Map<String, dynamic> _$WaypointToJson(_Waypoint instance) => <String, dynamic>{
   'description': instance.description,
   'latitude': instance.latitude,
   'longitude': instance.longitude,
+  'orderIndex': instance.orderIndex,
   'images': instance.images,
   'isVisited': instance.isVisited,
 };

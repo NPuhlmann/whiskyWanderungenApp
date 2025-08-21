@@ -20,6 +20,7 @@ void main() {
         expect(waypoint.description, 'A test waypoint');
         expect(waypoint.latitude, 47.3769);
         expect(waypoint.longitude, 8.5417);
+        expect(waypoint.orderIndex, 0);
         expect(waypoint.images, isEmpty);
         expect(waypoint.isVisited, false);
       });
@@ -32,6 +33,7 @@ void main() {
           description: 'Complete waypoint with all data',
           latitude: 46.9481,
           longitude: 7.4474,
+          orderIndex: 3,
           images: ['image1.jpg', 'image2.jpg'],
           isVisited: true,
         );
@@ -42,6 +44,7 @@ void main() {
         expect(waypoint.description, 'Complete waypoint with all data');
         expect(waypoint.latitude, 46.9481);
         expect(waypoint.longitude, 7.4474);
+        expect(waypoint.orderIndex, 3);
         expect(waypoint.images, ['image1.jpg', 'image2.jpg']);
         expect(waypoint.isVisited, true);
       });
@@ -87,6 +90,15 @@ void main() {
         expect(relocated.name, baseWaypoint.name);
       });
 
+      test('should copy with new order index', () {
+        final reordered = baseWaypoint.copyWith(orderIndex: 5);
+
+        expect(reordered.orderIndex, 5);
+        expect(reordered.id, baseWaypoint.id);
+        expect(reordered.name, baseWaypoint.name);
+        expect(reordered.latitude, baseWaypoint.latitude);
+      });
+
       test('should copy with new images', () {
         final withImages = baseWaypoint.copyWith(
           images: ['new1.jpg', 'new2.jpg', 'new3.jpg'],
@@ -124,6 +136,7 @@ void main() {
           description: 'Test JSON serialization',
           latitude: 47.3769,
           longitude: 8.5417,
+          orderIndex: 2,
           images: ['test1.jpg', 'test2.jpg'],
           isVisited: true,
         );
@@ -136,6 +149,7 @@ void main() {
         expect(json['description'], 'Test JSON serialization');
         expect(json['latitude'], 47.3769);
         expect(json['longitude'], 8.5417);
+        expect(json['orderIndex'], 2);
         expect(json['images'], ['test1.jpg', 'test2.jpg']);
         expect(json['isVisited'], true);
       });
@@ -148,6 +162,7 @@ void main() {
           'description': 'Deserialized waypoint',
           'latitude': 46.9481,
           'longitude': 7.4474,
+          'orderIndex': 4,
           'images': ['json1.jpg', 'json2.jpg'],
           'isVisited': false,
         };
@@ -160,6 +175,7 @@ void main() {
         expect(waypoint.description, 'Deserialized waypoint');
         expect(waypoint.latitude, 46.9481);
         expect(waypoint.longitude, 7.4474);
+        expect(waypoint.orderIndex, 4);
         expect(waypoint.images, ['json1.jpg', 'json2.jpg']);
         expect(waypoint.isVisited, false);
       });
@@ -172,6 +188,7 @@ void main() {
           'description': 'No images waypoint',
           'latitude': 45.0,
           'longitude': 6.0,
+          'orderIndex': 1,
           'images': <String>[],
           'isVisited': false,
         };
@@ -181,6 +198,7 @@ void main() {
         expect(waypoint.images, isEmpty);
         expect(waypoint.id, 3);
         expect(waypoint.name, 'No Images');
+        expect(waypoint.orderIndex, 1);
       });
 
       test('should use defaults for optional fields in JSON', () {
@@ -201,6 +219,7 @@ void main() {
         expect(waypoint.description, 'Minimal waypoint');
         expect(waypoint.latitude, 44.0);
         expect(waypoint.longitude, 5.0);
+        expect(waypoint.orderIndex, 0);
         expect(waypoint.images, isEmpty);
         expect(waypoint.isVisited, false);
       });

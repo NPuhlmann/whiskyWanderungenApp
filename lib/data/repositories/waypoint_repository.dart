@@ -19,10 +19,10 @@ class WaypointRepository {
   }
   
   // Methode zum Hinzufügen eines neuen Wegpunkts
-  Future<void> addWaypoint(Waypoint waypoint, int hikeId) async {
+  Future<void> addWaypoint(Waypoint waypoint, int hikeId, {int? orderIndex}) async {
     try {
-      await _backendApiService.addWaypoint(waypoint, hikeId);
-      developer.log('Wegpunkt hinzugefügt: ${waypoint.id}');
+      await _backendApiService.addWaypoint(waypoint, hikeId, orderIndex: orderIndex);
+      developer.log('Wegpunkt hinzugefügt: ${waypoint.id} mit order_index: ${orderIndex ?? waypoint.orderIndex}');
     } catch (e) {
       developer.log('Fehler beim Hinzufügen des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Hinzufügen des Wegpunkts: $e');
@@ -48,6 +48,17 @@ class WaypointRepository {
     } catch (e) {
       developer.log('Fehler beim Löschen des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Löschen des Wegpunkts: $e');
+    }
+  }
+  
+  // Methode zum Aktualisieren der Wegpunkt-Reihenfolge
+  Future<void> updateWaypointOrder(int hikeId, int waypointId, int newOrderIndex) async {
+    try {
+      await _backendApiService.updateWaypointOrder(hikeId, waypointId, newOrderIndex);
+      developer.log('Wegpunkt-Reihenfolge aktualisiert: waypoint $waypointId, neue Position: $newOrderIndex');
+    } catch (e) {
+      developer.log('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e', error: e);
+      throw Exception('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e');
     }
   }
 

@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS public.hikes_waypoints (
     id SERIAL PRIMARY KEY,
     hike_id INTEGER REFERENCES public.hikes(id) ON DELETE CASCADE,
     waypoint_id INTEGER REFERENCES public.waypoints(id) ON DELETE CASCADE,
+    order_index INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(hike_id, waypoint_id)
 );
@@ -84,6 +85,7 @@ CREATE INDEX IF NOT EXISTS idx_hikes_id ON public.hikes(id);
 CREATE INDEX IF NOT EXISTS idx_waypoints_id ON public.waypoints(id);
 CREATE INDEX IF NOT EXISTS idx_hikes_waypoints_hike_id ON public.hikes_waypoints(hike_id);
 CREATE INDEX IF NOT EXISTS idx_hikes_waypoints_waypoint_id ON public.hikes_waypoints(waypoint_id);
+CREATE INDEX IF NOT EXISTS idx_hikes_waypoints_hike_id_order ON public.hikes_waypoints(hike_id, order_index);
 CREATE INDEX IF NOT EXISTS idx_purchased_hikes_user_id ON public.purchased_hikes(user_id);
 CREATE INDEX IF NOT EXISTS idx_purchased_hikes_hike_id ON public.purchased_hikes(hike_id);
 CREATE INDEX IF NOT EXISTS idx_hike_images_hike_id ON public.hike_images(hike_id);

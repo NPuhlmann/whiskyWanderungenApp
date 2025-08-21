@@ -12,6 +12,7 @@ sealed class Waypoint with _$Waypoint {
     required String description,
     required double latitude,
     required double longitude,
+    @Default(0) int orderIndex,
     @Default([]) List<String> images,
     @Default(false) bool isVisited,
   }) = _Waypoint;

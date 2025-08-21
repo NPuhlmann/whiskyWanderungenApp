@@ -215,26 +215,40 @@ class BackendApiService {
   }
 
   // get waypoints for a hike by hike.id from the 'hikes_waypoints' table
-  Future<List<int>> _getWaypointIdsForHike(int hikeId) async {
+  Future<List<Map<String, dynamic>>> _getWaypointDataForHike(int hikeId) async {
     try {
-      final response = await client.from('hikes_waypoints').select('waypoint_id').eq('hike_id', hikeId);
-      final List<dynamic> waypointData = response as List<dynamic>;
+      final response = await client
+          .from('hikes_waypoints')
+          .select('waypoint_id, order_index')
+          .eq('hike_id', hikeId)
+          .order('order_index', ascending: true);
       
-      return waypointData.map((element) => int.parse(element['waypoint_id'].toString())).toList();
+      return List<Map<String, dynamic>>.from(response as List<dynamic>);
     } catch (e) {
-      dev.log('Fehler beim Abrufen der Wegpunkt-IDs: $e', error: e);
-      throw Exception('Fehler beim Abrufen der Wegpunkt-IDs für Wanderung $hikeId: $e');
+      dev.log('Fehler beim Abrufen der Wegpunkt-Daten: $e', error: e);
+      throw Exception('Fehler beim Abrufen der Wegpunkt-Daten für Wanderung $hikeId: $e');
     }
   }
 
   // get waypoints for for a hike by hike.id from the waypoints table
   Future<List<Waypoint>> getWaypointsForHike(int hikeId) async {
     try {
-      // Zuerst die Wegpunkt-IDs für die Wanderung abrufen
-      final List<int> waypointIds = await _getWaypointIdsForHike(hikeId);
+      // Zuerst die Wegpunkt-Daten mit order_index für die Wanderung abrufen
+      final List<Map<String, dynamic>> waypointDataList = await _getWaypointDataForHike(hikeId);
       
-      if (waypointIds.isEmpty) {
+      if (waypointDataList.isEmpty) {
         return [];
+      }
+      
+      // Map für orderIndex pro waypoint_id erstellen
+      final Map<int, int> waypointOrderMap = {};
+      final List<int> waypointIds = [];
+      
+      for (var data in waypointDataList) {
+        final waypointId = int.parse(data['waypoint_id'].toString());
+        final orderIndex = int.parse(data['order_index'].toString());
+        waypointIds.add(waypointId);
+        waypointOrderMap[waypointId] = orderIndex;
       }
       
       // Dann die Wegpunkte für diese IDs abrufen
@@ -245,7 +259,7 @@ class BackendApiService {
       
       final List<dynamic> waypointData = response as List<dynamic>;
       
-      return waypointData.map((element) {
+      List<Waypoint> waypoints = waypointData.map((element) {
         // Sicherstellen, dass alle erforderlichen Felder vorhanden und vom richtigen Typ sind
         Map<String, dynamic> safeElement = Map<String, dynamic>.from(element);
         
@@ -257,11 +271,18 @@ class BackendApiService {
         safeElement['latitude'] = double.parse(safeElement['latitude'].toString());
         safeElement['longitude'] = double.parse(safeElement['longitude'].toString());
         
-        // Füge hikeId hinzu, da diese in der waypoints Tabelle nicht enthalten ist
+        // Füge hikeId und orderIndex hinzu
         safeElement['hikeId'] = hikeId;
+        final waypointId = int.parse(safeElement['id'].toString());
+        safeElement['orderIndex'] = waypointOrderMap[waypointId] ?? 0;
         
         return Waypoint.fromJson(safeElement);
       }).toList();
+      
+      // Sortierung nach orderIndex (zusätzliche Sicherheit)
+      waypoints.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+      
+      return waypoints;
     } catch (e) {
       dev.log('Fehler beim Abrufen der Wegpunkte: $e', error: e);
       throw Exception('Fehler beim Abrufen der Wegpunkte für Wanderung $hikeId: $e');
@@ -269,7 +290,7 @@ class BackendApiService {
   }
 
   // Methode zum Hinzufügen eines neuen Wegpunkts
-  Future<void> addWaypoint(Waypoint waypoint, int hikeId) async {
+  Future<void> addWaypoint(Waypoint waypoint, int hikeId, {int? orderIndex}) async {
     try {
       // Zuerst den Wegpunkt in die 'waypoints' Tabelle einfügen
       final waypointResponse = await client.from('waypoints').insert({
@@ -282,10 +303,30 @@ class BackendApiService {
       // Die ID des neu erstellten Wegpunkts abrufen
       final int newWaypointId = waypointResponse['id'];
       
+      // Wenn kein orderIndex angegeben, den nächsten verfügbaren verwenden
+      int finalOrderIndex = orderIndex ?? waypoint.orderIndex;
+      if (finalOrderIndex == 0) {
+        // Bestimme den höchsten order_index für diese Wanderung + 1
+        final maxOrderResponse = await client
+            .from('hikes_waypoints')
+            .select('order_index')
+            .eq('hike_id', hikeId)
+            .order('order_index', ascending: false)
+            .limit(1);
+        
+        if (maxOrderResponse.isNotEmpty) {
+          final maxOrder = int.parse(maxOrderResponse.first['order_index'].toString());
+          finalOrderIndex = maxOrder + 1;
+        } else {
+          finalOrderIndex = 1;
+        }
+      }
+      
       // Verknüpfung zwischen Wanderung und Wegpunkt in der 'hikes_waypoints' Tabelle erstellen
       await client.from('hikes_waypoints').insert({
         'hike_id': hikeId,
         'waypoint_id': newWaypointId,
+        'order_index': finalOrderIndex,
       });
       
     } catch (e) {
@@ -327,6 +368,20 @@ class BackendApiService {
     } catch (e) {
       dev.log('Fehler beim Löschen des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Löschen des Wegpunkts: $e');
+    }
+  }
+  
+  // Methode zum Aktualisieren der Wegpunkt-Reihenfolge
+  Future<void> updateWaypointOrder(int hikeId, int waypointId, int newOrderIndex) async {
+    try {
+      await client
+          .from('hikes_waypoints')
+          .update({'order_index': newOrderIndex})
+          .eq('hike_id', hikeId)
+          .eq('waypoint_id', waypointId);
+    } catch (e) {
+      dev.log('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e', error: e);
+      throw Exception('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e');
     }
   }
 }
