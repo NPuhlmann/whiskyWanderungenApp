@@ -54,16 +54,10 @@ List<SingleChildWidget> get providers {
       ),
     ),
     ChangeNotifierProvider<HikeDetailsPageViewModel>(
-      create: (context) {
-        final waypointRepo = context.read<WaypointRepository>();
-        if (waypointRepo == null) {
-          dev.log("FEHLER: WaypointRepository ist null in dependencies.dart");
-        }
-        return HikeDetailsPageViewModel(
-          hikeImagesRepository: context.read<HikeImagesRepository>(),
-          waypointRepository: waypointRepo,
-        );
-      }
+      create: (context) => HikeDetailsPageViewModel(
+        hikeImagesRepository: context.read<HikeImagesRepository>(),
+        waypointRepository: context.read<WaypointRepository>(),
+      ),
     ),
     ChangeNotifierProvider<MyHikesViewModel>(
       create: (context) => MyHikesViewModel(

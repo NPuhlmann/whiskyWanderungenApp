@@ -4,7 +4,7 @@ part 'hike.g.dart';
 
 enum Difficulty { easy, mid, hard, very_hard }
 
-@unfreezed
+@freezed
 class Hike with _$Hike {
   factory Hike({
     // die id des hikes
