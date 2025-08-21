@@ -119,7 +119,6 @@ class _HikeMapViewState extends State<HikeMapView> {
                   maxZoom: 18.0,
                   interactionOptions: const InteractionOptions(
                     enableMultiFingerGestureRace: true,
-                    enableScrollWheel: true,
                     flags: InteractiveFlag.all,
                   ),
                   onMapEvent: (event) {

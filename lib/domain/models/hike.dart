@@ -6,7 +6,7 @@ enum Difficulty { easy, mid, hard, very_hard }
 
 @freezed
 class Hike with _$Hike {
-  factory Hike({
+  const factory Hike({
     // die id des hikes
     required int id,
     @Default('') String name,

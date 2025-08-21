@@ -145,9 +145,9 @@ WaypointRepository implements caching for offline access to previously loaded wa
 - **flutter_lints**: 5.0.0 → 6.0.0 (New lint rules active)
 
 #### Known Issues After Updates:
-⚠️ **Localization Issue**: `flutter_gen` package not generating correctly after Flutter 3.35.1 update  
-⚠️ **flutter_map Breaking Changes**: `enableScrollWheel` parameter renamed in 8.x  
-✅ **Freezed Models**: Fixed for version 3.x compatibility
+✅ **Localization Issue**: Fixed - imports updated to use local l10n files  
+✅ **flutter_map Breaking Changes**: Fixed - removed deprecated `enableScrollWheel` parameter  
+⚠️ **Freezed Models**: Code generation issues with Freezed 3.x - models need regeneration after clean build
 
 #### Migration Notes:
 - Profile model uses `@unfreezed` for mutability
@@ -157,5 +157,13 @@ WaypointRepository implements caching for offline access to previously loaded wa
 ### Testing
 Widget tests are located in the `test/` directory. 
 
-**Current Status**: Tests failing due to localization generation issues.  
-**Resolution**: Run `flutter clean && flutter pub get && flutter gen-l10n` after Flutter updates.
+**Current Status**: Tests failing due to Freezed 3.x code generation issues.  
+**Resolution**: Run `flutter clean && flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs` 
+
+#### Freezed 3.x Troubleshooting:
+If you encounter "Missing concrete implementations" errors:
+1. Delete all `.freezed.dart` and `.g.dart` files  
+2. Run `flutter clean`
+3. Run `flutter pub get`
+4. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+5. If issues persist, downgrade freezed to 2.5.x temporarily

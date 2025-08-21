@@ -3,7 +3,7 @@ import 'dart:developer' as dev;
 import '../../domain/models/hike.dart';
 import '../hike_map/hike_map_page.dart';
 import 'hike_details_view_model.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class HikeDetailsPage extends StatefulWidget {

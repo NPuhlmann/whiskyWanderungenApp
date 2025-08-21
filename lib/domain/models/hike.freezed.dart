@@ -219,7 +219,7 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 @JsonSerializable()
 
 class _Hike implements Hike {
-   _Hike({required this.id, this.name = '', this.length = 1.0, this.steep = 0.2, this.elevation = 100, this.description = '', this.price = 1.0, this.difficulty = Difficulty.mid, this.thumbnail_image_url, this.isFavorite = false});
+  const _Hike({required this.id, this.name = '', this.length = 1.0, this.steep = 0.2, this.elevation = 100, this.description = '', this.price = 1.0, this.difficulty = Difficulty.mid, this.thumbnail_image_url, this.isFavorite = false});
   factory _Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
 
 // die id des hikes
