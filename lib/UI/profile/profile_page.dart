@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
   
   // Funktion zum Anzeigen des plattformspezifischen Date Pickers
   Future<void> _showDatePicker(BuildContext context) async {
-    final DateTime initialDate = widget.viewModel.profile.date_of_birth ?? 
+    final DateTime initialDate = widget.viewModel.profile.dateOfBirth ?? 
         DateTime.now().subtract(const Duration(days: 365 * 18));
     
     DateTime? pickedDate;
@@ -95,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
     
     if (pickedDate != null) {
       setState(() {
-        widget.viewModel.profile.date_of_birth = pickedDate;
+        widget.viewModel.profile.dateOfBirth = pickedDate;
       });
     }
   }
@@ -181,7 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
         } catch (e) {
           // Wenn ein Fehler auftritt, sind wahrscheinlich im Simulator
           isSimulator = true;
-          print('Simulator erkannt: $e');
+          // Debug info: Simulator erkannt
         }
       }
       
@@ -226,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     } catch (e) {
       // Detaillierte Fehlerbehandlung
-      print('Fehler beim Hochladen des Bildes: $e');
+      // Error handling: Image upload failed
       if (mounted) {
         String errorMessage = AppLocalizations.of(context)!.errorUploadingImage;
         
@@ -289,7 +289,7 @@ class _ProfilePageState extends State<ProfilePage> {
             return const Center(child: CircularProgressIndicator());
           }
           
-          if (widget.viewModel.profile.first_name == "" && !widget.viewModel.isLoading) {
+          if (widget.viewModel.profile.firstName == "" && !widget.viewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
           } else {
             // Textfelder um Namen und Adresse des Users zu ändern
@@ -332,9 +332,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 24),
                     TextField(
-                      controller: TextEditingController(text: widget.viewModel.profile.first_name),
+                      controller: TextEditingController(text: widget.viewModel.profile.firstName),
                       onChanged: (value) {
-                        widget.viewModel.profile.first_name = value;
+                        widget.viewModel.profile.firstName = value;
                       },
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.firstName,
@@ -347,9 +347,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: TextEditingController(text: widget.viewModel.profile.last_name),
+                      controller: TextEditingController(text: widget.viewModel.profile.lastName),
                       onChanged: (value) {
-                        widget.viewModel.profile.last_name = value;
+                        widget.viewModel.profile.lastName = value;
                       },
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.lastName,
@@ -392,8 +392,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           suffixIcon: const Icon(Icons.calendar_today),
                         ),
                         child: Text(
-                          widget.viewModel.profile.date_of_birth != null
-                              ? _dateFormat.format(widget.viewModel.profile.date_of_birth!)
+                          widget.viewModel.profile.dateOfBirth != null
+                              ? _dateFormat.format(widget.viewModel.profile.dateOfBirth!)
                               : AppLocalizations.of(context)!.selectDate,
                         ),
                       ),
@@ -402,8 +402,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ElevatedButton(
                       onPressed: () {
                         // Überprüfen, ob der Benutzer mindestens 18 Jahre alt ist
-                        if (widget.viewModel.profile.date_of_birth != null &&
-                            !_isAtLeast18YearsOld(widget.viewModel.profile.date_of_birth!)) {
+                        if (widget.viewModel.profile.dateOfBirth != null &&
+                            !_isAtLeast18YearsOld(widget.viewModel.profile.dateOfBirth!)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(AppLocalizations.of(context)!.mustBeAtLeast18),

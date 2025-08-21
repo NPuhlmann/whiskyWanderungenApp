@@ -127,7 +127,7 @@ class _HikeMapViewState extends State<HikeMapView> {
                       _updateMapView();
                     }
                   },
-                  onTap: (_, __) {
+                  onTap: (_, point) {
                     // Schließe offene Popups, wenn auf die Karte getippt wird
                   },
                 ),
@@ -163,7 +163,7 @@ class _HikeMapViewState extends State<HikeMapView> {
                   children: [
                     FloatingActionButton.small(
                       heroTag: 'zoomIn',
-                      backgroundColor: Colors.white.withOpacity(0.8),
+                      backgroundColor: Colors.white.withValues(alpha: 0.8),
                       foregroundColor: Colors.black,
                       onPressed: () {
                         final currentZoom = _mapController.camera.zoom;
@@ -179,7 +179,7 @@ class _HikeMapViewState extends State<HikeMapView> {
                     const SizedBox(height: 8),
                     FloatingActionButton.small(
                       heroTag: 'zoomOut',
-                      backgroundColor: Colors.white.withOpacity(0.8),
+                      backgroundColor: Colors.white.withValues(alpha: 0.8),
                       foregroundColor: Colors.black,
                       onPressed: () {
                         final currentZoom = _mapController.camera.zoom;
@@ -200,7 +200,7 @@ class _HikeMapViewState extends State<HikeMapView> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white.withOpacity(0.8),
+        backgroundColor: Colors.white.withValues(alpha: 0.8),
         foregroundColor: Colors.black,
         onPressed: () {
           // Hier könnte man einen neuen Wegpunkt hinzufügen

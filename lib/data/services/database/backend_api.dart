@@ -75,7 +75,7 @@ class BackendApiService {
             userHikes.add(Hike.fromJson(hikeData));
           }
         } catch (e) {
-          print('Fehler beim Laden der Hike mit ID $hikeId: $e');
+          // logging: 'Fehler beim Laden der Hike mit ID $hikeId: $e');
           // Fahre mit der nächsten Hike fort
           continue;
         }
@@ -83,7 +83,7 @@ class BackendApiService {
       
       return userHikes;
     } catch (e) {
-      print('Fehler beim Laden der Benutzer-Hikes: $e');
+      // logging: 'Fehler beim Laden der Benutzer-Hikes: $e');
       return [];
     }
   }
@@ -209,7 +209,7 @@ class BackendApiService {
       }
       return null;
     } catch (e) {
-      print('Fehler beim Abrufen des Profilbilds: $e');
+      // logging: 'Fehler beim Abrufen des Profilbilds: $e');
       return null;
     }
   }

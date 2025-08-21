@@ -4,7 +4,7 @@ part 'waypoint.freezed.dart';
 part 'waypoint.g.dart';
 
 @freezed
-class Waypoint with _$Waypoint {
+sealed class Waypoint with _$Waypoint {
   const factory Waypoint({
     required int id,
     required int hikeId,
@@ -16,5 +16,6 @@ class Waypoint with _$Waypoint {
     @Default(false) bool isVisited,
   }) = _Waypoint;
 
-  factory Waypoint.fromJson(Map<String, dynamic> json) => _$WaypointFromJson(json);
-} 
+  factory Waypoint.fromJson(Map<String, dynamic> json) =>
+      _$WaypointFromJson(json);
+}

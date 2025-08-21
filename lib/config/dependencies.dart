@@ -1,6 +1,5 @@
 // dependencies for repositories and services
 
-import 'dart:developer' as dev;
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:whisky_hikes/UI/hike_details/hike_details_view_model.dart';

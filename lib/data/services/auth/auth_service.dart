@@ -43,7 +43,7 @@ class AuthService{
       await client.auth.updateUser(UserAttributes(email: newEmail));
     } catch (e) {
       // Fehlerbehandlung
-      print('Fehler beim Aktualisieren der E-Mail-Adresse: $e');
+      // Logging der Fehler - in Production sollte ein proper Logger verwendet werden
       throw Exception('Fehler beim Aktualisieren der E-Mail-Adresse: $e');
     }
   }

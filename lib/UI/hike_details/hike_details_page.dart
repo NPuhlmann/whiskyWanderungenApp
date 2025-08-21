@@ -87,7 +87,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
         return AppLocalizations.of(context)!.middle;
       case Difficulty.hard:
         return AppLocalizations.of(context)!.hard;
-      case Difficulty.very_hard:
+      case Difficulty.veryHard:
         return AppLocalizations.of(context)!.very_hard;
     }
   }

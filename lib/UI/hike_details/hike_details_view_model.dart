@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/repositories/hike_images_repository.dart';
 import '../../data/repositories/waypoint_repository.dart';
 import '../../domain/models/hike.dart';
-import '../../domain/models/waypoint.dart';
 
 class HikeDetailsPageViewModel extends ChangeNotifier{
 

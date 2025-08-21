@@ -16,12 +16,12 @@ T _$identity<T>(T value) => value;
 mixin _$Profile implements DiagnosticableTreeMixin {
 
  String get id; set id(String value);// ID des Benutzers
- String get first_name;// ID des Benutzers
- set first_name(String value);// Standardwert: leerer String
- String get last_name;// Standardwert: leerer String
- set last_name(String value);// Standardwert: leerer String
- DateTime? get date_of_birth;// Standardwert: leerer String
- set date_of_birth(DateTime? value); String get email; set email(String value);// Standardwert: leerer String
+ String get firstName;// ID des Benutzers
+ set firstName(String value);// Standardwert: leerer String
+ String get lastName;// Standardwert: leerer String
+ set lastName(String value);// Standardwert: leerer String
+ DateTime? get dateOfBirth;// Standardwert: leerer String
+ set dateOfBirth(DateTime? value); String get email; set email(String value);// Standardwert: leerer String
  String get imageUrl;// Standardwert: leerer String
  set imageUrl(String value);
 /// Create a copy of Profile
@@ -37,14 +37,14 @@ $ProfileCopyWith<Profile> get copyWith => _$ProfileCopyWithImpl<Profile>(this as
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Profile'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('first_name', first_name))..add(DiagnosticsProperty('last_name', last_name))..add(DiagnosticsProperty('date_of_birth', date_of_birth))..add(DiagnosticsProperty('email', email))..add(DiagnosticsProperty('imageUrl', imageUrl));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('firstName', firstName))..add(DiagnosticsProperty('lastName', lastName))..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))..add(DiagnosticsProperty('email', email))..add(DiagnosticsProperty('imageUrl', imageUrl));
 }
 
 
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Profile(id: $id, first_name: $first_name, last_name: $last_name, date_of_birth: $date_of_birth, email: $email, imageUrl: $imageUrl)';
+  return 'Profile(id: $id, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, email: $email, imageUrl: $imageUrl)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $ProfileCopyWith<$Res>  {
   factory $ProfileCopyWith(Profile value, $Res Function(Profile) _then) = _$ProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String first_name, String last_name, DateTime? date_of_birth, String email, String imageUrl
+ String id, String firstName, String lastName, DateTime? dateOfBirth, String email, String imageUrl
 });
 
 
@@ -72,12 +72,12 @@ class _$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? first_name = null,Object? last_name = null,Object? date_of_birth = freezed,Object? email = null,Object? imageUrl = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? email = null,Object? imageUrl = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,first_name: null == first_name ? _self.first_name : first_name // ignore: cast_nullable_to_non_nullable
-as String,last_name: null == last_name ? _self.last_name : last_name // ignore: cast_nullable_to_non_nullable
-as String,date_of_birth: freezed == date_of_birth ? _self.date_of_birth : date_of_birth // ignore: cast_nullable_to_non_nullable
+as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
+as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
+as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as DateTime?,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,
@@ -165,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String first_name,  String last_name,  DateTime? date_of_birth,  String email,  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String firstName,  String lastName,  DateTime? dateOfBirth,  String email,  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.first_name,_that.last_name,_that.date_of_birth,_that.email,_that.imageUrl);case _:
+return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.imageUrl);case _:
   return orElse();
 
 }
@@ -186,10 +186,10 @@ return $default(_that.id,_that.first_name,_that.last_name,_that.date_of_birth,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String first_name,  String last_name,  DateTime? date_of_birth,  String email,  String imageUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String firstName,  String lastName,  DateTime? dateOfBirth,  String email,  String imageUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Profile():
-return $default(_that.id,_that.first_name,_that.last_name,_that.date_of_birth,_that.email,_that.imageUrl);case _:
+return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.imageUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +206,10 @@ return $default(_that.id,_that.first_name,_that.last_name,_that.date_of_birth,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String first_name,  String last_name,  DateTime? date_of_birth,  String email,  String imageUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String firstName,  String lastName,  DateTime? dateOfBirth,  String email,  String imageUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.first_name,_that.last_name,_that.date_of_birth,_that.email,_that.imageUrl);case _:
+return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.imageUrl);case _:
   return null;
 
 }
@@ -221,16 +221,16 @@ return $default(_that.id,_that.first_name,_that.last_name,_that.date_of_birth,_t
 @JsonSerializable()
 
 class _Profile with DiagnosticableTreeMixin implements Profile {
-   _Profile({this.id = '', this.first_name = '', this.last_name = '', this.date_of_birth = null, this.email = '', this.imageUrl = ''});
+   _Profile({this.id = '', this.firstName = '', this.lastName = '', this.dateOfBirth = null, this.email = '', this.imageUrl = ''});
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
 @override@JsonKey()  String id;
 // ID des Benutzers
-@override@JsonKey()  String first_name;
+@override@JsonKey()  String firstName;
 // Standardwert: leerer String
-@override@JsonKey()  String last_name;
+@override@JsonKey()  String lastName;
 // Standardwert: leerer String
-@override@JsonKey()  DateTime? date_of_birth;
+@override@JsonKey()  DateTime? dateOfBirth;
 @override@JsonKey()  String email;
 // Standardwert: leerer String
 @override@JsonKey()  String imageUrl;
@@ -249,14 +249,14 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Profile'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('first_name', first_name))..add(DiagnosticsProperty('last_name', last_name))..add(DiagnosticsProperty('date_of_birth', date_of_birth))..add(DiagnosticsProperty('email', email))..add(DiagnosticsProperty('imageUrl', imageUrl));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('firstName', firstName))..add(DiagnosticsProperty('lastName', lastName))..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))..add(DiagnosticsProperty('email', email))..add(DiagnosticsProperty('imageUrl', imageUrl));
 }
 
 
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Profile(id: $id, first_name: $first_name, last_name: $last_name, date_of_birth: $date_of_birth, email: $email, imageUrl: $imageUrl)';
+  return 'Profile(id: $id, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, email: $email, imageUrl: $imageUrl)';
 }
 
 
@@ -267,7 +267,7 @@ abstract mixin class _$ProfileCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   factory _$ProfileCopyWith(_Profile value, $Res Function(_Profile) _then) = __$ProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String first_name, String last_name, DateTime? date_of_birth, String email, String imageUrl
+ String id, String firstName, String lastName, DateTime? dateOfBirth, String email, String imageUrl
 });
 
 
@@ -284,12 +284,12 @@ class __$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? first_name = null,Object? last_name = null,Object? date_of_birth = freezed,Object? email = null,Object? imageUrl = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? email = null,Object? imageUrl = null,}) {
   return _then(_Profile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,first_name: null == first_name ? _self.first_name : first_name // ignore: cast_nullable_to_non_nullable
-as String,last_name: null == last_name ? _self.last_name : last_name // ignore: cast_nullable_to_non_nullable
-as String,date_of_birth: freezed == date_of_birth ? _self.date_of_birth : date_of_birth // ignore: cast_nullable_to_non_nullable
+as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
+as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
+as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as DateTime?,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,

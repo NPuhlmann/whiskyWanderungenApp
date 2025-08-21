@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$Hike {
 
 // die id des hikes
- int get id; String get name; double get length; double get steep; int get elevation; String get description; double get price; Difficulty get difficulty; String? get thumbnail_image_url; bool get isFavorite;
+ int get id; String get name; double get length; double get steep; int get elevation; String get description; double get price; Difficulty get difficulty; String? get thumbnailImageUrl; bool get isFavorite;
 /// Create a copy of Hike
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $HikeCopyWith<Hike> get copyWith => _$HikeCopyWithImpl<Hike>(this as Hike, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Hike&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.length, length) || other.length == length)&&(identical(other.steep, steep) || other.steep == steep)&&(identical(other.elevation, elevation) || other.elevation == elevation)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.difficulty, difficulty) || other.difficulty == difficulty)&&(identical(other.thumbnail_image_url, thumbnail_image_url) || other.thumbnail_image_url == thumbnail_image_url)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Hike&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.length, length) || other.length == length)&&(identical(other.steep, steep) || other.steep == steep)&&(identical(other.elevation, elevation) || other.elevation == elevation)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.difficulty, difficulty) || other.difficulty == difficulty)&&(identical(other.thumbnailImageUrl, thumbnailImageUrl) || other.thumbnailImageUrl == thumbnailImageUrl)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,length,steep,elevation,description,price,difficulty,thumbnail_image_url,isFavorite);
+int get hashCode => Object.hash(runtimeType,id,name,length,steep,elevation,description,price,difficulty,thumbnailImageUrl,isFavorite);
 
 @override
 String toString() {
-  return 'Hike(id: $id, name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnail_image_url: $thumbnail_image_url, isFavorite: $isFavorite)';
+  return 'Hike(id: $id, name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnailImageUrl: $thumbnailImageUrl, isFavorite: $isFavorite)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $HikeCopyWith<$Res>  {
   factory $HikeCopyWith(Hike value, $Res Function(Hike) _then) = _$HikeCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty, String? thumbnail_image_url, bool isFavorite
+ int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty, String? thumbnailImageUrl, bool isFavorite
 });
 
 
@@ -66,7 +66,7 @@ class _$HikeCopyWithImpl<$Res>
 
 /// Create a copy of Hike
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? length = null,Object? steep = null,Object? elevation = null,Object? description = null,Object? price = null,Object? difficulty = null,Object? thumbnail_image_url = freezed,Object? isFavorite = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? length = null,Object? steep = null,Object? elevation = null,Object? description = null,Object? price = null,Object? difficulty = null,Object? thumbnailImageUrl = freezed,Object? isFavorite = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,7 @@ as double,elevation: null == elevation ? _self.elevation : elevation // ignore: 
 as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double,difficulty: null == difficulty ? _self.difficulty : difficulty // ignore: cast_nullable_to_non_nullable
-as Difficulty,thumbnail_image_url: freezed == thumbnail_image_url ? _self.thumbnail_image_url : thumbnail_image_url // ignore: cast_nullable_to_non_nullable
+as Difficulty,thumbnailImageUrl: freezed == thumbnailImageUrl ? _self.thumbnailImageUrl : thumbnailImageUrl // ignore: cast_nullable_to_non_nullable
 as String?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -125,10 +125,7 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _Hike():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -163,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnail_image_url,  bool isFavorite)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnailImageUrl,  bool isFavorite)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Hike() when $default != null:
-return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnail_image_url,_that.isFavorite);case _:
+return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite);case _:
   return orElse();
 
 }
@@ -184,13 +181,10 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnail_image_url,  bool isFavorite)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnailImageUrl,  bool isFavorite)  $default,) {final _that = this;
 switch (_that) {
 case _Hike():
-return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnail_image_url,_that.isFavorite);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -204,10 +198,10 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnail_image_url,  bool isFavorite)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnailImageUrl,  bool isFavorite)?  $default,) {final _that = this;
 switch (_that) {
 case _Hike() when $default != null:
-return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnail_image_url,_that.isFavorite);case _:
+return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite);case _:
   return null;
 
 }
@@ -219,7 +213,7 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 @JsonSerializable()
 
 class _Hike implements Hike {
-  const _Hike({required this.id, this.name = '', this.length = 1.0, this.steep = 0.2, this.elevation = 100, this.description = '', this.price = 1.0, this.difficulty = Difficulty.mid, this.thumbnail_image_url, this.isFavorite = false});
+  const _Hike({required this.id, this.name = '', this.length = 1.0, this.steep = 0.2, this.elevation = 100, this.description = '', this.price = 1.0, this.difficulty = Difficulty.mid, this.thumbnailImageUrl, this.isFavorite = false});
   factory _Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
 
 // die id des hikes
@@ -231,7 +225,7 @@ class _Hike implements Hike {
 @override@JsonKey() final  String description;
 @override@JsonKey() final  double price;
 @override@JsonKey() final  Difficulty difficulty;
-@override final  String? thumbnail_image_url;
+@override final  String? thumbnailImageUrl;
 @override@JsonKey() final  bool isFavorite;
 
 /// Create a copy of Hike
@@ -247,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Hike&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.length, length) || other.length == length)&&(identical(other.steep, steep) || other.steep == steep)&&(identical(other.elevation, elevation) || other.elevation == elevation)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.difficulty, difficulty) || other.difficulty == difficulty)&&(identical(other.thumbnail_image_url, thumbnail_image_url) || other.thumbnail_image_url == thumbnail_image_url)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Hike&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.length, length) || other.length == length)&&(identical(other.steep, steep) || other.steep == steep)&&(identical(other.elevation, elevation) || other.elevation == elevation)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.difficulty, difficulty) || other.difficulty == difficulty)&&(identical(other.thumbnailImageUrl, thumbnailImageUrl) || other.thumbnailImageUrl == thumbnailImageUrl)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,length,steep,elevation,description,price,difficulty,thumbnail_image_url,isFavorite);
+int get hashCode => Object.hash(runtimeType,id,name,length,steep,elevation,description,price,difficulty,thumbnailImageUrl,isFavorite);
 
 @override
 String toString() {
-  return 'Hike(id: $id, name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnail_image_url: $thumbnail_image_url, isFavorite: $isFavorite)';
+  return 'Hike(id: $id, name: $name, length: $length, steep: $steep, elevation: $elevation, description: $description, price: $price, difficulty: $difficulty, thumbnailImageUrl: $thumbnailImageUrl, isFavorite: $isFavorite)';
 }
 
 
@@ -267,7 +261,7 @@ abstract mixin class _$HikeCopyWith<$Res> implements $HikeCopyWith<$Res> {
   factory _$HikeCopyWith(_Hike value, $Res Function(_Hike) _then) = __$HikeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty, String? thumbnail_image_url, bool isFavorite
+ int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty, String? thumbnailImageUrl, bool isFavorite
 });
 
 
@@ -284,7 +278,7 @@ class __$HikeCopyWithImpl<$Res>
 
 /// Create a copy of Hike
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? length = null,Object? steep = null,Object? elevation = null,Object? description = null,Object? price = null,Object? difficulty = null,Object? thumbnail_image_url = freezed,Object? isFavorite = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? length = null,Object? steep = null,Object? elevation = null,Object? description = null,Object? price = null,Object? difficulty = null,Object? thumbnailImageUrl = freezed,Object? isFavorite = null,}) {
   return _then(_Hike(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -294,7 +288,7 @@ as double,elevation: null == elevation ? _self.elevation : elevation // ignore: 
 as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double,difficulty: null == difficulty ? _self.difficulty : difficulty // ignore: cast_nullable_to_non_nullable
-as Difficulty,thumbnail_image_url: freezed == thumbnail_image_url ? _self.thumbnail_image_url : thumbnail_image_url // ignore: cast_nullable_to_non_nullable
+as Difficulty,thumbnailImageUrl: freezed == thumbnailImageUrl ? _self.thumbnailImageUrl : thumbnailImageUrl // ignore: cast_nullable_to_non_nullable
 as String?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

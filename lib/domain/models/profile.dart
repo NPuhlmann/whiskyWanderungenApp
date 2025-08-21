@@ -6,16 +6,17 @@ part 'profile.freezed.dart';
 part 'profile.g.dart';
 
 @unfreezed
-class Profile with _$Profile {
+abstract class Profile with _$Profile {
   factory Profile({
-    @Default('') String id,         // ID des Benutzers
-    @Default('') String first_name, // Standardwert: leerer String
-    @Default('') String last_name,  // Standardwert: leerer String
-    @Default(null) DateTime? date_of_birth,
-    @Default('') String email,      // Standardwert: leerer String
+    @Default('') String id, // ID des Benutzers
+    @Default('') String firstName, // Standardwert: leerer String
+    @Default('') String lastName, // Standardwert: leerer String
+    @Default(null) DateTime? dateOfBirth,
+    @Default('') String email, // Standardwert: leerer String
 
-    @Default('') String imageUrl,   // Standardwert: leerer String
+    @Default('') String imageUrl, // Standardwert: leerer String
   }) = _Profile;
 
-  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
 }

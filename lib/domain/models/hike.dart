@@ -2,10 +2,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'hike.freezed.dart';
 part 'hike.g.dart';
 
-enum Difficulty { easy, mid, hard, very_hard }
+enum Difficulty { easy, mid, hard, veryHard }
 
 @freezed
-class Hike with _$Hike {
+sealed class Hike with _$Hike {
   const factory Hike({
     // die id des hikes
     required int id,
@@ -16,9 +16,9 @@ class Hike with _$Hike {
     @Default('') String description,
     @Default(1.0) double price,
     @Default(Difficulty.mid) Difficulty difficulty,
-    String? thumbnail_image_url,
+    String? thumbnailImageUrl,
     @Default(false) bool isFavorite,
-}) = _Hike;
+  }) = _Hike;
 
   factory Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
 }

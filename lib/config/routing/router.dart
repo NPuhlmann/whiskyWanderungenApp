@@ -14,8 +14,8 @@ import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 
-import '../../UI/auth/signup/SignUpPageViewModel.dart';
-import '../../UI/core/ScaffoldWithNavigationBar.dart';
+import '../../UI/auth/signup/sign_up_page_view_model.dart';
+import '../../UI/core/scaffold_with_navigation_bar.dart';
 import '../../UI/hike_details/hike_details_view_model.dart';
 import '../../UI/home/home_view_model.dart';
 import '../../UI/my_hikes/my_hikes_view_model.dart';
