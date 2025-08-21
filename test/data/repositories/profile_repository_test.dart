@@ -6,15 +6,18 @@ import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 
 import '../../mocks/mock_backend_api_service.dart';
+import '../../mocks/mock_repositories.dart';
 
 void main() {
   group('ProfileRepository Tests', () {
     late MockBackendApiService mockBackendApiService;
+    late MockLocalCacheService mockLocalCacheService;
     late ProfileRepository profileRepository;
 
     setUp(() {
       mockBackendApiService = MockBackendApiService();
-      profileRepository = ProfileRepository(mockBackendApiService);
+      mockLocalCacheService = MockLocalCacheService();
+      profileRepository = ProfileRepository(mockBackendApiService, mockLocalCacheService);
     });
 
     group('getUserProfileById', () {
@@ -31,8 +34,12 @@ void main() {
           imageUrl: 'https://example.com/avatar.jpg',
         );
 
+        when(mockLocalCacheService.getCachedProfileData(testUserId))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(testUserId))
             .thenAnswer((_) async => expectedProfile);
+        when(mockLocalCacheService.cacheProfileData(expectedProfile, testUserId))
+            .thenAnswer((_) async => {});
 
         // Act
         final result = await profileRepository.getUserProfileById(testUserId);
@@ -53,8 +60,12 @@ void main() {
         // Arrange
         final emptyProfile = Profile(id: testUserId);
 
+        when(mockLocalCacheService.getCachedProfileData(testUserId))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(testUserId))
             .thenAnswer((_) async => emptyProfile);
+        when(mockLocalCacheService.cacheProfileData(emptyProfile, testUserId))
+            .thenAnswer((_) async => {});
 
         // Act
         final result = await profileRepository.getUserProfileById(testUserId);
@@ -72,12 +83,14 @@ void main() {
 
       test('should throw exception when backend service fails', () async {
         // Arrange
+        when(mockLocalCacheService.getCachedProfileData(testUserId))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(testUserId))
             .thenThrow(Exception('User not found'));
 
         // Act & Assert
         expect(
-          () => profileRepository.getUserProfileById(testUserId),
+          () async => await profileRepository.getUserProfileById(testUserId),
           throwsA(isA<Exception>()),
         );
 
@@ -92,10 +105,18 @@ void main() {
         final profile1 = Profile(id: userId1, firstName: 'Alice');
         final profile2 = Profile(id: userId2, firstName: 'Bob');
 
+        when(mockLocalCacheService.getCachedProfileData(userId1))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
+        when(mockLocalCacheService.getCachedProfileData(userId2))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(userId1))
             .thenAnswer((_) async => profile1);
         when(mockBackendApiService.getUserProfileById(userId2))
             .thenAnswer((_) async => profile2);
+        when(mockLocalCacheService.cacheProfileData(profile1, userId1))
+            .thenAnswer((_) async => {});
+        when(mockLocalCacheService.cacheProfileData(profile2, userId2))
+            .thenAnswer((_) async => {});
 
         // Act
         final result1 = await profileRepository.getUserProfileById(userId1);
@@ -116,8 +137,12 @@ void main() {
         const emptyUserId = '';
         final emptyProfile = Profile(id: emptyUserId);
 
+        when(mockLocalCacheService.getCachedProfileData(emptyUserId))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(emptyUserId))
             .thenAnswer((_) async => emptyProfile);
+        when(mockLocalCacheService.cacheProfileData(emptyProfile, emptyUserId))
+            .thenAnswer((_) async => {});
 
         // Act
         final result = await profileRepository.getUserProfileById(emptyUserId);
@@ -136,8 +161,12 @@ void main() {
           lastName: 'Müller-Özkaya',
         );
 
+        when(mockLocalCacheService.getCachedProfileData(specialUserId))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(specialUserId))
             .thenAnswer((_) async => profile);
+        when(mockLocalCacheService.cacheProfileData(profile, specialUserId))
+            .thenAnswer((_) async => {});
 
         // Act
         final result = await profileRepository.getUserProfileById(specialUserId);
@@ -251,6 +280,8 @@ void main() {
 
         when(mockBackendApiService.uploadProfileImage(testUserId, imageBytes, testFileExt))
             .thenAnswer((_) async => expectedUrl);
+        when(mockLocalCacheService.cacheProfileImage(testUserId, imageBytes, testFileExt))
+            .thenAnswer((_) async => expectedUrl);
 
         // Act
         final result = await profileRepository.uploadProfileImage(testUserId, imageBytes, testFileExt);
@@ -285,6 +316,8 @@ void main() {
           final expectedUrl = 'https://example.com/image.$ext';
           when(mockBackendApiService.uploadProfileImage(testUserId, imageBytes, ext))
               .thenAnswer((_) async => expectedUrl);
+          when(mockLocalCacheService.cacheProfileImage(testUserId, imageBytes, ext))
+              .thenAnswer((_) async => expectedUrl);
         }
 
         // Act & Assert
@@ -301,6 +334,8 @@ void main() {
         const expectedUrl = 'https://example.com/large-image.jpg';
 
         when(mockBackendApiService.uploadProfileImage(testUserId, largeImageBytes, testFileExt))
+            .thenAnswer((_) async => expectedUrl);
+        when(mockLocalCacheService.cacheProfileImage(testUserId, largeImageBytes, testFileExt))
             .thenAnswer((_) async => expectedUrl);
 
         // Act
@@ -467,7 +502,7 @@ void main() {
 
         // Act & Assert
         expect(
-          () => profileRepository.getProfileImageUrl(testUserId),
+          () async => await profileRepository.getProfileImageUrl(testUserId),
           throwsA(
             predicate((e) => e.toString().contains('Unauthorized')),
           ),
@@ -484,8 +519,12 @@ void main() {
         final profiles = userIds.map((id) => Profile(id: id, firstName: 'User $id')).toList();
 
         for (int i = 0; i < userIds.length; i++) {
+          when(mockLocalCacheService.getCachedProfileData(userIds[i]))
+              .thenAnswer((_) async => null); // Force cache miss to trigger API call
           when(mockBackendApiService.getUserProfileById(userIds[i]))
               .thenAnswer((_) async => profiles[i]);
+          when(mockLocalCacheService.cacheProfileData(profiles[i], userIds[i]))
+              .thenAnswer((_) async => {});
         }
 
         // Act
@@ -508,8 +547,12 @@ void main() {
         final imageBytes = Uint8List.fromList([1, 2, 3]);
         const imageUrl = 'https://example.com/image.jpg';
 
+        when(mockLocalCacheService.getCachedProfileData(userId))
+            .thenAnswer((_) async => null); // Force cache miss to trigger API call
         when(mockBackendApiService.getUserProfileById(userId))
             .thenAnswer((_) async => profile);
+        when(mockLocalCacheService.cacheProfileData(profile, userId))
+            .thenAnswer((_) async => {});
         when(mockBackendApiService.updateUserProfile(profile))
             .thenAnswer((_) async => {});
         when(mockBackendApiService.uploadProfileImage(userId, imageBytes, 'jpg'))

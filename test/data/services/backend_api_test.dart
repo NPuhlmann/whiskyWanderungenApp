@@ -505,12 +505,12 @@ void main() {
           'date_of_birth': '1990-05-15',
         };
 
-        // Transform to model format (camelCase)
+        // Transform to model format (snake_case as expected by JSON annotations)
         final modelData = {
           'id': dbProfile['id'],
-          'firstName': dbProfile['first_name'],
-          'lastName': dbProfile['last_name'],
-          'dateOfBirth': dbProfile['date_of_birth'],
+          'first_name': dbProfile['first_name'],
+          'last_name': dbProfile['last_name'],
+          'date_of_birth': dbProfile['date_of_birth'],
           'email': '',
           'imageUrl': '',
         };

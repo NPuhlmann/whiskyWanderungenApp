@@ -93,9 +93,16 @@ Central service for all Supabase operations:
 #### Repositories
 - **HikeRepository** - Manages hike data and user purchases
 - **WaypointRepository** - Handles waypoint operations with offline caching
-- **ProfileRepository** - User profile management
+- **ProfileRepository** - User profile management with local caching and image upload
 - **UserRepository** - Authentication state management
 - **HikeImagesRepository** - Hike image management
+
+#### LocalCacheService (`lib/data/services/cache/local_cache_service.dart`)
+Provides transparent caching for profile data and images:
+- TTL-based cache invalidation (24h for data, 7 days for images)
+- Automatic background sync with conflict resolution
+- Size-limited cache (50MB) with LRU eviction
+- Offline-first loading strategy
 
 ### Localization
 - Supports English (en_US) and German (de_DE)
@@ -123,14 +130,24 @@ flutter pub run build_runner build --delete-conflicting-outputs
 ### Database Schema
 The app uses these main Supabase tables:
 - `hikes` - Hiking trail information
-- `profiles` - User profile data
-- `waypoints` - GPS waypoints for trails
+- `profiles` - User profile data with automatic creation via triggers
+- `waypoints` - GPS waypoints for trails with ordering system
 - `hikes_waypoints` - Junction table linking hikes to waypoints
 - `purchased_hikes` - User purchase tracking
 - `hike_images` - Trail images
 
+**Important**: When making database schema changes, always check if corresponding updates are needed in the Terraform configuration (`terraform-supabase/` directory).
+
+### Storage
+- Supabase Storage buckets with RLS policies for user-specific image access
+- Profile images with comprehensive upload validation and retry logic
+- iOS privacy permissions configured (Camera, Photo Library, Microphone)
+
 ### Offline Functionality
-WaypointRepository implements caching for offline access to previously loaded waypoints.
+- **WaypointRepository** implements caching for offline access to previously loaded waypoints
+- **LocalCacheService** provides transparent profile data and image caching with TTL support
+- Profile data cached for 24h, images for 7 days with 50MB size limit
+- Cache-first loading strategy with automatic background sync
 
 ### Latest Updates (August 2024)
 
@@ -147,7 +164,8 @@ WaypointRepository implements caching for offline access to previously loaded wa
 #### Known Issues After Updates:
 ✅ **Localization Issue**: Fixed - imports updated to use local l10n files  
 ✅ **flutter_map Breaking Changes**: Fixed - removed deprecated `enableScrollWheel` parameter  
-⚠️ **Freezed Models**: Code generation issues with Freezed 3.x - models need regeneration after clean build
+✅ **Freezed Models**: Fixed - Freezed 3.x migration completed, all models regenerated
+✅ **Profile Loading Issue**: Fixed - infinite loading spinner resolved
 
 #### Migration Notes:
 - Profile model uses `@unfreezed` for mutability
@@ -157,13 +175,17 @@ WaypointRepository implements caching for offline access to previously loaded wa
 ### Testing
 Widget tests are located in the `test/` directory. 
 
-**Current Status**: Tests failing due to Freezed 3.x code generation issues.  
-**Resolution**: Run `flutter clean && flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs` 
+**Development Approach**: Use Test Driven Development (TDD) - write tests first, then implement functionality.
 
-#### Freezed 3.x Troubleshooting:
-If you encounter "Missing concrete implementations" errors:
-1. Delete all `.freezed.dart` and `.g.dart` files  
-2. Run `flutter clean`
-3. Run `flutter pub get`
-4. Run `flutter pub run build_runner build --delete-conflicting-outputs`
-5. If issues persist, downgrade freezed to 2.5.x temporarily
+**Current Status**: Comprehensive unit test suite implemented with mocking support.  
+**Resolution**: All Freezed 3.x issues resolved, code generation working correctly.
+
+#### Testing Guidelines:
+1. Write tests before implementing new features
+2. Use mocking for external dependencies (Supabase, local storage)
+3. Test both success and error scenarios
+4. Include integration tests for critical user flows
+
+#### Development Dependencies Added:
+- **path_provider**: Local file storage for caching
+- Mock generation support for repositories in testing

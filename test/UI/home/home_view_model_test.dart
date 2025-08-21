@@ -213,16 +213,10 @@ void main() {
     });
 
     group('toggleFavorite', () {
-      test('should toggle favorite status and notify listeners', () {
+      test('should toggle favorite status and notify listeners', () async {
         // Arrange
         const hike = Hike(id: 1, name: 'Test Hike', isFavorite: false);
-        // Manually set hikes to simulate loaded state
-        homeViewModel.loadHikes(); // This will fail, but we need to set up the state differently
         
-        // We need to set up the state by accessing private field or using a different approach
-        // Let's test the logic with a fresh ViewModel that has hikes loaded
-        
-        // For this test, we'll create a scenario after hikes are loaded
         when(mockHikeRepository.getAllAvailableHikes())
             .thenAnswer((_) async => [hike]);
         
@@ -231,15 +225,18 @@ void main() {
         bool listenerCalled = false;
         homeViewModel.addListener(() => listenerCalled = true);
 
-        // We need to first load hikes to have them in the viewmodel
-        homeViewModel.loadHikes().then((_) {
-          // Act
-          homeViewModel.toggleFavorite(hike);
+        // First load hikes to have them in the viewmodel
+        await homeViewModel.loadHikes();
+        
+        // Reset listener flag after initial load
+        listenerCalled = false;
 
-          // Assert
-          expect(homeViewModel.hikes.first.isFavorite, true);
-          expect(listenerCalled, true);
-        });
+        // Act
+        homeViewModel.toggleFavorite(hike);
+
+        // Assert
+        expect(homeViewModel.hikes.first.isFavorite, true);
+        expect(listenerCalled, true);
       });
 
       test('should save favorites to SharedPreferences', () async {

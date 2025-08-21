@@ -10,13 +10,21 @@ import 'dart:ui' as _i12;
 import 'package:flutter/cupertino.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i10;
-import 'package:shared_preferences/src/shared_preferences_legacy.dart' as _i13;
+import 'package:shared_preferences/shared_preferences.dart' as _i18;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i4;
+import 'package:whisky_hikes/data/repositories/hike_images_repository.dart'
+    as _i13;
 import 'package:whisky_hikes/data/repositories/hike_repository.dart' as _i5;
 import 'package:whisky_hikes/data/repositories/profile_repository.dart' as _i8;
 import 'package:whisky_hikes/data/repositories/user_repository.dart' as _i11;
+import 'package:whisky_hikes/data/repositories/waypoint_repository.dart'
+    as _i14;
+import 'package:whisky_hikes/data/services/auth/auth_service.dart' as _i16;
+import 'package:whisky_hikes/data/services/cache/local_cache_service.dart'
+    as _i17;
 import 'package:whisky_hikes/domain/models/hike.dart' as _i7;
 import 'package:whisky_hikes/domain/models/profile.dart' as _i2;
+import 'package:whisky_hikes/domain/models/waypoint.dart' as _i15;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -43,6 +51,12 @@ class _FakeProfile_0 extends _i1.SmartFake implements _i2.Profile {
 
 class _FakeAuthResponse_1 extends _i1.SmartFake implements _i4.AuthResponse {
   _FakeAuthResponse_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSupabaseClient_2 extends _i1.SmartFake
+    implements _i4.SupabaseClient {
+  _FakeSupabaseClient_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -290,10 +304,339 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
   );
 }
 
+/// A class which mocks [HikeImagesRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockHikeImagesRepository extends _i1.Mock
+    implements _i13.HikeImagesRepository {
+  MockHikeImagesRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> uploadHikeImages(_i7.Hike? hike, List<String>? imagePaths) =>
+      (super.noSuchMethod(
+            Invocation.method(#uploadHikeImages, [hike, imagePaths]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<List<String>> getHikeImages(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getHikeImages, [hikeId]),
+            returnValue: _i6.Future<List<String>>.value(<String>[]),
+          )
+          as _i6.Future<List<String>>);
+}
+
+/// A class which mocks [WaypointRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWaypointRepository extends _i1.Mock
+    implements _i14.WaypointRepository {
+  MockWaypointRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<List<_i15.Waypoint>> getWaypointsForHike(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getWaypointsForHike, [hikeId]),
+            returnValue: _i6.Future<List<_i15.Waypoint>>.value(
+              <_i15.Waypoint>[],
+            ),
+          )
+          as _i6.Future<List<_i15.Waypoint>>);
+
+  @override
+  _i6.Future<void> addWaypoint(
+    _i15.Waypoint? waypoint,
+    int? hikeId, {
+    int? orderIndex,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #addWaypoint,
+              [waypoint, hikeId],
+              {#orderIndex: orderIndex},
+            ),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateWaypoint(_i15.Waypoint? waypoint) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWaypoint, [waypoint]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> updateWaypointOrder(
+    int? hikeId,
+    int? waypointId,
+    int? newOrderIndex,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWaypointOrder, [
+              hikeId,
+              waypointId,
+              newOrderIndex,
+            ]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+}
+
+/// A class which mocks [AuthService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthService extends _i1.Mock implements _i16.AuthService {
+  MockAuthService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.SupabaseClient get client =>
+      (super.noSuchMethod(
+            Invocation.getter(#client),
+            returnValue: _FakeSupabaseClient_2(
+              this,
+              Invocation.getter(#client),
+            ),
+          )
+          as _i4.SupabaseClient);
+
+  @override
+  bool get isDevMode =>
+      (super.noSuchMethod(Invocation.getter(#isDevMode), returnValue: false)
+          as bool);
+
+  @override
+  _i6.Future<_i4.AuthResponse> signInWithEmailPassword(
+    String? email,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithEmailPassword, [email, password]),
+            returnValue: _i6.Future<_i4.AuthResponse>.value(
+              _FakeAuthResponse_1(
+                this,
+                Invocation.method(#signInWithEmailPassword, [email, password]),
+              ),
+            ),
+          )
+          as _i6.Future<_i4.AuthResponse>);
+
+  @override
+  _i6.Future<_i4.AuthResponse> signUpWithEmailPassword(
+    String? email,
+    String? password, [
+    Map<String, dynamic>? data,
+  ]) =>
+      (super.noSuchMethod(
+            Invocation.method(#signUpWithEmailPassword, [
+              email,
+              password,
+              data,
+            ]),
+            returnValue: _i6.Future<_i4.AuthResponse>.value(
+              _FakeAuthResponse_1(
+                this,
+                Invocation.method(#signUpWithEmailPassword, [
+                  email,
+                  password,
+                  data,
+                ]),
+              ),
+            ),
+          )
+          as _i6.Future<_i4.AuthResponse>);
+
+  @override
+  _i6.Future<void> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  bool isUserLoggedIn() =>
+      (super.noSuchMethod(
+            Invocation.method(#isUserLoggedIn, []),
+            returnValue: false,
+          )
+          as bool);
+
+  @override
+  _i6.Future<void> updateUserEmail(String? newEmail) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateUserEmail, [newEmail]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> confirmEmailManually() =>
+      (super.noSuchMethod(
+            Invocation.method(#confirmEmailManually, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> handleEmailConfirmation(String? token, String? type) =>
+      (super.noSuchMethod(
+            Invocation.method(#handleEmailConfirmation, [token, type]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+}
+
+/// A class which mocks [LocalCacheService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLocalCacheService extends _i1.Mock implements _i17.LocalCacheService {
+  MockLocalCacheService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> cacheProfileData(_i2.Profile? profile, String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#cacheProfileData, [profile, userId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<_i2.Profile?> getCachedProfileData(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCachedProfileData, [userId]),
+            returnValue: _i6.Future<_i2.Profile?>.value(),
+          )
+          as _i6.Future<_i2.Profile?>);
+
+  @override
+  _i6.Future<String?> cacheProfileImage(
+    String? userId,
+    _i9.Uint8List? imageBytes,
+    String? fileExtension,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#cacheProfileImage, [
+              userId,
+              imageBytes,
+              fileExtension,
+            ]),
+            returnValue: _i6.Future<String?>.value(),
+          )
+          as _i6.Future<String?>);
+
+  @override
+  _i6.Future<String?> getCachedProfileImagePath(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCachedProfileImagePath, [userId]),
+            returnValue: _i6.Future<String?>.value(),
+          )
+          as _i6.Future<String?>);
+
+  @override
+  _i6.Future<bool> hasValidProfileDataCache(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#hasValidProfileDataCache, [userId]),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
+
+  @override
+  _i6.Future<bool> hasValidProfileImageCache(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#hasValidProfileImageCache, [userId]),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
+
+  @override
+  _i6.Future<void> clearProfileDataCache(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#clearProfileDataCache, [userId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> clearProfileImageCache(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#clearProfileImageCache, [userId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> clearUserCache(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#clearUserCache, [userId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> clearAllCache() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearAllCache, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<Map<String, dynamic>> getCacheStats() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCacheStats, []),
+            returnValue: _i6.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
+          )
+          as _i6.Future<Map<String, dynamic>>);
+
+  @override
+  _i6.Future<bool> hasNetworkConnection() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasNetworkConnection, []),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
+}
+
 /// A class which mocks [SharedPreferences].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSharedPreferences extends _i1.Mock implements _i13.SharedPreferences {
+class MockSharedPreferences extends _i1.Mock implements _i18.SharedPreferences {
   MockSharedPreferences() {
     _i1.throwOnMissingStub(this);
   }
