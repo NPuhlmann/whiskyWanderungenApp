@@ -132,5 +132,30 @@ The app uses these main Supabase tables:
 ### Offline Functionality
 WaypointRepository implements caching for offline access to previously loaded waypoints.
 
+### Latest Updates (August 2024)
+
+**Flutter Version:** 3.35.1 (Latest Stable)  
+**Dart SDK:** 3.9.0
+
+#### Recent Major Dependency Updates:
+- **flutter_map**: 6.1.0 → 8.2.1 (Breaking Changes - API updates required)
+- **go_router**: 14.6.2 → 16.2.0 (Breaking Changes - Route definitions updated)  
+- **geolocator**: 11.0.0 → 14.0.2 (Breaking Changes - Permission handling updated)
+- **freezed**: 2.5.7 → 3.2.0 (Breaking Changes - @unfreezed syntax updated)
+- **flutter_lints**: 5.0.0 → 6.0.0 (New lint rules active)
+
+#### Known Issues After Updates:
+⚠️ **Localization Issue**: `flutter_gen` package not generating correctly after Flutter 3.35.1 update  
+⚠️ **flutter_map Breaking Changes**: `enableScrollWheel` parameter renamed in 8.x  
+✅ **Freezed Models**: Fixed for version 3.x compatibility
+
+#### Migration Notes:
+- Profile model uses `@unfreezed` for mutability
+- Hike and Waypoint models use `@freezed` for immutability  
+- Use `copyWith()` for immutable model updates
+
 ### Testing
-Widget tests are located in the `test/` directory. Use `flutter test` to run them.
+Widget tests are located in the `test/` directory. 
+
+**Current Status**: Tests failing due to localization generation issues.  
+**Resolution**: Run `flutter clean && flutter pub get && flutter gen-l10n` after Flutter updates.
