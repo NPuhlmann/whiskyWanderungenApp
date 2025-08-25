@@ -1,0 +1,100 @@
+# Flutter Testing Best Practices
+
+## Test Structure and Organization
+- Organize tests in the same directory structure as your source code
+- Use descriptive test names that explain the expected behavior
+- Group related tests using `group()` blocks
+- Follow the Arrange-Act-Assert pattern
+
+## Common Testing Issues and Solutions
+
+### 1. Mock Type Conflicts
+When using Supabase mocks, ensure proper type compatibility:
+```dart
+// ✅ Correct: Use proper generic types
+when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+when(mockFilterBuilder.eq('id', 'user123')).thenAnswer((_) async => data);
+
+// ❌ Avoid: Type mismatches with PostgrestFilterBuilder
+when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder); // May cause type conflicts
+```
+
+### 2. Loading State Management
+Always test loading state transitions:
+```dart
+test('should set loading state correctly', () async {
+  // Arrange
+  expect(viewModel.isLoading, false);
+  
+  // Act
+  await viewModel.someAsyncOperation();
+  
+  // Assert
+  expect(viewModel.isLoading, false);
+});
+```
+
+### 3. Error Handling Tests
+Test both success and failure scenarios:
+```dart
+test('should handle errors gracefully', () async {
+  // Arrange
+  when(mockRepository.someOperation()).thenThrow(Exception('Error'));
+  
+  // Act & Assert
+  await viewModel.someOperation(); // Should not throw
+  expect(viewModel.isLoading, false);
+});
+```
+
+### 4. Async Operations
+Use `await` for async operations in tests:
+```dart
+// ✅ Correct
+await viewModel.updateProfile(profile);
+
+// ❌ Avoid
+viewModel.updateProfile(profile);
+await Future.delayed(Duration(milliseconds: 100));
+```
+
+## Mock Setup Best Practices
+- Use `when().thenAnswer()` for async operations
+- Use `when().thenReturn()` for synchronous operations
+- Reset mocks between tests when needed: `reset(mockRepository)`
+- Verify method calls: `verify(mockRepository.method()).called(1)`
+
+## Test Coverage Areas
+- Domain Models: ~95% coverage (Profile, Hike, Waypoint)
+- UI ViewModels: ~80% coverage (most ViewModel tests work)
+- Repositories: ~70% coverage (handle edge cases)
+- Services: ~30% coverage (BackendAPI, AuthService need attention)
+- UI Widgets: ~85% coverage (minor widget test issues)
+
+## Common Flutter Test Dependencies
+```yaml
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.6
+  build_runner: ^2.4.7
+```
+
+## Running Tests
+```bash
+# Run all tests
+flutter test
+
+# Run specific test file
+flutter test test/UI/profile/profile_view_model_test.dart
+
+# Run with verbose output
+flutter test --reporter=expanded
+
+# Generate mocks
+dart run build_runner build --delete-conflicting-outputs
+```
+description:
+globs:
+alwaysApply: false
+---

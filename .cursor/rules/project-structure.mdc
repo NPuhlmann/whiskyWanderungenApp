@@ -1,0 +1,62 @@
+# Whisky Hikes Projektstruktur
+
+## Architektur-Pattern
+
+Das Projekt folgt der **Clean Architecture** mit klarer Trennung der Schichten:
+
+### Domain Layer
+- **Models**: Geschäftsobjekte (Profile, Hike, Waypoint)
+- **Repositories**: Interface-Definitionen
+- **Services**: Geschäftslogik
+
+### Data Layer
+- **Repositories**: Implementierung der Repository-Interfaces
+- **Services**: Externe API-Calls, Datenbankzugriff
+- **Cache**: Lokale Datenspeicherung
+
+### UI Layer
+- **Pages**: Vollständige Bildschirme
+- **ViewModels**: Business Logic für UI
+- **Widgets**: Wiederverwendbare UI-Komponenten
+
+## Wichtige Verzeichnisse
+
+### Domain Models
+- [lib/domain/models/](mdc:lib/domain/models/) - Alle Geschäftsobjekte
+- [test/domain/models/](mdc:test/domain/models/) - Tests für Domain-Modelle
+
+### UI-Komponenten
+- [lib/UI/](mdc:lib/UI/) - Alle UI-bezogenen Dateien
+- [test/UI/](mdc:test/UI/) - UI-Tests
+
+### Datenbank & Backend
+- [lib/data/](mdc:lib/data/) - Datenzugriff und Services
+- [terraform-supabase/](mdc:terraform-supabase/) - Infrastruktur und Datenbankschema
+
+### Tests
+- [test/](mdc:test/) - Alle Tests
+- [test/mocks/](mdc:test/mocks/) - Mock-Objekte für Tests
+
+## Datenfluss
+
+1. **UI** → **ViewModel** → **Repository** → **Service** → **Backend/Datenbank**
+2. **Cache** wird zwischen Repository und Service eingeschoben
+3. **Domain-Models** werden in allen Schichten verwendet
+
+## Technologie-Stack
+
+- **Frontend**: Flutter/Dart
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **State Management**: ChangeNotifier (Provider-Pattern)
+- **Code Generation**: Freezed für Immutable Models
+- **JSON Serialization**: json_annotation
+- **Testing**: flutter_test + Mockito
+- **Infrastructure**: Terraform für Supabase
+
+## Wichtige Konventionen
+
+- **Dateinamen**: snake_case (z.B. `profile_page.dart`)
+- **Klassen**: PascalCase (z.B. `ProfilePage`)
+- **Variablen**: camelCase (z.B. `firstName`)
+- **Datenbank**: snake_case (z.B. `first_name`)
+- **Tests**: Dateiname + `_test.dart` Suffix

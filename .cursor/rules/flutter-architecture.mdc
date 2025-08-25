@@ -1,0 +1,73 @@
+# Flutter Architecture & State Management Patterns
+
+## Project Structure
+This Flutter project follows a clean MVVM architecture with Provider for state management.
+
+## Core Patterns
+
+### 1. MVVM Architecture
+- **Models**: Domain entities in [lib/domain/models/](mdc:lib/domain/models/)
+- **Views**: UI pages in [lib/UI/](mdc:lib/UI/)
+- **ViewModels**: Business logic in [lib/UI/*/view_model.dart](mdc:lib/UI/) files
+
+### 2. Repository Pattern
+All data access goes through repository classes:
+- [lib/data/repositories/](mdc:lib/data/repositories/) contains all repository implementations
+- ViewModels depend on repositories, not directly on services
+
+### 3. Dependency Injection
+- Provider setup in [lib/config/dependencies.dart](mdc:lib/config/dependencies.dart)
+- Use `context.read<T>()` to access dependencies in ViewModels
+- Always use `ChangeNotifierProvider` for ViewModels
+
+## State Management Rules
+
+### 1. Loading State Pattern
+Always use try-finally for loading states:
+```dart
+Future<void> operation() async {
+  _isLoading = true;
+  notifyListeners();
+  
+  try {
+    await repository.operation();
+  } finally {
+    _isLoading = false;
+    notifyListeners();
+  }
+}
+```
+
+### 2. Error Handling
+Handle errors gracefully without breaking UI:
+```dart
+try {
+  await operation();
+} catch (e) {
+  log("Error: $e");
+  // Handle error gracefully, don't rethrow
+} finally {
+  _isLoading = false;
+}
+```
+
+### 3. State Updates
+- Always call `notifyListeners()` after state changes
+- Use `copyWith` for immutable updates
+- Use `Future.microtask(() => notifyListeners())` for safe UI updates
+
+## File Naming Conventions
+- ViewModels: `*_view_model.dart`
+- Pages: `*_page.dart`
+- Repositories: `*_repository.dart`
+- Services: `*_service.dart`
+- Models: lowercase with underscores
+
+## Testing
+- Test files in [test/](mdc:test/) mirror the lib structure
+- Use mocks from [test/mocks/](mdc:test/mocks/)
+- Test ViewModels with proper async/await patterns
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,194 @@
+# Supabase Integration Best Practices
+
+## Backend API Service Structure
+The main backend service is located in [lib/data/services/database/backend_api.dart](mdc:lib/data/services/database/backend_api.dart)
+
+## Common Supabase Integration Issues
+
+### 1. Mock Type Compatibility
+When testing Supabase services, ensure proper mock setup:
+```dart
+// ✅ Correct: Include all required types in mock generation
+@GenerateMocks([
+  SupabaseClient,
+  SupabaseQueryBuilder,
+  PostgrestFilterBuilder,
+  PostgrestBuilder,
+  SupabaseStorageClient,
+  StorageFileApi,
+  GoTrueClient,
+  User,
+  Bucket,
+  FileObject,
+])
+```
+
+### 2. FileObject Constructor Requirements
+FileObject requires `updatedAt` parameter:
+```dart
+// ✅ Correct
+FileObject(
+  bucketId: 'avatars',
+  name: 'profile.jpg',
+  id: 'profile-id',
+  owner: 'owner-id',
+  metadata: {'size': 1024},
+  updatedAt: DateTime.now().toIso8601String(), // Required!
+)
+
+// ❌ Avoid: Missing updatedAt
+FileObject(
+  bucketId: 'avatars',
+  name: 'profile.jpg',
+  id: 'profile-id',
+  owner: 'owner-id',
+  metadata: {'size': 1024},
+  // Missing updatedAt will cause compilation errors
+)
+```
+
+### 3. Query Builder Type Safety
+Ensure proper type handling for PostgrestFilterBuilder:
+```dart
+// ✅ Correct: Use proper return types
+when(mockQueryBuilder.select()).thenAnswer((_) async => data);
+when(mockFilterBuilder.eq('id', '123')).thenAnswer((_) async => result);
+
+// ❌ Avoid: Type mismatches
+when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder); // May cause type conflicts
+```
+
+## Storage Operations
+
+### Profile Image Upload
+```dart
+Future<String> uploadProfileImage(String userId, Uint8List fileBytes, String fileExt) async {
+  final String path = '$userId/profile.$fileExt';
+  
+  // Check bucket existence
+  final List<Bucket> buckets = await client.storage.listBuckets();
+  final bool bucketExists = buckets.any((bucket) => bucket.name == 'avatars');
+  
+  if (!bucketExists) {
+    throw Exception("Der Storage-Bucket 'avatars' existiert nicht.");
+  }
+  
+  // Upload with proper options
+  await client.storage.from('avatars').uploadBinary(
+    path,
+    fileBytes,
+    fileOptions: FileOptions(
+      cacheControl: '3600',
+      upsert: true,
+    ),
+  );
+  
+  return client.storage.from('avatars').getPublicUrl(path);
+}
+```
+
+### Profile Image Retrieval
+```dart
+Future<String?> getProfileImageUrl(String userId) async {
+  try {
+    final List<FileObject> files = await client.storage.from('avatars')
+        .list(path: userId);
+    
+    final List<FileObject> userFiles = files.where(
+      (file) => file.name.startsWith('profile.')
+    ).toList();
+    
+    if (userFiles.isNotEmpty) {
+      final String filePath = '$userId/${userFiles.first.name}';
+      return client.storage.from('avatars').getPublicUrl(filePath);
+    }
+    
+    return null;
+  } catch (e) {
+    // Handle storage errors gracefully
+    return null;
+  }
+}
+```
+
+## Database Operations
+
+### Profile Management
+```dart
+Future<Profile> getUserProfileById(String id) async {
+  final response = await client.from('profiles').select().eq('id', id);
+  if ((response as List<dynamic>).isEmpty) {
+    return Profile(id: id); // Return empty profile for UI
+  }
+  
+  final Map<String, dynamic> profileData = response.first;
+  return Profile.fromJson(profileData);
+}
+
+Future<void> updateUserProfile(Profile profile) async {
+  final Map<String, dynamic> profileJson = profile.toJson();
+  profileJson.remove('email'); // Remove fields not in database
+  profileJson.remove('imageUrl');
+  
+  if (profileJson['id'] == null || profileJson['id'].isEmpty) {
+    final String? userId = client.auth.currentUser?.id;
+    if (userId != null) {
+      profileJson['id'] = userId;
+    } else {
+      throw Exception('Benutzer-ID konnte nicht ermittelt werden');
+    }
+  }
+  
+  await client.from('profiles')
+      .update(profileJson)
+      .eq('id', profileJson['id']);
+}
+```
+
+## Error Handling Patterns
+```dart
+try {
+  // Supabase operation
+  await client.from('table').select().eq('id', id);
+} catch (e) {
+  if (e.toString().contains('permission denied')) {
+    throw Exception("Keine Berechtigung für diese Operation");
+  } else if (e.toString().contains('network')) {
+    throw Exception("Netzwerkfehler - bitte Verbindung prüfen");
+  }
+  rethrow;
+}
+```
+
+## Testing Supabase Services
+```dart
+// Mock setup
+when(mockSupabaseClient.from('profiles')).thenReturn(mockQueryBuilder);
+when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+when(mockFilterBuilder.eq('id', 'user123')).thenAnswer((_) async => [profileData]);
+
+// Test execution
+final result = await service.getUserProfileById('user123');
+expect(result.id, 'user123');
+```
+
+## Common Supabase Tables
+- `profiles`: User profile information
+- `hikes`: Available hiking trails
+- `purchased_hikes`: User-hike associations
+- `hike_images`: Images for hikes
+- `waypoints`: Points of interest on hikes
+- `hikes_waypoints`: Hike-waypoint associations with order
+
+## Environment Configuration
+Ensure proper environment setup:
+```bash
+# .env file
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_anon_key
+DEV_MODE=true  # For development features
+```
+description:
+globs:
+alwaysApply: false
+---
