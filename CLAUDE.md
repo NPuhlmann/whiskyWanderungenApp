@@ -149,28 +149,42 @@ The app uses these main Supabase tables:
 - Profile data cached for 24h, images for 7 days with 50MB size limit
 - Cache-first loading strategy with automatic background sync
 
-### Latest Updates (August 2024)
+### Latest Updates (December 2024)
 
 **Flutter Version:** 3.35.1 (Latest Stable)  
 **Dart SDK:** 3.9.0
 
-#### Recent Major Dependency Updates:
+#### Recent Major Dependency Updates (August 2024):
 - **flutter_map**: 6.1.0 → 8.2.1 (Breaking Changes - API updates required)
 - **go_router**: 14.6.2 → 16.2.0 (Breaking Changes - Route definitions updated)  
 - **geolocator**: 11.0.0 → 14.0.2 (Breaking Changes - Permission handling updated)
 - **freezed**: 2.5.7 → 3.2.0 (Breaking Changes - @unfreezed syntax updated)
 - **flutter_lints**: 5.0.0 → 6.0.0 (New lint rules active)
 
+#### Supabase Dependencies (December 2024):
+- **supabase_flutter**: 2.9.1
+- **gotrue**: 2.13.0 (Breaking Changes - API type changes)
+- **storage_client**: 2.4.0 (Breaking Changes - constructor parameters)
+
 #### Known Issues After Updates:
 ✅ **Localization Issue**: Fixed - imports updated to use local l10n files  
 ✅ **flutter_map Breaking Changes**: Fixed - removed deprecated `enableScrollWheel` parameter  
 ✅ **Freezed Models**: Fixed - Freezed 3.x migration completed, all models regenerated
 ✅ **Profile Loading Issue**: Fixed - infinite loading spinner resolved
+✅ **Supabase API Breaking Changes**: Fixed - test suite updated for new API types
+✅ **Test Suite Compatibility**: Fixed - mocking patterns updated for new dependencies
 
 #### Migration Notes:
 - Profile model uses `@unfreezed` for mutability
 - Hike and Waypoint models use `@freezed` for immutability  
 - Use `copyWith()` for immutable model updates
+
+#### Supabase API Migration (December 2024):
+- **emailConfirmedAt**: Now expects `String` instead of `DateTime` (use `.toIso8601String()`)
+- **Session.user**: No longer nullable - use try/catch for error handling
+- **UserResponse**: Constructor changed - use `AuthResponse` where appropriate
+- **Bucket**: Requires `id`, `name`, `owner`, `public`, `createdAt`, `updatedAt` parameters
+- **FileObject**: Requires `bucketId`, `name`, `id`, `owner` parameters in constructor
 
 ### Testing
 Widget tests are located in the `test/` directory. 
@@ -179,6 +193,7 @@ Widget tests are located in the `test/` directory.
 
 **Current Status**: Comprehensive unit test suite implemented with mocking support.  
 **Resolution**: All Freezed 3.x issues resolved, code generation working correctly.
+**Latest**: Test suite compatibility restored after Supabase dependency updates (December 2024).
 
 #### Testing Guidelines:
 1. Write tests before implementing new features
@@ -186,6 +201,13 @@ Widget tests are located in the `test/` directory.
 3. Test both success and error scenarios
 4. Include integration tests for critical user flows
 
+#### Test Mocking Best Practices (Updated December 2024):
+- **Sequential Mock Calls**: Use call counters instead of chaining `.thenAnswer().thenAnswer()`
+- **Async ViewModels**: Use `Future.delayed()` to wait for async operations in tests
+- **Supabase Mocks**: Always include all required constructor parameters for API objects
+- **Null Safety**: Handle non-nullable session types with proper error simulation
+
 #### Development Dependencies Added:
 - **path_provider**: Local file storage for caching
-- Mock generation support for repositories in testing
+- **mockito**: Mock generation support for repositories in testing
+- Mock classes generated for Supabase client components

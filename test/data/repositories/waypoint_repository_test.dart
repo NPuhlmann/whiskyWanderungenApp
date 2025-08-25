@@ -189,6 +189,44 @@ void main() {
 
         verify(mockBackendApiService.addWaypoint(waypointWithImages, testHikeId)).called(1);
       });
+
+      test('should add waypoint with custom order index', () async {
+        // Arrange
+        const customOrderIndex = 5;
+        when(mockBackendApiService.addWaypoint(testWaypoint, testHikeId, orderIndex: customOrderIndex))
+            .thenAnswer((_) async => {});
+
+        // Act
+        await waypointRepository.addWaypoint(testWaypoint, testHikeId, orderIndex: customOrderIndex);
+
+        // Assert
+        verify(mockBackendApiService.addWaypoint(testWaypoint, testHikeId, orderIndex: customOrderIndex)).called(1);
+      });
+
+      test('should add waypoint without order index when not specified', () async {
+        // Arrange
+        when(mockBackendApiService.addWaypoint(testWaypoint, testHikeId, orderIndex: null))
+            .thenAnswer((_) async => {});
+
+        // Act
+        await waypointRepository.addWaypoint(testWaypoint, testHikeId);
+
+        // Assert
+        verify(mockBackendApiService.addWaypoint(testWaypoint, testHikeId, orderIndex: null)).called(1);
+      });
+
+      test('should handle zero order index', () async {
+        // Arrange
+        const zeroOrderIndex = 0;
+        when(mockBackendApiService.addWaypoint(testWaypoint, testHikeId, orderIndex: zeroOrderIndex))
+            .thenAnswer((_) async => {});
+
+        // Act
+        await waypointRepository.addWaypoint(testWaypoint, testHikeId, orderIndex: zeroOrderIndex);
+
+        // Assert
+        verify(mockBackendApiService.addWaypoint(testWaypoint, testHikeId, orderIndex: zeroOrderIndex)).called(1);
+      });
     });
 
     group('updateWaypoint', () {
@@ -325,6 +363,93 @@ void main() {
       });
     });
 
+    group('updateWaypointOrder', () {
+      const testHikeId = 1;
+      const testWaypointId = 10;
+      const newOrderIndex = 3;
+
+      test('should update waypoint order successfully', () async {
+        // Arrange
+        when(mockBackendApiService.updateWaypointOrder(testHikeId, testWaypointId, newOrderIndex))
+            .thenAnswer((_) async => {});
+
+        // Act & Assert - should not throw
+        await waypointRepository.updateWaypointOrder(testHikeId, testWaypointId, newOrderIndex);
+
+        verify(mockBackendApiService.updateWaypointOrder(testHikeId, testWaypointId, newOrderIndex)).called(1);
+      });
+
+      test('should throw custom exception when backend service fails', () async {
+        // Arrange
+        const originalError = 'Database constraint violation';
+        when(mockBackendApiService.updateWaypointOrder(testHikeId, testWaypointId, newOrderIndex))
+            .thenThrow(Exception(originalError));
+
+        // Act & Assert
+        try {
+          await waypointRepository.updateWaypointOrder(testHikeId, testWaypointId, newOrderIndex);
+          fail('Expected exception was not thrown');
+        } catch (e) {
+          expect(e.toString(), contains('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge'));
+          expect(e.toString(), contains(originalError));
+        }
+
+        verify(mockBackendApiService.updateWaypointOrder(testHikeId, testWaypointId, newOrderIndex)).called(1);
+      });
+
+      test('should handle different order index values', () async {
+        // Arrange
+        const testCases = [
+          [1, 10, 0],    // Move to first position
+          [1, 10, 1],    // Move to second position
+          [1, 10, 100],  // Move to end position
+          [2, 20, 50],   // Different hike and waypoint
+        ];
+
+        for (final testCase in testCases) {
+          when(mockBackendApiService.updateWaypointOrder(testCase[0], testCase[1], testCase[2]))
+              .thenAnswer((_) async => {});
+        }
+
+        // Act & Assert
+        for (final testCase in testCases) {
+          await waypointRepository.updateWaypointOrder(testCase[0], testCase[1], testCase[2]);
+          verify(mockBackendApiService.updateWaypointOrder(testCase[0], testCase[1], testCase[2])).called(1);
+        }
+      });
+
+      test('should handle negative order index', () async {
+        // Arrange
+        const negativeIndex = -1;
+        when(mockBackendApiService.updateWaypointOrder(testHikeId, testWaypointId, negativeIndex))
+            .thenAnswer((_) async => {});
+
+        // Act
+        await waypointRepository.updateWaypointOrder(testHikeId, testWaypointId, negativeIndex);
+
+        // Assert
+        verify(mockBackendApiService.updateWaypointOrder(testHikeId, testWaypointId, negativeIndex)).called(1);
+      });
+
+      test('should handle updating non-existent waypoint order', () async {
+        // Arrange
+        const nonExistentWaypointId = 999;
+        when(mockBackendApiService.updateWaypointOrder(testHikeId, nonExistentWaypointId, newOrderIndex))
+            .thenThrow(Exception('Waypoint not found'));
+
+        // Act & Assert
+        try {
+          await waypointRepository.updateWaypointOrder(testHikeId, nonExistentWaypointId, newOrderIndex);
+          fail('Expected exception was not thrown');
+        } catch (e) {
+          expect(e.toString(), contains('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge'));
+          expect(e.toString(), contains('Waypoint not found'));
+        }
+
+        verify(mockBackendApiService.updateWaypointOrder(testHikeId, nonExistentWaypointId, newOrderIndex)).called(1);
+      });
+    });
+
     group('Error Handling and Logging', () {
       test('should wrap all exceptions with German error messages', () async {
         // Test all methods wrap exceptions appropriately
@@ -348,6 +473,8 @@ void main() {
             .thenThrow(Exception('Test error'));
         when(mockBackendApiService.deleteWaypoint(waypointId, hikeId))
             .thenThrow(Exception('Test error'));
+        when(mockBackendApiService.updateWaypointOrder(hikeId, waypointId, 1))
+            .thenThrow(Exception('Test error'));
 
         // Test each method wraps the exception
         final methods = [
@@ -355,6 +482,7 @@ void main() {
           () => waypointRepository.addWaypoint(waypoint, hikeId),
           () => waypointRepository.updateWaypoint(waypoint),
           () => waypointRepository.deleteWaypoint(waypointId, hikeId),
+          () => waypointRepository.updateWaypointOrder(hikeId, waypointId, 1),
         ];
 
         for (final method in methods) {
@@ -430,12 +558,15 @@ void main() {
             .thenAnswer((_) async => {});
         when(mockBackendApiService.updateWaypoint(waypoint))
             .thenAnswer((_) async => {});
+        when(mockBackendApiService.updateWaypointOrder(hikeId, waypoint.id, 2))
+            .thenAnswer((_) async => {});
 
         // Act
         final futures = [
           waypointRepository.getWaypointsForHike(hikeId),
           waypointRepository.addWaypoint(waypoint, hikeId).then((_) => <Waypoint>[]),
           waypointRepository.updateWaypoint(waypoint).then((_) => <Waypoint>[]),
+          waypointRepository.updateWaypointOrder(hikeId, waypoint.id, 2).then((_) => <Waypoint>[]),
         ];
 
         final results = await Future.wait(futures);
@@ -443,10 +574,237 @@ void main() {
         // Assert
         expect(results[0], isA<List<Waypoint>>());
         expect(results[0].length, 1);
+        expect(results.length, 4); // Updated to include updateWaypointOrder
         
         verify(mockBackendApiService.getWaypointsForHike(hikeId)).called(1);
         verify(mockBackendApiService.addWaypoint(waypoint, hikeId)).called(1);
         verify(mockBackendApiService.updateWaypoint(waypoint)).called(1);
+        verify(mockBackendApiService.updateWaypointOrder(hikeId, waypoint.id, 2)).called(1);
+      });
+    });
+
+    group('Edge Cases and Validation', () {
+      test('should handle waypoints with extreme coordinate values', () async {
+        // Arrange
+        const extremeWaypoints = [
+          Waypoint(
+            id: 1,
+            hikeId: 1,
+            name: 'North Pole',
+            description: 'Extreme north',
+            latitude: 90.0,
+            longitude: 0.0,
+          ),
+          Waypoint(
+            id: 2,
+            hikeId: 1,
+            name: 'South Pole',
+            description: 'Extreme south',
+            latitude: -90.0,
+            longitude: 180.0,
+          ),
+          Waypoint(
+            id: 3,
+            hikeId: 1,
+            name: 'Date Line',
+            description: 'International date line',
+            latitude: 0.0,
+            longitude: -180.0,
+          ),
+        ];
+
+        when(mockBackendApiService.getWaypointsForHike(1))
+            .thenAnswer((_) async => extremeWaypoints);
+
+        // Act
+        final result = await waypointRepository.getWaypointsForHike(1);
+
+        // Assert
+        expect(result.length, 3);
+        expect(result[0].latitude, 90.0);
+        expect(result[1].latitude, -90.0);
+        expect(result[2].longitude, -180.0);
+      });
+
+      test('should handle waypoints with very long names and descriptions', () async {
+        // Arrange
+        final longName = 'A' * 1000;
+        final longDescription = 'B' * 2000;
+        final longNameWaypoint = Waypoint(
+          id: 1,
+          hikeId: 1,
+          name: longName,
+          description: longDescription,
+          latitude: 47.0,
+          longitude: 8.0,
+        );
+
+        when(mockBackendApiService.addWaypoint(longNameWaypoint, 1))
+            .thenAnswer((_) async => {});
+
+        // Act & Assert - should not throw
+        await waypointRepository.addWaypoint(longNameWaypoint, 1);
+
+        verify(mockBackendApiService.addWaypoint(longNameWaypoint, 1)).called(1);
+      });
+
+      test('should handle waypoints with empty names and descriptions', () async {
+        // Arrange
+        const emptyWaypoint = Waypoint(
+          id: 1,
+          hikeId: 1,
+          name: '',
+          description: '',
+          latitude: 47.0,
+          longitude: 8.0,
+        );
+
+        when(mockBackendApiService.updateWaypoint(emptyWaypoint))
+            .thenAnswer((_) async => {});
+
+        // Act & Assert
+        await waypointRepository.updateWaypoint(emptyWaypoint);
+
+        verify(mockBackendApiService.updateWaypoint(emptyWaypoint)).called(1);
+      });
+
+      test('should handle waypoints with many images', () async {
+        // Arrange
+        final manyImages = List.generate(100, (index) => 'image$index.jpg');
+        final imageHeavyWaypoint = Waypoint(
+          id: 1,
+          hikeId: 1,
+          name: 'Many Images Point',
+          description: 'Point with many images',
+          latitude: 47.0,
+          longitude: 8.0,
+          images: manyImages,
+        );
+
+        when(mockBackendApiService.addWaypoint(imageHeavyWaypoint, 1))
+            .thenAnswer((_) async => {});
+
+        // Act & Assert
+        await waypointRepository.addWaypoint(imageHeavyWaypoint, 1);
+
+        verify(mockBackendApiService.addWaypoint(imageHeavyWaypoint, 1)).called(1);
+      });
+
+      test('should handle zero and negative IDs', () async {
+        // Arrange
+        const testCases = [
+          [0, 0],    // Both zero
+          [-1, 1],   // Negative waypoint ID
+          [1, -1],   // Negative hike ID
+          [-1, -1],  // Both negative
+        ];
+
+        for (final testCase in testCases) {
+          when(mockBackendApiService.deleteWaypoint(testCase[0], testCase[1]))
+              .thenAnswer((_) async => {});
+        }
+
+        // Act & Assert
+        for (final testCase in testCases) {
+          await waypointRepository.deleteWaypoint(testCase[0], testCase[1]);
+          verify(mockBackendApiService.deleteWaypoint(testCase[0], testCase[1])).called(1);
+        }
+      });
+
+      test('should handle very large ID values', () async {
+        // Arrange
+        const largeWaypointId = 9223372036854775807; // Max int64
+        const largeHikeId = 2147483647; // Max int32
+        const largeOrderIndex = 1000000;
+
+        when(mockBackendApiService.updateWaypointOrder(largeHikeId, largeWaypointId, largeOrderIndex))
+            .thenAnswer((_) async => {});
+
+        // Act
+        await waypointRepository.updateWaypointOrder(largeHikeId, largeWaypointId, largeOrderIndex);
+
+        // Assert
+        verify(mockBackendApiService.updateWaypointOrder(largeHikeId, largeWaypointId, largeOrderIndex)).called(1);
+      });
+
+      test('should handle null safety for optional parameters', () async {
+        // Arrange
+        const waypoint = Waypoint(
+          id: 1,
+          hikeId: 1,
+          name: 'Test',
+          description: 'Test',
+          latitude: 47.0,
+          longitude: 8.0,
+        );
+
+        when(mockBackendApiService.addWaypoint(waypoint, 1, orderIndex: null))
+            .thenAnswer((_) async => {});
+
+        // Act - explicitly pass null
+        await waypointRepository.addWaypoint(waypoint, 1, orderIndex: null);
+
+        // Assert
+        verify(mockBackendApiService.addWaypoint(waypoint, 1, orderIndex: null)).called(1);
+      });
+    });
+
+    group('Performance and Load Testing', () {
+      test('should handle processing large number of waypoints', () async {
+        // Arrange
+        const hikeId = 1;
+        final manyWaypoints = List.generate(1000, (index) => Waypoint(
+          id: index,
+          hikeId: hikeId,
+          name: 'Waypoint $index',
+          description: 'Description $index',
+          latitude: 47.0 + (index * 0.001),
+          longitude: 8.0 + (index * 0.001),
+        ));
+
+        when(mockBackendApiService.getWaypointsForHike(hikeId))
+            .thenAnswer((_) async => manyWaypoints);
+
+        // Act
+        final result = await waypointRepository.getWaypointsForHike(hikeId);
+
+        // Assert
+        expect(result.length, 1000);
+        expect(result.first.name, 'Waypoint 0');
+        expect(result.last.name, 'Waypoint 999');
+        verify(mockBackendApiService.getWaypointsForHike(hikeId)).called(1);
+      });
+
+      test('should handle rapid sequential operations', () async {
+        // Arrange
+        const hikeId = 1;
+        final waypoints = List.generate(10, (index) => Waypoint(
+          id: index,
+          hikeId: hikeId,
+          name: 'Sequential $index',
+          description: 'Desc $index',
+          latitude: 47.0,
+          longitude: 8.0,
+        ));
+
+        for (final waypoint in waypoints) {
+          when(mockBackendApiService.addWaypoint(waypoint, hikeId))
+              .thenAnswer((_) async => {});
+          when(mockBackendApiService.updateWaypoint(waypoint))
+              .thenAnswer((_) async => {});
+        }
+
+        // Act - Add all waypoints sequentially
+        for (final waypoint in waypoints) {
+          await waypointRepository.addWaypoint(waypoint, hikeId);
+          await waypointRepository.updateWaypoint(waypoint);
+        }
+
+        // Assert
+        for (final waypoint in waypoints) {
+          verify(mockBackendApiService.addWaypoint(waypoint, hikeId)).called(1);
+          verify(mockBackendApiService.updateWaypoint(waypoint)).called(1);
+        }
       });
     });
   });

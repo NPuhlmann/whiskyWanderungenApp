@@ -63,7 +63,7 @@ class ProfilePageViewModel extends ChangeNotifier{
     }
   }
 
-  void updateProfile(Profile profile) async {
+  Future<void> updateProfile(Profile profile) async {
     _isLoading = true;
     notifyListeners();
     
@@ -80,6 +80,7 @@ class ProfilePageViewModel extends ChangeNotifier{
     } catch (e) {
       log("Fehler beim Aktualisieren des Profils: $e");
       // Hier könnte eine Fehlerbehandlung implementiert werden
+      // Don't rethrow to avoid breaking the UI state
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -156,7 +157,7 @@ class ProfilePageViewModel extends ChangeNotifier{
     } catch (e) {
       log("💥 Upload-Fehler: $e", error: e);
       _handleUploadError(e);
-      rethrow;
+      // Don't rethrow to avoid breaking the UI state
     } finally {
       _isLoading = false;
       notifyListeners();
