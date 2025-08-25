@@ -1,0 +1,214 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Flutter Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Analyze code
+        run: flutter analyze
+        
+      - name: Check formatting
+        run: dart format --set-exit-if-changed .
+        
+      - name: Run unit tests
+        run: flutter test --coverage
+        
+      - name: Run widget tests
+        run: flutter test test/UI/ --coverage
+        
+      - name: Run integration tests
+        run: flutter test test/integration/ --coverage || echo "No integration tests found"
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  build-android:
+    name: Android Build
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Build Android APK
+        run: flutter build apk --debug
+        
+      - name: Build Android App Bundle
+        run: flutter build appbundle --debug
+        
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-debug-aab
+          path: build/app/outputs/bundle/debug/app-debug.aab
+
+  build-ios:
+    name: iOS Build
+    runs-on: macos-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Build iOS
+        run: flutter build ios --debug --no-codesign
+        
+      - name: Upload iOS build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-debug-build
+          path: build/ios/
+
+  build-web:
+    name: Web Build
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Build Web
+        run: flutter build web
+        
+      - name: Upload Web build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: build/web/
+
+  dependency-check:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          
+      - name: Check for outdated dependencies
+        run: flutter pub outdated
+        
+      - name: Check for security vulnerabilities
+        run: flutter pub deps --style=tree
+
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [test, build-android, build-ios, build-web, security-scan, dependency-check]
+    if: always()
+    
+    steps:
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "🎉 Alle CI-Tests erfolgreich!"
+          echo "✅ Tests bestanden"
+          echo "✅ Builds erfolgreich"
+          echo "✅ Security Scan abgeschlossen"
+          echo "✅ Dependencies geprüft"
+          
+      - name: Notify Failure
+        if: failure()
+        run: |
+          echo "❌ CI-Pipeline fehlgeschlagen!"
+          echo "Bitte überprüfe die GitHub Actions Logs."

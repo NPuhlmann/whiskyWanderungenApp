@@ -1,0 +1,394 @@
+name: Advanced Release with Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+      target_branch:
+        description: 'Target Branch'
+        required: true
+        default: 'main'
+        type: string
+      skip_tests:
+        description: 'Skip Tests (Emergency Release)'
+        required: false
+        default: false
+        type: boolean
+  release:
+    types: [published]
+
+env:
+  FLUTTER_VERSION: '3.19.0'
+  ROLLBACK_TAG: ''
+
+jobs:
+  pre-release-check:
+    name: Pre-Release Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Validate branch protection
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/${{ github.event.inputs.target_branch }}" ]; then
+            echo "❌ Workflow kann nur auf dem angegebenen Branch ausgeführt werden"
+            exit 1
+          fi
+          echo "✅ Branch-Validierung erfolgreich"
+          
+      - name: Check for uncommitted changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "❌ Uncommitted changes detected"
+            git status
+            exit 1
+          fi
+          echo "✅ Keine uncommitted changes gefunden"
+
+  run-tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_tests != 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Run all tests
+        run: flutter test --coverage
+        
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+
+  create-release-branch:
+    name: Create Release Branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    needs: [pre-release-check, run-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+      - name: Create release branch
+        run: |
+          RELEASE_BRANCH="release/v$(date +%Y%m%d)-${{ github.event.inputs.release_type }}"
+          git checkout -b $RELEASE_BRANCH
+          echo "RELEASE_BRANCH=$RELEASE_BRANCH" >> $GITHUB_ENV
+          
+      - name: Push release branch
+        run: |
+          git push origin $RELEASE_BRANCH
+          echo "Release branch $RELEASE_BRANCH created and pushed"
+
+  build-android:
+    name: Android Release Build
+    runs-on: ubuntu-latest
+    needs: [pre-release-check, run-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Setup Android Keystore
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: build/app/outputs/flutter-apk/
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          
+      - name: Build Android Release APK
+        run: flutter build apk --release
+        
+      - name: Build Android Release App Bundle
+        run: flutter build appbundle --release
+        
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
+      - name: Upload Release AAB
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+
+  build-ios:
+    name: iOS Release Build
+    runs-on: macos-latest
+    needs: [pre-release-check, run-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        
+      - name: Setup iOS Code Signing
+        uses: apple-actions/import-codesigning-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+          
+      - name: Build iOS Release
+        run: flutter build ios --release
+        
+      - name: Create IPA
+        run: |
+          cd build/ios/iphoneos
+          xcrun altool --export-app --type ios --output-format ipa --output "whisky-hikes-ios.ipa" --export-options-plist ../../../.github/workflows/ios-export-options.plist
+          
+      - name: Upload iOS Release
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-release-ipa
+          path: build/ios/iphoneos/whisky-hikes-ios.ipa
+
+  version-bump:
+    name: Version Bump
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+      - name: Bump version
+        id: bump
+        run: |
+          # Aktuelle Version aus pubspec.yaml extrahieren
+          CURRENT_VERSION=$(grep 'version:' pubspec.yaml | sed 's/version: //')
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Neue Version basierend auf Release Type
+          VERSION_PART="${CURRENT_VERSION%+*}"
+          BUILD_NUMBER="${CURRENT_VERSION##*+}"
+          
+          IFS='.' read -ra VERSION_ARRAY <<< "$VERSION_PART"
+          MAJOR="${VERSION_ARRAY[0]}"
+          MINOR="${VERSION_ARRAY[1]}"
+          PATCH="${VERSION_ARRAY[2]}"
+          
+          case "${{ github.event.inputs.release_type }}" in
+            "major")
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            "minor")
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            "patch")
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}+${BUILD_NUMBER}"
+          echo "New version: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+          # Version in pubspec.yaml aktualisieren
+          sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" pubspec.yaml
+          
+      - name: Commit and push version bump
+        run: |
+          git add pubspec.yaml
+          git commit -m "Bump version to ${{ steps.bump.outputs.new_version }} [skip ci]"
+          git push origin main
+          
+      - name: Create Git tag
+        run: |
+          git tag -a "v${{ steps.bump.outputs.new_version }}" -m "Release v${{ steps.bump.outputs.new_version }}"
+          git push origin "v${{ steps.bump.outputs.new_version }}"
+          echo "ROLLBACK_TAG=v${{ steps.bump.outputs.new_version }}" >> $GITHUB_ENV
+
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios, version-bump]
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.version-bump.outputs.new_version }}
+          release_name: Release ${{ needs.version-bump.outputs.new_version }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload Android APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-release.apk
+          asset_name: whisky-hikes-android-${{ needs.version-bump.outputs.new_version }}.apk
+          asset_content_type: application/vnd.android.package-archive
+          
+      - name: Upload Android AAB
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/bundle/release/app-release.aab
+          asset_name: whisky-hikes-android-${{ needs.version-bump.outputs.new_version }}.aab
+          asset_content_type: application/octet-stream
+          
+      - name: Upload iOS IPA
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/ios/iphoneos/whisky-hikes-ios.ipa
+          asset_name: whisky-hikes-ios-${{ needs.version-bump.outputs.new_version }}.ipa
+          asset_content_type: application/octet-stream
+
+  post-release-cleanup:
+    name: Post-Release Cleanup
+    runs-on: ubuntu-latest
+    needs: [create-github-release]
+    if: github.event_name == 'workflow_dispatch' && always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+      - name: Delete release branch
+        if: success()
+        run: |
+          git push origin --delete ${{ env.RELEASE_BRANCH }} || echo "Release branch already deleted"
+          
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "🎉 Release erfolgreich abgeschlossen!"
+          echo "Version: ${{ needs.version-bump.outputs.new_version }}"
+          echo "GitHub Release erstellt"
+          echo "Release Branch gelöscht"
+
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: [version-bump]
+    if: failure() && github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+      - name: Rollback version
+        run: |
+          # Zurück zum vorherigen Tag
+          git tag -d ${{ needs.version-bump.outputs.new_version }} || echo "Tag not found"
+          git push origin :refs/tags/${{ needs.version-bump.outputs.new_version }} || echo "Remote tag not found"
+          
+          # Vorherige Version wiederherstellen
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "v1.0.0")
+          echo "Rolling back to: $PREVIOUS_TAG"
+          
+      - name: Notify Rollback
+        run: |
+          echo "🔄 Rollback durchgeführt!"
+          echo "Version ${{ needs.version-bump.outputs.new_version }} wurde zurückgesetzt"
+          echo "Bitte überprüfe die Logs und behebe die Probleme"
+
+  notify:
+    name: Final Notification
+    runs-on: ubuntu-latest
+    needs: [post-release-cleanup, rollback]
+    if: always()
+    
+    steps:
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "🎉 Release Pipeline erfolgreich abgeschlossen!"
+          echo "Alle Builds wurden erstellt und deployed"
+          
+      - name: Notify Failure
+        if: failure()
+        run: |
+          echo "❌ Release Pipeline fehlgeschlagen!"
+          echo "Rollback wurde durchgeführt"
+          echo "Bitte überprüfe die GitHub Actions Logs"
