@@ -1,0 +1,50 @@
+# Flutter Entwicklungsmuster - Whisky Hikes
+
+## 🏗️ Architektur-Pattern
+- **MVVM mit Provider**: ViewModels erweitern `ChangeNotifier`
+- **Repository Pattern**: Datenzugriff über Repositories abstrahieren
+- **Service Layer**: Business-Logic in Services kapseln
+- **Dependency Injection**: Über `lib/config/dependencies.dart` konfigurieren
+
+## 📁 Datei-Struktur
+```
+lib/UI/[feature]/
+├── [feature]_page.dart          # Hauptseite
+├── [feature]_view_model.dart    # ViewModel (ChangeNotifier)
+└── widgets/                     # Feature-spezifische Widgets
+    └── [widget_name].dart
+```
+
+## 🔧 Code-Konventionen
+- **Models**: Verwende Freezed für immutable Data Classes
+- **Services**: Async/Await für alle API-Calls
+- **Error Handling**: Try-Catch mit aussagekräftigen Fehlermeldungen
+- **Naming**: snake_case für Dateien, camelCase für Variablen
+
+## 📱 UI-Patterns
+- **Responsive Design**: MediaQuery für Bildschirmgrößen
+- **Loading States**: CircularProgressIndicator bei API-Calls
+- **Error States**: Error-Widgets mit Retry-Buttons
+- **Empty States**: Informative Nachrichten bei leeren Listen
+
+## 🧪 Testing
+- **Unit Tests**: Für ViewModels und Services
+- **Widget Tests**: Für UI-Komponenten
+- **Mocks**: Über `test/mocks/` für externe Dependencies
+- **Test Coverage**: Mindestens 80% für neue Features
+
+## 🔄 State Management
+- **Provider**: Für Dependency Injection und State Management
+- **ChangeNotifier**: Für reaktive UI-Updates
+- **Consumer**: Für Widgets, die auf State-Änderungen reagieren
+- **Context.read()**: Für einmalige Service-Aufrufe
+
+## 📡 API-Integration
+- **Supabase**: Über `BackendApiService` für alle Datenbank-Operationen
+- **Realtime**: Über Supabase Channels für Live-Updates
+- **Error Handling**: Konsistente Fehlerbehandlung über alle API-Calls
+- **Loading States**: Immer Loading-Indikatoren bei API-Operationen
+description:
+globs:
+alwaysApply: false
+---

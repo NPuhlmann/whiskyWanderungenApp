@@ -1,0 +1,54 @@
+# Supabase Backend-Patterns - Whisky Hikes
+
+## 🗄️ Datenbank-Schema
+- **Profiles**: Erweitert auth.users mit zusätzlichen Feldern
+- **Hikes**: Wanderrouten mit Metadaten (Länge, Schwierigkeit, Preis)
+- **Waypoints**: GPS-Koordinaten und Beschreibungen für Wanderrouten
+- **Orders**: Bestellungen mit Status-Tracking und Lieferoptionen
+- **Tasting_Sets**: Whisky-Samples pro Wanderroute
+
+## 🔐 RLS-Policies
+- **Authentifizierung**: Alle Tabellen haben RLS aktiviert
+- **Benutzer-Daten**: Benutzer können nur eigene Daten sehen/bearbeiten
+- **Admin-Rechte**: Admins haben Zugriff auf alle Daten
+- **Merchant-Rechte**: Händler können eigene Routen und Bestellungen verwalten
+
+## 📡 API-Patterns
+- **BackendApiService**: Zentrale Klasse für alle Supabase-Operationen
+- **Repository Pattern**: Jede Entität hat ein eigenes Repository
+- **Error Handling**: Konsistente Fehlerbehandlung über alle API-Calls
+- **Loading States**: Immer Loading-Indikatoren bei Datenbank-Operationen
+
+## 🔄 Realtime-Features
+- **Order Updates**: Live-Updates bei Bestellstatus-Änderungen
+- **Hike Changes**: Benachrichtigungen bei Routen-Updates
+- **User Notifications**: Push-Updates für wichtige Events
+- **Channels**: Supabase Channels für verschiedene Event-Typen
+
+## 🚀 Edge Functions
+- **Stripe Webhooks**: Payment-Status-Updates verarbeiten
+- **Complex Queries**: RPC Functions für komplexe Business-Logic
+- **File Processing**: Bild-Upload und -Optimierung
+- **External APIs**: Integration mit DHL, Deutsche Post, etc.
+
+## 📊 Datenbank-Operationen
+- **CRUD**: Create, Read, Update, Delete über Supabase Client
+- **Joins**: Komplexe Queries über RPC Functions
+- **Transactions**: Mehrere Operationen in einer Transaktion
+- **Batch Operations**: Mehrere Datensätze gleichzeitig verarbeiten
+
+## 🔒 Sicherheit
+- **Row Level Security**: Alle Tabellen haben RLS aktiviert
+- **User Isolation**: Benutzer können nur eigene Daten sehen
+- **Input Validation**: Alle Eingaben werden validiert
+- **SQL Injection**: Verhindert durch Supabase Client
+
+## 📈 Performance
+- **Indexes**: Optimierte Indizes für häufige Queries
+- **Pagination**: Limit/Offset für große Datensätze
+- **Caching**: Lokales Caching für Offline-Funktionalität
+- **Query Optimization**: Effiziente SQL-Queries über RPC Functions
+description:
+globs:
+alwaysApply: false
+---

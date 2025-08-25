@@ -1,0 +1,83 @@
+# Implementierungsprioritäten - Whisky Hikes
+
+## 🚀 Phase 1: Kritische Business-Features (Woche 1-4)
+### **Payment & Checkout System**
+- **Priorität**: 🔴 HOCH - Ohne Payment keine Umsätze
+- **Features**: Stripe-Integration, Checkout-UI, Order-Datenbank
+- **Abhängigkeiten**: Keine, kann parallel zu anderen Features entwickelt werden
+- **Dateien**: `lib/UI/checkout/`, `lib/data/services/payment/`, neue SQL-Tabellen
+
+### **Tasting-Set-Management**
+- **Priorität**: 🔴 HOCH - Kernprodukt der App
+- **Features**: Tasting-Set-Models, Whisky-Samples, Preisgestaltung
+- **Abhängigkeiten**: Keine
+- **Dateien**: `lib/domain/models/tasting_set.dart`, neue SQL-Tabellen
+
+## 🚀 Phase 2: User Experience Features (Woche 5-8)
+### **Order Tracking & Management**
+- **Priorität**: 🟡 MITTEL - Wichtig für Kundenzufriedenheit
+- **Features**: Bestellstatus-Tracking, Versand-Updates
+- **Abhängigkeiten**: Payment-System, Order-Datenbank
+- **Dateien**: `lib/UI/orders/`, `lib/domain/models/order.dart`
+
+### **Offline-Funktionalität**
+- **Priorität**: 🟡 MITTEL - Verbessert User Experience
+- **Features**: Lokales Caching, Offline-First Repository
+- **Abhängigkeiten**: Bestehende Repositories
+- **Dateien**: `lib/data/services/cache/`, erweiterte Repositories
+
+## 🚀 Phase 3: Admin & Business Features (Woche 9-16)
+### **Admin Dashboard (Web-App)**
+- **Priorität**: 🟢 NIEDRIG - Für Unternehmen, nicht für Endnutzer
+- **Features**: Admin-UI, Route-Planning, Bestellverwaltung
+- **Abhängigkeiten**: Alle Mobile App Features
+- **Dateien**: `lib/UI/web/`, `lib/UI/admin/`
+
+### **Analytics & Reporting**
+- **Priorität**: 🟢 NIEDRIG - Für Business-Entscheidungen
+- **Features**: Verkaufsstatistiken, Kundenanalytics
+- **Abhängigkeiten**: Order-System, Admin-Dashboard
+- **Dateien**: `lib/UI/admin/analytics/`, neue SQL-Functions
+
+## 📋 Implementierungsreihenfolge
+
+### **Woche 1-2: Foundation**
+1. Payment-System (Stripe + Checkout)
+2. Order-Datenbank-Schema
+3. Tasting-Set-Models
+
+### **Woche 3-4: Core Business Logic**
+1. Order-Management
+2. Payment-Webhooks
+3. Basic Order-Tracking
+
+### **Woche 5-6: User Experience**
+1. Offline-Funktionalität
+2. Push-Notifications (Supabase Realtime)
+3. Order-Status-Updates
+
+### **Woche 7-8: Polish & Testing**
+1. Review-System
+2. GPS-Tracking
+3. Umfassende Tests
+
+### **Woche 9-16: Admin Features**
+1. Flutter Web Setup
+2. Admin-Dashboard
+3. Route-Planning-Tool
+4. Analytics & Reporting
+
+## 🔗 Abhängigkeiten beachten
+- **Payment-System** muss vor Order-Management implementiert werden
+- **Tasting-Set-Models** müssen vor Admin-Features vorhanden sein
+- **Mobile App Features** müssen vor Web-App Features implementiert werden
+- **Datenbank-Schema** muss vor allen Features erstellt werden
+
+## 📚 Referenz-Dokumente
+- [MOBILE_APP_IMPLEMENTATION_PLAN.md](mdc:MOBILE_APP_IMPLEMENTATION_PLAN.md) - Detaillierte Mobile App Schritte
+- [WEBAPP_IMPLEMENTATION_PLAN.md](mdc:WEBAPP_IMPLEMENTATION_PLAN.md) - Detaillierte Web-App Schritte
+- [README.md](mdc:README.md) - Aktuelle Projektstruktur
+description:
+globs:
+alwaysApply: false
+---

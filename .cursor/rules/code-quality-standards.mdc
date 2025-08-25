@@ -1,0 +1,106 @@
+# Code-Qualitätsstandards - Whisky Hikes
+
+## 🧹 Code-Formatierung
+- **Dart Format**: Immer `dart format` vor dem Commit ausführen
+- **Zeilenlänge**: Maximal 80 Zeichen pro Zeile
+- **Einrückung**: 2 Spaces (Flutter Standard)
+- **Leerzeilen**: Sinnvolle Gruppierung von Code-Blöcken
+
+## 📝 Kommentare & Dokumentation
+- **DartDoc**: Alle public APIs mit `///` dokumentieren
+- **Inline-Kommentare**: Nur bei komplexer Business-Logic
+- **TODO-Kommentare**: Mit `// TODO: [Beschreibung]` formatieren
+- **FIXME-Kommentare**: Für bekannte Probleme mit `// FIXME: [Problem]`
+
+## 🔧 Code-Struktur
+- **Single Responsibility**: Jede Klasse hat eine klare Verantwortlichkeit
+- **Dependency Injection**: Über Constructor-Injection
+- **Interface Segregation**: Kleine, spezifische Interfaces
+- **Composition over Inheritance**: Bevorzuge Composition
+
+## 🚫 Anti-Patterns vermeiden
+- **God Objects**: Große Klassen mit vielen Verantwortlichkeiten
+- **Deep Nesting**: Maximal 3-4 Verschachtelungsebenen
+- **Magic Numbers**: Konstanten definieren, nicht hardcoden
+- **String Concatenation**: StringBuffer für viele Strings verwenden
+
+## 🧪 Testing-Standards
+- **Test Coverage**: Mindestens 80% für neue Features
+- **Test-Namen**: Beschreibende Namen wie `should_display_error_when_api_fails`
+- **Arrange-Act-Assert**: Klare Test-Struktur
+- **Mocks**: Externe Dependencies immer mocken
+
+## 📱 UI-Standards
+- **Responsive Design**: Immer MediaQuery für verschiedene Bildschirmgrößen
+- **Accessibility**: Semantics für Screen Reader
+- **Loading States**: Immer Loading-Indikatoren bei async Operationen
+- **Error Handling**: Benutzerfreundliche Fehlermeldungen
+
+## 🔒 Sicherheitsstandards
+- **Input Validation**: Alle Benutzereingaben validieren
+- **Error Messages**: Keine internen Details in UI-Fehlermeldungen
+- **Authentication**: Immer auth.uid() für RLS-Policies prüfen
+- **Data Sanitization**: SQL-Injection durch Supabase Client verhindert
+
+## 📊 Performance-Standards
+- **Lazy Loading**: Bilder und Daten bei Bedarf laden
+- **Caching**: Lokales Caching für Offline-Funktionalität
+- **Debouncing**: API-Calls bei häufigen Eingaben verzögern
+- **Memory Management**: Dispose von Controllern und Streams
+
+## 🔄 State Management
+- **Provider Pattern**: Konsistent über die gesamte App
+- **ChangeNotifier**: Für reaktive UI-Updates
+- **State Isolation**: Lokaler State in Widgets, globaler State in ViewModels
+- **Error States**: Immer Error-Handling implementieren
+
+## 📡 API-Standards
+- **Error Handling**: Konsistente Fehlerbehandlung über alle API-Calls
+- **Retry Logic**: Automatische Wiederholung bei Netzwerkfehlern
+- **Timeout**: Immer Timeouts für API-Calls setzen
+- **Loading States**: Immer Loading-Indikatoren bei API-Operationen
+
+## 📚 Code-Beispiele
+
+### ✅ Gute Praxis - ViewModel
+```dart
+class HikeViewModel extends ChangeNotifier {
+  final HikeRepository _hikeRepository;
+  List<Hike> _hikes = [];
+  bool _isLoading = false;
+  String? _error;
+
+  HikeViewModel(this._hikeRepository);
+
+  List<Hike> get hikes => _hikes;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  Future<void> loadHikes() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _hikes = await _hikeRepository.getHikes();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
+```
+
+### ❌ Schlechte Praxis - God Object
+```dart
+// Vermeiden: Zu viele Verantwortlichkeiten in einer Klasse
+class AppManager {
+  // Auth, Hikes, Orders, Payments, Notifications - alles in einer Klasse
+}
+```
+description:
+globs:
+alwaysApply: false
+---

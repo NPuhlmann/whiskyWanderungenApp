@@ -1,0 +1,42 @@
+# Whisky Hikes - Projektübersicht
+
+## 🎯 Projektziel
+Whisky Hikes ist eine Flutter-App, die es Nutzern ermöglicht, Tasting-Sets zu erwerben und damit auf geführte Whisky-Wanderungen zu gehen. Unternehmen können eigene Wanderrouten hochladen und Tasting-Sets verkaufen.
+
+## 🏗️ Architektur
+- **Frontend**: Flutter (Mobile + Web)
+- **Backend**: Supabase (PostgreSQL + Auth + Storage + Realtime)
+- **Architektur**: MVVM mit Provider Pattern
+- **Code-Generierung**: Freezed für Models, build_runner
+
+## 📁 Projektstruktur
+```
+whisky_hikes/
+├── lib/
+│   ├── config/          # App-Konfiguration, Routing, Dependencies
+│   ├── data/            # Services, Repositories, API-Calls
+│   ├── domain/          # Business-Logic, Models (Freezed)
+│   └── UI/              # Benutzeroberfläche (MVVM)
+├── terraform-supabase/  # Infrastructure as Code
+└── test/                # Test-Suite
+```
+
+## 🔑 Wichtige Dateien
+- [main.dart](mdc:lib/main.dart) - App-Einstiegspunkt
+- [pubspec.yaml](mdc:pubspec.yaml) - Dependencies und Konfiguration
+- [router.dart](mdc:lib/config/routing/router.dart) - Navigation und Routing
+- [backend_api.dart](mdc:lib/data/services/database/backend_api.dart) - Supabase API Service
+
+## 🚀 Implementierungsstatus
+- ✅ **Bereits implementiert**: Auth, Basis-UI, Kartenintegration, Datenbank-Schema
+- ❌ **Fehlend**: Payment, Tasting-Sets, Bestellverwaltung, Admin-Dashboard
+- 🔄 **In Entwicklung**: Responsive Design, Offline-Funktionalität
+
+## 📚 Dokumentation
+- [MOBILE_APP_IMPLEMENTATION_PLAN.md](mdc:MOBILE_APP_IMPLEMENTATION_PLAN.md) - Mobile App Features
+- [WEBAPP_IMPLEMENTATION_PLAN.md](mdc:WEBAPP_IMPLEMENTATION_PLAN.md) - Admin Web-App
+- [README.md](mdc:README.md) - Projekt-Setup und Deployment
+description:
+globs:
+alwaysApply: false
+---
