@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$Hike {
 
 // die id des hikes
- int get id; String get name; double get length; double get steep; int get elevation; String get description; double get price; Difficulty get difficulty; String? get thumbnailImageUrl; bool get isFavorite;
+ int get id; String get name; double get length; double get steep; int get elevation; String get description; double get price; Difficulty get difficulty;@JsonKey(name: 'thumbnail_image_url') String? get thumbnailImageUrl;@JsonKey(name: 'is_favorite') bool get isFavorite;
 /// Create a copy of Hike
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $HikeCopyWith<$Res>  {
   factory $HikeCopyWith(Hike value, $Res Function(Hike) _then) = _$HikeCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty, String? thumbnailImageUrl, bool isFavorite
+ int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty,@JsonKey(name: 'thumbnail_image_url') String? thumbnailImageUrl,@JsonKey(name: 'is_favorite') bool isFavorite
 });
 
 
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnailImageUrl,  bool isFavorite)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty, @JsonKey(name: 'thumbnail_image_url')  String? thumbnailImageUrl, @JsonKey(name: 'is_favorite')  bool isFavorite)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Hike() when $default != null:
 return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite);case _:
@@ -181,7 +181,7 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnailImageUrl,  bool isFavorite)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty, @JsonKey(name: 'thumbnail_image_url')  String? thumbnailImageUrl, @JsonKey(name: 'is_favorite')  bool isFavorite)  $default,) {final _that = this;
 switch (_that) {
 case _Hike():
 return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite);}
@@ -198,7 +198,7 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty,  String? thumbnailImageUrl,  bool isFavorite)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty, @JsonKey(name: 'thumbnail_image_url')  String? thumbnailImageUrl, @JsonKey(name: 'is_favorite')  bool isFavorite)?  $default,) {final _that = this;
 switch (_that) {
 case _Hike() when $default != null:
 return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite);case _:
@@ -213,7 +213,7 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 @JsonSerializable()
 
 class _Hike implements Hike {
-  const _Hike({required this.id, this.name = '', this.length = 1.0, this.steep = 0.2, this.elevation = 100, this.description = '', this.price = 1.0, this.difficulty = Difficulty.mid, this.thumbnailImageUrl, this.isFavorite = false});
+  const _Hike({required this.id, this.name = '', this.length = 1.0, this.steep = 0.2, this.elevation = 100, this.description = '', this.price = 1.0, this.difficulty = Difficulty.mid, @JsonKey(name: 'thumbnail_image_url') this.thumbnailImageUrl, @JsonKey(name: 'is_favorite') this.isFavorite = false});
   factory _Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
 
 // die id des hikes
@@ -225,8 +225,8 @@ class _Hike implements Hike {
 @override@JsonKey() final  String description;
 @override@JsonKey() final  double price;
 @override@JsonKey() final  Difficulty difficulty;
-@override final  String? thumbnailImageUrl;
-@override@JsonKey() final  bool isFavorite;
+@override@JsonKey(name: 'thumbnail_image_url') final  String? thumbnailImageUrl;
+@override@JsonKey(name: 'is_favorite') final  bool isFavorite;
 
 /// Create a copy of Hike
 /// with the given fields replaced by the non-null parameter values.
@@ -261,7 +261,7 @@ abstract mixin class _$HikeCopyWith<$Res> implements $HikeCopyWith<$Res> {
   factory _$HikeCopyWith(_Hike value, $Res Function(_Hike) _then) = __$HikeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty, String? thumbnailImageUrl, bool isFavorite
+ int id, String name, double length, double steep, int elevation, String description, double price, Difficulty difficulty,@JsonKey(name: 'thumbnail_image_url') String? thumbnailImageUrl,@JsonKey(name: 'is_favorite') bool isFavorite
 });
 
 

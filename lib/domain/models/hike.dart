@@ -16,8 +16,8 @@ sealed class Hike with _$Hike {
     @Default('') String description,
     @Default(1.0) double price,
     @Default(Difficulty.mid) Difficulty difficulty,
-    String? thumbnailImageUrl,
-    @Default(false) bool isFavorite,
+    @JsonKey(name: 'thumbnail_image_url') String? thumbnailImageUrl,
+    @JsonKey(name: 'is_favorite') @Default(false) bool isFavorite,
   }) = _Hike;
 
   factory Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);

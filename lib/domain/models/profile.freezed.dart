@@ -22,8 +22,8 @@ mixin _$Profile implements DiagnosticableTreeMixin {
 @JsonKey(name: 'last_name') set lastName(String value);// Standardwert: leerer String
 @JsonKey(name: 'date_of_birth') DateTime? get dateOfBirth;// Standardwert: leerer String
 @JsonKey(name: 'date_of_birth') set dateOfBirth(DateTime? value); String get email; set email(String value);// Standardwert: leerer String
- String get imageUrl;// Standardwert: leerer String
- set imageUrl(String value);
+@JsonKey(name: 'image_url') String get imageUrl;// Standardwert: leerer String
+@JsonKey(name: 'image_url') set imageUrl(String value);
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,7 +55,7 @@ abstract mixin class $ProfileCopyWith<$Res>  {
   factory $ProfileCopyWith(Profile value, $Res Function(Profile) _then) = _$ProfileCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth, String email, String imageUrl
+ String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth, String email,@JsonKey(name: 'image_url') String imageUrl
 });
 
 
@@ -165,7 +165,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email,  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email, @JsonKey(name: 'image_url')  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
 return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.imageUrl);case _:
@@ -186,7 +186,7 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email,  String imageUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email, @JsonKey(name: 'image_url')  String imageUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Profile():
 return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.imageUrl);case _:
@@ -206,7 +206,7 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email,  String imageUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email, @JsonKey(name: 'image_url')  String imageUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
 return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.imageUrl);case _:
@@ -221,7 +221,7 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.
 @JsonSerializable()
 
 class _Profile with DiagnosticableTreeMixin implements Profile {
-   _Profile({this.id = '', @JsonKey(name: 'first_name') this.firstName = '', @JsonKey(name: 'last_name') this.lastName = '', @JsonKey(name: 'date_of_birth') this.dateOfBirth = null, this.email = '', this.imageUrl = ''});
+   _Profile({this.id = '', @JsonKey(name: 'first_name') this.firstName = '', @JsonKey(name: 'last_name') this.lastName = '', @JsonKey(name: 'date_of_birth') this.dateOfBirth = null, this.email = '', @JsonKey(name: 'image_url') this.imageUrl = ''});
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
 @override@JsonKey()  String id;
@@ -233,7 +233,7 @@ class _Profile with DiagnosticableTreeMixin implements Profile {
 @override@JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth;
 @override@JsonKey()  String email;
 // Standardwert: leerer String
-@override@JsonKey()  String imageUrl;
+@override@JsonKey(name: 'image_url')  String imageUrl;
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
@@ -267,7 +267,7 @@ abstract mixin class _$ProfileCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   factory _$ProfileCopyWith(_Profile value, $Res Function(_Profile) _then) = __$ProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth, String email, String imageUrl
+ String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth, String email,@JsonKey(name: 'image_url') String imageUrl
 });
 
 

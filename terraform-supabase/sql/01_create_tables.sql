@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.hikes (
     elevation INTEGER NOT NULL DEFAULT 100,
     description TEXT DEFAULT '',
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
-    difficulty TEXT NOT NULL DEFAULT 'mid' CHECK (difficulty IN ('easy', 'mid', 'hard', 'very_hard')),
+    difficulty TEXT NOT NULL DEFAULT 'mid' CHECK (difficulty IN ('easy', 'mid', 'hard', 'veryHard')),
     thumbnail_image_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

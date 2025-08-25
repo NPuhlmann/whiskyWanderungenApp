@@ -7,14 +7,14 @@ part 'waypoint.g.dart';
 sealed class Waypoint with _$Waypoint {
   const factory Waypoint({
     required int id,
-    required int hikeId,
+    @JsonKey(name: 'hike_id') required int hikeId,
     required String name,
     required String description,
     required double latitude,
     required double longitude,
-    @Default(0) int orderIndex,
+    @JsonKey(name: 'order_index') @Default(0) int orderIndex,
     @Default([]) List<String> images,
-    @Default(false) bool isVisited,
+    @JsonKey(name: 'is_visited') @Default(false) bool isVisited,
   }) = _Waypoint;
 
   factory Waypoint.fromJson(Map<String, dynamic> json) =>

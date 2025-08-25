@@ -13,8 +13,7 @@ abstract class Profile with _$Profile {
     @JsonKey(name: 'last_name') @Default('') String lastName, // Standardwert: leerer String
     @JsonKey(name: 'date_of_birth') @Default(null) DateTime? dateOfBirth,
     @Default('') String email, // Standardwert: leerer String
-
-    @Default('') String imageUrl, // Standardwert: leerer String
+    @JsonKey(name: 'image_url') @Default('') String imageUrl, // Standardwert: leerer String
   }) = _Profile;
 
   factory Profile.fromJson(Map<String, dynamic> json) =>

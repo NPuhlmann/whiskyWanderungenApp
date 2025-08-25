@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Waypoint {
 
- int get id; int get hikeId; String get name; String get description; double get latitude; double get longitude; int get orderIndex; List<String> get images; bool get isVisited;
+ int get id;@JsonKey(name: 'hike_id') int get hikeId; String get name; String get description; double get latitude; double get longitude;@JsonKey(name: 'order_index') int get orderIndex; List<String> get images;@JsonKey(name: 'is_visited') bool get isVisited;
 /// Create a copy of Waypoint
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $WaypointCopyWith<$Res>  {
   factory $WaypointCopyWith(Waypoint value, $Res Function(Waypoint) _then) = _$WaypointCopyWithImpl;
 @useResult
 $Res call({
- int id, int hikeId, String name, String description, double latitude, double longitude, int orderIndex, List<String> images, bool isVisited
+ int id,@JsonKey(name: 'hike_id') int hikeId, String name, String description, double latitude, double longitude,@JsonKey(name: 'order_index') int orderIndex, List<String> images,@JsonKey(name: 'is_visited') bool isVisited
 });
 
 
@@ -158,7 +158,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  int orderIndex,  List<String> images,  bool isVisited)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'hike_id')  int hikeId,  String name,  String description,  double latitude,  double longitude, @JsonKey(name: 'order_index')  int orderIndex,  List<String> images, @JsonKey(name: 'is_visited')  bool isVisited)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Waypoint() when $default != null:
 return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.orderIndex,_that.images,_that.isVisited);case _:
@@ -179,7 +179,7 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitud
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  int orderIndex,  List<String> images,  bool isVisited)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'hike_id')  int hikeId,  String name,  String description,  double latitude,  double longitude, @JsonKey(name: 'order_index')  int orderIndex,  List<String> images, @JsonKey(name: 'is_visited')  bool isVisited)  $default,) {final _that = this;
 switch (_that) {
 case _Waypoint():
 return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.orderIndex,_that.images,_that.isVisited);}
@@ -196,7 +196,7 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitud
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int hikeId,  String name,  String description,  double latitude,  double longitude,  int orderIndex,  List<String> images,  bool isVisited)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'hike_id')  int hikeId,  String name,  String description,  double latitude,  double longitude, @JsonKey(name: 'order_index')  int orderIndex,  List<String> images, @JsonKey(name: 'is_visited')  bool isVisited)?  $default,) {final _that = this;
 switch (_that) {
 case _Waypoint() when $default != null:
 return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitude,_that.longitude,_that.orderIndex,_that.images,_that.isVisited);case _:
@@ -211,16 +211,16 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.latitud
 @JsonSerializable()
 
 class _Waypoint implements Waypoint {
-  const _Waypoint({required this.id, required this.hikeId, required this.name, required this.description, required this.latitude, required this.longitude, this.orderIndex = 0, final  List<String> images = const [], this.isVisited = false}): _images = images;
+  const _Waypoint({required this.id, @JsonKey(name: 'hike_id') required this.hikeId, required this.name, required this.description, required this.latitude, required this.longitude, @JsonKey(name: 'order_index') this.orderIndex = 0, final  List<String> images = const [], @JsonKey(name: 'is_visited') this.isVisited = false}): _images = images;
   factory _Waypoint.fromJson(Map<String, dynamic> json) => _$WaypointFromJson(json);
 
 @override final  int id;
-@override final  int hikeId;
+@override@JsonKey(name: 'hike_id') final  int hikeId;
 @override final  String name;
 @override final  String description;
 @override final  double latitude;
 @override final  double longitude;
-@override@JsonKey() final  int orderIndex;
+@override@JsonKey(name: 'order_index') final  int orderIndex;
  final  List<String> _images;
 @override@JsonKey() List<String> get images {
   if (_images is EqualUnmodifiableListView) return _images;
@@ -228,7 +228,7 @@ class _Waypoint implements Waypoint {
   return EqualUnmodifiableListView(_images);
 }
 
-@override@JsonKey() final  bool isVisited;
+@override@JsonKey(name: 'is_visited') final  bool isVisited;
 
 /// Create a copy of Waypoint
 /// with the given fields replaced by the non-null parameter values.
@@ -263,7 +263,7 @@ abstract mixin class _$WaypointCopyWith<$Res> implements $WaypointCopyWith<$Res>
   factory _$WaypointCopyWith(_Waypoint value, $Res Function(_Waypoint) _then) = __$WaypointCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int hikeId, String name, String description, double latitude, double longitude, int orderIndex, List<String> images, bool isVisited
+ int id,@JsonKey(name: 'hike_id') int hikeId, String name, String description, double latitude, double longitude,@JsonKey(name: 'order_index') int orderIndex, List<String> images,@JsonKey(name: 'is_visited') bool isVisited
 });
 
 
