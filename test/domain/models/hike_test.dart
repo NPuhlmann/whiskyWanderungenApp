@@ -120,8 +120,8 @@ void main() {
         expect(json['description'], 'Test description');
         expect(json['price'], 19.99);
         expect(json['difficulty'], 'easy');
-        expect(json['thumbnailImageUrl'], 'https://example.com/image.jpg');
-        expect(json['isFavorite'], true);
+        expect(json['thumbnail_image_url'], 'https://example.com/image.jpg');
+        expect(json['is_favorite'], true);
       });
 
       test('should deserialize from JSON correctly', () {
@@ -134,8 +134,8 @@ void main() {
           'description': 'From JSON',
           'price': 24.99,
           'difficulty': 'hard',
-          'thumbnailImageUrl': 'https://example.com/json.jpg',
-          'isFavorite': false,
+          'thumbnail_image_url': 'https://example.com/json.jpg',
+          'is_favorite': false,
         };
 
         final hike = Hike.fromJson(json);
@@ -156,7 +156,7 @@ void main() {
         final json = {
           'id': 3,
           'name': 'No Image Hike',
-          'thumbnailImageUrl': null,
+          'thumbnail_image_url': null,
         };
 
         final hike = Hike.fromJson(json);

@@ -144,27 +144,27 @@ void main() {
         final json = waypoint.toJson();
 
         expect(json['id'], 1);
-        expect(json['hikeId'], 10);
+        expect(json['hike_id'], 10);
         expect(json['name'], 'JSON Test');
         expect(json['description'], 'Test JSON serialization');
         expect(json['latitude'], 47.3769);
         expect(json['longitude'], 8.5417);
-        expect(json['orderIndex'], 2);
+        expect(json['order_index'], 2);
         expect(json['images'], ['test1.jpg', 'test2.jpg']);
-        expect(json['isVisited'], true);
+        expect(json['is_visited'], true);
       });
 
       test('should deserialize from JSON correctly', () {
         final json = {
           'id': 2,
-          'hikeId': 20,
+          'hike_id': 20,
           'name': 'From JSON',
           'description': 'Deserialized waypoint',
           'latitude': 46.9481,
           'longitude': 7.4474,
-          'orderIndex': 4,
+          'order_index': 4,
           'images': ['json1.jpg', 'json2.jpg'],
-          'isVisited': false,
+          'is_visited': false,
         };
 
         final waypoint = Waypoint.fromJson(json);
@@ -183,14 +183,14 @@ void main() {
       test('should handle empty images array in JSON', () {
         final json = {
           'id': 3,
-          'hikeId': 30,
+          'hike_id': 30,
           'name': 'No Images',
           'description': 'No images waypoint',
           'latitude': 45.0,
           'longitude': 6.0,
-          'orderIndex': 1,
+          'order_index': 1,
           'images': <String>[],
-          'isVisited': false,
+          'is_visited': false,
         };
 
         final waypoint = Waypoint.fromJson(json);
@@ -204,7 +204,7 @@ void main() {
       test('should use defaults for optional fields in JSON', () {
         final json = {
           'id': 4,
-          'hikeId': 40,
+          'hike_id': 40,
           'name': 'Minimal',
           'description': 'Minimal waypoint',
           'latitude': 44.0,
