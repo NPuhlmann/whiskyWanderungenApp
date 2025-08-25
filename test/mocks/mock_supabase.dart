@@ -10,6 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
   StorageFileApi,
   GoTrueClient,
   User,
+  Bucket,
+  FileObject,
 ])
 import 'mock_supabase.mocks.dart';
 

@@ -2630,3 +2630,83 @@ class MockUser extends _i1.Mock implements _i2.User {
           )
           as Map<String, dynamic>);
 }
+
+/// A class which mocks [Bucket].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockBucket extends _i1.Mock implements _i2.Bucket {
+  MockBucket() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get id =>
+      (super.noSuchMethod(
+            Invocation.getter(#id),
+            returnValue: _i5.dummyValue<String>(this, Invocation.getter(#id)),
+          )
+          as String);
+
+  @override
+  String get name =>
+      (super.noSuchMethod(
+            Invocation.getter(#name),
+            returnValue: _i5.dummyValue<String>(this, Invocation.getter(#name)),
+          )
+          as String);
+
+  @override
+  String get owner =>
+      (super.noSuchMethod(
+            Invocation.getter(#owner),
+            returnValue: _i5.dummyValue<String>(
+              this,
+              Invocation.getter(#owner),
+            ),
+          )
+          as String);
+
+  @override
+  String get createdAt =>
+      (super.noSuchMethod(
+            Invocation.getter(#createdAt),
+            returnValue: _i5.dummyValue<String>(
+              this,
+              Invocation.getter(#createdAt),
+            ),
+          )
+          as String);
+
+  @override
+  String get updatedAt =>
+      (super.noSuchMethod(
+            Invocation.getter(#updatedAt),
+            returnValue: _i5.dummyValue<String>(
+              this,
+              Invocation.getter(#updatedAt),
+            ),
+          )
+          as String);
+
+  @override
+  bool get public =>
+      (super.noSuchMethod(Invocation.getter(#public), returnValue: false)
+          as bool);
+}
+
+/// A class which mocks [FileObject].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFileObject extends _i1.Mock implements _i2.FileObject {
+  MockFileObject() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get name =>
+      (super.noSuchMethod(
+            Invocation.getter(#name),
+            returnValue: _i5.dummyValue<String>(this, Invocation.getter(#name)),
+          )
+          as String);
+}

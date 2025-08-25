@@ -1,526 +1,844 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:whisky_hikes/data/services/database/backend_api.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
 
+import '../../mocks/mock_supabase.dart';
+
 void main() {
   group('BackendApiService Tests', () {
-    group('Model Creation Tests', () {
-      test('should create Hike from JSON correctly', () {
-        // This tests the JSON conversion logic used in fetchHikes
-        final hikeJson = {
-          'id': 1,
-          'name': 'Test Hike',
-          'length': 5.5,
-          'steep': 0.3,
-          'elevation': 200,
-          'description': 'A test hike',
-          'price': 19.99,
-          'difficulty': 'mid',
-          'thumbnailImageUrl': 'https://example.com/image.jpg',
-          'isFavorite': false,
-        };
+    late BackendApiService backendApiService;
+    late MockSupabaseClient mockSupabaseClient;
+    late MockSupabaseQueryBuilder mockQueryBuilder;
+    late MockPostgrestFilterBuilder mockFilterBuilder;
+    late MockSupabaseStorageClient mockStorageClient;
+    late MockStorageFileApi mockStorageFileApi;
+    late MockGoTrueClient mockAuthClient;
+    late MockUser mockUser;
 
-        final hike = Hike.fromJson(hikeJson);
+    setUp(() {
+      mockSupabaseClient = MockSupabaseClient();
+      mockQueryBuilder = MockSupabaseQueryBuilder();
+      mockFilterBuilder = MockPostgrestFilterBuilder();
+      mockStorageClient = MockSupabaseStorageClient();
+      mockStorageFileApi = MockStorageFileApi();
+      mockAuthClient = MockGoTrueClient();
+      mockUser = MockUser();
 
-        expect(hike.id, 1);
-        expect(hike.name, 'Test Hike');
-        expect(hike.length, 5.5);
-        expect(hike.difficulty, Difficulty.mid);
-        expect(hike.price, 19.99);
-      });
-
-      test('should create Profile from JSON correctly', () {
-        final profileJson = {
-          'id': 'user123',
-          'firstName': 'John',
-          'lastName': 'Doe',
-          'dateOfBirth': '1990-05-15T00:00:00.000Z',
-          'email': 'john@example.com',
-          'imageUrl': 'https://example.com/avatar.jpg',
-        };
-
-        final profile = Profile.fromJson(profileJson);
-
-        expect(profile.id, 'user123');
-        expect(profile.firstName, 'John');
-        expect(profile.lastName, 'Doe');
-        expect(profile.email, 'john@example.com');
-      });
-
-      test('should create Waypoint from JSON correctly', () {
-        final waypointJson = {
-          'id': 1,
-          'hikeId': 10,
-          'name': 'Test Waypoint',
-          'description': 'A test waypoint',
-          'latitude': 47.3769,
-          'longitude': 8.5417,
-          'images': ['image1.jpg', 'image2.jpg'],
-          'isVisited': false,
-        };
-
-        final waypoint = Waypoint.fromJson(waypointJson);
-
-        expect(waypoint.id, 1);
-        expect(waypoint.hikeId, 10);
-        expect(waypoint.name, 'Test Waypoint');
-        expect(waypoint.latitude, 47.3769);
-        expect(waypoint.longitude, 8.5417);
-        expect(waypoint.images.length, 2);
-      });
+      // Create BackendApiService instance with reflection to access private client
+      backendApiService = BackendApiService();
+      
+      // Setup basic mocks
+      when(mockSupabaseClient.from(any)).thenReturn(mockQueryBuilder);
+      when(mockSupabaseClient.storage).thenReturn(mockStorageClient);
+      when(mockSupabaseClient.auth).thenReturn(mockAuthClient);
+      when(mockStorageClient.from(any)).thenReturn(mockStorageFileApi);
     });
 
-    group('Data Processing Logic Tests', () {
-      test('should handle empty hike list response', () {
-        // Test the logic for processing empty responses
-        final List<dynamic> emptyResponse = [];
-        final hikes = emptyResponse.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
+    group('Profile Management', () {
+      test('getUserProfileById should return profile when found', () async {
+        // Arrange
+        final profileData = {
+          'id': 'user123',
+          'first_name': 'John',
+          'last_name': 'Doe',
+          'date_of_birth': '1990-05-15T00:00:00.000Z',
+        };
         
-        expect(hikes, isEmpty);
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 'user123'))
+            .thenAnswer((_) async => [profileData]);
+
+        // Mock Supabase.instance.client
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getUserProfileById('user123');
+
+        // Assert
+        expect(result.id, 'user123');
+        expect(result.firstName, 'John');
+        expect(result.lastName, 'Doe');
+        verify(mockQueryBuilder.select()).called(1);
+        verify(mockFilterBuilder.eq('id', 'user123')).called(1);
       });
 
-      test('should handle multiple hikes response', () {
-        final List<dynamic> multipleHikesResponse = [
-          {
-            'id': 1,
-            'name': 'Hike 1',
-            'length': 3.0,
-            'price': 15.0,
-            'difficulty': 'easy',
-          },
-          {
-            'id': 2,
-            'name': 'Hike 2',
-            'length': 7.0,
-            'price': 25.0,
-            'difficulty': 'hard',
-          },
-        ];
+      test('getUserProfileById should return empty profile when not found', () async {
+        // Arrange
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 'user123'))
+            .thenAnswer((_) async => []);
 
-        final hikes = multipleHikesResponse.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
+        final service = MockedBackendApiService(mockSupabaseClient);
 
-        expect(hikes.length, 2);
-        expect(hikes[0].name, 'Hike 1');
-        expect(hikes[0].difficulty, Difficulty.easy);
-        expect(hikes[1].name, 'Hike 2');
-        expect(hikes[1].difficulty, Difficulty.hard);
+        // Act
+        final result = await service.getUserProfileById('user123');
+
+        // Assert
+        expect(result.id, 'user123');
+        expect(result.firstName, isEmpty);
+        expect(result.lastName, isEmpty);
       });
 
-      test('should process user hike IDs correctly', () {
-        // Test the logic for extracting hike IDs from purchased_hikes response
-        final List<dynamic> userHikeData = [
-          {'hike_id': '1'},
-          {'hike_id': 2},
-          {'hike_id': '3'},
-          {'hike_id': null}, // Should be filtered out
-        ];
-
-        final List<int> hikeIds = [];
-        for (final element in userHikeData) {
-          if (element['hike_id'] != null) {
-            hikeIds.add(int.parse(element['hike_id'].toString()));
-          }
-        }
-
-        expect(hikeIds, [1, 2, 3]);
-      });
-
-      test('should handle profile update data preparation', () {
+      test('updateUserProfile should update profile correctly', () async {
+        // Arrange
         final profile = Profile(
           id: 'user123',
           firstName: 'John',
           lastName: 'Doe',
           email: 'john@example.com', // Should be removed
           imageUrl: 'https://example.com/avatar.jpg', // Should be removed
-          dateOfBirth: DateTime(1990, 5, 15),
         );
 
-        final Map<String, dynamic> profileJson = profile.toJson();
-        profileJson.remove('email');
-        profileJson.remove('imageUrl');
+        when(mockQueryBuilder.update(any)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 'user123'))
+            .thenAnswer((_) async => null);
 
-        expect(profileJson.containsKey('email'), false);
-        expect(profileJson.containsKey('imageUrl'), false);
-        expect(profileJson['firstName'], 'John');
-        expect(profileJson['lastName'], 'Doe');
-        expect(profileJson['id'], 'user123');
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.updateUserProfile(profile);
+
+        // Assert
+        final capturedData = verify(mockQueryBuilder.update(captureAny)).captured.single;
+        expect(capturedData['email'], isNull);
+        expect(capturedData['imageUrl'], isNull);
+        expect(capturedData['first_name'], 'John');
+        expect(capturedData['last_name'], 'Doe');
+        verify(mockFilterBuilder.eq('id', 'user123')).called(1);
       });
 
-      test('should handle coordinate conversion for waypoints', () {
-        // Test the coordinate conversion logic
-        Map<String, dynamic> safeElement = {
-          'id': 1,
-          'name': 'Test Waypoint',
-          'description': 'Test',
-          'latitude': '47.3769', // String that needs conversion
-          'longitude': 8.5417,   // Already double
-        };
+      test('updateUserProfile should set user ID from auth when missing', () async {
+        // Arrange
+        final profile = Profile(
+          id: '', // Empty ID
+          firstName: 'John',
+          lastName: 'Doe',
+        );
 
-        // Simulate the conversion logic from getWaypointsForHike
-        if (safeElement['latitude'] == null) safeElement['latitude'] = 0.0;
-        if (safeElement['longitude'] == null) safeElement['longitude'] = 0.0;
-        
-        safeElement['latitude'] = double.parse(safeElement['latitude'].toString());
-        safeElement['longitude'] = double.parse(safeElement['longitude'].toString());
-        safeElement['hikeId'] = 10;
+        when(mockAuthClient.currentUser).thenReturn(mockUser);
+        when(mockUser.id).thenReturn('auth_user_123');
+        when(mockQueryBuilder.update(any)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 'auth_user_123'))
+            .thenAnswer((_) async => null);
 
-        expect(safeElement['latitude'], 47.3769);
-        expect(safeElement['longitude'], 8.5417);
-        expect(safeElement['hikeId'], 10);
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.updateUserProfile(profile);
+
+        // Assert
+        final capturedData = verify(mockQueryBuilder.update(captureAny)).captured.single;
+        expect(capturedData['id'], 'auth_user_123');
+        verify(mockFilterBuilder.eq('id', 'auth_user_123')).called(1);
       });
 
-      test('should handle null coordinates with defaults', () {
-        Map<String, dynamic> safeElement = {
-          'id': 1,
-          'name': 'Test Waypoint',
-          'description': 'Test',
-          'latitude': null,
-          'longitude': null,
-        };
+      test('updateUserProfile should throw when no user ID available', () async {
+        // Arrange
+        final profile = Profile(id: '', firstName: 'John', lastName: 'Doe');
 
-        // Apply the null handling logic
-        if (safeElement['latitude'] == null) safeElement['latitude'] = 0.0;
-        if (safeElement['longitude'] == null) safeElement['longitude'] = 0.0;
-        
-        safeElement['latitude'] = double.parse(safeElement['latitude'].toString());
-        safeElement['longitude'] = double.parse(safeElement['longitude'].toString());
+        when(mockAuthClient.currentUser).thenReturn(null);
 
-        expect(safeElement['latitude'], 0.0);
-        expect(safeElement['longitude'], 0.0);
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act & Assert
+        expect(
+          () => service.updateUserProfile(profile),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Benutzer-ID konnte nicht ermittelt werden'))),
+        );
       });
     });
 
-    group('Image URL Processing Tests', () {
-      test('should extract image URLs from hike images response', () {
-        final List<dynamic> hikeImageData = [
-          {'image_url': 'https://example.com/image1.jpg'},
-          {'image_url': 'https://example.com/image2.png'},
-          {'image_url': 'https://example.com/image3.webp'},
+    group('Hike Management', () {
+      test('fetchHikes should return list of hikes', () async {
+        // Arrange
+        final hikesData = [
+          {
+            'id': 1,
+            'name': 'Mountain Trail',
+            'length': 5.5,
+            'price': 19.99,
+            'difficulty': 'mid',
+          },
+          {
+            'id': 2,
+            'name': 'Forest Path',
+            'length': 3.2,
+            'price': 15.99,
+            'difficulty': 'easy',
+          }
         ];
 
-        final imageUrls = hikeImageData.map((element) => element['image_url'] as String).toList();
+        when(mockQueryBuilder.select()).thenAnswer((_) async => hikesData);
 
-        expect(imageUrls.length, 3);
-        expect(imageUrls[0], 'https://example.com/image1.jpg');
-        expect(imageUrls[1], 'https://example.com/image2.png');
-        expect(imageUrls[2], 'https://example.com/image3.webp');
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.fetchHikes();
+
+        // Assert
+        expect(result.length, 2);
+        expect(result[0].name, 'Mountain Trail');
+        expect(result[0].difficulty, Difficulty.mid);
+        expect(result[1].name, 'Forest Path');
+        expect(result[1].difficulty, Difficulty.easy);
+        verify(mockQueryBuilder.select()).called(1);
       });
 
-      test('should create image records for upload', () {
-        const hikeId = 1;
-        const imageUrls = [
+      test('fetchHikes should return empty list when no hikes found', () async {
+        // Arrange
+        when(mockQueryBuilder.select()).thenAnswer((_) async => []);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.fetchHikes();
+
+        // Assert
+        expect(result, isEmpty);
+      });
+
+      test('fetchUserHikes should return user purchased hikes', () async {
+        // Arrange
+        final purchasedHikesData = [
+          {'hike_id': '1'},
+          {'hike_id': 2},
+        ];
+
+        final hikeData = {
+          'id': 1,
+          'name': 'User Hike',
+          'length': 4.0,
+          'price': 20.0,
+          'difficulty': 'mid',
+        };
+
+        // Mock purchased hikes query
+        when(mockQueryBuilder.select('hike_id')).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('user_id', 'user123'))
+            .thenAnswer((_) async => purchasedHikesData);
+
+        // Mock individual hike queries
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 1))
+            .thenAnswer((_) async => [hikeData]);
+        when(mockFilterBuilder.eq('id', 2))
+            .thenAnswer((_) async => [hikeData]);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.fetchUserHikes('user123');
+
+        // Assert
+        expect(result.length, 2);
+        expect(result[0].name, 'User Hike');
+        verify(mockQueryBuilder.select('hike_id')).called(1);
+        verify(mockFilterBuilder.eq('user_id', 'user123')).called(1);
+      });
+
+      test('fetchUserHikes should handle empty purchased hikes', () async {
+        // Arrange
+        when(mockQueryBuilder.select('hike_id')).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('user_id', 'user123'))
+            .thenAnswer((_) async => []);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.fetchUserHikes('user123');
+
+        // Assert
+        expect(result, isEmpty);
+      });
+
+      test('fetchUserHikes should handle errors gracefully', () async {
+        // Arrange
+        when(mockQueryBuilder.select('hike_id')).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('user_id', 'user123'))
+            .thenThrow(Exception('Database error'));
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.fetchUserHikes('user123');
+
+        // Assert
+        expect(result, isEmpty);
+      });
+
+      test('fetchUserHikes should skip invalid hike IDs', () async {
+        // Arrange
+        final purchasedHikesData = [
+          {'hike_id': '1'},
+          {'hike_id': null}, // Should be filtered out
+          {'hike_id': '2'},
+        ];
+
+        when(mockQueryBuilder.select('hike_id')).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('user_id', 'user123'))
+            .thenAnswer((_) async => purchasedHikesData);
+
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 1))
+            .thenAnswer((_) async => [{'id': 1, 'name': 'Hike 1'}]);
+        when(mockFilterBuilder.eq('id', 2))
+            .thenThrow(Exception('Hike not found'));
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.fetchUserHikes('user123');
+
+        // Assert
+        expect(result.length, 1);
+        expect(result[0].name, 'Hike 1');
+      });
+    });
+
+    group('Hike Images Management', () {
+      test('getHikeImages should return list of image URLs', () async {
+        // Arrange
+        final imagesData = [
+          {'image_url': 'https://example.com/image1.jpg'},
+          {'image_url': 'https://example.com/image2.png'},
+        ];
+
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1))
+            .thenAnswer((_) async => imagesData);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getHikeImages(1);
+
+        // Assert
+        expect(result.length, 2);
+        expect(result[0], 'https://example.com/image1.jpg');
+        expect(result[1], 'https://example.com/image2.png');
+        verify(mockFilterBuilder.eq('hike_id', 1)).called(1);
+      });
+
+      test('getHikeImages should return empty list when no images', () async {
+        // Arrange
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1))
+            .thenAnswer((_) async => []);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getHikeImages(1);
+
+        // Assert
+        expect(result, isEmpty);
+      });
+
+      test('uploadHikeImages should upload images correctly', () async {
+        // Arrange
+        final imageUrls = [
           'https://example.com/image1.jpg',
           'https://example.com/image2.png',
         ];
 
-        final List<Map<String, dynamic>> imageRecords = imageUrls.map((imageUrl) => {
-          'hike_id': hikeId,
-          'image_url': imageUrl,
-        }).toList();
+        when(mockQueryBuilder.upsert(any)).thenAnswer((_) async => null);
 
-        expect(imageRecords.length, 2);
-        expect(imageRecords[0]['hike_id'], hikeId);
-        expect(imageRecords[0]['image_url'], 'https://example.com/image1.jpg');
-        expect(imageRecords[1]['hike_id'], hikeId);
-        expect(imageRecords[1]['image_url'], 'https://example.com/image2.png');
-      });
+        final service = MockedBackendApiService(mockSupabaseClient);
 
-      test('should generate correct profile image path', () {
-        const userId = 'user123';
-        const fileExt = 'jpg';
-        final String path = 'profile_images/$userId.$fileExt';
+        // Act
+        await service.uploadHikeImages(1, imageUrls);
 
-        expect(path, 'profile_images/user123.jpg');
-      });
-
-      test('should handle different file extensions', () {
-        const userId = 'user123';
-        const extensions = ['jpg', 'png', 'webp', 'jpeg'];
-
-        for (final ext in extensions) {
-          final String path = 'profile_images/$userId.$ext';
-          expect(path, 'profile_images/user123.$ext');
-        }
+        // Assert
+        final capturedData = verify(mockQueryBuilder.upsert(captureAny)).captured.single;
+        expect(capturedData.length, 2);
+        expect(capturedData[0]['hike_id'], 1);
+        expect(capturedData[0]['image_url'], 'https://example.com/image1.jpg');
+        expect(capturedData[1]['hike_id'], 1);
+        expect(capturedData[1]['image_url'], 'https://example.com/image2.png');
       });
     });
 
-    group('Error Handling Logic Tests', () {
-      test('should identify permission denied errors', () {
-        const errorMessage = 'permission denied for table profiles';
-        
-        final bool isPermissionError = errorMessage.contains('permission denied');
-        expect(isPermissionError, true);
-      });
-
-      test('should identify network errors', () {
-        const errorMessage = 'network timeout after 30 seconds';
-        
-        final bool isNetworkError = errorMessage.contains('network');
-        expect(isNetworkError, true);
-      });
-
-      test('should identify platform exceptions', () {
-        const errorMessage = 'PlatformException(error, message, details)';
-        
-        final bool isPlatformError = errorMessage.contains('PlatformException');
-        expect(isPlatformError, true);
-      });
-
-      test('should handle waypoint ID extraction from response', () {
-        final waypointResponse = {'id': 123};
-        final int newWaypointId = waypointResponse['id'] as int;
-        
-        expect(newWaypointId, 123);
-      });
-
-      test('should filter waypoint IDs correctly', () {
-        final List<dynamic> waypointData = [
-          {'waypoint_id': '1'},
-          {'waypoint_id': 2},
-          {'waypoint_id': '3'},
-        ];
-
-        final waypointIds = waypointData.map((element) => int.parse(element['waypoint_id'].toString())).toList();
-
-        expect(waypointIds, [1, 2, 3]);
-      });
-    });
-
-    group('Storage Path Generation Tests', () {
-      test('should generate correct storage paths', () {
-        const userId = 'user123';
-        const fileExt = 'jpg';
-        
-        final profileImagePath = 'profile_images/$userId.$fileExt';
-        expect(profileImagePath, 'profile_images/user123.jpg');
-      });
-
-      test('should handle special characters in user ID', () {
-        const userId = 'user@123-test_id';
-        const fileExt = 'png';
-        
-        final profileImagePath = 'profile_images/$userId.$fileExt';
-        expect(profileImagePath, 'profile_images/user@123-test_id.png');
-      });
-
-      test('should create hike waypoint insertion data', () {
-        const hikeId = 10;
-        const waypointId = 5;
-
-        final insertData = {
-          'hike_id': hikeId,
-          'waypoint_id': waypointId,
-        };
-
-        expect(insertData['hike_id'], hikeId);
-        expect(insertData['waypoint_id'], waypointId);
-      });
-
-      test('should create waypoint update data', () {
-        const waypoint = Waypoint(
-          id: 1,
-          hikeId: 10,
-          name: 'Updated Waypoint',
-          description: 'Updated description',
-          latitude: 47.3769,
-          longitude: 8.5417,
-        );
-
-        final updateData = {
-          'name': waypoint.name,
-          'description': waypoint.description,
-          'latitude': waypoint.latitude,
-          'longitude': waypoint.longitude,
-        };
-
-        expect(updateData['name'], 'Updated Waypoint');
-        expect(updateData['description'], 'Updated description');
-        expect(updateData['latitude'], 47.3769);
-        expect(updateData['longitude'], 8.5417);
-      });
-    });
-
-    group('File Processing Tests', () {
-      test('should handle file bytes correctly', () {
+    group('Profile Image Management', () {
+      test('uploadProfileImage should upload image successfully', () async {
+        // Arrange
         final fileBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
-        
-        expect(fileBytes.length, 5);
-        expect(fileBytes[0], 1);
-        expect(fileBytes[4], 5);
+        const userId = 'user123';
+        const fileExt = 'jpg';
+        const expectedUrl = 'https://example.com/avatars/user123/profile.jpg';
+
+        when(mockStorageClient.listBuckets())
+            .thenAnswer((_) async => [Bucket(id: 'avatars-bucket-id', name: 'avatars', owner: 'owner-id', public: true, createdAt: DateTime.now().toIso8601String(), updatedAt: DateTime.now().toIso8601String())]);
+        when(mockStorageFileApi.uploadBinary(any, any, fileOptions: anyNamed('fileOptions')))
+            .thenAnswer((_) async => 'path');
+        when(mockStorageFileApi.getPublicUrl(any))
+            .thenReturn(expectedUrl);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.uploadProfileImage(userId, fileBytes, fileExt);
+
+        // Assert
+        expect(result, expectedUrl);
+        verify(mockStorageFileApi.uploadBinary(
+          'user123/profile.jpg',
+          fileBytes,
+          fileOptions: anyNamed('fileOptions'),
+        )).called(1);
       });
 
-      test('should handle large file bytes', () {
-        final largeFileBytes = Uint8List.fromList(List.generate(10000, (index) => index % 256));
-        
-        expect(largeFileBytes.length, 10000);
-        expect(largeFileBytes[0], 0);
-        expect(largeFileBytes[255], 255);
-        expect(largeFileBytes[256], 0); // Should wrap around
+      test('uploadProfileImage should handle bucket not found', () async {
+        // Arrange
+        final fileBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
+
+        when(mockStorageClient.listBuckets())
+            .thenAnswer((_) async => []); // No avatars bucket
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act & Assert
+        expect(
+          () => service.uploadProfileImage('user123', fileBytes, 'jpg'),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('avatars') && 
+            e.toString().contains('existiert nicht'))),
+        );
       });
 
-      test('should identify user files by prefix', () {
+      test('uploadProfileImage should handle permission denied', () async {
+        // Arrange
+        final fileBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
+
+        when(mockStorageClient.listBuckets())
+            .thenAnswer((_) async => [Bucket(id: 'avatars-bucket-id', name: 'avatars', owner: 'owner-id', public: true, createdAt: DateTime.now().toIso8601String(), updatedAt: DateTime.now().toIso8601String())]);
+        when(mockStorageFileApi.uploadBinary(any, any, fileOptions: anyNamed('fileOptions')))
+            .thenThrow(Exception('permission denied'));
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act & Assert
+        expect(
+          () => service.uploadProfileImage('user123', fileBytes, 'jpg'),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Berechtigung'))),
+        );
+      });
+
+      test('getProfileImageUrl should return URL when image exists', () async {
+        // Arrange
         const userId = 'user123';
         final files = [
-          'user123.jpg',
-          'user456.png',
-          'user123.png',
-          'otherfile.jpg',
+          FileObject(bucketId: 'avatars', name: 'profile.jpg', id: 'profile-id', owner: 'owner-id', metadata: {'size': 1024}, updatedAt: DateTime.now().toIso8601String(), createdAt: DateTime.now().toIso8601String()),
+          FileObject(bucketId: 'avatars', name: 'other.png', id: 'other-id', owner: 'owner-id', metadata: {'size': 512}, updatedAt: DateTime.now().toIso8601String(), createdAt: DateTime.now().toIso8601String()),
+        ];
+        const expectedUrl = 'https://example.com/avatars/user123/profile.jpg';
+
+        when(mockStorageFileApi.list(path: userId))
+            .thenAnswer((_) async => files);
+        when(mockStorageFileApi.getPublicUrl('user123/profile.jpg'))
+            .thenReturn(expectedUrl);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getProfileImageUrl(userId);
+
+        // Assert
+        expect(result, expectedUrl);
+        verify(mockStorageFileApi.list(path: userId)).called(1);
+      });
+
+      test('getProfileImageUrl should return null when no profile image', () async {
+        // Arrange
+        const userId = 'user123';
+        final files = [
+          FileObject(bucketId: 'avatars', name: 'other.png', id: 'other-id-2', owner: 'owner-id', metadata: {'size': 512}, updatedAt: DateTime.now().toIso8601String(), createdAt: DateTime.now().toIso8601String()),
         ];
 
-        final userFiles = files.where((fileName) => fileName.startsWith(userId)).toList();
+        when(mockStorageFileApi.list(path: userId))
+            .thenAnswer((_) async => files);
 
-        expect(userFiles.length, 2);
-        expect(userFiles, contains('user123.jpg'));
-        expect(userFiles, contains('user123.png'));
-        expect(userFiles, isNot(contains('user456.png')));
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getProfileImageUrl(userId);
+
+        // Assert
+        expect(result, isNull);
+      });
+
+      test('getProfileImageUrl should handle storage errors gracefully', () async {
+        // Arrange
+        when(mockStorageFileApi.list(path: 'user123'))
+            .thenThrow(Exception('permission error'));
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getProfileImageUrl('user123');
+
+        // Assert
+        expect(result, isNull);
       });
     });
 
-    group('Validation Logic Tests', () {
-      test('should validate required profile fields', () {
-        final profileJson = {
-          'id': 'user123',
-          'firstName': 'John',
-          'lastName': 'Doe',
-        };
+    group('Waypoint Management', () {
+      test('getWaypointsForHike should return waypoints in order', () async {
+        // Arrange
+        final waypointDataList = [
+          {'waypoint_id': '2', 'order_index': '1'},
+          {'waypoint_id': '1', 'order_index': '0'},
+        ];
 
-        expect(profileJson['id'], isNotNull);
-        expect(profileJson['id'], isNotEmpty);
-        expect(profileJson.containsKey('firstName'), true);
-        expect(profileJson.containsKey('lastName'), true);
+        final waypointsResponse = [
+          {
+            'id': 1,
+            'name': 'First Waypoint',
+            'description': 'Description 1',
+            'latitude': '47.3769',
+            'longitude': '8.5417',
+          },
+          {
+            'id': 2,
+            'name': 'Second Waypoint',
+            'description': 'Description 2',
+            'latitude': '47.3800',
+            'longitude': '8.5500',
+          }
+        ];
+
+        // Mock waypoint data query
+        when(mockQueryBuilder.select('waypoint_id, order_index'))
+            .thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.order('order_index', ascending: true))
+            .thenAnswer((_) async => waypointDataList);
+
+        // Mock waypoints query
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.inFilter('id', [2, 1]))
+            .thenAnswer((_) async => waypointsResponse);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getWaypointsForHike(1);
+
+        // Assert
+        expect(result.length, 2);
+        expect(result[0].orderIndex, 0); // Should be sorted
+        expect(result[1].orderIndex, 1);
+        expect(result[0].name, 'First Waypoint');
+        expect(result[1].name, 'Second Waypoint');
       });
 
-      test('should handle missing profile ID', () {
-        final profileJson = <String, dynamic>{
-          'firstName': 'John',
-          'lastName': 'Doe',
-        };
+      test('getWaypointsForHike should handle empty waypoints', () async {
+        // Arrange
+        when(mockQueryBuilder.select('waypoint_id, order_index'))
+            .thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.order('order_index', ascending: true))
+            .thenAnswer((_) async => []);
 
-        final bool idMissing = profileJson['id'] == null || profileJson['id'].toString().isEmpty;
-        expect(idMissing, true);
+        final service = MockedBackendApiService(mockSupabaseClient);
 
-        // Simulate setting ID from auth
-        const mockUserId = 'auth_user_123';
-        profileJson['id'] = mockUserId;
-        
-        expect(profileJson['id'], mockUserId);
+        // Act
+        final result = await service.getWaypointsForHike(1);
+
+        // Assert
+        expect(result, isEmpty);
       });
 
-      test('should validate waypoint data completeness', () {
-        const waypoint = Waypoint(
-          id: 1,
-          hikeId: 10,
-          name: 'Test Waypoint',
-          description: 'Test Description',
+      test('getWaypointsForHike should handle coordinate conversion', () async {
+        // Arrange
+        final waypointDataList = [
+          {'waypoint_id': '1', 'order_index': '0'},
+        ];
+
+        final waypointsResponse = [
+          {
+            'id': 1,
+            'name': 'Test Waypoint',
+            'description': 'Test Description',
+            'latitude': null, // Should default to 0.0
+            'longitude': '8.5417', // String to be converted
+          }
+        ];
+
+        when(mockQueryBuilder.select('waypoint_id, order_index'))
+            .thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.order('order_index', ascending: true))
+            .thenAnswer((_) async => waypointDataList);
+
+        when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.inFilter('id', [1]))
+            .thenAnswer((_) async => waypointsResponse);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        final result = await service.getWaypointsForHike(1);
+
+        // Assert
+        expect(result.length, 1);
+        expect(result[0].latitude, 0.0); // Should default from null
+        expect(result[0].longitude, 8.5417); // Should convert from string
+      });
+
+      test('addWaypoint should create waypoint with association', () async {
+        // Arrange
+        final waypoint = Waypoint(
+          id: 0, // Will be generated
+          hikeId: 1,
+          name: 'New Waypoint',
+          description: 'New Description',
           latitude: 47.3769,
           longitude: 8.5417,
         );
 
-        // Simulate validation checks
-        expect(waypoint.name.isNotEmpty, true);
-        expect(waypoint.description.isNotEmpty, true);
-        expect(waypoint.latitude, greaterThanOrEqualTo(-90.0));
-        expect(waypoint.latitude, lessThanOrEqualTo(90.0));
-        expect(waypoint.longitude, greaterThanOrEqualTo(-180.0));
-        expect(waypoint.longitude, lessThanOrEqualTo(180.0));
+        when(mockQueryBuilder.insert(any)).thenReturn(mockQueryBuilder);
+        when(mockQueryBuilder.select('id')).thenReturn(mockQueryBuilder);
+        when(mockQueryBuilder.single()).thenAnswer((_) async => {'id': 123});
+
+        // Mock for order index check
+        when(mockQueryBuilder.select('order_index')).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.order('order_index', ascending: false))
+            .thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.limit(1)).thenAnswer((_) async => []);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.addWaypoint(waypoint, 1);
+
+        // Assert
+        // Verify waypoint insertion
+        final waypointData = verify(mockQueryBuilder.insert(captureAny)).captured.first;
+        expect(waypointData['name'], 'New Waypoint');
+        expect(waypointData['description'], 'New Description');
+        expect(waypointData['latitude'], 47.3769);
+        expect(waypointData['longitude'], 8.5417);
+
+        // Verify association insertion
+        final associationData = verify(mockQueryBuilder.insert(captureAny)).captured.last;
+        expect(associationData['hike_id'], 1);
+        expect(associationData['waypoint_id'], 123);
+        expect(associationData['order_index'], 1); // Should be 1 for first waypoint
       });
 
-      test('should validate file extension formats', () {
-        const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-        const testExtensions = ['jpg', 'PNG', 'gif', 'pdf'];
+      test('addWaypoint should use next order index when waypoints exist', () async {
+        // Arrange
+        final waypoint = Waypoint(
+          id: 0,
+          hikeId: 1,
+          name: 'New Waypoint',
+          description: 'New Description',
+          latitude: 47.3769,
+          longitude: 8.5417,
+        );
 
-        for (final ext in testExtensions) {
-          final isValid = validExtensions.contains(ext.toLowerCase());
-          if (ext == 'jpg' || ext == 'PNG') {
-            expect(isValid || ext.toLowerCase() == 'png', true);
-          } else if (ext == 'gif' || ext == 'pdf') {
-            expect(isValid, false);
-          }
-        }
+        when(mockQueryBuilder.insert(any)).thenReturn(mockQueryBuilder);
+        when(mockQueryBuilder.select('id')).thenReturn(mockQueryBuilder);
+        when(mockQueryBuilder.single()).thenAnswer((_) async => {'id': 123});
+
+        // Mock for order index check - return existing max order
+        when(mockQueryBuilder.select('order_index')).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.order('order_index', ascending: false))
+            .thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.limit(1))
+            .thenAnswer((_) async => [{'order_index': '5'}]);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.addWaypoint(waypoint, 1);
+
+        // Assert
+        final associationData = verify(mockQueryBuilder.insert(captureAny)).captured.last;
+        expect(associationData['order_index'], 6); // Should be max + 1
+      });
+
+      test('updateWaypoint should update waypoint correctly', () async {
+        // Arrange
+        final waypoint = Waypoint(
+          id: 123,
+          hikeId: 1,
+          name: 'Updated Waypoint',
+          description: 'Updated Description',
+          latitude: 47.4000,
+          longitude: 8.6000,
+        );
+
+        when(mockQueryBuilder.update(any)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('id', 123)).thenAnswer((_) async => null);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.updateWaypoint(waypoint);
+
+        // Assert
+        final updateData = verify(mockQueryBuilder.update(captureAny)).captured.single;
+        expect(updateData['name'], 'Updated Waypoint');
+        expect(updateData['description'], 'Updated Description');
+        expect(updateData['latitude'], 47.4000);
+        expect(updateData['longitude'], 8.6000);
+        verify(mockFilterBuilder.eq('id', 123)).called(1);
+      });
+
+      test('deleteWaypoint should delete waypoint and association', () async {
+        // Arrange
+        when(mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq(any, any)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq(any, any)).thenAnswer((_) async => null);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.deleteWaypoint(123, 1);
+
+        // Assert
+        verify(mockQueryBuilder.delete()).called(2); // Association and waypoint
+        verify(mockFilterBuilder.eq('waypoint_id', 123)).called(1);
+        verify(mockFilterBuilder.eq('hike_id', 1)).called(1);
+        verify(mockFilterBuilder.eq('id', 123)).called(1);
+      });
+
+      test('updateWaypointOrder should update order correctly', () async {
+        // Arrange
+        when(mockQueryBuilder.update(any)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('waypoint_id', 123)).thenAnswer((_) async => null);
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act
+        await service.updateWaypointOrder(1, 123, 5);
+
+        // Assert
+        final updateData = verify(mockQueryBuilder.update(captureAny)).captured.single;
+        expect(updateData['order_index'], 5);
+        verify(mockFilterBuilder.eq('hike_id', 1)).called(1);
+        verify(mockFilterBuilder.eq('waypoint_id', 123)).called(1);
       });
     });
 
-    group('Data Transformation Tests', () {
-      test('should transform hike response data correctly', () {
-        final hikeData = {
-          'id': 1,
-          'name': 'Test Hike',
-          'length': 5.5,
-          'steep': 0.3,
-          'elevation': 200,
-          'description': 'A test hike',
-          'price': 19.99,
-          'difficulty': 'mid',
-          'thumbnailImageUrl': null,
-          'isFavorite': false,
-        };
+    group('Error Handling', () {
+      test('getWaypointsForHike should throw meaningful error on failure', () async {
+        // Arrange
+        when(mockQueryBuilder.select('waypoint_id, order_index'))
+            .thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.eq('hike_id', 1)).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.order('order_index', ascending: true))
+            .thenThrow(Exception('Database connection failed'));
 
-        final hike = Hike.fromJson(hikeData);
+        final service = MockedBackendApiService(mockSupabaseClient);
 
-        expect(hike.id, 1);
-        expect(hike.name, 'Test Hike');
-        expect(hike.thumbnailImageUrl, null);
-        expect(hike.difficulty, Difficulty.mid);
+        // Act & Assert
+        expect(
+          () => service.getWaypointsForHike(1),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Fehler beim Abrufen der Wegpunkt-Daten für Wanderung 1'))),
+        );
       });
 
-      test('should handle database to model transformations', () {
-        // Simulate database response with snake_case
-        final dbWaypoint = {
-          'id': 1,
-          'name': 'Test Point',
-          'description': 'Test Description',
-          'latitude': '47.3769',
-          'longitude': '8.5417',
-          'created_at': '2024-01-01T10:00:00Z',
-        };
+      test('addWaypoint should throw meaningful error on failure', () async {
+        // Arrange
+        final waypoint = Waypoint(
+          id: 0,
+          hikeId: 1,
+          name: 'Test',
+          description: 'Test',
+          latitude: 47.3769,
+          longitude: 8.5417,
+        );
 
-        // Transform for model creation
-        final modelData = {
-          'id': dbWaypoint['id'],
-          'hikeId': 10, // Added during processing
-          'name': dbWaypoint['name'],
-          'description': dbWaypoint['description'],
-          'latitude': double.parse(dbWaypoint['latitude'].toString()),
-          'longitude': double.parse(dbWaypoint['longitude'].toString()),
-          'images': <String>[],
-          'isVisited': false,
-        };
+        when(mockQueryBuilder.insert(any))
+            .thenThrow(Exception('Insert failed'));
 
-        final waypoint = Waypoint.fromJson(modelData);
+        final service = MockedBackendApiService(mockSupabaseClient);
 
-        expect(waypoint.id, 1);
-        expect(waypoint.hikeId, 10);
-        expect(waypoint.latitude, 47.3769);
-        expect(waypoint.longitude, 8.5417);
+        // Act & Assert
+        expect(
+          () => service.addWaypoint(waypoint, 1),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Fehler beim Hinzufügen des Wegpunkts'))),
+        );
       });
 
-      test('should handle profile data transformations', () {
-        final dbProfile = {
-          'id': 'user123',
-          'first_name': 'John', // Database uses snake_case
-          'last_name': 'Doe',
-          'date_of_birth': '1990-05-15',
-        };
+      test('updateWaypoint should throw meaningful error on failure', () async {
+        // Arrange
+        final waypoint = Waypoint(
+          id: 123,
+          hikeId: 1,
+          name: 'Test',
+          description: 'Test',
+          latitude: 47.3769,
+          longitude: 8.5417,
+        );
 
-        // Transform to model format (snake_case as expected by JSON annotations)
-        final modelData = {
-          'id': dbProfile['id'],
-          'first_name': dbProfile['first_name'],
-          'last_name': dbProfile['last_name'],
-          'date_of_birth': dbProfile['date_of_birth'],
-          'email': '',
-          'imageUrl': '',
-        };
+        when(mockQueryBuilder.update(any))
+            .thenThrow(Exception('Update failed'));
 
-        final profile = Profile.fromJson(modelData);
+        final service = MockedBackendApiService(mockSupabaseClient);
 
-        expect(profile.id, 'user123');
-        expect(profile.firstName, 'John');
-        expect(profile.lastName, 'Doe');
+        // Act & Assert
+        expect(
+          () => service.updateWaypoint(waypoint),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Fehler beim Aktualisieren des Wegpunkts'))),
+        );
+      });
+
+      test('deleteWaypoint should throw meaningful error on failure', () async {
+        // Arrange
+        when(mockQueryBuilder.delete())
+            .thenThrow(Exception('Delete failed'));
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act & Assert
+        expect(
+          () => service.deleteWaypoint(123, 1),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Fehler beim Löschen des Wegpunkts'))),
+        );
+      });
+
+      test('updateWaypointOrder should throw meaningful error on failure', () async {
+        // Arrange
+        when(mockQueryBuilder.update(any))
+            .thenThrow(Exception('Update order failed'));
+
+        final service = MockedBackendApiService(mockSupabaseClient);
+
+        // Act & Assert
+        expect(
+          () => service.updateWaypointOrder(1, 123, 5),
+          throwsA(predicate((e) => e is Exception && 
+            e.toString().contains('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge'))),
+        );
       });
     });
   });
+}
+
+/// Test wrapper class that allows injecting a mocked SupabaseClient
+class MockedBackendApiService extends BackendApiService {
+  final SupabaseClient mockClient;
+
+  MockedBackendApiService(this.mockClient);
+
+  @override
+  SupabaseClient get client => mockClient;
 }
