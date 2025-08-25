@@ -119,37 +119,47 @@ class HikeCard extends StatelessWidget {
               ],
             ),
             ListTile(
-              title: Row(
+              title: Text(
+                hike.name,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(hike.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.straighten),
-                      Text(hike.length.toString(), style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 12)),
-                      Text(' km', style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 12)),
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.terrain),
-                      Text(getDifficultyString(context, hike.difficulty),
-                          style: const TextStyle(
+                      Row(
+                        children: [
+                          Icon(Icons.straighten),
+                          Text(hike.length.toString(), style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text(' km', style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 12)),
+                        ],
+                      ),
+                      const SizedBox(width: 16),
+                      Row(
+                        children: [
+                          Icon(Icons.terrain),
+                          Text(getDifficultyString(context, hike.difficulty),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 12)),
+                        ],
+                      ),
                     ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    hike.description, 
+                    maxLines: 3, 
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-              subtitle: Text(
-                hike.description, maxLines: 3, overflow: TextOverflow.ellipsis,),
             ),
           ],
         ),
