@@ -10,9 +10,14 @@ import 'package:whisky_hikes/UI/home/home_page.dart';
 import 'package:whisky_hikes/UI/my_hikes/my_hikes_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_view_model.dart';
+import 'package:whisky_hikes/UI/checkout/checkout_page.dart';
+import 'package:whisky_hikes/UI/payment/payment_success_page.dart';
+import 'package:whisky_hikes/UI/payment/payment_failed_page.dart';
+import 'package:whisky_hikes/UI/payment/order_history_page.dart';
 import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
+import 'package:whisky_hikes/domain/models/basic_order.dart';
 
 import '../../UI/auth/signup/sign_up_page_view_model.dart';
 import '../../UI/core/scaffold_with_navigation_bar.dart';
@@ -118,7 +123,51 @@ GoRouter router(UserRepository authRepository) => GoRouter(
                         return ProfilePage(viewModel: viewModel);
                       }),
                 ]),
-              ])
+              ]),
+          
+          // Payment routes - outside of the shell navigation
+          GoRoute(
+            path: Routes.checkout,
+            name: 'checkout',
+            builder: (context, state) {
+              final order = state.extra as BasicOrder?;
+              if (order == null) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Bestellung nicht gefunden'),
+                  ),
+                );
+              }
+              
+              return CheckoutPage(order: order);
+            },
+          ),
+          
+          GoRoute(
+            path: Routes.paymentSuccess,
+            name: 'payment-success',
+            builder: (context, state) {
+              final orderNumber = state.uri.queryParameters['orderNumber'];
+              return PaymentSuccessPage(orderNumber: orderNumber);
+            },
+          ),
+          
+          GoRoute(
+            path: Routes.paymentFailed,
+            name: 'payment-failed',
+            builder: (context, state) {
+              final errorMessage = state.uri.queryParameters['error'];
+              return PaymentFailedPage(errorMessage: errorMessage);
+            },
+          ),
+          
+          GoRoute(
+            path: Routes.orderHistory,
+            name: 'order-history',
+            builder: (context, state) {
+              return const OrderHistoryPage();
+            },
+          )
         ]);
 
 // From https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart

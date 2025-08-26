@@ -11,8 +11,11 @@ class UserRepository extends ChangeNotifier{
   UserRepository(this._authService);
 
   Future<void> signUserOut() async{
-    await _authService.signOut();
-    notifyListeners();
+    try {
+      await _authService.signOut();
+    } finally {
+      notifyListeners();
+    }
   }
 
   Future<AuthResponse> signUpWithEmailPassword(String email, String password, [Map<String, dynamic>? data]) async{

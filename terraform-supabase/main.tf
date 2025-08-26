@@ -25,5 +25,23 @@ data "supabase_apikeys" "whisky_hikes" {
   project_ref = supabase_project.whisky_hikes.id
 }
 
+# SQL Migration für Payment-Tabellen über Supabase Management API
+resource "null_resource" "payment_schema_migration" {
+  triggers = {
+    # Trigger bei Änderungen der SQL-Datei
+    sql_content = filemd5("${path.module}/sql/05_create_payment_tables.sql")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      export SUPABASE_ACCESS_TOKEN="${var.supabase_access_token}"
+      export PROJECT_ID="${supabase_project.whisky_hikes.id}"
+      ${path.module}/execute_sql.sh "$(cat ${path.module}/sql/05_create_payment_tables.sql)"
+    EOT
+  }
+
+  depends_on = [supabase_project.whisky_hikes]
+}
+
 # Note: Database schema is created via Management API scripts
 # See: complete_schema.sh, create_policies.sh, insert_sample_data.sh

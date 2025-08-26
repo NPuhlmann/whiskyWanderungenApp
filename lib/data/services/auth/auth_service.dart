@@ -2,10 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class AuthService{
-  final SupabaseClient client = Supabase.instance.client;
+class AuthService {
+  final SupabaseClient client;
+  final bool? _testDevMode;
   
-  bool get isDevMode => dotenv.env['DEV_MODE']?.toLowerCase() == 'true';
+  // Constructor für Dependency Injection in Tests
+  AuthService({SupabaseClient? client, bool? isDevMode}) 
+      : client = client ?? Supabase.instance.client,
+        _testDevMode = isDevMode;
+  
+  bool get isDevMode => _testDevMode ?? (dotenv.env['DEV_MODE']?.toLowerCase() == 'true');
 
   // sign in with email and password
   Future<AuthResponse> signInWithEmailPassword(String email, String password) async {

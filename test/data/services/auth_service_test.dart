@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/data/services/auth/auth_service.dart';
 
-import '../../mocks/mock_supabase.dart';
+// Generate mocks
+@GenerateMocks([SupabaseClient, GoTrueClient, User, Session])
+import 'auth_service_test.mocks.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +28,7 @@ void main() {
       // Setup basic mocks
       when(mockSupabaseClient.auth).thenReturn(mockAuthClient);
 
-      authService = MockedAuthService(mockSupabaseClient);
+      authService = AuthService(client: mockSupabaseClient);
     });
 
     group('Sign In', () {
@@ -82,7 +85,7 @@ void main() {
           emailRedirectTo: 'whiskyhikes://email-confirm',
         )).thenAnswer((_) async => expectedResponse);
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: false);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: false);
 
         // Act
         final result = await service.signUpWithEmailPassword(email, password, userData);
@@ -113,7 +116,7 @@ void main() {
           emailRedirectTo: null,
         )).thenAnswer((_) async => expectedResponse);
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         // Act
         final result = await service.signUpWithEmailPassword(email, password, userData);
@@ -149,7 +152,7 @@ void main() {
         when(mockAuthClient.signInWithPassword(email: email, password: password))
             .thenAnswer((_) async => signInResponse);
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         // Act
         final result = await service.signUpWithEmailPassword(email, password, userData);
@@ -181,7 +184,7 @@ void main() {
         when(mockAuthClient.signInWithPassword(email: email, password: password))
             .thenThrow(AuthException('Email not confirmed'));
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         // Act
         final result = await service.signUpWithEmailPassword(email, password, userData);
@@ -203,7 +206,7 @@ void main() {
           emailRedirectTo: anyNamed('emailRedirectTo'),
         )).thenThrow(AuthException('User already registered'));
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: false);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: false);
 
         // Act & Assert
         expect(
@@ -331,8 +334,8 @@ void main() {
       test('updateUserEmail should update email successfully', () async {
         // Arrange
         const newEmail = 'newemail@example.com';
-        // Mock successful user update - return type is UserResponse in current version
-        when(mockAuthClient.updateUser(any)).thenAnswer((_) async => UserResponse(user: mockUser));
+        // Mock successful user update - return UserResponse.fromJson
+        when(mockAuthClient.updateUser(any)).thenAnswer((_) async => UserResponse.fromJson({'user': null}));
 
         // Act
         await authService.updateUserEmail(newEmail);
@@ -364,7 +367,7 @@ void main() {
         when(mockUser.emailConfirmedAt).thenReturn(null);
         when(mockAuthClient.currentUser).thenReturn(mockUser);
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         // Act & Assert - should not throw
         expect(() => service.confirmEmailManually(), returnsNormally);
@@ -372,7 +375,7 @@ void main() {
 
       test('confirmEmailManually should throw in production mode', () async {
         // Arrange
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: false);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: false);
 
         // Act & Assert
         expect(
@@ -385,7 +388,7 @@ void main() {
       test('confirmEmailManually should throw when no user logged in', () async {
         // Arrange
         when(mockAuthClient.currentUser).thenReturn(null);
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         // Act & Assert
         expect(
@@ -400,7 +403,7 @@ void main() {
         when(mockUser.emailConfirmedAt).thenReturn(DateTime.now().toIso8601String());
         when(mockAuthClient.currentUser).thenReturn(mockUser);
 
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         // Act & Assert - should not throw and should handle gracefully
         expect(() => service.confirmEmailManually(), returnsNormally);
@@ -440,7 +443,7 @@ void main() {
       test('should detect dev mode from environment', () async {
         // This test depends on how the environment is set up
         // The actual isDevMode getter reads from dotenv
-        final service = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
         
         // We can't easily test the actual dotenv reading, but we can test the behavior
         expect(service.isDevMode, true);
@@ -448,8 +451,8 @@ void main() {
 
       test('should handle different modes correctly in signup', () async {
         // Test production mode
-        final prodService = MockedAuthService(mockSupabaseClient, isDevMode: false);
-        final devService = MockedAuthService(mockSupabaseClient, isDevMode: true);
+        final prodService = AuthService(client: mockSupabaseClient, isDevMode: false);
+        final devService = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         const email = 'test@example.com';
         const password = 'password123';
@@ -535,21 +538,3 @@ void main() {
     });
   });
 }
-
-/// Test wrapper class that allows injecting a mocked SupabaseClient
-class MockedAuthService extends AuthService {
-  final SupabaseClient mockClient;
-  final bool _isDevMode;
-
-  MockedAuthService(this.mockClient, {bool isDevMode = false})
-      : _isDevMode = isDevMode;
-
-  @override
-  SupabaseClient get client => mockClient;
-
-  @override
-  bool get isDevMode => _isDevMode;
-}
-
-/// Mock class for Session
-class MockSession extends Mock implements Session {}

@@ -18,6 +18,16 @@ void main() {
       mockBackendApiService = MockBackendApiService();
       mockLocalCacheService = MockLocalCacheService();
       profileRepository = ProfileRepository(mockBackendApiService, mockLocalCacheService);
+      
+      // Setup default mock behaviors
+      when(mockLocalCacheService.getCachedProfileImagePath(any))
+          .thenAnswer((_) async => null);
+      when(mockLocalCacheService.getCachedProfileData(any))
+          .thenAnswer((_) async => null);
+      when(mockLocalCacheService.cacheProfileData(any, any))
+          .thenAnswer((_) async {});
+      when(mockLocalCacheService.cacheProfileImage(any, any, any))
+          .thenAnswer((_) async => null);
     });
 
     group('getUserProfileById', () {
@@ -525,6 +535,8 @@ void main() {
 
         when(mockBackendApiService.getProfileImageUrl(testUserId))
             .thenAnswer((_) async => expectedUrl);
+        when(mockLocalCacheService.getCachedProfileImagePath(testUserId))
+            .thenAnswer((_) async => null);
 
         // Act
         final result = await profileRepository.getProfileImageUrl(testUserId);
@@ -537,6 +549,8 @@ void main() {
       test('should return null when no image exists', () async {
         // Arrange
         when(mockBackendApiService.getProfileImageUrl(testUserId))
+            .thenAnswer((_) async => null);
+        when(mockLocalCacheService.getCachedProfileImagePath(testUserId))
             .thenAnswer((_) async => null);
 
         // Act
@@ -551,6 +565,8 @@ void main() {
         // Arrange
         when(mockBackendApiService.getProfileImageUrl(testUserId))
             .thenThrow(Exception('Service unavailable'));
+        when(mockLocalCacheService.getCachedProfileImagePath(testUserId))
+            .thenAnswer((_) async => null);
 
         // Act & Assert
         expect(
@@ -559,6 +575,7 @@ void main() {
         );
 
         verify(mockBackendApiService.getProfileImageUrl(testUserId)).called(1);
+        verify(mockLocalCacheService.getCachedProfileImagePath(testUserId)).called(1);
       });
 
       test('should handle different user IDs', () async {
@@ -572,9 +589,15 @@ void main() {
 
         when(mockBackendApiService.getProfileImageUrl(userId1))
             .thenAnswer((_) async => url1);
+        when(mockLocalCacheService.getCachedProfileImagePath(userId1))
+            .thenAnswer((_) async => null);
         when(mockBackendApiService.getProfileImageUrl(userId2))
             .thenAnswer((_) async => url2);
+        when(mockLocalCacheService.getCachedProfileImagePath(userId2))
+            .thenAnswer((_) async => null);
         when(mockBackendApiService.getProfileImageUrl(userId3))
+            .thenAnswer((_) async => null);
+        when(mockLocalCacheService.getCachedProfileImagePath(userId3))
             .thenAnswer((_) async => null);
 
         // Act
@@ -597,6 +620,8 @@ void main() {
         const emptyUserId = '';
 
         when(mockBackendApiService.getProfileImageUrl(emptyUserId))
+            .thenAnswer((_) async => null);
+        when(mockLocalCacheService.getCachedProfileImagePath(emptyUserId))
             .thenAnswer((_) async => null);
 
         // Act
@@ -680,20 +705,19 @@ void main() {
       test('should propagate specific exceptions from backend service', () async {
         // Arrange
         const testUserId = 'user123';
-        const errorMessage = 'Database connection timeout';
-
         when(mockBackendApiService.getUserProfileById(testUserId))
-            .thenThrow(Exception(errorMessage));
+            .thenThrow(Exception('Database connection timeout'));
+        when(mockLocalCacheService.getCachedProfileData(testUserId))
+            .thenAnswer((_) async => null);
 
         // Act & Assert
-        try {
-          await profileRepository.getUserProfileById(testUserId);
-          fail('Expected exception was not thrown');
-        } catch (e) {
-          expect(e.toString(), contains(errorMessage));
-        }
+        expect(
+          () => profileRepository.getUserProfileById(testUserId),
+          throwsA(predicate((e) => e.toString().contains('Database connection timeout'))),
+        );
 
         verify(mockBackendApiService.getUserProfileById(testUserId)).called(1);
+        verify(mockLocalCacheService.getCachedProfileData(testUserId)).called(1);
       });
 
       test('should handle network timeouts', () async {
@@ -719,17 +743,18 @@ void main() {
         const testUserId = 'user123';
 
         when(mockBackendApiService.getProfileImageUrl(testUserId))
-            .thenThrow(Exception('Unauthorized'));
+            .thenThrow(Exception('Unauthorized access'));
+        when(mockLocalCacheService.getCachedProfileImagePath(testUserId))
+            .thenAnswer((_) async => null);
 
         // Act & Assert
         expect(
-          () async => await profileRepository.getProfileImageUrl(testUserId),
-          throwsA(
-            predicate((e) => e.toString().contains('Unauthorized')),
-          ),
+          () => profileRepository.getProfileImageUrl(testUserId),
+          throwsA(predicate((e) => e.toString().contains('Unauthorized access'))),
         );
 
         verify(mockBackendApiService.getProfileImageUrl(testUserId)).called(1);
+        verify(mockLocalCacheService.getCachedProfileImagePath(testUserId)).called(1);
       });
     });
 
@@ -778,6 +803,8 @@ void main() {
             .thenAnswer((_) async => {});
         when(mockBackendApiService.uploadProfileImage(userId, imageBytes, 'jpg'))
             .thenAnswer((_) async => imageUrl);
+        when(mockLocalCacheService.cacheProfileImage(userId, imageBytes, 'jpg'))
+            .thenAnswer((_) async => '');
         when(mockBackendApiService.getProfileImageUrl(userId))
             .thenAnswer((_) async => imageUrl);
 

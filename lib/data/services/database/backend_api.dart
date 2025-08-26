@@ -5,10 +5,14 @@ import 'dart:developer' as dev;
 import '../../../domain/models/hike.dart';
 import '../../../domain/models/profile.dart';
 import '../../../domain/models/waypoint.dart';
+import '../../../domain/models/basic_order.dart';
 
 class BackendApiService {
-  final SupabaseClient client = Supabase.instance.client;
+  final SupabaseClient client;
   
+  // Constructor für Dependency Injection in Tests
+  BackendApiService({SupabaseClient? client}) 
+      : client = client ?? Supabase.instance.client;
 
   // get User Profile by id
   Future<Profile> getUserProfileById(String id) async {
@@ -406,6 +410,224 @@ class BackendApiService {
     } catch (e) {
       dev.log('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e', error: e);
       throw Exception('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e');
+    }
+  }
+
+  // ======================================
+  // PAYMENT EXTENSION METHODS
+  // ======================================
+
+  /// Fetch all orders for a specific user
+  Future<List<BasicOrder>> fetchUserOrders(String userId) async {
+    if (userId.isEmpty) {
+      throw ArgumentError('User ID cannot be empty');
+    }
+
+    try {
+      dev.log('🔍 Fetching orders for user: $userId');
+
+      final response = await client
+          .from('orders')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final List<dynamic> orderData = response as List<dynamic>;
+
+      List<BasicOrder> orders = orderData
+          .map<BasicOrder>((json) => BasicOrder.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${orders.length} orders for user $userId');
+      return orders;
+
+    } catch (e) {
+      dev.log('❌ Error fetching user orders: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch user orders: $e');
+    }
+  }
+
+  /// Fetch a specific order by ID
+  Future<BasicOrder> fetchOrderById(int orderId) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Fetching order by ID: $orderId');
+
+      final response = await client
+          .from('orders')
+          .select()
+          .eq('id', orderId)
+          .single();
+
+      dev.log('✅ Order $orderId fetched successfully');
+      return BasicOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching order $orderId: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch order: $e');
+    }
+  }
+
+  /// Check if a user has purchased a specific hike
+  Future<bool> hasUserPurchasedHike(String userId, int hikeId) async {
+    if (userId.isEmpty) {
+      throw ArgumentError('User ID cannot be empty');
+    }
+    if (hikeId <= 0) {
+      throw ArgumentError('Hike ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Checking if user $userId purchased hike $hikeId');
+
+      final response = await client
+          .from('purchased_hikes')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('hike_id', hikeId);
+
+      final List<dynamic> purchaseData = response as List<dynamic>;
+      final bool hasPurchased = purchaseData.isNotEmpty;
+
+      dev.log('✅ User $userId has${hasPurchased ? '' : ' not'} purchased hike $hikeId');
+      return hasPurchased;
+
+    } catch (e) {
+      dev.log('❌ Error checking hike purchase: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to check hike purchase: $e');
+    }
+  }
+
+  /// Record a successful hike purchase
+  Future<void> recordHikePurchase(String userId, int hikeId, int orderId) async {
+    if (userId.isEmpty) {
+      throw ArgumentError('User ID cannot be empty');
+    }
+    if (hikeId <= 0) {
+      throw ArgumentError('Hike ID must be greater than 0');
+    }
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+
+    try {
+      dev.log('💰 Recording hike purchase: user=$userId, hike=$hikeId, order=$orderId');
+
+      final purchaseData = {
+        'user_id': userId,
+        'hike_id': hikeId,
+        'order_id': orderId,
+        'purchased_at': DateTime.now().toIso8601String(),
+      };
+
+      await client.from('purchased_hikes').insert(purchaseData);
+
+      dev.log('✅ Hike purchase recorded successfully');
+
+    } catch (e) {
+      dev.log('❌ Error recording hike purchase: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to record hike purchase: $e');
+    }
+  }
+
+  /// Fetch order with payment details
+  Future<BasicOrder> fetchOrderWithPaymentDetails(int orderId) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Fetching order $orderId with payment details');
+
+      final response = await client
+          .from('orders')
+          .select()
+          .eq('id', orderId)
+          .single();
+
+      dev.log('✅ Order $orderId with payment details fetched');
+      return BasicOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching order with payment details: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch order with payment details: $e');
+    }
+  }
+
+  /// Update order status after payment processing
+  Future<BasicOrder> updateOrderAfterPayment({
+    required int orderId,
+    required OrderStatus status,
+    required String paymentIntentId,
+  }) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+    if (paymentIntentId.isEmpty) {
+      throw ArgumentError('Payment Intent ID cannot be empty');
+    }
+
+    try {
+      dev.log('💳 Updating order $orderId after payment: status=${status.name}');
+
+      final updateData = {
+        'status': status.name,
+        'payment_intent_id': paymentIntentId,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      final response = await client
+          .from('orders')
+          .update(updateData)
+          .eq('id', orderId)
+          .select()
+          .single();
+
+      dev.log('✅ Order $orderId updated after payment');
+      return BasicOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error updating order after payment: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to update order after payment: $e');
+    }
+  }
+
+  /// Get payment history for a user using JOIN query
+  Future<List<Map<String, dynamic>>> getUserPaymentHistory(String userId) async {
+    if (userId.isEmpty) {
+      throw ArgumentError('User ID cannot be empty');
+    }
+
+    try {
+      dev.log('💳 Fetching payment history for user: $userId');
+
+      final response = await client
+          .from('payments')
+          .select('*, orders!inner(user_id)')
+          .eq('orders.user_id', userId)
+          .order('created_at', ascending: false);
+
+      final List<dynamic> paymentData = response as List<dynamic>;
+      final List<Map<String, dynamic>> payments = paymentData
+          .map<Map<String, dynamic>>((json) => Map<String, dynamic>.from(json))
+          .toList();
+
+      dev.log('✅ Found ${payments.length} payment records for user $userId');
+      return payments;
+
+    } catch (e) {
+      dev.log('❌ Error fetching payment history: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch payment history: $e');
     }
   }
 }

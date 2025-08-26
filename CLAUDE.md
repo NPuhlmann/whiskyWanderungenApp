@@ -211,3 +211,5 @@ Widget tests are located in the `test/` directory.
 - **path_provider**: Local file storage for caching
 - **mockito**: Mock generation support for repositories in testing
 - Mock classes generated for Supabase client components
+
+- Add to Memory, how the payment process works

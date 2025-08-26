@@ -7,6 +7,7 @@ import 'package:whisky_hikes/UI/my_hikes/my_hikes_view_model.dart';
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 import 'package:whisky_hikes/data/repositories/hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/waypoint_repository.dart';
+import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 
 import '../UI/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
@@ -47,6 +48,12 @@ List<SingleChildWidget> get providers {
     Provider<WaypointRepository>(
       create: (context) => WaypointRepository(context.read<BackendApiService>()),
       lazy: false, // Sofort initialisieren, nicht erst bei Bedarf
+    ),
+    Provider<PaymentRepository>(
+      create: (context) => PaymentRepositoryFactory.create(
+        supabaseClient: null, // Will use default Supabase.instance.client
+        stripeService: null,  // Will use StripeService.instance
+      ),
     ),
     
     // Dann alle ViewModels
