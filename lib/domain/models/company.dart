@@ -6,7 +6,7 @@ part 'company.g.dart';
 /// Company/Vendor Model für Multi-Vendor Whisky Hikes System
 /// Repräsentiert Firmen, die Hikes erstellen und verkaufen
 @freezed
-class Company with _$Company {
+abstract class Company with _$Company {
   const factory Company({
     required String id,
     required String name,
@@ -40,6 +40,9 @@ class Company with _$Company {
 
 /// Extension für Business Logic auf Company
 extension CompanyExtensions on Company {
+  /// Prüft ob die Firma eine DACH-Adresse hat (Deutschland, Österreich, Schweiz)
+  bool get isDachAddress => ['DE', 'AT', 'CH'].contains(countryCode);
+  
   /// Generiert eine Anzeige-Adresse für die Firma
   String get displayAddress {
     final parts = <String>[];
@@ -88,7 +91,7 @@ extension CompanyExtensions on Company {
 
 /// Shipping Rule Model für Company-spezifische Versandregeln
 @freezed
-class CompanyShippingRule with _$CompanyShippingRule {
+abstract class CompanyShippingRule with _$CompanyShippingRule {
   const factory CompanyShippingRule({
     required int id,
     required String companyId,

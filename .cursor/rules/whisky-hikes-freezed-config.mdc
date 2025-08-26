@@ -1,0 +1,329 @@
+# Whisky Hikes Freezed Configuration Guide
+
+## Overview
+Diese Regel beschreibt die korrekte Konfiguration von Freezed 3.x für das Whisky Hikes Projekt und löst häufige Probleme bei der Code-Generierung.
+
+## Freezed 3.x Requirements
+
+### 1. Class Definition
+**WICHTIG**: Alle Freezed-Modelle müssen als `abstract class` definiert werden:
+
+```dart
+// ✅ KORREKT - Freezed 3.x
+@freezed
+abstract class Company with _$Company {
+  const factory Company({
+    required String id,
+    required String name,
+    String? description,
+  }) = _Company;
+
+  factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
+}
+
+// ❌ FALSCH - Funktioniert nicht mit Freezed 3.x
+@freezed
+class Company with _$Company { ... }  // Fehlt 'abstract'
+
+// ❌ FALSCH - Funktioniert nicht mit Freezed 3.x
+sealed class Company with _$Company { ... }  // Falscher Ansatz
+```
+
+### 2. Required Annotations
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'company.freezed.dart';  // Freezed-Generierung
+part 'company.g.dart';        // JSON-Serialisierung
+```
+
+## Code Generation Workflow
+
+### 1. Build Runner Commands
+```bash
+# Vollständige Generierung (empfohlen)
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Nur Freezed generieren
+flutter pub run build_runner build --delete-conflicting-outputs --build-filter=freezed
+
+# Nur JSON-Serialisierung generieren
+flutter pub run build_runner build --delete-conflicting-outputs --build-filter=json_serializable
+
+# Nur Mocks generieren
+flutter pub run build_runner build --delete-conflicting-outputs --build-filter=mockito
+```
+
+### 2. Watch Mode für Entwicklung
+```bash
+# Überwacht Datei-Änderungen und generiert automatisch
+flutter pub run build_runner watch
+```
+
+### 3. Clean Build
+```bash
+# Bei Problemen: Alles löschen und neu generieren
+flutter clean
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+## Common Freezed Patterns
+
+### 1. Basic Model
+```dart
+@freezed
+abstract class Hike with _$Hike {
+  const factory Hike({
+    required int id,
+    required String name,
+    required double length,
+    required double steep,
+    required int elevation,
+    String? description,
+    String? thumbnailImageUrl,
+    @Default(false) bool isFavorite,
+  }) = _Hike;
+
+  factory Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
+}
+```
+
+### 2. Model mit Enums
+```dart
+enum Difficulty { easy, mid, hard, veryHard }
+
+@freezed
+abstract class Hike with _$Hike {
+  const factory Hike({
+    required int id,
+    required String name,
+    required Difficulty difficulty,
+    @Default(Difficulty.mid) Difficulty defaultDifficulty,
+  }) = _Hike;
+
+  factory Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
+}
+```
+
+### 3. Model mit Custom JSON Keys
+```dart
+@freezed
+abstract class Profile with _$Profile {
+  const factory Profile({
+    required String id,
+    @JsonKey(name: 'first_name') required String firstName,
+    @JsonKey(name: 'last_name') required String lastName,
+    @JsonKey(name: 'date_of_birth') DateTime? dateOfBirth,
+    @JsonKey(name: 'image_url') String imageUrl,
+  }) = _Profile;
+
+  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
+}
+```
+
+### 4. Model mit Computed Properties
+```dart
+@freezed
+abstract class Company with _$Company {
+  const factory Company({
+    required String id,
+    required String name,
+    required String countryCode,
+    required String city,
+  }) = _Company;
+
+  factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
+}
+
+// Extension für computed properties
+extension CompanyExtensions on Company {
+  bool get isDachAddress => ['DE', 'AT', 'CH'].contains(countryCode);
+  
+  String get displayAddress => '$city, $countryCode';
+}
+```
+
+## JSON Serialization
+
+### 1. Custom Converters
+```dart
+class DateTimeConverter implements JsonConverter<DateTime, String> {
+  const DateTimeConverter();
+
+  @override
+  DateTime fromJson(String json) => DateTime.parse(json);
+
+  @override
+  String toJson(DateTime object) => object.toIso8601String();
+}
+
+@freezed
+abstract class Event with _$Event {
+  const factory Event({
+    required String id,
+    @DateTimeConverter() required DateTime startTime,
+    @DateTimeConverter() required DateTime endTime,
+  }) = _Event;
+
+  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+}
+```
+
+### 2. Nullable vs Non-Nullable Fields
+```dart
+@freezed
+abstract class User with _$User {
+  const factory User({
+    required String id,           // Non-nullable
+    required String email,        // Non-nullable
+    String? firstName,           // Nullable
+    String? lastName,            // Nullable
+    @Default('en') String locale, // Mit Default-Wert
+  }) = _User;
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+```
+
+## Troubleshooting
+
+### 1. Common Compilation Errors
+
+#### "Missing implementations for these members"
+**Problem**: Klasse ist nicht als `abstract` definiert
+**Lösung**: `abstract class` verwenden
+
+#### "Could not generate toJson code for type"
+**Problem**: Typ kann nicht serialisiert werden
+**Lösung**: `JsonConverter` oder `JsonKey` mit `fromJson`/`toJson` verwenden
+
+#### "Target of URI doesn't exist"
+**Problem**: Generierte Dateien fehlen
+**Lösung**: `build_runner` ausführen
+
+### 2. Generation Issues
+
+#### Freezed generiert nicht
+```bash
+# Dependencies prüfen
+flutter pub deps
+
+# Build Runner neu installieren
+flutter pub run build_runner clean
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+#### JSON-Serialisierung funktioniert nicht
+```bash
+# Nur JSON-Serialisierung neu generieren
+flutter pub run build_runner build --delete-conflicting-outputs --build-filter=json_serializable
+```
+
+### 3. Version Compatibility
+```yaml
+# pubspec.yaml - Kompatible Versionen
+dependencies:
+  freezed_annotation: ^3.1.0
+
+dev_dependencies:
+  build_runner: ^2.7.0
+  freezed: ^3.2.0
+  json_serializable: ^6.10.0
+```
+
+## Best Practices
+
+### 1. Model Organization
+```dart
+// lib/domain/models/hike.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'hike.freezed.dart';
+part 'hike.g.dart';
+
+@freezed
+abstract class Hike with _$Hike {
+  const factory Hike({...}) = _Hike;
+  factory Hike.fromJson(Map<String, dynamic> json) => _$HikeFromJson(json);
+}
+
+// Extension in derselben Datei
+extension HikeExtensions on Hike {
+  // Business Logic hier
+}
+```
+
+### 2. Import Management
+```dart
+// Immer relative Imports für part-Dateien
+part 'hike.freezed.dart';  // ✅
+part 'hike.g.dart';        // ✅
+
+// Nie absolute Imports für part-Dateien
+part 'package:whisky_hikes/domain/models/hike.freezed.dart';  // ❌
+```
+
+### 3. Testing mit Freezed
+```dart
+// test/domain/models/hike_test.dart
+void main() {
+  group('Hike Model Tests', () {
+    test('should create hike with required fields', () {
+      final hike = Hike(
+        id: 1,
+        name: 'Test Hike',
+        length: 5.0,
+        steep: 0.3,
+        elevation: 200,
+      );
+      
+      expect(hike.id, equals(1));
+      expect(hike.name, equals('Test Hike'));
+    });
+    
+    test('should serialize to JSON', () {
+      final hike = Hike(
+        id: 1,
+        name: 'Test Hike',
+        length: 5.0,
+        steep: 0.3,
+        elevation: 200,
+      );
+      
+      final json = hike.toJson();
+      expect(json['id'], equals(1));
+      expect(json['name'], equals('Test Hike'));
+    });
+  });
+}
+```
+
+## Migration von Freezed 2.x
+
+### 1. Breaking Changes
+- `class` → `abstract class`
+- Neue Annotation-Syntax
+- Geänderte Code-Generierung
+
+### 2. Migration Steps
+```bash
+# 1. Dependencies aktualisieren
+flutter pub upgrade --major-versions
+
+# 2. Code anpassen (abstract class hinzufügen)
+# 3. Build Runner ausführen
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# 4. Tests ausführen
+flutter test
+```
+
+---
+alwaysApply: false
+description: Freezed Configuration and Code Generation Guide for Whisky Hikes Project
+---
+description:
+globs:
+alwaysApply: true
+---

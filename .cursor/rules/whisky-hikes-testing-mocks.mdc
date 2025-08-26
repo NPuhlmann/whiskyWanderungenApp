@@ -1,0 +1,301 @@
+# Whisky Hikes Testing & Mock Setup Guide
+
+## Overview
+Diese Regel beschreibt die Test-Architektur und Mock-Setups für das Whisky Hikes Projekt, insbesondere für Postgres/Supabase-Integration.
+
+## Test Structure
+
+### Directory Organization
+```
+test/
+├── config/           # Test-Konfiguration
+├── data/            # Data Layer Tests
+├── domain/          # Domain Model Tests
+├── integration/     # End-to-End Tests
+├── mocks/           # Mock-Definitionen
+├── repositories/    # Repository Tests
+├── services/        # Service Tests
+├── UI/              # UI Component Tests
+├── test_helpers.dart # Zentrale Test-Hilfsfunktionen
+└── run_all_tests.dart # Test-Runner
+```
+
+### Mock Files Location
+- **Mock Definitions**: `test/mocks/mock_*.dart`
+- **Generated Mocks**: `test/mocks/mock_*.mocks.dart`
+- **Test Helpers**: `test/test_helpers.dart`
+
+## Mock Setup Configuration
+
+### 1. Supabase Mocks
+**File**: `test/mocks/mock_supabase.dart`
+
+```dart
+@GenerateMocks([
+  SupabaseClient,
+  SupabaseQueryBuilder,
+  PostgrestFilterBuilder,
+  PostgrestBuilder,
+  SupabaseStorageClient,
+  StorageFileApi,
+  GoTrueClient,
+  User,
+  Bucket,
+  FileObject,
+])
+```
+
+**Verwendung in Tests**:
+```dart
+import 'package:whisky_hikes/test/mocks/mock_supabase.dart';
+
+void main() {
+  late MockSupabaseClient mockSupabase;
+  
+  setUp(() {
+    mockSupabase = MockSupabaseClient();
+  });
+}
+```
+
+### 2. Repository Mocks
+**File**: `test/mocks/mock_repositories.dart`
+
+```dart
+@GenerateMocks([
+  HikeRepository,
+  ProfileRepository,
+  WaypointRepository,
+  CompanyRepository,
+])
+```
+
+### 3. Service Mocks
+**File**: `test/mocks/mock_backend_api_service.dart`
+
+```dart
+@GenerateMocks([BackendApiService])
+```
+
+## Test Data Creation
+
+### Test Helpers
+**File**: `test/test_helpers.dart`
+
+```dart
+class TestHelpers {
+  static List<Hike> createSampleHikes() { ... }
+  static List<Profile> createSampleProfiles() { ... }
+  static List<Waypoint> createSampleWaypoints(int hikeId) { ... }
+  
+  // Factory Methods für einzelne Test-Objekte
+  static Hike createTestHike({...}) { ... }
+  static Profile createTestProfile({...}) { ... }
+  static Waypoint createTestWaypoint({...}) { ... }
+}
+```
+
+### Verwendung in Tests
+```dart
+void main() {
+  test('should create hike with valid data', () {
+    final hike = TestHelpers.createTestHike(
+      id: 1,
+      name: 'Test Hike',
+      length: 5.0,
+    );
+    
+    expect(hike.id, equals(1));
+    expect(hike.name, equals('Test Hike'));
+  });
+}
+```
+
+## Mock Setup Best Practices
+
+### 1. Setup in setUp()
+```dart
+void main() {
+  late MockHikeRepository mockHikeRepository;
+  late MockSupabaseClient mockSupabase;
+  
+  setUp(() {
+    mockHikeRepository = MockHikeRepository();
+    mockSupabase = MockSupabaseClient();
+    
+    // Standard-Mock-Verhalten definieren
+    when(mockHikeRepository.getAllHikes())
+        .thenAnswer((_) async => TestHelpers.createSampleHikes());
+  });
+}
+```
+
+### 2. Mock-Verhalten definieren
+```dart
+// Erfolgreicher Fall
+when(mockRepository.getHike(1))
+    .thenAnswer((_) async => TestHelpers.createTestHike(id: 1));
+
+// Fehlerfall
+when(mockRepository.getHike(999))
+    .thenThrow(Exception('Hike not found'));
+
+// Async-Operationen
+when(mockRepository.saveHike(any))
+    .thenAnswer((_) async => true);
+```
+
+### 3. Verifizierung von Mock-Aufrufen
+```dart
+test('should call repository method', () async {
+  await viewModel.loadHikes();
+  
+  verify(mockHikeRepository.getAllHikes()).called(1);
+  verifyNever(mockHikeRepository.getHike(any));
+});
+```
+
+## Common Testing Patterns
+
+### 1. ViewModel Tests
+```dart
+void main() {
+  late HikeViewModel viewModel;
+  late MockHikeRepository mockRepository;
+  
+  setUp(() {
+    mockRepository = MockHikeRepository();
+    viewModel = HikeViewModel(repository: mockRepository);
+  });
+  
+  test('should load hikes successfully', () async {
+    final hikes = TestHelpers.createSampleHikes();
+    when(mockRepository.getAllHikes()).thenAnswer((_) async => hikes);
+    
+    await viewModel.loadHikes();
+    
+    expect(viewModel.hikes, equals(hikes));
+    expect(viewModel.isLoading, isFalse);
+    expect(viewModel.error, isNull);
+  });
+}
+```
+
+### 2. Repository Tests
+```dart
+void main() {
+  late HikeRepositoryImpl repository;
+  late MockSupabaseClient mockSupabase;
+  
+  setUp(() {
+    mockSupabase = MockSupabaseClient();
+    repository = HikeRepositoryImpl(supabase: mockSupabase);
+  });
+  
+  test('should fetch hikes from Supabase', () async {
+    final mockQuery = MockSupabaseQueryBuilder();
+    when(mockSupabase.from('hikes')).thenReturn(mockQuery);
+    when(mockQuery.select()).thenReturn(mockQuery);
+    when(mockQuery.execute()).thenAnswer((_) async => MockResponse());
+    
+    await repository.getAllHikes();
+    
+    verify(mockSupabase.from('hikes')).called(1);
+  });
+}
+```
+
+## Troubleshooting
+
+### 1. Mock Generation Issues
+```bash
+# Mocks neu generieren
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Nur Mocks generieren
+flutter pub run build_runner build --delete-conflicting-outputs --build-filter=mockito
+```
+
+### 2. Common Mock Errors
+- **"NoSuchMethodError"**: Mock wurde nicht korrekt generiert
+- **"Mock not found"**: Import der Mock-Datei fehlt
+- **"Method not stubbed"**: Mock-Verhalten wurde nicht definiert
+
+### 3. Test Setup Issues
+- **"Test not found"**: Test-Datei hat nicht die Endung `_test.dart`
+- **"Compilation failed"**: Freezed-Modelle müssen neu generiert werden
+- **"Mock not working"**: `setUp()` wird nicht korrekt ausgeführt
+
+## Integration Test Setup
+
+### 1. Test Environment
+```dart
+// test/integration/setup.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:whisky_hikes/main.dart' as app;
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  
+  group('App Integration Tests', () {
+    testWidgets('should navigate through app', (tester) async {
+      app.main();
+      await tester.pumpAndSettle();
+      
+      // Test-Logik hier
+    });
+  });
+}
+```
+
+### 2. Mock Services in Integration Tests
+```dart
+// Services für Integration Tests mocken
+setUpAll(() {
+  // Globale Mock-Setups
+  TestWidgetsFlutterBinding.ensureInitialized();
+});
+```
+
+## Performance Testing
+
+### 1. Mock Performance
+```dart
+test('should handle large datasets efficiently', () async {
+  final largeHikeList = List.generate(1000, (i) => 
+    TestHelpers.createTestHike(id: i));
+  
+  when(mockRepository.getAllHikes())
+      .thenAnswer((_) async => largeHikeList);
+  
+  final stopwatch = Stopwatch()..start();
+  await viewModel.loadHikes();
+  stopwatch.stop();
+  
+  expect(stopwatch.elapsedMilliseconds, lessThan(100));
+});
+```
+
+### 2. Memory Testing
+```dart
+test('should not leak memory', () async {
+  final initialMemory = ProcessInfo.currentRss;
+  
+  for (int i = 0; i < 100; i++) {
+    await viewModel.loadHikes();
+    await viewModel.dispose();
+  }
+  
+  final finalMemory = ProcessInfo.currentRss;
+  expect(finalMemory - initialMemory, lessThan(1024 * 1024)); // 1MB
+});
+```
+
+---
+alwaysApply: false
+description: Testing and Mock Setup Guide for Whisky Hikes Project
+---
+description:
+globs:
+alwaysApply: true
+---

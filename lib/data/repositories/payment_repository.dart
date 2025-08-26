@@ -3,20 +3,25 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/payment/stripe_service.dart';
+import '../services/payment/multi_payment_service.dart';
 import '../../domain/models/basic_order.dart';
 import '../../domain/models/basic_payment_result.dart';
+import '../../domain/models/payment_intent.dart';
 
 /// Repository for handling payment-related database operations
-/// Integrates with StripeService for payment processing and Supabase for data persistence
+/// Integrates with MultiPaymentService for multiple payment methods and Supabase for data persistence
 class PaymentRepository {
   final SupabaseClient _supabaseClient;
   final StripeService _stripeService;
+  final MultiPaymentService _multiPaymentService;
 
   PaymentRepository({
     required SupabaseClient supabaseClient,
     required StripeService stripeService,
+    MultiPaymentService? multiPaymentService,
   })  : _supabaseClient = supabaseClient,
-        _stripeService = stripeService;
+        _stripeService = stripeService,
+        _multiPaymentService = multiPaymentService ?? MultiPaymentService.instance;
 
   /// Create a new order with order items
   Future<BasicOrder> createOrder({
@@ -82,8 +87,87 @@ class PaymentRepository {
     }
   }
 
-  /// Process payment for an order using Stripe
+  /// Get available payment methods for the device
+  Future<List<PaymentMethodType>> getAvailablePaymentMethods() async {
+    try {
+      return await _multiPaymentService.getAvailablePaymentMethods();
+    } catch (e) {
+      dev.log('❌ Error getting available payment methods: $e');
+      // Fallback to card only
+      return [PaymentMethodType.card];
+    }
+  }
+
+  /// Check if a specific payment method is available
+  Future<bool> isPaymentMethodAvailable(PaymentMethodType paymentMethod) async {
+    try {
+      return await _multiPaymentService.isPaymentMethodAvailable(paymentMethod);
+    } catch (e) {
+      dev.log('❌ Error checking payment method availability: $e');
+      return false;
+    }
+  }
+
+  /// Process payment for an order using specified payment method
   Future<BasicPaymentResult> processPayment({
+    required BasicOrder order,
+    required PaymentMethodType paymentMethod,
+    String? paymentMethodId, // For card payments
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      dev.log('🔄 Processing ${paymentMethod.name} payment for order ${order.orderNumber}...');
+
+      // Use MultiPaymentService for all payment methods
+      final paymentResult = await _multiPaymentService.processPayment(
+        paymentMethod: paymentMethod,
+        amount: order.totalAmount,
+        currency: 'eur',
+        metadata: {
+          'order_id': order.id.toString(),
+          'hike_id': order.hikeId.toString(),
+          'delivery_type': order.deliveryType.name,
+          'order_number': order.orderNumber,
+          ...?metadata,
+        },
+      );
+
+      // Store payment record in database
+      await _createPaymentRecord(
+        order: order,
+        paymentMethod: paymentMethod,
+        paymentResult: paymentResult,
+      );
+
+      // Update order status based on payment result
+      if (paymentResult.isSuccess) {
+        await updateOrderStatus(
+          orderId: order.id,
+          status: OrderStatus.confirmed,
+          paymentIntentId: paymentResult.paymentIntentId,
+        );
+        dev.log('✅ ${paymentMethod.name} payment successful for order ${order.orderNumber}');
+      } else if (paymentResult.requiresUserAction) {
+        dev.log('🔐 ${paymentMethod.name} payment requires additional authentication');
+      } else {
+        dev.log('❌ ${paymentMethod.name} payment failed for order ${order.orderNumber}');
+      }
+
+      return paymentResult;
+
+    } catch (e) {
+      dev.log('❌ Error processing ${paymentMethod.name} payment: $e');
+      // Return failed payment result instead of throwing
+      return BasicPaymentResult.failure(
+        error: 'Payment processing failed: ${e.toString()}',
+        status: PaymentStatus.failed,
+      );
+    }
+  }
+
+  /// Process payment for an order using Stripe (legacy method - kept for backward compatibility)
+  @Deprecated('Use processPayment with PaymentMethodType instead')
+  Future<BasicPaymentResult> processStripePayment({
     required BasicOrder order,
     required String paymentMethodId,
     Map<String, dynamic>? metadata,
@@ -215,8 +299,41 @@ class PaymentRepository {
     }
   }
 
-  /// Create payment record in database
+  /// Create payment record in database for multi-payment methods
   Future<void> _createPaymentRecord({
+    required BasicOrder order,
+    required PaymentMethodType paymentMethod,
+    required BasicPaymentResult paymentResult,
+  }) async {
+    try {
+      final paymentData = {
+        'order_id': order.id,
+        'payment_intent_id': paymentResult.paymentIntentId ?? 'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
+        'client_secret': paymentResult.clientSecret,
+        'amount': (order.totalAmount * 100).round(), // Convert to cents
+        'currency': 'eur',
+        'status': paymentResult.status?.name ?? 'pending',
+        'payment_method': paymentMethod.name,
+        if (paymentResult.errorMessage != null) 'failure_reason': paymentResult.errorMessage,
+        if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      await _supabaseClient
+          .from('payments')
+          .insert(paymentData);
+
+      dev.log('✅ Payment record created for ${paymentMethod.name} payment: ${paymentData['payment_intent_id']}');
+
+    } catch (e) {
+      dev.log('⚠️ Warning: Failed to create payment record: $e');
+      // Don't throw here - payment may have succeeded even if record creation failed
+    }
+  }
+
+  /// Create payment record in database (legacy method for Stripe)
+  @Deprecated('Use _createPaymentRecord with PaymentMethodType instead')
+  Future<void> _createPaymentRecordLegacy({
     required BasicOrder order,
     required PaymentIntentResult paymentIntent,
     required BasicPaymentResult paymentResult,
@@ -280,10 +397,12 @@ class PaymentRepositoryFactory {
   static PaymentRepository create({
     SupabaseClient? supabaseClient,
     StripeService? stripeService,
+    MultiPaymentService? multiPaymentService,
   }) {
     return PaymentRepository(
       supabaseClient: supabaseClient ?? Supabase.instance.client,
       stripeService: stripeService ?? StripeService.instance,
+      multiPaymentService: multiPaymentService ?? MultiPaymentService.instance,
     );
   }
 }

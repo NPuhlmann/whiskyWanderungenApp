@@ -9,6 +9,7 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:whisky_hikes/data/repositories/payment_repository.dart' as _i4;
 import 'package:whisky_hikes/domain/models/basic_order.dart' as _i2;
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart' as _i3;
+import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -75,14 +76,36 @@ class MockPaymentRepository extends _i1.Mock implements _i4.PaymentRepository {
           as _i5.Future<_i2.BasicOrder>);
 
   @override
+  _i5.Future<List<_i6.PaymentMethodType>> getAvailablePaymentMethods() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAvailablePaymentMethods, []),
+            returnValue: _i5.Future<List<_i6.PaymentMethodType>>.value(
+              <_i6.PaymentMethodType>[],
+            ),
+          )
+          as _i5.Future<List<_i6.PaymentMethodType>>);
+
+  @override
+  _i5.Future<bool> isPaymentMethodAvailable(
+    _i6.PaymentMethodType? paymentMethod,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#isPaymentMethodAvailable, [paymentMethod]),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
   _i5.Future<_i3.BasicPaymentResult> processPayment({
     required _i2.BasicOrder? order,
-    required String? paymentMethodId,
+    required _i6.PaymentMethodType? paymentMethod,
+    String? paymentMethodId,
     Map<String, dynamic>? metadata,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#processPayment, [], {
               #order: order,
+              #paymentMethod: paymentMethod,
               #paymentMethodId: paymentMethodId,
               #metadata: metadata,
             }),
@@ -90,6 +113,32 @@ class MockPaymentRepository extends _i1.Mock implements _i4.PaymentRepository {
               _FakeBasicPaymentResult_1(
                 this,
                 Invocation.method(#processPayment, [], {
+                  #order: order,
+                  #paymentMethod: paymentMethod,
+                  #paymentMethodId: paymentMethodId,
+                  #metadata: metadata,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i3.BasicPaymentResult>);
+
+  @override
+  _i5.Future<_i3.BasicPaymentResult> processStripePayment({
+    required _i2.BasicOrder? order,
+    required String? paymentMethodId,
+    Map<String, dynamic>? metadata,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#processStripePayment, [], {
+              #order: order,
+              #paymentMethodId: paymentMethodId,
+              #metadata: metadata,
+            }),
+            returnValue: _i5.Future<_i3.BasicPaymentResult>.value(
+              _FakeBasicPaymentResult_1(
+                this,
+                Invocation.method(#processStripePayment, [], {
                   #order: order,
                   #paymentMethodId: paymentMethodId,
                   #metadata: metadata,

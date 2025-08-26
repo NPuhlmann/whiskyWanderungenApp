@@ -8,7 +8,7 @@ Whisky Hikes ist eine Flutter-App für geführte Wanderungen mit integrierten Wh
 ### 1. Domain-Driven Design (DDD)
 - **Models**: Alle Geschäftsobjekte sind in `lib/domain/models/` definiert
 - **Freezed**: Alle Models verwenden `@freezed` für Immutabilität und Code-Generierung
-- **Sealed Classes**: Models sind als `sealed class` definiert (siehe [hike.dart](mdc:lib/domain/models/hike.dart))
+- **Sealed Classes**: Models sind als `abstract class` definiert (siehe [company.dart](mdc:lib/domain/models/company.dart))
 
 ### 2. Repository Pattern
 - **Data Layer**: `lib/data/repositories/` enthält alle Repository-Implementierungen
@@ -31,6 +31,7 @@ Whisky Hikes ist eine Flutter-App für geführte Wanderungen mit integrierten Wh
 - [hike.dart](mdc:lib/domain/models/hike.dart) - Hike Model mit Freezed
 - [tasting_set.dart](mdc:lib/domain/models/tasting_set.dart) - Tasting Set Model (1:1 mit Hike)
 - [order.dart](mdc:lib/domain/models/order.dart) - Order Model
+- [company.dart](mdc:lib/domain/models/company.dart) - Company Model mit DACH-Adress-Logik
 
 ### Database & Backend
 - [backend_api.dart](mdc:lib/data/services/database/backend_api.dart) - Haupt-API-Service
@@ -79,7 +80,39 @@ flutter test test/domain/models/tasting_set_test.dart
 - **Files**: `snake_case.dart` für alle Dart-Dateien
 - **Widgets**: `snake_case_widget.dart` für Widget-Dateien
 - **Tests**: `snake_case_test.dart` für Test-Dateien
-description:
-globs:
-alwaysApply: true
----
+
+## Critical Development Notes
+
+### Freezed 3.x Configuration
+**WICHTIG**: Alle Freezed-Modelle müssen als `abstract class` definiert werden:
+```dart
+@freezed
+abstract class Company with _$Company {
+  const factory Company({...}) = _Company;
+  factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
+}
+```
+
+### Mock Setup for Testing
+Das Projekt verwendet umfassende Mock-Setups für Tests:
+- **Supabase Mocks**: `test/mocks/mock_supabase.dart` - Mock für alle Supabase-Client-Klassen
+- **Repository Mocks**: `test/mocks/mock_repositories.dart` - Mock für alle Repository-Implementierungen
+- **Service Mocks**: `test/mocks/mock_backend_api_service.dart` - Mock für Backend-API-Services
+
+### Test Configuration
+- **Test Helpers**: `test/test_helpers.dart` - Zentrale Test-Daten-Erstellung
+- **Mock Generation**: Alle Mocks werden mit Mockito generiert
+- **Integration Tests**: `test/integration/` für End-to-End-Tests
+
+### Common Issues & Solutions
+1. **Freezed Generation Errors**: Immer `abstract class` mit `@freezed` verwenden
+2. **Mock Compilation**: Nach Änderungen an Mock-Definitionen `build_runner` ausführen
+3. **Dependency Conflicts**: Regelmäßig `flutter pub outdated` prüfen
+4. **Test Failures**: Mock-Setups vor Test-Ausführung überprüfen
+
+## Database Schema
+- **Company Table**: Zentrale Tabelle für alle Unternehmen
+- **Hike Table**: Wanderungen mit Company-Referenz
+- **Tasting Set Table**: 1:1 mit Hike verknüpft
+- **Waypoint Table**: Geografische Wegpunkte für Wanderungen
+- **Profile Table**: Benutzerprofile mit Authentifizierung

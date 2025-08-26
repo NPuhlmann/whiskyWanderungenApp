@@ -61,6 +61,9 @@ const _$PaymentMethodTypeEnumMap = {
   PaymentMethodType.sofort: 'sofort',
   PaymentMethodType.giropay: 'giropay',
   PaymentMethodType.ideal: 'ideal',
+  PaymentMethodType.paypal: 'paypal',
+  PaymentMethodType.applePay: 'apple_pay',
+  PaymentMethodType.googlePay: 'google_pay',
 };
 
 _CardDetails _$CardDetailsFromJson(Map<String, dynamic> json) => _CardDetails(

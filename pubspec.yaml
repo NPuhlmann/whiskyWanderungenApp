@@ -58,6 +58,11 @@ dependencies:
   cached_network_image: ^3.3.1
   # Stripe Payment Integration (2025 Official Package)
   flutter_stripe: ^12.0.0
+  # PayPal Integration (temporarily removed due to compatibility issues)
+  # paypal_checkout: ^2.0.1
+  # Additional payment method support
+  pay: ^1.1.2
+  # Google Pay & Apple Pay via pay package
 
 dev_dependencies:
   flutter_test:

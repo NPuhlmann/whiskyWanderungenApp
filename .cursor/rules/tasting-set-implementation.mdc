@@ -208,5 +208,5 @@ test('should test business logic extensions', () {
 - Company Performance Metrics
 description:
 globs:
-alwaysApply: true
+alwaysApply: false
 ---

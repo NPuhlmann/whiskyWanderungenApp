@@ -15,6 +15,12 @@ enum PaymentMethodType {
   giropay,
   @JsonValue('ideal')
   ideal,
+  @JsonValue('paypal')
+  paypal,
+  @JsonValue('apple_pay')
+  applePay,
+  @JsonValue('google_pay')
+  googlePay,
 }
 
 /// Payment intent model for Stripe integration

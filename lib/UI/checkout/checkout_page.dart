@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'checkout_view_model.dart';
 import 'widgets/order_summary.dart';
-import 'widgets/payment_method_selector.dart';
+import 'widgets/multi_payment_method_selector.dart';
 import 'widgets/delivery_address_form.dart';
 import 'widgets/checkout_button.dart';
 import '../../domain/models/basic_order.dart';
@@ -26,10 +26,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => CheckoutViewModel(
-        paymentRepository: context.read<PaymentRepository>(),
-        order: widget.order,
-      ),
+      create: (context) {
+        final viewModel = CheckoutViewModel(
+          paymentRepository: context.read<PaymentRepository>(),
+          order: widget.order,
+        );
+        // Initialize payment methods
+        viewModel.initialize();
+        return viewModel;
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Checkout'),
@@ -72,22 +77,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         const SizedBox(height: 24),
                       ],
 
-                      // Payment Method Selector
-                      const Text(
-                        'Zahlungsmethode',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      // Multi Payment Method Selector
+                      if (viewModel.isInitializing)
+                        const Center(
+                          child: Column(
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 8),
+                              Text('Zahlungsmethoden werden geladen...'),
+                            ],
+                          ),
+                        )
+                      else
+                        Semantics(
+                          label: 'Zahlungsmethode auswählen',
+                          child: MultiPaymentMethodSelector(
+                            selectedPaymentMethod: viewModel.selectedPaymentMethod,
+                            selectedPaymentMethodId: viewModel.selectedPaymentMethodId,
+                            availablePaymentMethods: viewModel.availablePaymentMethods,
+                            onPaymentMethodChanged: viewModel.setPaymentMethod,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Semantics(
-                        label: 'Zahlungsmethode auswählen',
-                        child: PaymentMethodSelector(
-                          selectedPaymentMethod: viewModel.selectedPaymentMethod,
-                          onPaymentMethodChanged: viewModel.setPaymentMethod,
-                        ),
-                      ),
 
                       const SizedBox(height: 32),
 

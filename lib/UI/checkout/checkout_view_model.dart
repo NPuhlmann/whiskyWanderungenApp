@@ -4,6 +4,7 @@ import 'dart:developer' as dev;
 import '../../data/repositories/payment_repository.dart';
 import '../../domain/models/basic_order.dart';
 import '../../domain/models/basic_payment_result.dart';
+import '../../domain/models/payment_intent.dart';
 
 /// ViewModel for managing checkout state and payment processing
 class CheckoutViewModel extends ChangeNotifier {
@@ -18,16 +19,22 @@ class CheckoutViewModel extends ChangeNotifier {
 
   // State properties
   bool _isLoading = false;
+  bool _isInitializing = false;
   String? _errorMessage;
-  String? _selectedPaymentMethod;
+  PaymentMethodType? _selectedPaymentMethod;
+  String? _selectedPaymentMethodId;
+  List<PaymentMethodType> _availablePaymentMethods = [];
   Map<String, dynamic>? _deliveryAddress;
   bool _paymentSuccess = false;
   int? _completedOrderId;
 
   // Getters
   bool get isLoading => _isLoading;
+  bool get isInitializing => _isInitializing;
   String? get errorMessage => _errorMessage;
-  String? get selectedPaymentMethod => _selectedPaymentMethod;
+  PaymentMethodType? get selectedPaymentMethod => _selectedPaymentMethod;
+  String? get selectedPaymentMethodId => _selectedPaymentMethodId;
+  List<PaymentMethodType> get availablePaymentMethods => _availablePaymentMethods;
   Map<String, dynamic>? get deliveryAddress => _deliveryAddress;
   bool get paymentSuccess => _paymentSuccess;
   int? get completedOrderId => _completedOrderId;
@@ -35,8 +42,14 @@ class CheckoutViewModel extends ChangeNotifier {
 
   /// Check if payment can be processed
   bool get canProcessPayment {
-    if (_isLoading) return false;
-    if (_selectedPaymentMethod == null || _selectedPaymentMethod!.isEmpty) return false;
+    if (_isLoading || _isInitializing) return false;
+    if (_selectedPaymentMethod == null) return false;
+    
+    // For card payments, payment method ID is required
+    if (_selectedPaymentMethod == PaymentMethodType.card && 
+        (_selectedPaymentMethodId == null || _selectedPaymentMethodId!.isEmpty)) {
+      return false;
+    }
     
     // For shipping orders, delivery address is required
     if (_order.deliveryType == DeliveryType.shipping) {
@@ -55,10 +68,26 @@ class CheckoutViewModel extends ChangeNotifier {
     return true;
   }
 
+  /// Initialize payment methods when ViewModel is created
+  Future<void> initialize() async {
+    _setInitializing(true);
+    try {
+      dev.log('🔄 Initializing payment methods...');
+      _availablePaymentMethods = await _paymentRepository.getAvailablePaymentMethods();
+      dev.log('✅ Payment methods initialized: ${_availablePaymentMethods.map((m) => m.name).join(', ')}');
+    } catch (e) {
+      dev.log('❌ Failed to initialize payment methods: $e');
+      _setError('Fehler beim Laden der Zahlungsmethoden');
+    } finally {
+      _setInitializing(false);
+    }
+  }
+
   /// Set selected payment method
-  void setPaymentMethod(String paymentMethodId) {
-    _selectedPaymentMethod = paymentMethodId;
-    dev.log('💳 Payment method selected: $paymentMethodId');
+  void setPaymentMethod(PaymentMethodType paymentMethod, String? paymentMethodId) {
+    _selectedPaymentMethod = paymentMethod;
+    _selectedPaymentMethodId = paymentMethodId;
+    dev.log('💳 Payment method selected: ${paymentMethod.name} (ID: $paymentMethodId)');
     notifyListeners();
   }
 
@@ -102,14 +131,16 @@ class CheckoutViewModel extends ChangeNotifier {
         orderToProcess = _order.copyWith(deliveryAddress: _deliveryAddress);
       }
 
-      // Process payment through repository
+      // Process payment through repository with new multi-payment API
       final paymentResult = await _paymentRepository.processPayment(
         order: orderToProcess,
-        paymentMethodId: _selectedPaymentMethod!,
+        paymentMethod: _selectedPaymentMethod!,
+        paymentMethodId: _selectedPaymentMethodId,
         metadata: {
           'source': 'mobile_checkout',
           'delivery_type': _order.deliveryType.name,
           'order_number': _order.orderNumber,
+          'payment_method_type': _selectedPaymentMethod!.name,
         },
       );
 
@@ -194,6 +225,11 @@ class CheckoutViewModel extends ChangeNotifier {
   // Private helper methods
   void _setLoading(bool loading) {
     _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setInitializing(bool initializing) {
+    _isInitializing = initializing;
     notifyListeners();
   }
 

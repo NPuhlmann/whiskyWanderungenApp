@@ -102,5 +102,5 @@ class AppManager {
 ```
 description:
 globs:
-alwaysApply: false
+alwaysApply: true
 ---
