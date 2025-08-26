@@ -11,7 +11,16 @@ class AuthService {
       : client = client ?? Supabase.instance.client,
         _testDevMode = isDevMode;
   
-  bool get isDevMode => _testDevMode ?? (dotenv.env['DEV_MODE']?.toLowerCase() == 'true');
+  bool get isDevMode {
+    // In production, always return false
+    const bool isProduction = bool.fromEnvironment('dart.vm.product');
+    if (isProduction) {
+      return false;
+    }
+    
+    // In development, check test mode or environment variable
+    return _testDevMode ?? (dotenv.env['DEV_MODE']?.toLowerCase() == 'true');
+  }
 
   // sign in with email and password
   Future<AuthResponse> signInWithEmailPassword(String email, String password) async {
@@ -31,7 +40,7 @@ class AuthService {
       
       // Auto-confirm email in development mode
       if (response.user != null && response.user!.emailConfirmedAt == null) {
-        debugPrint('=== DEV MODE: Auto-confirming email ===');
+        if (isDevMode) debugPrint('=== DEV MODE: Auto-confirming email ===');
         try {
           // Sign out first to clear any session
           await client.auth.signOut();
@@ -43,11 +52,13 @@ class AuthService {
             password: password
           );
           
-          debugPrint('DEV MODE: Email auto-confirmed and user signed in');
+          if (isDevMode) debugPrint('DEV MODE: Email auto-confirmed and user signed in');
           return AuthResponse(user: signInResponse.user, session: signInResponse.session);
         } catch (e) {
-          debugPrint('DEV MODE: Could not auto-confirm. User needs manual confirmation.');
-          debugPrint('Error: $e');
+          if (isDevMode) {
+            debugPrint('DEV MODE: Could not auto-confirm. User needs manual confirmation.');
+            debugPrint('Error: $e');
+          }
           return response;
         }
       }

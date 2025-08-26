@@ -1,17 +1,53 @@
-# Beispiel-Konfiguration für das Whisky Hikes Supabase Projekt
-# Kopiere diese Datei zu terraform.tfvars und passe die Werte an
+# Terraform Variables für Whisky Hikes Multi-Vendor System
+# WICHTIG: 
+# 1. Kopiere diese Datei zu terraform.tfvars und passe die Werte an
+# 2. Erstelle .env Datei basierend auf .env.example für sensible Daten
+# 3. Beide Dateien (.env und terraform.tfvars) sind in .gitignore und werden nicht committed
+
+# === SUPABASE CONFIGURATION ===
+# Supabase Access Token (aus .env: $SUPABASE_ACCESS_TOKEN)
+supabase_access_token = "" # Wird aus .env geladen
 
 # Supabase Organization ID (finde sie in deinem Supabase Dashboard)
 organization_id = "your-organization-id"
 
 # Supabase Region (wähle eine Region in deiner Nähe)
-region = "us-east-1"
+region = "eu-central-1"
 
-# Datenbank-Passwort (sollte sicher und komplex sein)
-database_password = "your-secure-database-password"
+# Datenbank-Passwort (aus .env: $SUPABASE_DATABASE_PASSWORD)
+database_password = "" # Wird aus .env geladen
 
+# === PROJECT CONFIGURATION ===
 # Projektname (optional, Standard ist "whisky-hikes")
 project_name = "whisky-hikes"
 
 # Umgebung (dev, staging, prod)
-environment = "dev" 
+environment = "dev"
+
+# === STRIPE CONFIGURATION ===
+# WICHTIG: Alle Stripe-Keys kommen aus der .env Datei!
+# Test Keys (für Development)
+stripe_publishable_key_test = "" # Wird aus .env: $STRIPE_PUBLISHABLE_KEY_TEST geladen
+stripe_secret_key_test = ""      # Wird aus .env: $STRIPE_SECRET_KEY_TEST geladen  
+stripe_webhook_secret_test = ""  # Wird aus .env: $STRIPE_WEBHOOK_SECRET_TEST geladen
+
+# Live Keys (nur für Production - optional)
+stripe_publishable_key_live = "" # Wird aus .env: $STRIPE_PUBLISHABLE_KEY_LIVE geladen
+stripe_secret_key_live = ""      # Wird aus .env: $STRIPE_SECRET_KEY_LIVE geladen
+stripe_webhook_secret_live = ""  # Wird aus .env: $STRIPE_WEBHOOK_SECRET_LIVE geladen
+
+# === USAGE INSTRUCTIONS ===
+# 1. cp .env.example .env
+# 2. cp terraform.tfvars.example terraform.tfvars  
+# 3. Bearbeite .env mit deinen echten Secrets
+# 4. Bearbeite terraform.tfvars mit deiner Organization ID
+# 5. terraform init
+# 6. terraform plan
+# 7. terraform apply
+
+# === SECURITY NOTES ===
+# - Alle Stripe Secret Keys sind hochsensibel
+# - Teste zuerst mit Test-Keys (pk_test_/sk_test_)
+# - Live-Keys nur in Production verwenden
+# - Secrets regelmäßig rotieren
+# - .env und terraform.tfvars niemals committen! 

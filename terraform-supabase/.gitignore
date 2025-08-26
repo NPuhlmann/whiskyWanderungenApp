@@ -48,11 +48,25 @@ Thumbs.db
 # Logs
 *.log
 
-# Environment variables
+# Environment variables (CRITICAL - contain Stripe secrets!)
 .env
 .env.local
 .env.*.local
 
 # Backup files
 *.backup
-*.bak 
+*.bak
+
+# === SECURITY CRITICAL FILES ===
+# NEVER commit these - they contain sensitive API keys:
+# - .env (Stripe keys, database passwords, API tokens)
+# - terraform.tfvars (production secrets)
+# - *.tfstate (may contain passwords in plaintext)
+
+# === MULTI-VENDOR PAYMENT SECURITY ===
+# This project handles international payments and company data
+# Extra vigilance required for:
+# - Stripe API keys (test and live)
+# - Webhook secrets
+# - Database passwords
+# - Supabase access tokens 

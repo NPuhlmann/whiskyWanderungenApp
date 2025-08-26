@@ -15,15 +15,37 @@ void main() async {
   
   // supabase setup
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
+    url: _ensureHttps(dotenv.env['SUPABASE_URL']!),
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-    debug: true,
+    debug: _isDebugMode(),
   );
 
   runApp(MultiProvider(
     providers: providers,
     child: const MyApp(),
   ));
+}
+
+/// Ensures HTTPS is used for Supabase URL
+String _ensureHttps(String url) {
+  if (url.startsWith('http://')) {
+    return url.replaceFirst('http://', 'https://');
+  }
+  return url;
+}
+
+/// Determines if debug mode should be enabled
+bool _isDebugMode() {
+  // In production, always disable debug mode
+  // In development, check environment variable
+  const bool isProduction = bool.fromEnvironment('dart.vm.product');
+  if (isProduction) {
+    return false;
+  }
+  
+  // Check environment variable for development
+  final devMode = dotenv.env['DEV_MODE']?.toLowerCase();
+  return devMode == 'true';
 }
 
 class MyApp extends StatefulWidget {
@@ -53,7 +75,7 @@ class _MyAppState extends State<MyApp> {
     try {
       // Handle app opened by deep link when app was closed
       // Initial link handling would go here if needed
-      debugPrint('App initialized for deep link handling');
+      if (_isDebugMode()) debugPrint('App initialized for deep link handling');
     } catch (e) {
       debugPrint('Error handling initial link: $e');
     }
@@ -65,7 +87,7 @@ class _MyAppState extends State<MyApp> {
       final event = data.event;
       if (event == AuthChangeEvent.signedIn) {
         // User successfully signed in via email confirmation
-        debugPrint('User confirmed email and signed in');
+        if (_isDebugMode()) debugPrint('User confirmed email and signed in');
       }
     });
   }
