@@ -58,7 +58,7 @@ void main() {
       test('should call authService signUpWithEmailPassword and notify listeners', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final expectedResponse = AuthResponse(user: null, session: null);
 
         when(mockAuthService.signUpWithEmailPassword(email, password, null))
@@ -79,7 +79,7 @@ void main() {
       test('should call authService with user data and notify listeners', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final userData = {'firstName': 'John', 'lastName': 'Doe'};
         final expectedResponse = AuthResponse(user: null, session: null);
 
@@ -101,7 +101,7 @@ void main() {
       test('should notify listeners even when signUp throws', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         when(mockAuthService.signUpWithEmailPassword(email, password, null))
             .thenThrow(Exception('Sign up failed'));
 
@@ -122,7 +122,7 @@ void main() {
       test('should call authService signInWithEmailPassword and notify listeners', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final expectedResponse = AuthResponse(user: null, session: null);
 
         when(mockAuthService.signInWithEmailPassword(email, password))
@@ -143,7 +143,7 @@ void main() {
       test('should notify listeners even when login throws', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         when(mockAuthService.signInWithEmailPassword(email, password))
             .thenThrow(Exception('Login failed'));
 

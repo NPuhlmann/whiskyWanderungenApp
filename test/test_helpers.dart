@@ -331,7 +331,7 @@ class TestHelpers {
   /// Constants for testing
   static const String validEmail = 'test@example.com';
   static const String invalidEmail = 'invalid-email';
-  static const String validPassword = 'password123';
+  static const String validPassword = 'TestPassword123!';
   static const String weakPassword = '123';
   
   static const double validLatitude = 47.3769;

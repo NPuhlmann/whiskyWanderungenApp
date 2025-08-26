@@ -11,7 +11,7 @@ void main() {
     setUpAll(() async {
       // Initialize StripeService with test key
       stripeService = StripeService.instance;
-      await stripeService.initialize('pk_test_51H7xBkA1R0BdHGNmj3vA0RnhH3crmf8ZMT5hKPJfzFCFrBdOhvhk4F6C3K8QK8eCmP4sG2l2F2V1C5K6V6k8mP6k7F5x6');
+      await stripeService.initialize('pk_test_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef');
     });
 
     group('Complete Payment Flow Integration', () {

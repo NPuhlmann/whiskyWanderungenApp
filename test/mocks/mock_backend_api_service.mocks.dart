@@ -3,17 +3,18 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
-import 'dart:typed_data' as _i8;
+import 'dart:async' as _i7;
+import 'dart:typed_data' as _i9;
 
 import 'package:flutter/src/foundation/diagnostics.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i9;
+import 'package:mockito/src/dummies.dart' as _i10;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i2;
-import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i5;
-import 'package:whisky_hikes/domain/models/hike.dart' as _i7;
+import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i6;
+import 'package:whisky_hikes/domain/models/basic_order.dart' as _i5;
+import 'package:whisky_hikes/domain/models/hike.dart' as _i8;
 import 'package:whisky_hikes/domain/models/profile.dart' as _i3;
-import 'package:whisky_hikes/domain/models/waypoint.dart' as _i10;
+import 'package:whisky_hikes/domain/models/waypoint.dart' as _i11;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -44,10 +45,15 @@ class _FakeProfile_1 extends _i1.SmartFake implements _i3.Profile {
       super.toString();
 }
 
+class _FakeBasicOrder_2 extends _i1.SmartFake implements _i5.BasicOrder {
+  _FakeBasicOrder_2(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [BackendApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
+class MockBackendApiService extends _i1.Mock implements _i6.BackendApiService {
   MockBackendApiService() {
     _i1.throwOnMissingStub(this);
   }
@@ -64,64 +70,64 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
           as _i2.SupabaseClient);
 
   @override
-  _i6.Future<_i3.Profile> getUserProfileById(String? id) =>
+  _i7.Future<_i3.Profile> getUserProfileById(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#getUserProfileById, [id]),
-            returnValue: _i6.Future<_i3.Profile>.value(
+            returnValue: _i7.Future<_i3.Profile>.value(
               _FakeProfile_1(
                 this,
                 Invocation.method(#getUserProfileById, [id]),
               ),
             ),
           )
-          as _i6.Future<_i3.Profile>);
+          as _i7.Future<_i3.Profile>);
 
   @override
-  _i6.Future<List<_i7.Hike>> fetchHikes() =>
+  _i7.Future<List<_i8.Hike>> fetchHikes() =>
       (super.noSuchMethod(
             Invocation.method(#fetchHikes, []),
-            returnValue: _i6.Future<List<_i7.Hike>>.value(<_i7.Hike>[]),
+            returnValue: _i7.Future<List<_i8.Hike>>.value(<_i8.Hike>[]),
           )
-          as _i6.Future<List<_i7.Hike>>);
+          as _i7.Future<List<_i8.Hike>>);
 
   @override
-  _i6.Future<List<_i7.Hike>> fetchUserHikes(String? userId) =>
+  _i7.Future<List<_i8.Hike>> fetchUserHikes(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchUserHikes, [userId]),
-            returnValue: _i6.Future<List<_i7.Hike>>.value(<_i7.Hike>[]),
+            returnValue: _i7.Future<List<_i8.Hike>>.value(<_i8.Hike>[]),
           )
-          as _i6.Future<List<_i7.Hike>>);
+          as _i7.Future<List<_i8.Hike>>);
 
   @override
-  _i6.Future<List<String>> getHikeImages(int? hikeId) =>
+  _i7.Future<List<String>> getHikeImages(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getHikeImages, [hikeId]),
-            returnValue: _i6.Future<List<String>>.value(<String>[]),
+            returnValue: _i7.Future<List<String>>.value(<String>[]),
           )
-          as _i6.Future<List<String>>);
+          as _i7.Future<List<String>>);
 
   @override
-  _i6.Future<void> uploadHikeImages(int? hikeId, List<String>? imageUrls) =>
+  _i7.Future<void> uploadHikeImages(int? hikeId, List<String>? imageUrls) =>
       (super.noSuchMethod(
             Invocation.method(#uploadHikeImages, [hikeId, imageUrls]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i7.Future<void>);
 
   @override
-  _i6.Future<void> updateUserProfile(_i3.Profile? profile) =>
+  _i7.Future<void> updateUserProfile(_i3.Profile? profile) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserProfile, [profile]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i7.Future<void>);
 
   @override
-  _i6.Future<String> uploadProfileImage(
+  _i7.Future<String> uploadProfileImage(
     String? userId,
-    _i8.Uint8List? fileBytes,
+    _i9.Uint8List? fileBytes,
     String? fileExt,
   ) =>
       (super.noSuchMethod(
@@ -130,8 +136,8 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
               fileBytes,
               fileExt,
             ]),
-            returnValue: _i6.Future<String>.value(
-              _i9.dummyValue<String>(
+            returnValue: _i7.Future<String>.value(
+              _i10.dummyValue<String>(
                 this,
                 Invocation.method(#uploadProfileImage, [
                   userId,
@@ -141,29 +147,29 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
               ),
             ),
           )
-          as _i6.Future<String>);
+          as _i7.Future<String>);
 
   @override
-  _i6.Future<String?> getProfileImageUrl(String? userId) =>
+  _i7.Future<String?> getProfileImageUrl(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getProfileImageUrl, [userId]),
-            returnValue: _i6.Future<String?>.value(),
+            returnValue: _i7.Future<String?>.value(),
           )
-          as _i6.Future<String?>);
+          as _i7.Future<String?>);
 
   @override
-  _i6.Future<List<_i10.Waypoint>> getWaypointsForHike(int? hikeId) =>
+  _i7.Future<List<_i11.Waypoint>> getWaypointsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getWaypointsForHike, [hikeId]),
-            returnValue: _i6.Future<List<_i10.Waypoint>>.value(
-              <_i10.Waypoint>[],
+            returnValue: _i7.Future<List<_i11.Waypoint>>.value(
+              <_i11.Waypoint>[],
             ),
           )
-          as _i6.Future<List<_i10.Waypoint>>);
+          as _i7.Future<List<_i11.Waypoint>>);
 
   @override
-  _i6.Future<void> addWaypoint(
-    _i10.Waypoint? waypoint,
+  _i7.Future<void> addWaypoint(
+    _i11.Waypoint? waypoint,
     int? hikeId, {
     int? orderIndex,
   }) =>
@@ -173,31 +179,31 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
               [waypoint, hikeId],
               {#orderIndex: orderIndex},
             ),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i7.Future<void>);
 
   @override
-  _i6.Future<void> updateWaypoint(_i10.Waypoint? waypoint) =>
+  _i7.Future<void> updateWaypoint(_i11.Waypoint? waypoint) =>
       (super.noSuchMethod(
             Invocation.method(#updateWaypoint, [waypoint]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i7.Future<void>);
 
   @override
-  _i6.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
+  _i7.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i7.Future<void>);
 
   @override
-  _i6.Future<void> updateWaypointOrder(
+  _i7.Future<void> updateWaypointOrder(
     int? hikeId,
     int? waypointId,
     int? newOrderIndex,
@@ -208,8 +214,102 @@ class MockBackendApiService extends _i1.Mock implements _i5.BackendApiService {
               waypointId,
               newOrderIndex,
             ]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i7.Future<void>);
+
+  @override
+  _i7.Future<List<_i5.BasicOrder>> fetchUserOrders(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchUserOrders, [userId]),
+            returnValue: _i7.Future<List<_i5.BasicOrder>>.value(
+              <_i5.BasicOrder>[],
+            ),
+          )
+          as _i7.Future<List<_i5.BasicOrder>>);
+
+  @override
+  _i7.Future<_i5.BasicOrder> fetchOrderById(int? orderId) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchOrderById, [orderId]),
+            returnValue: _i7.Future<_i5.BasicOrder>.value(
+              _FakeBasicOrder_2(
+                this,
+                Invocation.method(#fetchOrderById, [orderId]),
+              ),
+            ),
+          )
+          as _i7.Future<_i5.BasicOrder>);
+
+  @override
+  _i7.Future<bool> hasUserPurchasedHike(String? userId, int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#hasUserPurchasedHike, [userId, hikeId]),
+            returnValue: _i7.Future<bool>.value(false),
+          )
+          as _i7.Future<bool>);
+
+  @override
+  _i7.Future<void> recordHikePurchase(
+    String? userId,
+    int? hikeId,
+    int? orderId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#recordHikePurchase, [userId, hikeId, orderId]),
+            returnValue: _i7.Future<void>.value(),
+            returnValueForMissingStub: _i7.Future<void>.value(),
+          )
+          as _i7.Future<void>);
+
+  @override
+  _i7.Future<_i5.BasicOrder> fetchOrderWithPaymentDetails(int? orderId) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchOrderWithPaymentDetails, [orderId]),
+            returnValue: _i7.Future<_i5.BasicOrder>.value(
+              _FakeBasicOrder_2(
+                this,
+                Invocation.method(#fetchOrderWithPaymentDetails, [orderId]),
+              ),
+            ),
+          )
+          as _i7.Future<_i5.BasicOrder>);
+
+  @override
+  _i7.Future<_i5.BasicOrder> updateOrderAfterPayment({
+    required int? orderId,
+    required _i5.OrderStatus? status,
+    required String? paymentIntentId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateOrderAfterPayment, [], {
+              #orderId: orderId,
+              #status: status,
+              #paymentIntentId: paymentIntentId,
+            }),
+            returnValue: _i7.Future<_i5.BasicOrder>.value(
+              _FakeBasicOrder_2(
+                this,
+                Invocation.method(#updateOrderAfterPayment, [], {
+                  #orderId: orderId,
+                  #status: status,
+                  #paymentIntentId: paymentIntentId,
+                }),
+              ),
+            ),
+          )
+          as _i7.Future<_i5.BasicOrder>);
+
+  @override
+  _i7.Future<List<Map<String, dynamic>>> getUserPaymentHistory(
+    String? userId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUserPaymentHistory, [userId]),
+            returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i7.Future<List<Map<String, dynamic>>>);
 }

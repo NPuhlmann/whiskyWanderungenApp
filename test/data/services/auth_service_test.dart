@@ -35,7 +35,7 @@ void main() {
       test('signInWithEmailPassword should return successful AuthResponse', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final expectedResponse = AuthResponse(
           user: mockUser,
           session: mockSession,
@@ -74,7 +74,7 @@ void main() {
       test('signUpWithEmailPassword should work in production mode', () async {
         // Arrange
         const email = 'newuser@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final userData = {'firstName': 'John', 'lastName': 'Doe'};
         final expectedResponse = AuthResponse(user: mockUser, session: mockSession);
 
@@ -103,7 +103,7 @@ void main() {
       test('signUpWithEmailPassword should work in dev mode with confirmed email', () async {
         // Arrange
         const email = 'devuser@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final userData = {'firstName': 'Dev', 'lastName': 'User'};
         
         when(mockUser.emailConfirmedAt).thenReturn(DateTime.now().toIso8601String());
@@ -134,7 +134,7 @@ void main() {
       test('signUpWithEmailPassword should auto-confirm in dev mode when email not confirmed', () async {
         // Arrange
         const email = 'unconfirmed@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final userData = {'firstName': 'Unconfirmed', 'lastName': 'User'};
         
         when(mockUser.emailConfirmedAt).thenReturn(null); // Not confirmed
@@ -167,7 +167,7 @@ void main() {
       test('signUpWithEmailPassword should handle dev mode auto-confirm failure gracefully', () async {
         // Arrange
         const email = 'failuser@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final userData = {'firstName': 'Fail', 'lastName': 'User'};
         
         when(mockUser.emailConfirmedAt).thenReturn(null);
@@ -197,7 +197,7 @@ void main() {
       test('signUpWithEmailPassword should handle signup errors', () async {
         // Arrange
         const email = 'existing@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
 
         when(mockAuthClient.signUp(
           email: anyNamed('email'),
@@ -455,7 +455,7 @@ void main() {
         final devService = AuthService(client: mockSupabaseClient, isDevMode: true);
 
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
 
         when(mockAuthClient.signUp(
           email: anyNamed('email'),
@@ -504,7 +504,7 @@ void main() {
       test('should handle empty user data in signup', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final expectedResponse = AuthResponse();
 
         when(mockAuthClient.signUp(
@@ -524,7 +524,7 @@ void main() {
       test('should handle network timeouts', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
 
         when(mockAuthClient.signInWithPassword(email: email, password: password))
             .thenThrow(Exception('Network timeout'));

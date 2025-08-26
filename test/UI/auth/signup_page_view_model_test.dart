@@ -30,7 +30,7 @@ void main() {
       test('should call userRepository signUpWithEmailPassword without data', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final expectedResponse = AuthResponse(user: null, session: null);
         
         when(mockUserRepository.signUpWithEmailPassword(email, password, null))
@@ -47,7 +47,7 @@ void main() {
       test('should call userRepository signUpWithEmailPassword with data', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final data = {'firstName': 'John', 'lastName': 'Doe'};
         final expectedResponse = AuthResponse(user: null, session: null);
         
@@ -65,7 +65,7 @@ void main() {
       test('should propagate exceptions from userRepository', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final exception = Exception('Sign up failed');
         
         when(mockUserRepository.signUpWithEmailPassword(email, password, null))
@@ -122,7 +122,7 @@ void main() {
       test('should handle null values in AuthResponse', () async {
         // Arrange
         const email = 'test@example.com';
-        const password = 'password123';
+        const password = 'TestPassword123!';
         final expectedResponse = AuthResponse(user: null, session: null);
         
         when(mockUserRepository.signUpWithEmailPassword(email, password, null))
