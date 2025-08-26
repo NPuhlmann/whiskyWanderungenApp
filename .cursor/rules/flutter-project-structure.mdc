@@ -1,0 +1,143 @@
+# 📱 Flutter Project Structure for Whisky Hikes
+
+## Project Overview
+
+The Whisky Hikes Flutter app follows a clean architecture pattern with clear separation of concerns between UI, business logic, and data layers.
+
+## Directory Structure
+
+```
+lib/
+├── main.dart                    # App entry point
+├── config/                      # Configuration and setup
+│   ├── dependencies.dart        # Dependency injection
+│   ├── l10n/                    # Localization files
+│   └── routing/                 # Navigation configuration
+├── UI/                          # User interface components
+│   ├── auth/                    # Authentication screens
+│   ├── checkout/                # Checkout flow
+│   ├── core/                    # Shared UI components
+│   ├── home/                    # Home screen and widgets
+│   ├── payment/                 # Payment screens
+│   └── profile/                 # User profile screens
+├── data/                        # Data layer
+│   ├── repositories/            # Data access layer
+│   └── services/                # External service integrations
+└── domain/                      # Business logic layer
+    └── models/                  # Data models and entities
+```
+
+## Architecture Layers
+
+### UI Layer ([lib/UI/](mdc:lib/UI/))
+- **Screens**: Full-page UI components
+- **Widgets**: Reusable UI components
+- **ViewModels**: State management for UI components
+- **Navigation**: Screen routing and transitions
+
+### Data Layer ([lib/data/](mdc:lib/data/))
+- **Repositories**: Abstract data access interfaces
+- **Services**: External API integrations (Supabase, Stripe)
+- **Local Storage**: Caching and offline data
+
+### Domain Layer ([lib/domain/](mdc:lib/domain/))
+- **Models**: Business entities and data structures
+- **Use Cases**: Business logic and rules
+- **Interfaces**: Abstract contracts for data access
+
+## Key Components
+
+### Authentication System
+- [auth_service.dart](mdc:lib/data/services/auth/auth_service.dart) - Supabase authentication
+- [user_repository.dart](mdc:lib/data/repositories/user_repository.dart) - User data management
+- [login_page.dart](mdc:lib/UI/auth/login_page.dart) - Login UI
+
+### Payment Integration
+- [stripe_service.dart](mdc:lib/data/services/payment/stripe_service.dart) - Stripe payment processing
+- [payment_repository.dart](mdc:lib/data/repositories/payment_repository.dart) - Payment data management
+- [checkout_page.dart](mdc:lib/UI/checkout/checkout_page.dart) - Checkout flow
+
+### Navigation
+- [router.dart](mdc:lib/config/routing/router.dart) - App navigation configuration
+- [routes.dart](mdc:lib/config/routing/routes.dart) - Route definitions
+
+### Data Models
+- [order.dart](mdc:lib/domain/models/order.dart) - Order management
+- [payment_intent.dart](mdc:lib/domain/models/payment_intent.dart) - Payment processing
+- [hike.dart](mdc:lib/domain/models/hike.dart) - Hike data structure
+
+## Configuration
+
+### Dependencies
+- [dependencies.dart](mdc:lib/config/dependencies.dart) - Service locator and dependency injection
+- [pubspec.yaml](mdc:pubspec.yaml) - Package dependencies and app metadata
+
+### Localization
+- [l10n.yaml](mdc:l10n.yaml) - Localization configuration
+- [lib/config/l10n/](mdc:lib/config/l10n/) - Translation files
+
+## Testing Structure
+
+```
+test/
+├── config/                      # Test configuration
+├── data/                        # Data layer tests
+├── domain/                      # Domain layer tests
+├── UI/                          # UI component tests
+├── integration/                 # End-to-end tests
+├── mocks/                       # Mock objects
+└── run_all_tests.dart          # Test runner
+```
+
+## Development Workflow
+
+### Adding New Features
+1. Create models in [lib/domain/models/](mdc:lib/domain/models/)
+2. Implement repositories in [lib/data/repositories/](mdc:lib/data/repositories/)
+3. Create services in [lib/data/services/](mdc:lib/data/services/)
+4. Build UI components in [lib/UI/](mdc:lib/UI/)
+5. Add tests in corresponding [test/](mdc:test/) directories
+
+### State Management
+- Use ViewModels for screen state management
+- Implement reactive patterns with Streams
+- Keep business logic in domain layer
+- UI components should be stateless when possible
+
+### Error Handling
+- Implement consistent error handling patterns
+- Use Result types for operations that can fail
+- Provide user-friendly error messages
+- Log errors for debugging
+
+## Integration Points
+
+### Supabase Backend
+- Authentication via [auth_service.dart](mdc:lib/data/services/auth/auth_service.dart)
+- Database operations via [backend_api.dart](mdc:lib/data/services/database/backend_api.dart)
+- Real-time subscriptions for live updates
+
+### Payment Processing
+- Stripe integration via [stripe_service.dart](mdc:lib/data/services/payment/stripe_service.dart)
+- Order management through [payment_repository.dart](mdc:lib/data/repositories/payment_repository.dart)
+- Secure payment flow in [checkout_page.dart](mdc:lib/UI/checkout/checkout_page.dart)
+
+## Performance Considerations
+
+- Use lazy loading for images and heavy content
+- Implement efficient caching strategies
+- Minimize widget rebuilds with proper state management
+- Use const constructors where possible
+- Implement pagination for large data sets
+
+## Security Features
+
+- Secure API communication with Supabase
+- Token-based authentication
+- Secure payment processing with Stripe
+- Input validation and sanitization
+- Secure local storage for sensitive data
+description:
+globs:
+alwaysApply: true
+---

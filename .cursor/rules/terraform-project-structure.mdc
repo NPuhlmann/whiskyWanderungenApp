@@ -1,0 +1,121 @@
+# 🏗️ Terraform Project Structure for Whisky Hikes
+
+## Project Overview
+
+The [terraform-supabase/](mdc:terraform-supabase/) directory contains all infrastructure code for deploying and managing the Whisky Hikes Supabase backend.
+
+## Directory Structure
+
+```
+terraform-supabase/
+├── main.tf                 # Main Terraform configuration
+├── variables.tf            # Variable definitions (no defaults for sensitive data)
+├── terraform.tfvars.example # Template for local configuration
+├── .env                    # Local environment variables (not in Git)
+├── *.sh                    # Shell scripts for database operations
+├── sql/                    # SQL migration files
+│   ├── 01_create_tables.sql
+│   ├── 02_create_functions.sql
+│   ├── 03_create_policies.sql
+│   ├── 04_insert_sample_data.sql
+│   └── 05_create_payment_tables.sql
+└── README_SECURITY.md      # Security configuration guide
+```
+
+## Key Files
+
+### Infrastructure Configuration
+- [main.tf](mdc:terraform-supabase/main.tf) - Creates Supabase project and manages resources
+- [variables.tf](mdc:terraform-supabase/variables.tf) - Defines all input variables
+- [terraform.tfvars.example](mdc:terraform-supabase/terraform.tfvars.example) - Configuration template
+
+### Database Management Scripts
+- [complete_schema.sh](mdc:terraform-supabase/complete_schema.sh) - Creates complete database schema
+- [create_policies.sh](mdc:terraform-supabase/create_policies.sh) - Applies RLS policies
+- [create_storage.sh](mdc:terraform-supabase/create_storage.sh) - Sets up storage buckets
+- [insert_sample_data.sh](mdc:terraform-supabase/insert_sample_data.sh) - Inserts test data
+- [execute_sql.sh](mdc:terraform-supabase/execute_sql.sh) - Executes custom SQL commands
+
+### Build and Deployment
+- [Makefile](mdc:terraform-supabase/Makefile) - Common commands and shortcuts
+- [README_SECURITY.md](mdc:terraform-supabase/README_SECURITY.md) - Security setup instructions
+
+## Workflow
+
+### Initial Setup
+1. Copy [terraform.tfvars.example](mdc:terraform-supabase/terraform.tfvars.example) to `terraform.tfvars`
+2. Configure [.env](mdc:terraform-supabase/.env) with secrets from Supabase Vault
+3. Run `terraform init` to initialize
+4. Run `make plan` to review changes
+
+### Development Workflow
+1. Make changes to Terraform files or SQL scripts
+2. Test with `make plan`
+3. Apply with `make apply`
+4. Run database scripts as needed
+
+### Database Changes
+1. Create new SQL files in [sql/](mdc:terraform-supabase/sql/) directory
+2. Update [main.tf](mdc:terraform-supabase/main.tf) if needed
+3. Test with `make sql SQL="YOUR_SQL_HERE"`
+4. Commit SQL files to version control
+
+## Security Features
+
+- **Row Level Security (RLS)** enabled on all tables
+- **Environment-based configuration** via `.env` files
+- **Supabase Vault integration** for secret management
+- **No hardcoded secrets** in any files
+- **Automatic .env loading** in all shell scripts
+
+## Common Commands
+
+```bash
+# Initialize Terraform
+make init
+
+# Review changes
+make plan
+
+# Deploy infrastructure
+make apply
+
+# Create database schema
+make schema
+
+# Apply security policies
+make policies
+
+# Insert sample data
+make sample-data
+
+# Execute custom SQL
+make sql SQL="CREATE TABLE test (id SERIAL);"
+
+# Clean up
+make clean
+```
+
+## Environment Variables
+
+All scripts automatically load from [.env](mdc:terraform-supabase/.env):
+- `SUPABASE_ACCESS_TOKEN` - Management API token
+- `PROJECT_ID` - Supabase project identifier
+- `ORGANIZATION_ID` - Supabase organization ID
+- `DATABASE_PASSWORD` - Database password
+
+## Troubleshooting
+
+### Common Issues
+- **"SUPABASE_ACCESS_TOKEN not set"** - Check `.env` file exists and is configured
+- **"Project not found"** - Verify PROJECT_ID in `.env`
+- **Permission denied** - Ensure token has correct permissions
+
+### Debug Mode
+- Use `make test-api` to test connectivity
+- Check Supabase Dashboard → Logs for errors
+- Verify Vault permissions and secret access
+description:
+globs:
+alwaysApply: true
+---

@@ -1,0 +1,116 @@
+# 🔒 Security Guidelines for Whisky Hikes
+
+## Never Commit Sensitive Information
+
+**CRITICAL:** Never commit any of the following to Git:
+- API Keys (especially Supabase tokens starting with `sbp_`)
+- Database passwords
+- Project IDs
+- Organization IDs
+- Access tokens
+- Private keys
+- Environment-specific configuration
+
+## Terraform Security Rules
+
+### Configuration Files
+- Use [terraform.tfvars.example](mdc:terraform-supabase/terraform.tfvars.example) as a template
+- **NEVER** commit [terraform.tfvars](mdc:terraform-supabase/terraform.tfvars) 
+- Store sensitive values in Supabase Vault or environment variables
+- Mark sensitive variables with `sensitive = true` in [variables.tf](mdc:terraform-supabase/variables.tf)
+
+### Shell Scripts
+- All shell scripts in [terraform-supabase/](mdc:terraform-supabase/) must load environment variables from `.env`
+- Use `${SUPABASE_ACCESS_TOKEN}` instead of hardcoded values
+- Scripts should source `.env` file if it exists
+
+### State Files
+- Never commit `*.tfstate` or `*.tfstate.backup` files
+- Use remote state backends for production
+- Local state files may contain sensitive information
+
+## Environment Configuration
+
+### Local Development
+- Create `.env` file from `.env.example` template
+- Add `.env*` to `.gitignore`
+- Use environment variables for all sensitive data
+
+### CI/CD
+- Set secrets as environment variables in CI/CD pipeline
+- Never echo or log sensitive values
+- Use secret management services (AWS Secrets Manager, HashiCorp Vault)
+
+## Code Security Best Practices
+
+### HTTPS Enforcement
+- Always use HTTPS for production URLs
+- Implement `_ensureHttps()` helper function in main.dart
+- Never allow HTTP in production environments
+
+### Debug Mode Security
+- Debug mode is automatically disabled in production builds
+- Use `bool.fromEnvironment('dart.vm.product')` to detect production
+- Wrap all debugPrint statements with debug mode checks
+- Set `DEV_MODE=false` in production .env files
+
+### Test Data Security
+- Use generic test keys instead of real API keys in tests
+- Replace hardcoded passwords with secure test passwords
+- Use environment variables for test configuration
+- Never commit test keys that resemble real keys
+
+### Input Validation
+- Validate all user inputs before processing
+- Use Supabase RLS policies for database security
+- Implement proper error handling without exposing internals
+- Sanitize all data before database operations
+
+## Code Review Checklist
+
+Before committing, verify:
+- [ ] No hardcoded API keys
+- [ ] No hardcoded passwords
+- [ ] No hardcoded project IDs
+- [ ] All sensitive variables marked as `sensitive = true`
+- [ ] `.env` file not committed
+- [ ] State files not committed
+- [ ] Example files don't contain real values
+- [ ] HTTPS enforced for all external URLs
+- [ ] Debug mode properly controlled
+- [ ] Test data uses generic values
+- [ ] All debugPrint statements wrapped with debug checks
+
+## Emergency Response
+
+If secrets are accidentally committed:
+1. **IMMEDIATELY** invalidate all exposed keys
+2. Use `git filter-branch` to remove from history
+3. Force push to overwrite remote history
+4. Generate new keys and update all services
+5. Notify team members to re-clone repository
+
+## File Patterns to Watch
+
+**Always check these patterns for secrets:**
+- `sbp_[a-zA-Z0-9]+` (Supabase tokens)
+- `[a-zA-Z0-9]{20,}` (long random strings)
+- `password.*=.*["'][^"']+["']`
+- `token.*=.*["'][^"']+["']`
+- `key.*=.*["'][^"']+["']`
+- `pk_test_[a-zA-Z0-9]+` (Stripe test keys)
+- `sk_test_[a-zA-Z0-9]+` (Stripe test keys)
+
+## Security Testing
+
+### Automated Checks
+- Run `flutter analyze` before commits
+- Use CI/CD security scanning (Trivy)
+- Check for dependency vulnerabilities
+- Verify .gitignore excludes sensitive files
+
+### Manual Security Review
+- Review all new API integrations
+- Check authentication flows
+- Verify RLS policies are active
+- Test input validation thoroughly
