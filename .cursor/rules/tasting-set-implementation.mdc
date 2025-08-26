@@ -1,0 +1,212 @@
+# Tasting Set System Implementation
+
+## Overview
+Das Tasting Set System implementiert eine 1:1 Beziehung zwischen Wanderungen (Hikes) und Whisky-Tasting-Sets. Jede Wanderung hat automatisch ein inklusives Tasting Set.
+
+## Key Implementation Details
+
+### 1. Database Schema
+Das SQL-Schema definiert die 1:1 Beziehung:
+```sql
+-- 1:1 relationship with hikes
+CREATE TABLE public.tasting_sets (
+    id SERIAL PRIMARY KEY,
+    hike_id INTEGER UNIQUE REFERENCES public.hikes(id) ON DELETE CASCADE,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0.00, -- Always 0 since included
+    is_included BOOLEAN DEFAULT TRUE, -- Always true
+    -- ... other fields
+);
+```
+
+**Wichtige Constraints:**
+- `hike_id UNIQUE` - Garantiert 1:1 Beziehung
+- `price DEFAULT 0.00` - Tasting Set ist immer inklusive
+- `is_included DEFAULT TRUE` - Immer im Hike-Preis enthalten
+
+### 2. Model Structure
+
+#### WhiskySample Model
+```dart
+@freezed
+sealed class WhiskySample with _$WhiskySample {
+  const factory WhiskySample({
+    required int id,
+    required String name,
+    required String distillery,
+    required int age,
+    required String region,
+    @JsonKey(name: 'tasting_notes') required String tastingNotes,
+    @JsonKey(name: 'image_url') required String imageUrl,
+    required double abv,
+    String? category,
+    @JsonKey(name: 'sample_size_ml') @Default(5.0) double sampleSizeMl,
+    @JsonKey(name: 'order_index') @Default(0) int orderIndex,
+  }) = _WhiskySample;
+}
+```
+
+#### TastingSet Model
+```dart
+@freezed
+sealed class TastingSet with _$TastingSet {
+  const factory TastingSet({
+    required int id,
+    @JsonKey(name: 'hike_id') required int hikeId,
+    required String name,
+    required String description,
+    required List<WhiskySample> samples,
+    @Default(0.0) double price, // Always 0 since included
+    @JsonKey(name: 'is_included') @Default(true) bool isIncluded, // Always true
+    // ... other fields
+  }) = _TastingSet;
+}
+```
+
+### 3. Business Logic Extensions
+
+#### TastingSet Extensions
+```dart
+extension TastingSetExtensions on TastingSet {
+  bool get isCurrentlyAvailable { /* date logic */ }
+  int get sampleCount => samples.length;
+  double get totalVolumeMl => samples.fold(0.0, (sum, sample) => sum + sample.sampleSizeMl);
+  String get formattedPrice => 'Inklusive'; // Always "Inklusive"
+  String get mainRegion { /* most common region logic */ }
+  double get averageAge { /* average calculation */ }
+  double get averageAbv { /* average calculation */ }
+}
+```
+
+#### WhiskySample Extensions
+```dart
+extension WhiskySampleExtensions on WhiskySample {
+  String get formattedAge => '$age Jahre';
+  String get formattedAbv => '${abv.toStringAsFixed(1)}%';
+  String get formattedSampleSize => '${sampleSizeMl.toStringAsFixed(0)}ml';
+  bool get hasCategory => category != null && category!.isNotEmpty;
+  String get displayName => '$name ($distillery)';
+}
+```
+
+### 4. Repository Pattern
+
+#### TastingSetRepository
+```dart
+class TastingSetRepository {
+  // Core methods for 1:1 relationship
+  Future<TastingSet?> getTastingSetForHike(int hikeId);
+  
+  // Company management methods
+  Future<TastingSet> createTastingSet({required int hikeId, ...});
+  Future<TastingSet> updateTastingSet({required int tastingSetId, ...});
+  Future<void> deleteTastingSet(int tastingSetId);
+  
+  // Utility methods
+  Future<List<TastingSet>> getAllTastingSets();
+  Future<List<TastingSet>> searchTastingSets(String query);
+  Future<List<TastingSet>> getTastingSetsByRegion(String region);
+}
+```
+
+### 5. UI Implementation
+
+#### ViewModel (TastingSetSelectionViewModel)
+```dart
+class TastingSetSelectionViewModel extends ChangeNotifier {
+  final Hike hike;
+  TastingSet? _tastingSet;
+  
+  // Load single tasting set for hike (1:1 relationship)
+  Future<void> _loadTastingSet() async {
+    _tastingSet = await _tastingSetRepository.getTastingSetForHike(hike.id);
+  }
+  
+  // Business logic getters
+  int get totalSampleCount => _tastingSet?.sampleCount ?? 0;
+  double get totalVolumeMl => _tastingSet?.totalVolumeMl ?? 0.0;
+  String get mainRegion => _tastingSet?.mainRegion ?? 'Unbekannt';
+}
+```
+
+#### UI Components
+- **TastingSetSelectionPage**: Hauptseite für Tasting Set Anzeige
+- **TastingSetInfoCard**: Informationskarte für Tasting Set Details
+- **Keine Auswahl-Logik**: Nur informative Darstellung
+
+### 6. Integration Points
+
+#### With Hike System
+- Tasting Set wird automatisch mit Hike geladen
+- Keine separate Auswahl oder Preisberechnung
+- Checkout integriert Tasting Set automatisch
+
+#### With Company System
+- Unternehmen verwalten Tasting Sets für ihre Wanderungen
+- RLS-Policies schützen Company-Daten
+- Admin-Interface für Tasting Set Management
+
+### 7. Testing Strategy
+
+#### Model Tests
+```dart
+test('should create TastingSet with default values', () {
+  final tastingSet = TastingSet(/* required fields */);
+  expect(tastingSet.price, equals(0.0)); // Always 0
+  expect(tastingSet.isIncluded, isTrue); // Always true
+});
+
+test('should test business logic extensions', () {
+  expect(tastingSet.formattedPrice, equals('Inklusive'));
+  expect(tastingSet.mainRegion, equals('Highland'));
+  expect(tastingSet.averageAge, closeTo(12.33, 0.01));
+});
+```
+
+#### Repository Tests
+- Mock BackendApiService
+- Test error handling
+- Verify correct API calls
+
+#### UI Tests
+- Test ViewModel state changes
+- Test UI rendering with different states
+- Test error handling and loading states
+
+## Common Pitfalls & Solutions
+
+### 1. Code Generation Issues
+**Problem**: Linter errors nach Model-Änderungen
+**Solution**: `flutter pub run build_runner build --delete-conflicting-outputs`
+
+### 2. JSON Serialization
+**Problem**: Nested list deserialization in Freezed
+**Solution**: Verwende `@JsonKey` mit korrekten Namen, teste Serialisierung
+
+### 3. Database Constraints
+**Problem**: UNIQUE constraint violations
+**Solution**: Stelle sicher, dass jeder Hike nur ein Tasting Set hat
+
+### 4. State Management
+**Problem**: ViewModel state nicht synchronisiert
+**Solution**: Verwende `notifyListeners()` nach State-Änderungen
+
+## Future Enhancements
+
+### 1. Sample Management
+- Drag & Drop für Sample-Reihenfolge
+- Sample-Templates für Companies
+- Bulk-Import von Sample-Daten
+
+### 2. Availability Management
+- Saisonale Verfügbarkeit
+- Sample-Rotation
+- Limited Edition Tasting Sets
+
+### 3. Analytics
+- Popularität von Samples
+- Region-basierte Statistiken
+- Company Performance Metrics
+description:
+globs:
+alwaysApply: true
+---

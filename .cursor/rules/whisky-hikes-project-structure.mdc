@@ -1,0 +1,85 @@
+# Whisky Hikes Project Structure & Architecture
+
+## Project Overview
+Whisky Hikes ist eine Flutter-App für geführte Wanderungen mit integrierten Whisky-Tastings. Das Projekt folgt einer klaren Architektur mit Test-Driven Development (TDD).
+
+## Key Architecture Patterns
+
+### 1. Domain-Driven Design (DDD)
+- **Models**: Alle Geschäftsobjekte sind in `lib/domain/models/` definiert
+- **Freezed**: Alle Models verwenden `@freezed` für Immutabilität und Code-Generierung
+- **Sealed Classes**: Models sind als `sealed class` definiert (siehe [hike.dart](mdc:lib/domain/models/hike.dart))
+
+### 2. Repository Pattern
+- **Data Layer**: `lib/data/repositories/` enthält alle Repository-Implementierungen
+- **Service Layer**: `lib/data/services/` für Backend-API-Kommunikation
+- **Abstraction**: Repositories abstrahieren die Datenzugriffslogik
+
+### 3. MVVM Pattern
+- **ViewModels**: `lib/UI/*/` Verzeichnisse enthalten ViewModels mit `ChangeNotifier`
+- **State Management**: Provider-Pattern für State Management
+- **Business Logic**: ViewModels enthalten die Geschäftslogik
+
+### 4. Test-Driven Development (TDD)
+- **Test Structure**: Tests folgen der gleichen Verzeichnisstruktur wie der Code
+- **Test Files**: Alle Tests haben die Endung `_test.dart`
+- **Coverage**: Umfassende Testabdeckung für Models, Repositories und UI
+
+## Important File Locations
+
+### Core Models
+- [hike.dart](mdc:lib/domain/models/hike.dart) - Hike Model mit Freezed
+- [tasting_set.dart](mdc:lib/domain/models/tasting_set.dart) - Tasting Set Model (1:1 mit Hike)
+- [order.dart](mdc:lib/domain/models/order.dart) - Order Model
+
+### Database & Backend
+- [backend_api.dart](mdc:lib/data/services/database/backend_api.dart) - Haupt-API-Service
+- [terraform-supabase/](mdc:terraform-supabase/) - Supabase-Infrastruktur
+- [06_tasting_sets_tables.sql](mdc:terraform-supabase/sql/06_tasting_sets_tables.sql) - Tasting Set Schema
+
+### UI Components
+- [tasting_set_selection_page.dart](mdc:lib/UI/tasting_sets/tasting_set_selection_page.dart) - Tasting Set Anzeige
+- [tasting_set_info_card.dart](mdc:lib/UI/tasting_sets/widgets/tasting_set_info_card.dart) - Tasting Set Info Widget
+
+## Development Workflow
+
+### 1. Code Generation
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+- Wird benötigt nach Änderungen an Freezed Models
+- Generiert `.freezed.dart` und `.g.dart` Dateien
+
+### 2. Testing
+```bash
+flutter test test/domain/models/tasting_set_test.dart
+```
+- Tests laufen vor der Implementierung (TDD)
+- Alle Tests müssen bestehen
+
+### 3. Database Changes
+- SQL-Skripte in `terraform-supabase/sql/` definieren
+- Manuell in Supabase ausführen oder über Terraform deployen
+
+## Key Business Rules
+
+### Tasting Set System
+- **1:1 Beziehung**: Jede Wanderung hat genau ein Tasting Set
+- **Automatische Inklusion**: Tasting Sets sind im Hike-Preis enthalten
+- **Company-Management**: Unternehmen verwalten Tasting Sets für ihre Wanderungen
+- **Preis**: Tasting Sets haben immer Preis 0.00 (inklusive)
+
+### Hike System
+- **Company-basiert**: Jede Wanderung gehört zu einem Unternehmen
+- **Geolocation**: Wanderungen haben Start-/Endpunkte und Wegpunkte
+- **Preis**: Wanderungen haben einen festen Preis inklusive Tasting Set
+
+## File Naming Conventions
+- **Models**: `snake_case` für JSON-Keys, `camelCase` für Dart-Properties
+- **Files**: `snake_case.dart` für alle Dart-Dateien
+- **Widgets**: `snake_case_widget.dart` für Widget-Dateien
+- **Tests**: `snake_case_test.dart` für Test-Dateien
+description:
+globs:
+alwaysApply: true
+---

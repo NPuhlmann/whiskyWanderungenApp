@@ -1,0 +1,337 @@
+# Development Workflow & TDD Guidelines
+
+## Test-Driven Development (TDD) Approach
+
+### 1. TDD Cycle
+Das Projekt folgt dem klassischen TDD-Zyklus: **Red → Green → Refactor**
+
+#### Red Phase (Write Failing Test)
+```dart
+// 1. Schreibe zuerst den Test
+test('should create TastingSet with required fields', () {
+  final tastingSet = TastingSet(
+    id: 1,
+    hikeId: 100,
+    name: 'Test Set',
+    description: 'Test description',
+    samples: [],
+    price: 0.0,
+  );
+  
+  expect(tastingSet.name, equals('Test Set'));
+  expect(tastingSet.price, equals(0.0)); // Always 0
+});
+```
+
+#### Green Phase (Make Test Pass)
+```dart
+// 2. Implementiere das Minimum für den Test
+@freezed
+sealed class TastingSet with _$TastingSet {
+  const factory TastingSet({
+    required int id,
+    @JsonKey(name: 'hike_id') required int hikeId,
+    required String name,
+    required String description,
+    required List<WhiskySample> samples,
+    @Default(0.0) double price, // Default to 0
+  }) = _TastingSet;
+}
+```
+
+#### Refactor Phase (Improve Code)
+```dart
+// 3. Verbessere den Code ohne Tests zu brechen
+// Füge Extensions, Validierung, etc. hinzu
+extension TastingSetExtensions on TastingSet {
+  String get formattedPrice => 'Inklusive';
+  int get sampleCount => samples.length;
+}
+```
+
+### 2. Test Structure
+
+#### File Organization
+```
+test/
+├── domain/
+│   └── models/
+│       ├── tasting_set_test.dart
+│       ├── hike_test.dart
+│       └── order_test.dart
+├── data/
+│   ├── repositories/
+│   └── services/
+└── UI/
+    └── tasting_sets/
+        └── tasting_set_selection_view_model_test.dart
+```
+
+#### Test Naming Convention
+```dart
+// Beschreibende Test-Namen auf Deutsch
+group('TastingSet', () {
+  test('should create TastingSet with required fields', () {});
+  test('should handle empty samples list', () {});
+  test('should calculate average age correctly', () {});
+  test('should format price as "Inklusive"', () {});
+});
+```
+
+#### Test Organization
+```dart
+group('TastingSet Business Logic', () {
+  late TastingSet tastingSet;
+  
+  setUp(() {
+    tastingSet = TastingSet(/* test data */);
+  });
+  
+  test('should calculate total volume correctly', () {
+    expect(tastingSet.totalVolumeMl, equals(15.0));
+  });
+});
+```
+
+### 3. Code Generation Workflow
+
+#### When to Run Build Runner
+```bash
+# Nach Änderungen an Freezed Models
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Für kontinuierliche Generierung (während Entwicklung)
+flutter pub run build_runner watch
+```
+
+#### Common Code Generation Issues
+```dart
+// Problem: Linter errors nach Model-Änderungen
+// Error: The name '_TastingSet' isn't defined
+// Solution: build_runner ausführen
+
+// Problem: JSON serialization errors
+// Error: type '_WhiskySample' is not a subtype of type 'Map<String, dynamic>'
+// Solution: @JsonKey Namen überprüfen, build_runner neu ausführen
+```
+
+### 4. Testing Best Practices
+
+#### Model Testing
+```dart
+// Teste alle Konstruktoren
+test('should create with factory constructor', () {
+  final tastingSet = TastingSet(/* params */);
+  expect(tastingSet, isA<TastingSet>());
+});
+
+// Teste Default-Werte
+test('should use default values for optional fields', () {
+  final tastingSet = TastingSet(/* required only */);
+  expect(tastingSet.price, equals(0.0)); // Default
+  expect(tastingSet.isIncluded, isTrue); // Default
+});
+
+// Teste Business Logic Extensions
+test('should calculate statistics correctly', () {
+  expect(tastingSet.averageAge, closeTo(12.33, 0.01));
+  expect(tastingSet.mainRegion, equals('Highland'));
+});
+```
+
+#### Repository Testing
+```dart
+// Mock Dependencies
+class MockBackendApiService extends Mock implements BackendApiService {}
+
+// Test Error Handling
+test('should throw exception on API error', () async {
+  when(mockApi.getTastingSetForHike(any))
+      .thenThrow(Exception('API Error'));
+  
+  expect(
+    () => repository.getTastingSetForHike(1),
+    throwsA(isA<Exception>()),
+  );
+});
+
+// Test Success Cases
+test('should return tasting set on successful API call', () async {
+  final expectedTastingSet = TastingSet(/* test data */);
+  when(mockApi.getTastingSetForHike(1))
+      .thenAnswer((_) async => expectedTastingSet);
+  
+  final result = await repository.getTastingSetForHike(1);
+  expect(result, equals(expectedTastingSet));
+});
+```
+
+#### ViewModel Testing
+```dart
+// Test State Changes
+test('should update loading state correctly', () async {
+  expect(viewModel.isLoading, isTrue);
+  
+  await viewModel.refresh();
+  
+  expect(viewModel.isLoading, isFalse);
+});
+
+// Test Error Handling
+test('should set error state on failure', () async {
+  when(mockRepository.getTastingSetForHike(any))
+      .thenThrow(Exception('Test error'));
+  
+  await viewModel.refresh();
+  
+  expect(viewModel.hasError, isTrue);
+  expect(viewModel.error, contains('Test error'));
+});
+```
+
+### 5. Development Commands
+
+#### Testing Commands
+```bash
+# Alle Tests ausführen
+flutter test
+
+# Spezifische Test-Datei
+flutter test test/domain/models/tasting_set_test.dart
+
+# Tests mit Coverage
+flutter test --coverage
+
+# Tests in Watch-Modus
+flutter test --watch
+```
+
+#### Code Generation Commands
+```bash
+# Einmalige Generierung
+flutter pub run build_runner build
+
+# Generierung mit Clean
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Kontinuierliche Generierung
+flutter pub run build_runner watch
+
+# Clean Build
+flutter clean && flutter pub get && flutter pub run build_runner build
+```
+
+#### Linting & Formatting
+```bash
+# Code formatieren
+dart format lib/ test/
+
+# Linting prüfen
+flutter analyze
+
+# Fixes anwenden
+dart fix --apply
+```
+
+### 6. Common Development Patterns
+
+#### Error Handling
+```dart
+// Repository Pattern
+try {
+  final result = await _backendApi.getTastingSetForHike(hikeId);
+  return result;
+} catch (e) {
+  throw Exception('Fehler beim Laden des Tasting Sets: $e');
+}
+
+// ViewModel Pattern
+try {
+  _setLoading(true);
+  _clearError();
+  
+  final result = await _repository.getTastingSetForHike(hike.id);
+  _tastingSet = result;
+  
+  _setLoading(false);
+} catch (e) {
+  _setError('Fehler beim Laden: $e');
+  _setLoading(false);
+}
+```
+
+#### State Management
+```dart
+// State Updates
+void _setLoading(bool loading) {
+  _isLoading = loading;
+  notifyListeners(); // Wichtig für UI-Updates
+}
+
+void _setError(String error) {
+  _error = error;
+  notifyListeners();
+}
+
+void _clearError() {
+  _error = null;
+  notifyListeners();
+}
+```
+
+#### Async Operations
+```dart
+// Loading States
+Future<void> _loadTastingSet() async {
+  try {
+    _setLoading(true);
+    _clearError();
+    
+    final result = await _repository.getTastingSetForHike(hike.id);
+    _tastingSet = result;
+    
+    _setLoading(false);
+  } catch (e) {
+    _setError('Fehler: $e');
+    _setLoading(false);
+  }
+}
+```
+
+### 7. Debugging Tips
+
+#### Common Issues
+1. **Linter Errors nach Model-Änderungen**
+   - `build_runner` ausführen
+   - Import-Pfade überprüfen
+
+2. **JSON Serialization Issues**
+   - `@JsonKey` Namen überprüfen
+   - Nested objects korrekt definieren
+
+3. **State nicht synchronisiert**
+   - `notifyListeners()` nach State-Änderungen
+   - Provider korrekt konfiguriert
+
+4. **Tests schlagen fehl**
+   - Mock-Dependencies korrekt konfiguriert
+   - Async/await korrekt verwendet
+
+#### Debugging Commands
+```bash
+# Flutter Doctor
+flutter doctor -v
+
+# Dependencies prüfen
+flutter pub deps
+
+# Clean Build
+flutter clean && flutter pub get
+
+# Hot Reload während Entwicklung
+flutter run --hot
+```
+description:
+globs:
+alwaysApply: true
+---
