@@ -1,0 +1,104 @@
+# Freezed v3 Migration Guide
+
+## Wichtige Änderungen in Freezed v3
+
+### 1. Keine @freezed Annotation mehr
+**NEU in Freezed v3**: Die `@freezed` Annotation wird nicht mehr benötigt.
+
+```dart
+// ✅ KORREKT - Freezed v3
+class Company with _$Company {
+  const Company._(); // Private Konstruktor erforderlich
+  
+  const factory Company({
+    required String id,
+    required String name,
+    String? description,
+  }) = _Company;
+
+  factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
+}
+
+// ❌ VERALTET - Freezed v2 (funktioniert nicht mehr)
+@freezed
+class Company with _$Company { ... }
+```
+
+### 2. Private Konstruktor erforderlich
+Jede Freezed v3 Klasse benötigt einen privaten Konstruktor:
+
+```dart
+class EnhancedOrder with _$EnhancedOrder {
+  const EnhancedOrder._(); // ← Dies ist erforderlich
+  
+  const factory EnhancedOrder({ ... }) = _EnhancedOrder;
+}
+```
+
+### 3. Beibehaltung der bestehenden Syntax
+- `with _$ClassName` bleibt bestehen
+- `part` Deklarationen bleiben gleich
+- Factory-Konstruktoren funktionieren unverändert
+
+## Migration von bestehenden Modellen
+
+### Vor der Migration (Freezed v2)
+```dart
+@freezed
+class Hike with _$Hike {
+  const factory Hike({
+    required int id,
+    required String name,
+  }) = _Hike;
+}
+```
+
+### Nach der Migration (Freezed v3)
+```dart
+class Hike with _$Hike {
+  const Hike._(); // ← Hinzugefügt
+  
+  const factory Hike({
+    required int id,
+    required String name,
+  }) = _Hike;
+}
+```
+
+## Vorteile der Freezed v3 Migration
+
+1. **Bessere Performance**: Kleinere generierte Dateien
+2. **Schnellere Kompilierung**: Weniger generierter Code
+3. **Zukunftssicherheit**: Kompatibel mit neueren Dart/Flutter Versionen
+4. **Verbesserte Typsicherheit**: Bessere Unterstützung für komplexe Typen
+
+## Nach der Migration
+
+### 1. Code neu generieren
+```bash
+flutter packages pub run build_runner build --delete-conflicting-outputs
+```
+
+### 2. Tests ausführen
+```bash
+flutter test
+```
+
+### 3. Alle Modelle überprüfen
+Stellen Sie sicher, dass alle Freezed Modelle im Projekt aktualisiert wurden.
+
+## Dateien die aktualisiert wurden
+
+- [lib/domain/models/enhanced_order.dart](mdc:lib/domain/models/enhanced_order.dart) - ✅ Bereits auf v3 aktualisiert
+
+## Nächste Schritte
+
+1. Alle anderen Freezed Modelle im Projekt auf v3 aktualisieren
+2. Code neu generieren
+3. Tests ausführen
+4. Dokumentation aktualisieren
+
+## Referenzen
+
+- [Freezed v3 Migration Guide](https://github.com/rrousselGit/freezed/blob/master/packages/freezed/migration_guide.md#migrate-from-v2-to-v3)
+- [Whisky Hikes Freezed Config](mdc:.cursor/rules/whisky-hikes-freezed-config.mdc)

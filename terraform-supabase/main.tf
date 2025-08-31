@@ -86,5 +86,70 @@ resource "null_resource" "sample_companies_migration" {
   ]
 }
 
+# SQL Migration für Storage Policies
+resource "null_resource" "storage_policies_migration" {
+  triggers = {
+    # Trigger bei Änderungen der Storage Policies
+    storage_policies_content = filemd5("${path.module}/sql/09_storage_policies.sql")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      export SUPABASE_ACCESS_TOKEN="${var.supabase_access_token}"
+      export PROJECT_ID="${supabase_project.whisky_hikes.id}"
+      echo "🔐 Setting up Storage Policies..."
+      ${path.module}/execute_sql.sh "$(cat ${path.module}/sql/09_storage_policies.sql)"
+    EOT
+  }
+
+  depends_on = [
+    supabase_project.whisky_hikes
+  ]
+}
+
+# Upload der Sample Images
+resource "null_resource" "sample_images_upload" {
+  triggers = {
+    # Trigger bei Änderungen der Sample Images
+    sample_images_content = filemd5("${path.module}/upload_sample_images.sh")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      export SUPABASE_ACCESS_TOKEN="${var.supabase_access_token}"
+      export PROJECT_ID="${supabase_project.whisky_hikes.id}"
+      export SUPABASE_URL="https://${supabase_project.whisky_hikes.id}.supabase.co"
+      export SUPABASE_SERVICE_ROLE_KEY="${var.supabase_service_role_key}"
+      echo "🖼️  Uploading Sample Images..."
+      ${path.module}/upload_sample_images.sh
+    EOT
+  }
+
+  depends_on = [
+    null_resource.storage_policies_migration
+  ]
+}
+
+# SQL Migration für Hike Images Update
+resource "null_resource" "hike_images_update" {
+  triggers = {
+    # Trigger bei Änderungen der Hike Images SQL
+    hike_images_content = filemd5("${path.module}/sql/10_update_hike_images.sql")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      export SUPABASE_ACCESS_TOKEN="${var.supabase_access_token}"
+      export PROJECT_ID="${supabase_project.whisky_hikes.id}"
+      echo "🖼️  Updating Hike Images with Sample Images..."
+      ${path.module}/execute_sql.sh "$(cat ${path.module}/sql/10_update_hike_images.sql)"
+    EOT
+  }
+
+  depends_on = [
+    null_resource.sample_images_upload
+  ]
+}
+
 # Note: Database schema is created via Management API scripts
 # See: complete_schema.sh, create_policies.sh, insert_sample_data.sh

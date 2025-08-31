@@ -14,6 +14,7 @@ import 'package:whisky_hikes/UI/checkout/checkout_page.dart';
 import 'package:whisky_hikes/UI/payment/payment_success_page.dart';
 import 'package:whisky_hikes/UI/payment/payment_failed_page.dart';
 import 'package:whisky_hikes/UI/payment/order_history_page.dart';
+import 'package:whisky_hikes/UI/orders/order_tracking_page.dart';
 import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
@@ -166,6 +167,25 @@ GoRouter router(UserRepository authRepository) => GoRouter(
             name: 'order-history',
             builder: (context, state) {
               return const OrderHistoryPage();
+            },
+          ),
+          
+          GoRoute(
+            path: '${Routes.orderTracking}/:orderId',
+            name: 'order-tracking',
+            builder: (context, state) {
+              final orderIdStr = state.pathParameters['orderId'];
+              final orderId = int.tryParse(orderIdStr ?? '');
+              
+              if (orderId == null) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Ungültige Bestell-ID'),
+                  ),
+                );
+              }
+              
+              return OrderTrackingPage(orderId: orderId);
             },
           )
         ]);

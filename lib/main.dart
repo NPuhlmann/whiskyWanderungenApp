@@ -7,9 +7,12 @@ import 'package:whisky_hikes/config/routing/router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:async';
 import 'config/dependencies.dart';
+import 'data/services/payment/multi_payment_service.dart';
 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
   // Load env variables
   await dotenv.load();
   
@@ -19,6 +22,15 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     debug: _isDebugMode(),
   );
+  
+  // Initialize payment services
+  try {
+    await MultiPaymentService.instance.initialize();
+    debugPrint('✅ Payment services initialized successfully');
+  } catch (e) {
+    debugPrint('⚠️ Payment services initialization failed: $e');
+    // Continue app startup even if payment initialization fails
+  }
 
   runApp(MultiProvider(
     providers: providers,

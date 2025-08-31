@@ -1,12 +1,12 @@
 import 'dart:developer' as dev;
-import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/payment/stripe_service.dart';
 import '../services/payment/multi_payment_service.dart';
 import '../../domain/models/basic_order.dart';
 import '../../domain/models/basic_payment_result.dart';
-import '../../domain/models/payment_intent.dart';
+import '../../domain/models/payment_intent.dart' show PaymentMethodType;
+
 
 /// Repository for handling payment-related database operations
 /// Integrates with MultiPaymentService for multiple payment methods and Supabase for data persistence
@@ -197,7 +197,7 @@ class PaymentRepository {
       // Store payment record in database
       await _createPaymentRecord(
         order: order,
-        paymentIntent: paymentIntent,
+        paymentMethod: PaymentMethodType.card, // Default to card for Stripe
         paymentResult: paymentResult,
       );
 
@@ -331,38 +331,6 @@ class PaymentRepository {
     }
   }
 
-  /// Create payment record in database (legacy method for Stripe)
-  @Deprecated('Use _createPaymentRecord with PaymentMethodType instead')
-  Future<void> _createPaymentRecordLegacy({
-    required BasicOrder order,
-    required PaymentIntentResult paymentIntent,
-    required BasicPaymentResult paymentResult,
-  }) async {
-    try {
-      final paymentData = {
-        'order_id': order.id,
-        'payment_intent_id': paymentIntent.id,
-        'client_secret': paymentIntent.clientSecret,
-        'amount': paymentIntent.amount, // Already in cents
-        'currency': paymentIntent.currency,
-        'status': paymentResult.status?.name ?? 'pending',
-        'payment_method': 'card', // Default to card, could be extended
-        if (paymentResult.errorMessage != null) 'failure_reason': paymentResult.errorMessage,
-        if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
-        'created_at': DateTime.now().toIso8601String(),
-      };
-
-      await _supabaseClient
-          .from('payments')
-          .insert(paymentData);
-
-      dev.log('✅ Payment record created for payment intent ${paymentIntent.id}');
-
-    } catch (e) {
-      dev.log('⚠️ Warning: Failed to create payment record: $e');
-      // Don't throw here - payment may have succeeded even if record creation failed
-    }
-  }
 
   /// Generate unique order number
   String _generateOrderNumber() {

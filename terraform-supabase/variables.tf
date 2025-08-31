@@ -8,6 +8,12 @@ variable "supabase_access_token" {
   sensitive   = true
 }
 
+variable "supabase_service_role_key" {
+  description = "Supabase Service Role Key für Storage-Operationen"
+  type        = string
+  sensitive   = true
+}
+
 variable "organization_id" {
   description = "Supabase Organization ID"
   type        = string

@@ -1,10 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:developer' as dev;
 
 import '../../data/repositories/payment_repository.dart';
 import '../../domain/models/basic_order.dart';
 import '../../domain/models/basic_payment_result.dart';
 import '../../domain/models/payment_intent.dart';
+import '../../config/routing/routes.dart';
 
 /// ViewModel for managing checkout state and payment processing
 class CheckoutViewModel extends ChangeNotifier {
@@ -208,6 +210,32 @@ class CheckoutViewModel extends ChangeNotifier {
     }
 
     return null; // Valid
+  }
+
+  /// Navigate to order tracking page after successful payment
+  void navigateToOrderTracking(BuildContext context) {
+    if (_paymentSuccess && _completedOrderId != null) {
+      dev.log('📍 Navigating to order tracking for order $_completedOrderId');
+      context.go('${Routes.orderTracking}/$_completedOrderId');
+    } else {
+      dev.log('⚠️ Cannot navigate to order tracking: payment not successful or order ID missing');
+    }
+  }
+
+  /// Navigate to payment success page (alternative)
+  void navigateToPaymentSuccess(BuildContext context) {
+    if (_paymentSuccess) {
+      dev.log('📍 Navigating to payment success page');
+      context.go('${Routes.paymentSuccess}?orderNumber=${_order.orderNumber}');
+    } else {
+      dev.log('⚠️ Cannot navigate to payment success: payment not successful');
+    }
+  }
+
+  /// Navigate to order history page
+  void navigateToOrderHistory(BuildContext context) {
+    dev.log('📍 Navigating to order history');
+    context.go(Routes.orderHistory);
   }
 
   /// Reset checkout state

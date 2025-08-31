@@ -8,6 +8,9 @@
 # Supabase Access Token (aus .env: $SUPABASE_ACCESS_TOKEN)
 supabase_access_token = "" # Wird aus .env geladen
 
+# Supabase Service Role Key (aus .env: $SUPABASE_SERVICE_ROLE_KEY)
+supabase_service_role_key = "" # Wird aus .env geladen
+
 # Supabase Organization ID (finde sie in deinem Supabase Dashboard)
 organization_id = "your-organization-id"
 

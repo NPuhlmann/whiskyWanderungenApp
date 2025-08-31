@@ -12,4 +12,5 @@ abstract final class Routes {
   static const paymentSuccess = '/payment-success';
   static const paymentFailed = '/payment-failed';
   static const orderHistory = '/order-history';
+  static const orderTracking = '/order-tracking';
 }

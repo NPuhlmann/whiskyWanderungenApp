@@ -1,240 +1,221 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+// import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'delivery_address.freezed.dart';
-part 'delivery_address.g.dart';
+// part 'delivery_address.freezed.dart';
+// part 'delivery_address.g.dart';
 
-/// Delivery Address Model für Checkout und Versandkostenberechnung
-/// Unterstützt internationale Adressen mit Validierung
-@freezed
-class DeliveryAddress with _$DeliveryAddress {
-  const factory DeliveryAddress({
-    String? id, // Optional für gespeicherte Adressen
-    
-    // Persönliche Daten
-    required String firstName,
-    required String lastName,
-    String? company, // Optional für Firmenadressen
-    
-    // Adressdaten
-    required String addressLine1,
-    String? addressLine2,
-    required String city,
-    required String postalCode,
-    required String countryCode, // ISO 3166-1 alpha-2
-    required String countryName,
-    String? state, // Für USA, Australien, etc.
-    
-    // Kontaktdaten
-    String? phone,
-    String? email,
-    
-    // Zusatzinformationen
-    String? deliveryInstructions,
-    @Default(false) bool isBusinessAddress,
-    @Default(false) bool isDefault, // Standardadresse des Users
-    
-    // System Fields
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) = _DeliveryAddress;
+/// Delivery Address Model für strukturierte Adressverwaltung
+/// Unterstützt sowohl private als auch Geschäftsadressen
+class DeliveryAddress {
+  final String? id; // Optional für gespeicherte Adressen
+  final String firstName;
+  final String lastName;
+  final String? company; // Optional für Firmenadressen
+  final String addressLine1;
+  final String? addressLine2;
+  final String city;
+  final String postalCode;
+  final String countryCode; // ISO 3166-1 alpha-2
+  final String countryName;
+  final String? state; // Für USA, Australien, etc.
+  final String? phone;
+  final String? email; // Zusatzinformationen
+  final String? deliveryInstructions;
+  final bool isBusinessAddress;
+  final bool isDefaultAddress;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
-  factory DeliveryAddress.fromJson(Map<String, dynamic> json) => 
-      _$DeliveryAddressFromJson(json);
-}
+  const DeliveryAddress({
+    this.id,
+    required this.firstName,
+    required this.lastName,
+    this.company,
+    required this.addressLine1,
+    this.addressLine2,
+    required this.city,
+    required this.postalCode,
+    required this.countryCode,
+    required this.countryName,
+    this.state,
+    this.phone,
+    this.email,
+    this.deliveryInstructions,
+    this.isBusinessAddress = false,
+    this.isDefaultAddress = false,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-/// Extension für Address Business Logic und Validierung
-extension DeliveryAddressExtensions on DeliveryAddress {
-  /// Generiert einen vollständigen Anzeige-Namen
-  String get fullName => '$firstName $lastName';
-  
-  /// Generiert eine formatierte Adresse für Anzeige
-  String get formattedAddress {
-    final lines = <String>[];
-    
-    // Name
-    if (company?.isNotEmpty == true) {
-      lines.add(company!);
-      lines.add(fullName);
-    } else {
-      lines.add(fullName);
-    }
-    
-    // Adresse
-    lines.add(addressLine1);
-    if (addressLine2?.isNotEmpty == true) {
-      lines.add(addressLine2!);
-    }
-    
-    // Stadt, PLZ, Staat (falls vorhanden)
-    String cityLine = postalCode.isNotEmpty ? '$postalCode $city' : city;
-    if (state?.isNotEmpty == true) {
-      cityLine += ', $state';
-    }
-    lines.add(cityLine);
-    
-    // Land
-    lines.add(countryName);
-    
-    return lines.join('\n');
+  factory DeliveryAddress.fromJson(Map<String, dynamic> json) {
+    return DeliveryAddress(
+      id: json['id'] as String?,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
+      company: json['company'] as String?,
+      addressLine1: json['address_line1'] as String,
+      addressLine2: json['address_line2'] as String?,
+      city: json['city'] as String,
+      postalCode: json['postal_code'] as String,
+      countryCode: json['country_code'] as String,
+      countryName: json['country_name'] as String,
+      state: json['state'] as String?,
+      phone: json['phone'] as String?,
+      email: json['email'] as String?,
+      deliveryInstructions: json['delivery_instructions'] as String?,
+      isBusinessAddress: json['is_business_address'] as bool? ?? false,
+      isDefaultAddress: json['is_default_address'] as bool? ?? false,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+    );
   }
-  
-  /// Generiert eine kompakte einzeilige Adresse
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'company': company,
+      'address_line1': addressLine1,
+      'address_line2': addressLine2,
+      'city': city,
+      'postal_code': postalCode,
+      'country_code': countryCode,
+      'country_name': countryName,
+      'state': state,
+      'phone': phone,
+      'email': email,
+      'delivery_instructions': deliveryInstructions,
+      'is_business_address': isBusinessAddress,
+      'is_default_address': isDefaultAddress,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+
+  /// Get full name (firstName + lastName)
+  String get fullName => '$firstName $lastName'.trim();
+
+  /// Get compact address for display
   String get compactAddress {
     final parts = <String>[];
     
     parts.add(fullName);
     parts.add(addressLine1);
-    if (postalCode.isNotEmpty) {
-      parts.add('$postalCode $city');
-    } else {
-      parts.add(city);
-    }
-    parts.add(countryCode);
     
-    return parts.join(', ');
-  }
-  
-  /// Validiert die Adresse auf Vollständigkeit
-  AddressValidationResult validate() {
-    final errors = <String>[];
-    
-    // Pflichtfelder prüfen
-    if (firstName.trim().isEmpty) {
-      errors.add('Vorname ist erforderlich');
+    if (addressLine2 != null && addressLine2!.isNotEmpty) {
+      parts.add(addressLine2!);
     }
     
-    if (lastName.trim().isEmpty) {
-      errors.add('Nachname ist erforderlich');
+    parts.add('$postalCode $city');
+    
+    if (state != null && state!.isNotEmpty) {
+      parts.add(state!);
     }
     
-    if (addressLine1.trim().isEmpty) {
-      errors.add('Straße und Hausnummer sind erforderlich');
-    }
+    parts.add(countryName);
     
-    if (city.trim().isEmpty) {
-      errors.add('Stadt ist erforderlich');
-    }
-    
-    if (postalCode.trim().isEmpty) {
-      errors.add('Postleitzahl ist erforderlich');
-    }
-    
-    if (countryCode.trim().isEmpty) {
-      errors.add('Land ist erforderlich');
-    }
-    
-    // Format-Validierungen
-    if (countryCode.length != 2 || !countryCode.contains(RegExp(r'^[A-Z]{2}$'))) {
-      errors.add('Ungültiger Ländercode');
-    }
-    
-    // Länderspezifische Validierungen
-    if (countryCode == 'US' || countryCode == 'CA') {
-      if (state?.trim().isEmpty == true) {
-        errors.add('Staat/Provinz ist für ${countryName} erforderlich');
-      }
-    }
-    
-    // PLZ-Format-Validierung (beispielhaft)
-    if (!_isValidPostalCode(postalCode, countryCode)) {
-      errors.add('Ungültiges Postleitzahl-Format für $countryName');
-    }
-    
-    // Email-Validierung (falls angegeben)
-    if (email?.isNotEmpty == true && !_isValidEmail(email!)) {
-      errors.add('Ungültige E-Mail-Adresse');
-    }
-    
-    return AddressValidationResult(
-      isValid: errors.isEmpty,
-      errors: errors,
-    );
-  }
-  
-  /// Prüft ob es sich um eine EU-Adresse handelt
-  bool get isEuAddress {
-    const euCountries = {
-      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
-      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
-      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'
-    };
-    return euCountries.contains(countryCode);
-  }
-  
-  /// Prüft ob es sich um eine DACH-Region handelt
-  bool get isDachAddress => ['DE', 'AT', 'CH'].contains(countryCode);
-  
-  /// Bestimmt die Versandregion für Kostenberechnung
-  String get shippingRegion {
-    if (countryCode == 'DE') return 'DOMESTIC_DE';
-    if (isDachAddress) return 'DACH';
-    if (isEuAddress) return 'EU';
-    if (['GB', 'NO', 'IS'].contains(countryCode)) return 'EUROPE';
-    if (['US', 'CA'].contains(countryCode)) return 'NORTH_AMERICA';
-    if (['AU', 'NZ'].contains(countryCode)) return 'OCEANIA';
-    if (['JP', 'KR', 'SG', 'HK'].contains(countryCode)) return 'ASIA';
-    return 'INTERNATIONAL';
-  }
-  
-  /// Validiert PLZ-Format für verschiedene Länder
-  bool _isValidPostalCode(String postalCode, String countryCode) {
-    final code = postalCode.trim().replaceAll(' ', '');
-    
-    switch (countryCode) {
-      case 'DE':
-        return RegExp(r'^\d{5}$').hasMatch(code);
-      case 'AT':
-        return RegExp(r'^\d{4}$').hasMatch(code);
-      case 'CH':
-        return RegExp(r'^\d{4}$').hasMatch(code);
-      case 'US':
-        return RegExp(r'^\d{5}(-\d{4})?$').hasMatch(code);
-      case 'GB':
-        return RegExp(r'^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$', caseSensitive: false).hasMatch(code);
-      case 'FR':
-        return RegExp(r'^\d{5}$').hasMatch(code);
-      case 'AU':
-        return RegExp(r'^\d{4}$').hasMatch(code);
-      default:
-        return code.isNotEmpty; // Basic validation for other countries
-    }
-  }
-  
-  /// Validiert E-Mail-Format
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
+    return parts.where((part) => part.isNotEmpty).join(', ');
   }
 }
 
-/// Validation Result für Address Validation
-@freezed
-class AddressValidationResult with _$AddressValidationResult {
-  const factory AddressValidationResult({
-    required bool isValid,
-    @Default([]) List<String> errors,
-  }) = _AddressValidationResult;
-  
-  factory AddressValidationResult.fromJson(Map<String, dynamic> json) => 
-      _$AddressValidationResultFromJson(json);
+/// Address Type für verschiedene Adressarten
+enum AddressType {
+  residential,
+  business,
+  shipping,
+  billing,
+  pickup,
+}
+
+/// Address Validation Result für Adressvalidierung
+class AddressValidationResult {
+  final bool isValid;
+  final List<String> errors;
+  final List<String> suggestions;
+  final Map<String, dynamic>? validationData;
+
+  const AddressValidationResult({
+    required this.isValid,
+    required this.errors,
+    this.suggestions = const [],
+    this.validationData,
+  });
+}
+
+/// Address Format für verschiedene Länder
+class AddressFormat {
+  final String countryCode;
+  final String countryName;
+  final List<String> requiredFields;
+  final List<String> optionalFields;
+  final String displayFormat;
+  final String? postalCodeFormat;
+  final String? phoneFormat;
+  final Map<String, dynamic>? countrySpecificRules;
+
+  const AddressFormat({
+    required this.countryCode,
+    required this.countryName,
+    required this.requiredFields,
+    required this.optionalFields,
+    required this.displayFormat,
+    this.postalCodeFormat,
+    this.phoneFormat,
+    this.countrySpecificRules,
+  });
 }
 
 /// Shipping Cost Calculation Result
-@freezed
-class ShippingCostResult with _$ShippingCostResult {
-  const factory ShippingCostResult({
-    required double cost,
-    required bool isFreeShipping,
-    required String serviceName,
-    int? estimatedDaysMin,
-    int? estimatedDaysMax,
-    String? region,
-    String? description,
-    @Default(true) bool trackingAvailable,
-    @Default(false) bool signatureRequired,
-  }) = _ShippingCostResult;
-  
-  factory ShippingCostResult.fromJson(Map<String, dynamic> json) => 
-      _$ShippingCostResultFromJson(json);
+class ShippingCostResult {
+  final double cost;
+  final bool isFreeShipping;
+  final String serviceName;
+  final int? estimatedDaysMin;
+  final int? estimatedDaysMax;
+  final String? region;
+  final String? description;
+  final bool trackingAvailable;
+  final bool signatureRequired;
+
+  const ShippingCostResult({
+    required this.cost,
+    required this.isFreeShipping,
+    required this.serviceName,
+    this.estimatedDaysMin,
+    this.estimatedDaysMax,
+    this.region,
+    this.description,
+    this.trackingAvailable = true,
+    this.signatureRequired = false,
+  });
+
+  factory ShippingCostResult.fromJson(Map<String, dynamic> json) {
+    return ShippingCostResult(
+      cost: (json['cost'] as num).toDouble(),
+      isFreeShipping: json['is_free_shipping'] as bool,
+      serviceName: json['service_name'] as String,
+      estimatedDaysMin: json['estimated_days_min'] as int?,
+      estimatedDaysMax: json['estimated_days_max'] as int?,
+      region: json['region'] as String?,
+      description: json['description'] as String?,
+      trackingAvailable: json['tracking_available'] as bool? ?? true,
+      signatureRequired: json['signature_required'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'cost': cost,
+      'is_free_shipping': isFreeShipping,
+      'service_name': serviceName,
+      'estimated_days_min': estimatedDaysMin,
+      'estimated_days_max': estimatedDaysMax,
+      'region': region,
+      'description': description,
+      'tracking_available': trackingAvailable,
+      'signature_required': signatureRequired,
+    };
+  }
 }
 
 /// Extension für ShippingCostResult

@@ -99,18 +99,7 @@ data "external" "vault_status" {
   ]
 }
 
-# Locals for secret management
-locals {
-  # Use appropriate keys based on environment
-  stripe_publishable_key = var.environment == "prod" && var.stripe_publishable_key_live != "" ? var.stripe_publishable_key_live : var.stripe_publishable_key_test
-  stripe_secret_key     = var.environment == "prod" && var.stripe_secret_key_live != "" ? var.stripe_secret_key_live : var.stripe_secret_key_test  
-  stripe_webhook_secret = var.environment == "prod" && var.stripe_webhook_secret_live != "" ? var.stripe_webhook_secret_live : var.stripe_webhook_secret_test
-  
-  # Live keys (empty if not provided)
-  stripe_publishable_key_live = var.stripe_publishable_key_live
-  stripe_secret_key_live     = var.stripe_secret_key_live
-  stripe_webhook_secret_live = var.stripe_webhook_secret_live
-}
+# Locals for secret management (defined in variables.tf)
 
 # Output vault information (no sensitive data)
 output "vault_setup" {

@@ -4,10 +4,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:ui' as _i7;
+import 'dart:ui' as _i8;
 
+import 'package:flutter/material.dart' as _i7;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:whisky_hikes/data/repositories/payment_repository.dart' as _i8;
+import 'package:whisky_hikes/data/repositories/payment_repository.dart' as _i9;
 import 'package:whisky_hikes/domain/models/basic_order.dart' as _i2;
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart' as _i3;
 import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i5;
@@ -149,6 +150,25 @@ class MockCheckoutViewModel extends _i1.Mock implements _i4.CheckoutViewModel {
           as String?);
 
   @override
+  void navigateToOrderTracking(_i7.BuildContext? context) => super.noSuchMethod(
+    Invocation.method(#navigateToOrderTracking, [context]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void navigateToPaymentSuccess(_i7.BuildContext? context) =>
+      super.noSuchMethod(
+        Invocation.method(#navigateToPaymentSuccess, [context]),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void navigateToOrderHistory(_i7.BuildContext? context) => super.noSuchMethod(
+    Invocation.method(#navigateToOrderHistory, [context]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
   void reset() => super.noSuchMethod(
     Invocation.method(#reset, []),
     returnValueForMissingStub: null,
@@ -161,13 +181,13 @@ class MockCheckoutViewModel extends _i1.Mock implements _i4.CheckoutViewModel {
   );
 
   @override
-  void addListener(_i7.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i8.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#addListener, [listener]),
     returnValueForMissingStub: null,
   );
 
   @override
-  void removeListener(_i7.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i8.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#removeListener, [listener]),
     returnValueForMissingStub: null,
   );
@@ -182,7 +202,7 @@ class MockCheckoutViewModel extends _i1.Mock implements _i4.CheckoutViewModel {
 /// A class which mocks [PaymentRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPaymentRepository extends _i1.Mock implements _i8.PaymentRepository {
+class MockPaymentRepository extends _i1.Mock implements _i9.PaymentRepository {
   MockPaymentRepository() {
     _i1.throwOnMissingStub(this);
   }

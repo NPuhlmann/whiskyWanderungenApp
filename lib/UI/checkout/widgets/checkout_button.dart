@@ -25,7 +25,7 @@ class CheckoutButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
-          disabledBackgroundColor: theme.colorScheme.outline.withOpacity(0.12),
+          disabledBackgroundColor: theme.colorScheme.outline.withValues(alpha: 0.12),
           disabledForegroundColor: theme.colorScheme.outline,
           elevation: enabled ? 2 : 0,
           shape: RoundedRectangleBorder(

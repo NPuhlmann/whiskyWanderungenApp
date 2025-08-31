@@ -8,12 +8,16 @@ import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 import 'package:whisky_hikes/data/services/payment/stripe_service.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
+import 'package:whisky_hikes/domain/models/payment_intent.dart' show PaymentMethodType;
 
 import 'payment_repository_test.mocks.dart';
 
 @GenerateMocks([
   SupabaseClient,
   SupabaseQueryBuilder,
+  PostgrestClient,
+  PostgrestQueryBuilder,
+  PostgrestFilterBuilder,
   StripeService,
 ])
 void main() {
@@ -275,6 +279,7 @@ void main() {
         // Act
         final result = await repository.processPayment(
           order: order,
+          paymentMethod: PaymentMethodType.card,
           paymentMethodId: 'pm_test_card',
         );
 
@@ -340,6 +345,7 @@ void main() {
         // Act
         final result = await repository.processPayment(
           order: order,
+          paymentMethod: PaymentMethodType.card,
           paymentMethodId: 'pm_test_card_declined',
         );
 
@@ -388,6 +394,7 @@ void main() {
         // Act
         final result = await repository.processPayment(
           order: order,
+          paymentMethod: PaymentMethodType.card,
           paymentMethodId: 'pm_test_card_authentication',
         );
 

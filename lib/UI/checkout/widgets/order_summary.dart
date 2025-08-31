@@ -98,16 +98,23 @@ class OrderSummary extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+        Expanded(
+          flex: 2,
+          child: Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
+        Expanded(
+          flex: 3,
+          child: Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.end,
           ),
         ),
       ],
@@ -135,12 +142,15 @@ class OrderSummary extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          '${amount.toStringAsFixed(2)} €',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-            fontSize: isTotal ? 16 : null,
-            color: isTotal ? theme.colorScheme.primary : null,
+        Flexible(
+          child: Text(
+            '${amount.toStringAsFixed(2)} €',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+              fontSize: isTotal ? 16 : null,
+              color: isTotal ? theme.colorScheme.primary : null,
+            ),
+            textAlign: TextAlign.end,
           ),
         ),
       ],
@@ -151,7 +161,7 @@ class OrderSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity(0.5),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -179,7 +189,7 @@ class OrderSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity(0.5),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

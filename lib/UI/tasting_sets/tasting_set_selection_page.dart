@@ -98,7 +98,7 @@ class TastingSetSelectionPage extends StatelessWidget {
                 // Header with hike info
                 Container(
                   padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: Row(
                     children: [
                       if (hike.thumbnailImageUrl != null)
@@ -169,7 +169,7 @@ class TastingSetSelectionPage extends StatelessWidget {
                     color: Theme.of(context).colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha:0.1),
                         blurRadius: 8,
                         offset: const Offset(0, -2),
                       ),

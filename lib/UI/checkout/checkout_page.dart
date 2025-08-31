@@ -23,6 +23,45 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+  bool _hasShownSuccessDialog = false;
+  
+  void _showPaymentSuccessDialog(CheckoutViewModel viewModel) {
+    if (_hasShownSuccessDialog) return;
+    _hasShownSuccessDialog = true;
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        icon: const Icon(
+          Icons.check_circle,
+          color: Colors.green,
+          size: 48,
+        ),
+        title: const Text('Zahlung erfolgreich!'),
+        content: Text(
+          'Ihre Bestellung ${viewModel.order.formattedOrderNumber} wurde erfolgreich verarbeitet.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              viewModel.navigateToOrderHistory(context);
+            },
+            child: const Text('Alle Bestellungen'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              viewModel.navigateToOrderTracking(context);
+            },
+            child: const Text('Bestellung verfolgen'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -44,6 +83,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         body: Consumer<CheckoutViewModel>(
           builder: (context, viewModel, child) {
+            // Show success dialog when payment is successful
+            if (viewModel.paymentSuccess && !_hasShownSuccessDialog) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _showPaymentSuccessDialog(viewModel);
+              });
+            }
+            
             return Stack(
               children: [
                 // Main content
@@ -158,7 +204,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 // Loading overlay
                 if (viewModel.isLoading)
                   Container(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     child: const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

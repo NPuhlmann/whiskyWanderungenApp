@@ -143,29 +143,28 @@ class MultiPaymentService {
       case PaymentMethodType.applePay:
         if (_applePayConfig == null) return false;
         try {
-          // For testing purposes, simulate Apple Pay availability
-          // In production, you would use the actual Pay.userCanPay method
-          dev.log('📱 Checking Apple Pay availability (simulated)');
-          return true; // Simulated availability
+          // For now, simulate Apple Pay availability check
+          // In production, you would use platform-specific availability checks
+          dev.log('📱 Checking Apple Pay availability (simulated for development)');
+          await Future.delayed(const Duration(milliseconds: 100));
+          return _applePayConfig != null; // Available if config exists
         } catch (e) {
-          dev.log('❌ Error checking Apple Pay availability: $e');
+          dev.log('❌ Apple Pay not available: $e');
           return false;
         }
         
       case PaymentMethodType.googlePay:
         if (_googlePayConfig == null) return false;
         try {
-          // For testing purposes, simulate Google Pay availability
-          // In production, you would use the actual Pay.userCanPay method
-          dev.log('🤖 Checking Google Pay availability (simulated)');
-          return true; // Simulated availability
+          // For now, simulate Google Pay availability check
+          // In production, you would use platform-specific availability checks
+          dev.log('🤖 Checking Google Pay availability (simulated for development)');
+          await Future.delayed(const Duration(milliseconds: 100));
+          return _googlePayConfig != null; // Available if config exists
         } catch (e) {
-          dev.log('❌ Error checking Google Pay availability: $e');
+          dev.log('❌ Google Pay not available: $e');
           return false;
         }
-        
-      case PaymentMethodType.paypal:
-        return true; // Always available via web redirect
         
       default:
         return false; // Other methods not yet implemented
@@ -208,9 +207,6 @@ class MultiPaymentService {
           
         case PaymentMethodType.googlePay:
           return await _processGooglePayPayment(amount: amount, currency: currency, metadata: metadata);
-          
-        case PaymentMethodType.paypal:
-          return await _processPayPalPayment(amount: amount, currency: currency, metadata: metadata);
           
         default:
           throw ArgumentError('Payment method ${paymentMethod.name} not implemented');
@@ -264,20 +260,12 @@ class MultiPaymentService {
     }
     
     try {
-      dev.log('🍎 Processing Apple Pay payment...');
+      dev.log('🍎 Processing Apple Pay payment (simulated for development)...');
       
-      // Create payment request
-      final paymentItems = [
-        PaymentItem(
-          label: 'Whisky Hike',
-          amount: amount.toStringAsFixed(2),
-          status: PaymentItemStatus.final_price,
-        )
-      ];
+      // Simulate Apple Pay processing delay
+      await Future.delayed(const Duration(milliseconds: 1500));
       
-      // Show Apple Pay sheet (simulated for testing)
-      await Future.delayed(const Duration(milliseconds: 1500)); // Simulate user interaction
-      
+      // For development, simulate successful Apple Pay payment
       dev.log('✅ Apple Pay payment successful (simulated)');
       return BasicPaymentResult(
         isSuccess: true,
@@ -308,20 +296,12 @@ class MultiPaymentService {
     }
     
     try {
-      dev.log('🤖 Processing Google Pay payment...');
+      dev.log('🤖 Processing Google Pay payment (simulated for development)...');
       
-      // Create payment request
-      final paymentItems = [
-        PaymentItem(
-          label: 'Whisky Hike',
-          amount: amount.toStringAsFixed(2),
-          status: PaymentItemStatus.final_price,
-        )
-      ];
+      // Simulate Google Pay processing delay
+      await Future.delayed(const Duration(milliseconds: 1200));
       
-      // Show Google Pay sheet (simulated for testing)
-      await Future.delayed(const Duration(milliseconds: 1200)); // Simulate user interaction
-      
+      // For development, simulate successful Google Pay payment
       dev.log('✅ Google Pay payment successful (simulated)');
       return BasicPaymentResult(
         isSuccess: true,
@@ -341,45 +321,6 @@ class MultiPaymentService {
     }
   }
 
-  /// Process PayPal payment
-  Future<BasicPaymentResult> _processPayPalPayment({
-    required double amount,
-    required String currency,
-    Map<String, dynamic>? metadata,
-  }) async {
-    try {
-      dev.log('💙 Processing PayPal payment...');
-      
-      // PayPal integration would typically involve:
-      // 1. Create PayPal order
-      // 2. Show PayPal checkout (web view or SDK)
-      // 3. Handle approval/cancellation
-      
-      // Simulate PayPal flow for testing
-      await Future.delayed(const Duration(milliseconds: 2000)); // Simulate redirect + approval
-      
-      // Simulate different outcomes based on amount for testing
-      if (amount > 1000) {
-        return BasicPaymentResult.failure(
-          error: 'PayPal payment limit exceeded',
-          status: PaymentStatus.failed,
-          metadata: metadata,
-        );
-      }
-      
-      dev.log('✅ PayPal payment successful (simulated)');
-      return BasicPaymentResult(
-        isSuccess: true,
-        status: PaymentStatus.succeeded,
-        paymentIntentId: 'pi_paypal_${DateTime.now().millisecondsSinceEpoch}',
-        metadata: {...?metadata, 'payment_method': 'paypal'},
-      );
-      
-    } catch (e) {
-      dev.log('❌ PayPal payment failed: $e');
-      throw Exception('PayPal payment failed: $e');
-    }
-  }
 
   /// Get display name for payment method
   String getPaymentMethodDisplayName(PaymentMethodType paymentMethod) {
@@ -390,8 +331,6 @@ class MultiPaymentService {
         return 'Apple Pay';
       case PaymentMethodType.googlePay:
         return 'Google Pay';
-      case PaymentMethodType.paypal:
-        return 'PayPal';
       case PaymentMethodType.sepaDebit:
         return 'SEPA Lastschrift';
       case PaymentMethodType.sofort:
@@ -412,8 +351,6 @@ class MultiPaymentService {
         return 'apple';
       case PaymentMethodType.googlePay:
         return 'google';
-      case PaymentMethodType.paypal:
-        return 'paypal'; 
       case PaymentMethodType.sepaDebit:
         return 'account_balance';
       case PaymentMethodType.sofort:
@@ -425,6 +362,9 @@ class MultiPaymentService {
     }
   }
 
+  /// Note: Pay integration will be implemented in future versions
+  /// For now, Apple Pay and Google Pay use simulated flows
+
   /// Ensure service is initialized
   void _ensureInitialized() {
     if (!_isInitialized) {
@@ -433,21 +373,5 @@ class MultiPaymentService {
   }
 }
 
-/// Payment item for Apple Pay and Google Pay
-class PaymentItem {
-  final String label;
-  final String amount;
-  final PaymentItemStatus status;
-
-  const PaymentItem({
-    required this.label,
-    required this.amount,
-    required this.status,
-  });
-}
-
-/// Payment item status
-enum PaymentItemStatus {
-  pending,
-  final_price,
-}
+/// Payment processing completed using simulated flows for development
+/// Real Pay integration will be implemented in Phase 3

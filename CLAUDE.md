@@ -213,3 +213,327 @@ Widget tests are located in the `test/` directory.
 - Mock classes generated for Supabase client components
 
 - Add to Memory, how the payment process works
+- Dein Ziel ist immer am Ende einer neuen Implementierung, dass die App ausführbar ist
+
+## Code Quality & Development Standards
+
+### Code Formatting
+- **Dart Format**: Always run `dart format` before commits
+- **Line Length**: Maximum 80 characters per line
+- **Indentation**: 2 spaces (Flutter Standard)
+- **Comments**: Use `///` for public APIs, `//` for complex business logic
+
+### Code Structure Principles
+- **Single Responsibility**: Each class has one clear responsibility
+- **Dependency Injection**: Use constructor injection
+- **Composition over Inheritance**: Prefer composition patterns
+- **Avoid God Objects**: Keep classes focused and small
+
+### Anti-Patterns to Avoid
+- **Deep Nesting**: Maximum 3-4 levels of nesting
+- **Magic Numbers**: Define constants instead of hardcoding
+- **String Concatenation**: Use StringBuffer for multiple strings
+
+## Test-Driven Development (TDD)
+
+### TDD Cycle: Red → Green → Refactor
+
+#### Red Phase (Write Failing Test)
+```dart
+test('should create TastingSet with required fields', () {
+  final tastingSet = TastingSet(
+    id: 1,
+    hikeId: 100,
+    name: 'Test Set',
+    description: 'Test description',
+    samples: [],
+    price: 0.0, // Always 0 - included in hike
+  );
+  
+  expect(tastingSet.name, equals('Test Set'));
+  expect(tastingSet.price, equals(0.0));
+});
+```
+
+#### Green Phase (Make Test Pass)
+```dart
+@freezed
+abstract class TastingSet with _$TastingSet {
+  const factory TastingSet({
+    required int id,
+    @JsonKey(name: 'hike_id') required int hikeId,
+    required String name,
+    required String description,
+    required List<WhiskySample> samples,
+    @Default(0.0) double price, // Default to 0
+  }) = _TastingSet;
+  
+  factory TastingSet.fromJson(Map<String, dynamic> json) => _$TastingSetFromJson(json);
+}
+```
+
+### Code Generation Workflow
+```bash
+# After Freezed model changes
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Continuous generation during development
+flutter pub run build_runner watch
+
+# Clean build when needed
+flutter clean && flutter pub get && flutter pub run build_runner build
+```
+
+## Freezed 3.x Configuration (Critical Update)
+
+### Correct Freezed Syntax
+**IMPORTANT**: All Freezed models MUST be defined as `abstract class`:
+
+```dart
+// ✅ CORRECT - Freezed 3.x
+@freezed
+abstract class Company with _$Company {
+  const factory Company({
+    required String id,
+    required String name,
+    String? description,
+  }) = _Company;
+
+  factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
+}
+
+// ❌ WRONG - Won't work with Freezed 3.x
+@freezed
+class Company with _$Company { ... }  // Missing 'abstract'
+```
+
+### Required Annotations
+```dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'company.freezed.dart';  // Freezed generation
+part 'company.g.dart';        // JSON serialization
+```
+
+## Tasting Set System Implementation
+
+### Business Rules
+- **1:1 Relationship**: Each hike has exactly one tasting set
+- **Always Included**: Tasting sets are included in hike price (price = 0.00)
+- **Company Management**: Companies manage tasting sets for their hikes
+- **No Selection Logic**: Users don't select tasting sets - they're automatic
+
+### Database Schema
+```sql
+CREATE TABLE public.tasting_sets (
+    id SERIAL PRIMARY KEY,
+    hike_id INTEGER UNIQUE REFERENCES public.hikes(id) ON DELETE CASCADE,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0.00, -- Always 0
+    is_included BOOLEAN DEFAULT TRUE, -- Always true
+    name VARCHAR NOT NULL,
+    description TEXT
+);
+```
+
+### Model Extensions
+```dart
+extension TastingSetExtensions on TastingSet {
+  String get formattedPrice => 'Inklusive'; // Always "Included"
+  int get sampleCount => samples.length;
+  double get totalVolumeMl => samples.fold(0.0, (sum, sample) => sum + sample.sampleSizeMl);
+  String get mainRegion { /* most common region logic */ }
+  double get averageAge { /* average calculation */ }
+}
+```
+
+## Implementation Priorities
+
+### Phase 1: Critical Business Features (Week 1-4)
+1. **Payment & Checkout System** - Stripe integration, checkout UI, order database
+2. **Tasting-Set-Management** - Models, samples, pricing (always 0.0)
+
+### Phase 2: User Experience Features (Week 5-8)
+1. **Order Tracking & Management** - Order status tracking, shipping updates  
+2. **Offline Functionality** - Local caching, offline-first repository
+
+### Phase 3: Admin & Business Features (Week 9-16)
+1. **Admin Dashboard (Web App)** - Admin UI, route planning, order management
+2. **Analytics & Reporting** - Sales statistics, customer analytics
+
+## Security Guidelines
+
+### Critical Security Rules
+**NEVER COMMIT**:
+- API Keys (especially Supabase tokens starting with `sbp_`)
+- Database passwords
+- Project IDs
+- Organization IDs
+- Access tokens
+
+### Environment Configuration
+- Use `.env` file from `.env.example` template
+- Add `.env*` to `.gitignore`
+- Use environment variables for all sensitive data
+- Mark sensitive Terraform variables with `sensitive = true`
+
+### HTTPS Enforcement
+- Always use HTTPS for production URLs
+- Implement `_ensureHttps()` helper function in main.dart
+- Set `DEV_MODE=false` in production .env files
+
+## Repository Pattern Best Practices
+
+### ViewModels MUST Depend on Repositories
+```dart
+// ✅ Correct - Use Repository
+final hikes = await _hikeRepository.getAllAvailableHikes();
+
+// ❌ Avoid - Direct service call
+final hikes = await _backendApiService.getHikes();
+```
+
+### Error Handling in Repositories
+```dart
+Future<Profile> getUserProfileById(String userId) async {
+  try {
+    return profile;
+  } catch (e) {
+    log("Error getting profile for user $userId: $e");
+    rethrow; // Let ViewModel handle the error
+  }
+}
+```
+
+## ViewModel Patterns
+
+### Loading State Management
+Always use try-finally pattern:
+```dart
+Future<void> operation() async {
+  _isLoading = true;
+  notifyListeners();
+  
+  try {
+    await repository.operation();
+  } catch (e) {
+    log("Error: $e");
+    // Handle gracefully, don't rethrow
+  } finally {
+    _isLoading = false;
+    notifyListeners();
+  }
+}
+```
+
+### File Upload with Retry Logic
+```dart
+Future<void> uploadProfileImage(Uint8List imageBytes, String fileExt) async {
+  const int maxRetries = 3;
+  
+  for (int attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      imageUrl = await _profileRepository.uploadProfileImage(userId, imageBytes, fileExt);
+      break; // Success
+    } catch (e) {
+      if (attempt < maxRetries && _isRetryableError(e)) {
+        await Future.delayed(Duration(seconds: attempt * 2));
+      } else {
+        break;
+      }
+    }
+  }
+}
+```
+
+## Testing Patterns & Mock Setup
+
+### Mock Generation
+```dart
+@GenerateMocks([
+  SupabaseClient,
+  SupabaseQueryBuilder, 
+  PostgrestFilterBuilder,
+  HikeRepository,
+  ProfileRepository,
+  BackendApiService,
+])
+```
+
+### Test Helpers
+Create centralized test data creation in `test/test_helpers.dart`:
+```dart
+class TestHelpers {
+  static List<Hike> createSampleHikes() { /* ... */ }
+  static Hike createTestHike({...}) { /* ... */ }
+  static TastingSet createTestTastingSet({...}) { /* ... */ }
+}
+```
+
+### ViewModel Testing
+```dart
+test('should handle errors gracefully', () async {
+  when(mockRepository.operation()).thenThrow(Exception('Error'));
+  
+  await viewModel.someAsyncOperation(); // Should not throw
+  
+  expect(viewModel.isLoading, false);
+  verify(mockRepository.operation()).called(1);
+});
+```
+
+## Terraform Infrastructure
+
+### Project Structure
+- `terraform-supabase/main.tf` - Main Terraform configuration
+- `terraform-supabase/variables.tf` - Variable definitions (no sensitive defaults)
+- `terraform-supabase/terraform.tfvars.example` - Configuration template
+- `terraform-supabase/sql/` - SQL migration files
+
+### Common Commands
+```bash
+make init     # Initialize Terraform
+make plan     # Review changes  
+make apply    # Deploy infrastructure
+make schema   # Create database schema
+make policies # Apply security policies
+```
+
+### Environment Variables
+All scripts load from `.env`:
+- `SUPABASE_ACCESS_TOKEN`
+- `PROJECT_ID` 
+- `ORGANIZATION_ID`
+- `DATABASE_PASSWORD`
+
+## Supabase Integration Patterns
+
+### FileObject Constructor (Breaking Change)
+```dart
+// ✅ Correct - FileObject requires updatedAt
+FileObject(
+  bucketId: 'avatars',
+  name: 'profile.jpg', 
+  id: 'profile-id',
+  owner: 'owner-id',
+  metadata: {'size': 1024},
+  updatedAt: DateTime.now().toIso8601String(), // Required!
+)
+```
+
+### Profile Image Operations
+```dart
+Future<String> uploadProfileImage(String userId, Uint8List fileBytes, String fileExt) async {
+  final String path = '$userId/profile.$fileExt';
+  
+  await client.storage.from('avatars').uploadBinary(
+    path,
+    fileBytes,
+    fileOptions: FileOptions(
+      cacheControl: '3600',
+      upsert: true,
+    ),
+  );
+  
+  return client.storage.from('avatars').getPublicUrl(path);
+}
+```

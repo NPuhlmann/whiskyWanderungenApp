@@ -6,6 +6,7 @@ import 'package:whisky_hikes/UI/checkout/checkout_view_model.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
+import 'package:whisky_hikes/domain/models/payment_intent.dart' show PaymentMethodType;
 
 import 'checkout_view_model_test.mocks.dart';
 
@@ -59,7 +60,7 @@ void main() {
         expect(viewModel.canProcessPayment, isFalse);
         
         // Set payment method
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         expect(viewModel.canProcessPayment, isFalse); // Still false - shipping order needs address
         
         // Set delivery address
@@ -92,7 +93,7 @@ void main() {
 
         // Act & Assert
         expect(pickupViewModel.canProcessPayment, isFalse); // No payment method yet
-        pickupViewModel.setPaymentMethod('pm_test_card_123');
+        pickupViewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         expect(pickupViewModel.canProcessPayment, isTrue); // Should be true - no address needed
         
         pickupViewModel.dispose();
@@ -105,10 +106,10 @@ void main() {
         expect(viewModel.selectedPaymentMethod, isNull);
 
         // Act
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
 
         // Assert
-        expect(viewModel.selectedPaymentMethod, equals('pm_test_card_123'));
+        expect(viewModel.selectedPaymentMethod, equals(PaymentMethodType.card));
       });
 
       test('should notify listeners when payment method changes', () {
@@ -117,8 +118,8 @@ void main() {
         viewModel.addListener(() => notificationCount++);
 
         // Act
-        viewModel.setPaymentMethod('pm_test_card_123');
-        viewModel.setPaymentMethod('pm_test_card_456');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_456');
 
         // Assert
         expect(notificationCount, equals(2));
@@ -129,7 +130,7 @@ void main() {
         expect(viewModel.canProcessPayment, isFalse);
 
         // Act - Set payment method for shipping order (still needs address)
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
 
         // Assert - Still false because shipping order needs address
         expect(viewModel.canProcessPayment, isFalse);
@@ -222,12 +223,13 @@ void main() {
 
         when(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         )).thenAnswer((_) async => successfulResult);
 
         // Setup valid state
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         viewModel.setDeliveryAddress({
           'street': 'Test Street 123',
           'city': 'Test City',
@@ -247,6 +249,7 @@ void main() {
         // Verify repository was called
         verify(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: PaymentMethodType.card,
           paymentMethodId: 'pm_test_card_123',
           metadata: anyNamed('metadata'),
         )).called(1);
@@ -261,12 +264,13 @@ void main() {
 
         when(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         )).thenAnswer((_) async => failedResult);
 
         // Setup valid state
-        viewModel.setPaymentMethod('pm_test_card_declined');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_declined');
         viewModel.setDeliveryAddress({
           'street': 'Test Street 123',
           'city': 'Test City',
@@ -292,12 +296,13 @@ void main() {
 
         when(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         )).thenAnswer((_) async => authRequiredResult);
 
         // Setup valid state
-        viewModel.setPaymentMethod('pm_test_card_auth');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_auth');
         viewModel.setDeliveryAddress({
           'street': 'Test Street 123',
           'city': 'Test City',
@@ -324,6 +329,7 @@ void main() {
 
         when(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         )).thenAnswer((_) => Future.delayed(
@@ -332,7 +338,7 @@ void main() {
         ));
 
         // Setup valid state
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         viewModel.setDeliveryAddress({
           'street': 'Test Street 123',
           'city': 'Test City',
@@ -369,6 +375,7 @@ void main() {
         // Verify repository was not called
         verifyNever(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         ));
@@ -378,12 +385,13 @@ void main() {
         // Arrange
         when(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         )).thenThrow(Exception('Network error'));
 
         // Setup valid state
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         viewModel.setDeliveryAddress({
           'street': 'Test Street 123',
           'city': 'Test City',
@@ -431,7 +439,7 @@ void main() {
     group('State Management', () {
       test('should reset all state correctly', () {
         // Arrange - Set various state
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         viewModel.setDeliveryAddress({
           'street': 'Test Street',
           'city': 'Test City',
@@ -477,11 +485,11 @@ void main() {
     group('Edge Cases', () {
       test('should handle null/empty payment method gracefully', () {
         // Act & Assert
-        viewModel.setPaymentMethod('');
+        viewModel.setPaymentMethod(PaymentMethodType.card, '');
         expect(viewModel.canProcessPayment, isFalse);
         
-        viewModel.setPaymentMethod('valid_method');
-        expect(viewModel.selectedPaymentMethod, equals('valid_method'));
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'valid_method');
+        expect(viewModel.selectedPaymentMethod, equals(PaymentMethodType.card));
       });
 
       test('should handle partial address data correctly', () {
@@ -489,7 +497,7 @@ void main() {
         viewModel.setDeliveryAddress({'street': 'Partial Street'});
 
         // Assert - Should not be valid for processing (missing required fields)
-        viewModel.setPaymentMethod('pm_test_card');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card');
         expect(viewModel.canProcessPayment, isFalse);
       });
 
@@ -503,6 +511,7 @@ void main() {
 
         when(mockPaymentRepository.processPayment(
           order: anyNamed('order'),
+          paymentMethod: anyNamed('paymentMethod'),
           paymentMethodId: anyNamed('paymentMethodId'),
           metadata: anyNamed('metadata'),
         )).thenAnswer((_) => Future.delayed(
@@ -511,7 +520,7 @@ void main() {
         ));
 
         // Setup valid state
-        viewModel.setPaymentMethod('pm_test_card_123');
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
         viewModel.setDeliveryAddress({
           'street': 'Test Street 123',
           'city': 'Test City',

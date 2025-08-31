@@ -6,7 +6,7 @@ import 'package:mockito/annotations.dart';
 
 import 'package:whisky_hikes/UI/checkout/checkout_page.dart';
 import 'package:whisky_hikes/UI/checkout/widgets/order_summary.dart';
-import 'package:whisky_hikes/UI/checkout/widgets/payment_method_selector.dart';
+import 'package:whisky_hikes/UI/checkout/widgets/multi_payment_method_selector.dart';
 import 'package:whisky_hikes/UI/checkout/widgets/delivery_address_form.dart';
 import 'package:whisky_hikes/UI/checkout/widgets/checkout_button.dart';
 import 'package:whisky_hikes/UI/checkout/checkout_view_model.dart';
@@ -61,6 +61,9 @@ void main() {
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
         when(mockViewModel.selectedPaymentMethod).thenReturn(null);
+        when(mockViewModel.selectedPaymentMethodId).thenReturn(null);
+        when(mockViewModel.availablePaymentMethods).thenReturn([]);
+        when(mockViewModel.isInitializing).thenReturn(false);
         when(mockViewModel.deliveryAddress).thenReturn(null);
 
         // Act
@@ -73,7 +76,7 @@ void main() {
         
         // Should contain main components
         expect(find.byType(OrderSummary), findsOneWidget);
-        expect(find.byType(PaymentMethodSelector), findsOneWidget);
+        expect(find.byType(MultiPaymentMethodSelector), findsOneWidget);
         expect(find.byType(CheckoutButton), findsOneWidget);
       });
 
@@ -92,6 +95,10 @@ void main() {
 
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
+        when(mockViewModel.selectedPaymentMethod).thenReturn(null);
+        when(mockViewModel.selectedPaymentMethodId).thenReturn(null);
+        when(mockViewModel.availablePaymentMethods).thenReturn([]);
+        when(mockViewModel.isInitializing).thenReturn(false);
 
         // Act
         await tester.pumpWidget(createCheckoutPage(order: shippingOrder));
@@ -116,6 +123,10 @@ void main() {
 
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
+        when(mockViewModel.selectedPaymentMethod).thenReturn(null);
+        when(mockViewModel.selectedPaymentMethodId).thenReturn(null);
+        when(mockViewModel.availablePaymentMethods).thenReturn([]);
+        when(mockViewModel.isInitializing).thenReturn(false);
 
         // Act
         await tester.pumpWidget(createCheckoutPage(order: pickupOrder));
@@ -207,11 +218,11 @@ void main() {
 
         // Act
         await tester.pumpWidget(createCheckoutPage());
-        await tester.tap(find.byType(PaymentMethodSelector));
+        await tester.tap(find.byType(MultiPaymentMethodSelector));
         await tester.pump();
 
         // Assert - This will test the widget interaction
-        expect(find.byType(PaymentMethodSelector), findsOneWidget);
+        expect(find.byType(MultiPaymentMethodSelector), findsOneWidget);
       });
     });
 

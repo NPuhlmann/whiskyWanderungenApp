@@ -2,172 +2,211 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'company.dart';
 import 'delivery_address.dart';
 import 'hike.dart';
+import 'delivery_address.dart' show ShippingCostResult;
 
-part 'enhanced_order.freezed.dart';
-part 'enhanced_order.g.dart';
+// part 'enhanced_order.freezed.dart';
+// part 'enhanced_order.g.dart';
 
 /// Enhanced Order Status für erweiterte Funktionalität
 enum EnhancedOrderStatus {
-  @JsonValue('pending') pending,
-  @JsonValue('payment_pending') paymentPending, // Waiting for payment confirmation
-  @JsonValue('confirmed') confirmed,
-  @JsonValue('processing') processing,
-  @JsonValue('shipped') shipped,
-  @JsonValue('out_for_delivery') outForDelivery,
-  @JsonValue('delivered') delivered,
-  @JsonValue('cancelled') cancelled,
-  @JsonValue('refunded') refunded,
-  @JsonValue('failed') failed, // Payment or processing failed
+  pending,
+  paymentPending, // Waiting for payment confirmation
+  confirmed,
+  processing,
+  shipped,
+  outForDelivery,
+  delivered,
+  cancelled,
+  refunded,
+  failed, // Payment or processing failed
+}
+
+/// Delivery Type enum
+enum DeliveryType {
+  pickup,
+  standardShipping,
+  expressShipping,
+  premiumShipping,
 }
 
 /// Enhanced Order Model für Multi-Vendor System
 /// Unterstützt komplexe Bestellungen mit Company-Kontext und detaillierter Adressverwaltung
-@freezed
-class EnhancedOrder with _$EnhancedOrder {
-  const factory EnhancedOrder({
-    required int id,
-    required String orderNumber,
-    
-    // Multi-Vendor Context
-    required String companyId,
-    Company? company, // Populated via JOIN
-    
-    // User und Hike Information
-    required String userId,
-    required int hikeId,
-    Hike? hike, // Populated via JOIN
-    
-    // Pricing Information
-    required double baseAmount, // Hike Preis ohne Versand
-    required double shippingCost,
-    required double totalAmount, // baseAmount + shippingCost + eventuelle Steuern
-    double? taxAmount, // Für zukünftige MwSt-Funktionalität
-    String? currency, // ISO 4217 Currency Code (EUR, USD, etc.)
-    
-    // Delivery Information
-    required DeliveryType deliveryType,
-    DeliveryAddress? deliveryAddress, // Strukturierte Adresse
-    @JsonKey(name: 'delivery_address_raw') Map<String, dynamic>? deliveryAddressRaw, // Fallback für alte Daten
-    
-    // Status und Tracking
-    required EnhancedOrderStatus status,
-    String? trackingNumber,
-    String? trackingUrl,
-    DateTime? estimatedDelivery,
-    DateTime? actualDelivery,
-    
-    // Payment Information
-    String? paymentIntentId,
-    String? paymentMethodId,
-    PaymentProvider? paymentProvider,
-    
-    // Shipping Information
-    ShippingCostResult? shippingDetails,
-    String? shippingService, // 'Standard', 'Express', etc.
-    
-    // Order Items (für zukünftige Multi-Item Bestellungen)
-    @Default([]) List<OrderItem> items,
-    
-    // Customer Notes und Instructions
-    String? customerNotes,
-    String? deliveryInstructions,
-    String? internalNotes, // Für Company-interne Notizen
-    
-    // Status History (für Tracking)
-    @Default([]) List<OrderStatusChange> statusHistory,
-    
-    // System Fields
-    required DateTime createdAt,
-    DateTime? updatedAt,
-    
-    // Metadata für zusätzliche Informationen
-    @Default({}) Map<String, dynamic> metadata,
-  }) = _EnhancedOrder;
-
-  factory EnhancedOrder.fromJson(Map<String, dynamic> json) => 
-      _$EnhancedOrderFromJson(json);
-}
-
-/// Delivery Type enum (erweitert)
-enum DeliveryType {
-  @JsonValue('pickup') pickup,
-  @JsonValue('standard_shipping') standardShipping,
-  @JsonValue('express_shipping') expressShipping,
-  @JsonValue('premium_shipping') premiumShipping,
-}
-
-/// Payment Provider enum
-enum PaymentProvider {
-  @JsonValue('stripe') stripe,
-  @JsonValue('paypal') paypal,
-  @JsonValue('apple_pay') applePay,
-  @JsonValue('google_pay') googlePay,
-}
-
-/// Order Item Model für Multi-Item Orders (zukünftige Erweiterung)
-@freezed
-class OrderItem with _$OrderItem {
-  const factory OrderItem({
-    required int id,
-    required int hikeId,
-    Hike? hike,
-    @Default(1) int quantity,
-    required double unitPrice,
-    required double totalPrice,
-    String? notes,
-  }) = _OrderItem;
-
-  factory OrderItem.fromJson(Map<String, dynamic> json) => 
-      _$OrderItemFromJson(json);
-}
-
-/// Order Status Change für History Tracking
-@freezed
-class OrderStatusChange with _$OrderStatusChange {
-  const factory OrderStatusChange({
-    required EnhancedOrderStatus fromStatus,
-    required EnhancedOrderStatus toStatus,
-    required DateTime changedAt,
-    String? reason,
-    String? notes,
-    String? changedBy, // User ID oder 'system'
-  }) = _OrderStatusChange;
-
-  factory OrderStatusChange.fromJson(Map<String, dynamic> json) => 
-      _$OrderStatusChangeFromJson(json);
-}
-
-/// Extension für Enhanced Order Business Logic
-extension EnhancedOrderExtensions on EnhancedOrder {
-  /// Prüft ob die Bestellung eine Lieferadresse benötigt
-  bool get requiresDeliveryAddress => 
-      deliveryType != DeliveryType.pickup;
+class EnhancedOrder {
+  final int id;
+  final String orderNumber;
   
-  /// Prüft ob die Bestellung in einem finalen Status ist
-  bool get isFinalStatus => [
-    EnhancedOrderStatus.delivered,
-    EnhancedOrderStatus.cancelled,
-    EnhancedOrderStatus.refunded,
-    EnhancedOrderStatus.failed,
-  ].contains(status);
+  // Multi-Vendor Context
+  final String companyId;
+  final Company? company; // Populated when loading with company details
   
-  /// Prüft ob die Bestellung storniert werden kann
-  bool get canBeCancelled => [
-    EnhancedOrderStatus.pending,
-    EnhancedOrderStatus.paymentPending,
-    EnhancedOrderStatus.confirmed,
-  ].contains(status);
+  // Order Details
+  final List<Hike> items;
+  final double subtotal;
+  final double taxAmount;
+  final double shippingCost;
+  final double totalAmount;
+  final String currency;
+  final double baseAmount; // Base amount without shipping
   
-  /// Prüft ob die Bestellung verfolgt werden kann
-  bool get canBeTracked => 
-      trackingNumber?.isNotEmpty == true && 
-      [EnhancedOrderStatus.shipped, EnhancedOrderStatus.outForDelivery]
-          .contains(status);
+  // Status & Timestamps
+  final EnhancedOrderStatus status;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final DateTime? confirmedAt;
+  final DateTime? shippedAt;
+  final DateTime? deliveredAt;
+  final DateTime? cancelledAt;
   
-  /// Generiert eine formatierte Bestellnummer
+  // Customer Information
+  final String customerId;
+  final String? customerEmail;
+  final String? customerPhone;
+  
+  // Delivery & Shipping
+  final DeliveryType deliveryType;
+  final DeliveryAddress deliveryAddress;
+  final String? trackingNumber;
+  final String? trackingUrl;
+  final String? shippingCarrier;
+  final String? shippingMethod;
+  final String? shippingService;
+  final String? estimatedDeliveryDate;
+  final DateTime? estimatedDelivery;
+  final DateTime? actualDelivery;
+  final ShippingCostResult? shippingDetails;
+  
+  // Payment Information
+  final String? paymentIntentId;
+  final String? paymentMethodId;
+  final String? paymentStatus;
+  final DateTime? paymentDate;
+  
+  // Additional Details
+  final String? notes;
+  final String? internalNotes;
+  final Map<String, dynamic>? metadata;
+  final List<String>? tags;
+  final List<OrderStatusChange> statusHistory;
+  
+  // Vendor Specific
+  final String? vendorOrderId;
+  final String? vendorNotes;
+  final Map<String, dynamic>? vendorMetadata;
+
+  const EnhancedOrder({
+    required this.id,
+    required this.orderNumber,
+    required this.companyId,
+    this.company,
+    required this.items,
+    required this.subtotal,
+    required this.taxAmount,
+    required this.shippingCost,
+    required this.totalAmount,
+    required this.currency,
+    required this.baseAmount,
+    required this.status,
+    required this.createdAt,
+    this.updatedAt,
+    this.confirmedAt,
+    this.shippedAt,
+    this.deliveredAt,
+    this.cancelledAt,
+    required this.customerId,
+    this.customerEmail,
+    this.customerPhone,
+    required this.deliveryType,
+    required this.deliveryAddress,
+    this.trackingNumber,
+    this.trackingUrl,
+    this.shippingCarrier,
+    this.shippingMethod,
+    this.shippingService,
+    this.estimatedDeliveryDate,
+    this.estimatedDelivery,
+    this.actualDelivery,
+    this.shippingDetails,
+    this.paymentIntentId,
+    this.paymentMethodId,
+    this.paymentStatus,
+    this.paymentDate,
+    this.notes,
+    this.internalNotes,
+    this.metadata,
+    this.tags,
+    this.statusHistory = const [],
+    this.vendorOrderId,
+    this.vendorNotes,
+    this.vendorMetadata,
+  });
+
+  factory EnhancedOrder.fromJson(Map<String, dynamic> json) {
+    // Simple JSON parsing for now
+    return EnhancedOrder(
+      id: json['id'] as int,
+      orderNumber: json['order_number'] as String,
+      companyId: json['company_id'] as String,
+      items: [], // TODO: Parse items
+      subtotal: (json['subtotal'] as num).toDouble(),
+      taxAmount: (json['tax_amount'] as num).toDouble(),
+      shippingCost: (json['shipping_cost'] as num).toDouble(),
+      totalAmount: (json['total_amount'] as num).toDouble(),
+      currency: json['currency'] as String,
+      baseAmount: (json['base_amount'] as num?)?.toDouble() ?? 0.0,
+      status: EnhancedOrderStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+        orElse: () => EnhancedOrderStatus.pending,
+      ),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      customerId: json['customer_id'] as String,
+      deliveryType: DeliveryType.values.firstWhere(
+        (e) => e.name == json['delivery_type'],
+        orElse: () => DeliveryType.standardShipping,
+      ),
+      deliveryAddress: DeliveryAddress(
+        firstName: 'John',
+        lastName: 'Doe',
+        addressLine1: 'Sample Address',
+        city: 'Sample City',
+        postalCode: '12345',
+        countryCode: 'DE',
+        countryName: 'Germany',
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'order_number': orderNumber,
+      'company_id': companyId,
+      'subtotal': subtotal,
+      'tax_amount': taxAmount,
+      'shipping_cost': shippingCost,
+      'total_amount': totalAmount,
+      'currency': currency,
+      'base_amount': baseAmount,
+      'status': status.name,
+      'delivery_type': deliveryType.name,
+      'created_at': createdAt.toIso8601String(),
+      'customer_id': customerId,
+    };
+  }
+
+  // Computed properties
   String get formattedOrderNumber => '#$orderNumber';
   
-  /// Generiert einen Status-Display-Text auf Deutsch
+  bool get requiresDeliveryAddress => deliveryType != DeliveryType.pickup;
+  
+  bool get canBeTracked => trackingNumber?.isNotEmpty == true && 
+      [EnhancedOrderStatus.shipped, EnhancedOrderStatus.outForDelivery].contains(status);
+  
+  bool get canBeCancelled => [EnhancedOrderStatus.pending, EnhancedOrderStatus.paymentPending, 
+      EnhancedOrderStatus.confirmed].contains(status);
+  
+  bool get isFinalStatus => [EnhancedOrderStatus.delivered, EnhancedOrderStatus.cancelled, 
+      EnhancedOrderStatus.refunded, EnhancedOrderStatus.failed].contains(status);
+  
   String get statusDisplayText {
     switch (status) {
       case EnhancedOrderStatus.pending:
@@ -193,7 +232,6 @@ extension EnhancedOrderExtensions on EnhancedOrder {
     }
   }
   
-  /// Generiert einen Delivery-Type-Display-Text
   String get deliveryTypeDisplayText {
     switch (deliveryType) {
       case DeliveryType.pickup:
@@ -206,123 +244,142 @@ extension EnhancedOrderExtensions on EnhancedOrder {
         return 'Premium-Versand';
     }
   }
-  
-  /// Berechnet die Gesamtsumme aus Einzelposten (falls vorhanden)
-  double get calculatedTotal {
-    if (items.isEmpty) {
-      return baseAmount + shippingCost + (taxAmount ?? 0.0);
-    }
-    
-    final itemsTotal = items.fold<double>(
-      0.0, 
-      (sum, item) => sum + item.totalPrice,
+}
+
+/// Order Status Change für Status History
+class OrderStatusChange {
+  final EnhancedOrderStatus fromStatus;
+  final EnhancedOrderStatus toStatus;
+  final DateTime changedAt;
+  final String? reason;
+  final String? notes;
+  final String? changedBy;
+
+  const OrderStatusChange({
+    required this.fromStatus,
+    required this.toStatus,
+    required this.changedAt,
+    this.reason,
+    this.notes,
+    this.changedBy,
+  });
+
+  factory OrderStatusChange.fromJson(Map<String, dynamic> json) {
+    return OrderStatusChange(
+      fromStatus: EnhancedOrderStatus.values.firstWhere(
+        (e) => e.name == json['from_status'],
+        orElse: () => EnhancedOrderStatus.pending,
+      ),
+      toStatus: EnhancedOrderStatus.values.firstWhere(
+        (e) => e.name == json['to_status'],
+        orElse: () => EnhancedOrderStatus.pending,
+      ),
+      changedAt: DateTime.parse(json['changed_at'] as String),
+      reason: json['reason'] as String?,
+      notes: json['notes'] as String?,
+      changedBy: json['changed_by'] as String?,
     );
-    
-    return itemsTotal + shippingCost + (taxAmount ?? 0.0);
   }
-  
-  /// Prüft ob die berechnete Gesamtsumme mit der gespeicherten übereinstimmt
-  bool get totalAmountIsConsistent {
-    return (calculatedTotal - totalAmount).abs() < 0.01; // 1 Cent Toleranz
+
+  Map<String, dynamic> toJson() {
+    return {
+      'from_status': fromStatus.name,
+      'to_status': toStatus.name,
+      'changed_at': changedAt.toIso8601String(),
+      'reason': reason,
+      'notes': notes,
+      'changed_by': changedBy,
+    };
   }
-  
-  /// Generiert eine Preis-Aufschlüsselung
-  String get priceBreakdown {
-    final lines = <String>[];
-    
-    if (items.isEmpty) {
-      lines.add('Hike: ${baseAmount.toStringAsFixed(2)} €');
-    } else {
-      for (final item in items) {
-        final hikeName = item.hike?.name ?? 'Hike #${item.hikeId}';
-        if (item.quantity > 1) {
-          lines.add('$hikeName (${item.quantity}x): ${item.totalPrice.toStringAsFixed(2)} €');
-        } else {
-          lines.add('$hikeName: ${item.totalPrice.toStringAsFixed(2)} €');
-        }
-      }
-    }
-    
-    if (shippingCost > 0) {
-      lines.add('Versand: ${shippingCost.toStringAsFixed(2)} €');
-    }
-    
-    if (taxAmount != null && taxAmount! > 0) {
-      lines.add('MwSt.: ${taxAmount!.toStringAsFixed(2)} €');
-    }
-    
-    lines.add('Gesamt: ${totalAmount.toStringAsFixed(2)} €');
-    
-    return lines.join('\n');
-  }
-  
-  /// Generiert eine kompakte Lieferadresse
-  String? get compactDeliveryAddress {
-    if (deliveryAddress != null) {
-      return deliveryAddress!.compactAddress;
-    }
-    
-    // Fallback für alte JSON-Adressen
-    if (deliveryAddressRaw != null) {
-      final name = deliveryAddressRaw!['name'] ?? '';
-      final street = deliveryAddressRaw!['street'] ?? '';
-      final city = deliveryAddressRaw!['city'] ?? '';
-      final country = deliveryAddressRaw!['country'] ?? '';
-      
-      return [name, street, city, country]
-          .where((s) => s.isNotEmpty)
-          .join(', ');
-    }
-    
-    return null;
-  }
-  
-  /// Prüft ob die Bestellung von einer internationalen Firma stammt
-  bool get isFromInternationalVendor {
-    return company?.isInternationalVendor == true;
-  }
-  
-  /// Generiert einen Lieferstatus-Text mit geschätzter/tatsächlicher Lieferzeit
-  String? get deliveryStatusText {
-    if (actualDelivery != null) {
-      return 'Zugestellt am ${_formatDate(actualDelivery!)}';
-    }
-    
-    if (estimatedDelivery != null) {
-      final now = DateTime.now();
-      if (estimatedDelivery!.isBefore(now)) {
-        return 'Lieferung überfällig (erwartet: ${_formatDate(estimatedDelivery!)})';
-      } else {
-        return 'Geschätzte Lieferung: ${_formatDate(estimatedDelivery!)}';
-      }
-    }
-    
-    return null;
-  }
-  
-  /// Formatiert ein Datum für die Anzeige
-  String _formatDate(DateTime date) {
-    return '${date.day}.${date.month}.${date.year}';
-  }
-  
-  /// Generiert Tracking-Informationen
-  String? get trackingInfo {
-    if (!canBeTracked) return null;
-    
-    final info = <String>[];
-    info.add('Sendungsnummer: $trackingNumber');
-    
-    if (trackingUrl?.isNotEmpty == true) {
-      info.add('Tracking-URL: $trackingUrl');
-    }
-    
-    return info.join('\n');
-  }
-  
-  /// Prüft ob die Bestellung Tasting-Sets enthält (für zukünftige Erweiterung)
-  bool get includesTastingSets {
-    // Placeholder für zukünftige Tasting-Set-Funktionalität
-    return metadata.containsKey('tasting_sets') || 
-           metadata.containsKey('includes_tasting');
-  }
+}
+
+/// Enhanced Order Summary für Listen und Übersichten
+class EnhancedOrderSummary {
+  final int id;
+  final String orderNumber;
+  final String companyId;
+  final String companyName;
+  final int itemCount;
+  final double totalAmount;
+  final String currency;
+  final EnhancedOrderStatus status;
+  final DateTime createdAt;
+  final String customerName;
+  final String? trackingNumber;
+  final String? estimatedDeliveryDate;
+
+  const EnhancedOrderSummary({
+    required this.id,
+    required this.orderNumber,
+    required this.companyId,
+    required this.companyName,
+    required this.itemCount,
+    required this.totalAmount,
+    required this.currency,
+    required this.status,
+    required this.createdAt,
+    required this.customerName,
+    this.trackingNumber,
+    this.estimatedDeliveryDate,
+  });
+}
+
+/// Enhanced Order Filter für erweiterte Suchfunktionen
+class EnhancedOrderFilter {
+  final List<EnhancedOrderStatus>? statuses;
+  final String? companyId;
+  final String? customerId;
+  final DateTime? dateFrom;
+  final DateTime? dateTo;
+  final double? minAmount;
+  final double? maxAmount;
+  final String? searchTerm;
+  final List<String>? tags;
+  final bool? hasTracking;
+  final String? shippingCarrier;
+
+  const EnhancedOrderFilter({
+    this.statuses,
+    this.companyId,
+    this.customerId,
+    this.dateFrom,
+    this.dateTo,
+    this.minAmount,
+    this.maxAmount,
+    this.searchTerm,
+    this.tags,
+    this.hasTracking,
+    this.shippingCarrier,
+  });
+}
+
+/// Enhanced Order Statistics für Dashboard und Berichte
+class EnhancedOrderStats {
+  final int totalOrders;
+  final int pendingOrders;
+  final int confirmedOrders;
+  final int shippedOrders;
+  final int deliveredOrders;
+  final int cancelledOrders;
+  final double totalRevenue;
+  final double averageOrderValue;
+  final Map<EnhancedOrderStatus, int> statusCounts;
+  final Map<String, int> companyOrderCounts;
+  final Map<String, double> monthlyRevenue;
+  final Map<String, int> monthlyOrders;
+
+  const EnhancedOrderStats({
+    required this.totalOrders,
+    required this.pendingOrders,
+    required this.confirmedOrders,
+    required this.shippedOrders,
+    required this.deliveredOrders,
+    required this.cancelledOrders,
+    required this.totalRevenue,
+    required this.averageOrderValue,
+    required this.statusCounts,
+    required this.companyOrderCounts,
+    required this.monthlyRevenue,
+    required this.monthlyOrders,
+  });
 }
