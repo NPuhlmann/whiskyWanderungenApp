@@ -76,9 +76,14 @@ void main() {
     group('retry functionality', () {
       test('should retry loading after error', () async {
         // Arrange - first call fails, second succeeds
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenThrow(Exception('First error'))
-            .thenAnswer((_) async => testOrder);
+        var callCount = 0;
+        when(mockPaymentRepository.getOrderById(orderId)).thenAnswer((_) async {
+          callCount++;
+          if (callCount == 1) {
+            throw Exception('First error');
+          }
+          return testOrder;
+        });
 
         // Act - first attempt fails
         await viewModel.initialize();
@@ -164,9 +169,14 @@ void main() {
         const newStatus = OrderStatus.shipped;
         final updatedOrder = testOrder.copyWith(status: newStatus);
         
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder)
-            .thenAnswer((_) async => updatedOrder);
+        var updateCallCount = 0;
+        when(mockPaymentRepository.getOrderById(orderId)).thenAnswer((_) async {
+          updateCallCount++;
+          if (updateCallCount == 1) {
+            return testOrder;
+          }
+          return updatedOrder;
+        });
         when(mockPaymentRepository.updateOrderStatus(
           orderId: orderId,
           status: newStatus,

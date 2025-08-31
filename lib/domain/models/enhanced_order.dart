@@ -4,8 +4,8 @@ import 'delivery_address.dart';
 import 'hike.dart';
 import 'delivery_address.dart' show ShippingCostResult;
 
-// part 'enhanced_order.freezed.dart';
-// part 'enhanced_order.g.dart';
+part 'enhanced_order.freezed.dart';
+part 'enhanced_order.g.dart';
 
 /// Enhanced Order Status für erweiterte Funktionalität
 enum EnhancedOrderStatus {
@@ -31,169 +31,77 @@ enum DeliveryType {
 
 /// Enhanced Order Model für Multi-Vendor System
 /// Unterstützt komplexe Bestellungen mit Company-Kontext und detaillierter Adressverwaltung
-class EnhancedOrder {
-  final int id;
-  final String orderNumber;
-  
-  // Multi-Vendor Context
-  final String companyId;
-  final Company? company; // Populated when loading with company details
-  
-  // Order Details
-  final List<Hike> items;
-  final double subtotal;
-  final double taxAmount;
-  final double shippingCost;
-  final double totalAmount;
-  final String currency;
-  final double baseAmount; // Base amount without shipping
-  
-  // Status & Timestamps
-  final EnhancedOrderStatus status;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
-  final DateTime? confirmedAt;
-  final DateTime? shippedAt;
-  final DateTime? deliveredAt;
-  final DateTime? cancelledAt;
-  
-  // Customer Information
-  final String customerId;
-  final String? customerEmail;
-  final String? customerPhone;
-  
-  // Delivery & Shipping
-  final DeliveryType deliveryType;
-  final DeliveryAddress deliveryAddress;
-  final String? trackingNumber;
-  final String? trackingUrl;
-  final String? shippingCarrier;
-  final String? shippingMethod;
-  final String? shippingService;
-  final String? estimatedDeliveryDate;
-  final DateTime? estimatedDelivery;
-  final DateTime? actualDelivery;
-  final ShippingCostResult? shippingDetails;
-  
-  // Payment Information
-  final String? paymentIntentId;
-  final String? paymentMethodId;
-  final String? paymentStatus;
-  final DateTime? paymentDate;
-  
-  // Additional Details
-  final String? notes;
-  final String? internalNotes;
-  final Map<String, dynamic>? metadata;
-  final List<String>? tags;
-  final List<OrderStatusChange> statusHistory;
-  
-  // Vendor Specific
-  final String? vendorOrderId;
-  final String? vendorNotes;
-  final Map<String, dynamic>? vendorMetadata;
+@freezed
+abstract class EnhancedOrder with _$EnhancedOrder {
+  const factory EnhancedOrder({
+    required int id,
+    required String orderNumber,
+    
+    // Multi-Vendor Context
+    required String companyId,
+    Company? company, // Populated when loading with company details
+    
+    // Order Details
+    @Default([]) List<Hike> items,
+    @JsonKey(name: 'hike_id') int? hikeId, // Add missing hikeId field
+    required double subtotal,
+    @JsonKey(name: 'tax_amount') @Default(0.0) double taxAmount,
+    @JsonKey(name: 'shipping_cost') @Default(0.0) double shippingCost,
+    @JsonKey(name: 'total_amount') required double totalAmount,
+    @Default('EUR') String currency,
+    @JsonKey(name: 'base_amount') @Default(0.0) double baseAmount, // Base amount without shipping
+    
+    // Status & Timestamps
+    @Default(EnhancedOrderStatus.pending) EnhancedOrderStatus status,
+    @JsonKey(name: 'created_at') required DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    @JsonKey(name: 'confirmed_at') DateTime? confirmedAt,
+    @JsonKey(name: 'shipped_at') DateTime? shippedAt,
+    @JsonKey(name: 'delivered_at') DateTime? deliveredAt,
+    @JsonKey(name: 'cancelled_at') DateTime? cancelledAt,
+    
+    // Customer Information
+    @JsonKey(name: 'customer_id') required String customerId,
+    @JsonKey(name: 'customer_email') String? customerEmail,
+    @JsonKey(name: 'customer_phone') String? customerPhone,
+    
+    // Delivery & Shipping
+    @JsonKey(name: 'delivery_type') @Default(DeliveryType.standardShipping) DeliveryType deliveryType,
+    @JsonKey(name: 'delivery_address') required DeliveryAddress deliveryAddress,
+    @JsonKey(name: 'tracking_number') String? trackingNumber,
+    @JsonKey(name: 'tracking_url') String? trackingUrl,
+    @JsonKey(name: 'shipping_carrier') String? shippingCarrier,
+    @JsonKey(name: 'shipping_method') String? shippingMethod,
+    @JsonKey(name: 'shipping_service') String? shippingService,
+    @JsonKey(name: 'estimated_delivery_date') String? estimatedDeliveryDate,
+    @JsonKey(name: 'estimated_delivery') DateTime? estimatedDelivery,
+    @JsonKey(name: 'actual_delivery') DateTime? actualDelivery,
+    @JsonKey(name: 'shipping_details') ShippingCostResult? shippingDetails,
+    
+    // Payment Information
+    @JsonKey(name: 'payment_intent_id') String? paymentIntentId,
+    @JsonKey(name: 'payment_method_id') String? paymentMethodId,
+    @JsonKey(name: 'payment_status') String? paymentStatus,
+    @JsonKey(name: 'payment_date') DateTime? paymentDate,
+    
+    // Additional Details
+    String? notes,
+    @JsonKey(name: 'internal_notes') String? internalNotes,
+    Map<String, dynamic>? metadata,
+    @Default([]) List<String>? tags,
+    @JsonKey(name: 'status_history') @Default([]) List<OrderStatusChange> statusHistory,
+    
+    // Vendor Specific
+    @JsonKey(name: 'vendor_order_id') String? vendorOrderId,
+    @JsonKey(name: 'vendor_notes') String? vendorNotes,
+    @JsonKey(name: 'vendor_metadata') Map<String, dynamic>? vendorMetadata,
+  }) = _EnhancedOrder;
 
-  const EnhancedOrder({
-    required this.id,
-    required this.orderNumber,
-    required this.companyId,
-    this.company,
-    required this.items,
-    required this.subtotal,
-    required this.taxAmount,
-    required this.shippingCost,
-    required this.totalAmount,
-    required this.currency,
-    required this.baseAmount,
-    required this.status,
-    required this.createdAt,
-    this.updatedAt,
-    this.confirmedAt,
-    this.shippedAt,
-    this.deliveredAt,
-    this.cancelledAt,
-    required this.customerId,
-    this.customerEmail,
-    this.customerPhone,
-    required this.deliveryType,
-    required this.deliveryAddress,
-    this.trackingNumber,
-    this.trackingUrl,
-    this.shippingCarrier,
-    this.shippingMethod,
-    this.shippingService,
-    this.estimatedDeliveryDate,
-    this.estimatedDelivery,
-    this.actualDelivery,
-    this.shippingDetails,
-    this.paymentIntentId,
-    this.paymentMethodId,
-    this.paymentStatus,
-    this.paymentDate,
-    this.notes,
-    this.internalNotes,
-    this.metadata,
-    this.tags,
-    this.statusHistory = const [],
-    this.vendorOrderId,
-    this.vendorNotes,
-    this.vendorMetadata,
-  });
+  factory EnhancedOrder.fromJson(Map<String, dynamic> json) => _$EnhancedOrderFromJson(json);
+}
 
-  factory EnhancedOrder.fromJson(Map<String, dynamic> json) {
-    // Simple JSON parsing for now
-    return EnhancedOrder(
-      id: json['id'] as int,
-      orderNumber: json['order_number'] as String,
-      companyId: json['company_id'] as String,
-      items: [], // TODO: Parse items
-      subtotal: (json['subtotal'] as num).toDouble(),
-      taxAmount: (json['tax_amount'] as num).toDouble(),
-      shippingCost: (json['shipping_cost'] as num).toDouble(),
-      totalAmount: (json['total_amount'] as num).toDouble(),
-      currency: json['currency'] as String,
-      baseAmount: (json['base_amount'] as num?)?.toDouble() ?? 0.0,
-      status: EnhancedOrderStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => EnhancedOrderStatus.pending,
-      ),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      customerId: json['customer_id'] as String,
-      deliveryType: DeliveryType.values.firstWhere(
-        (e) => e.name == json['delivery_type'],
-        orElse: () => DeliveryType.standardShipping,
-      ),
-      deliveryAddress: DeliveryAddress(
-        firstName: 'John',
-        lastName: 'Doe',
-        addressLine1: 'Sample Address',
-        city: 'Sample City',
-        postalCode: '12345',
-        countryCode: 'DE',
-        countryName: 'Germany',
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'order_number': orderNumber,
-      'company_id': companyId,
-      'subtotal': subtotal,
-      'tax_amount': taxAmount,
-      'shipping_cost': shippingCost,
-      'total_amount': totalAmount,
-      'currency': currency,
-      'base_amount': baseAmount,
-      'status': status.name,
-      'delivery_type': deliveryType.name,
-      'created_at': createdAt.toIso8601String(),
-      'customer_id': customerId,
-    };
-  }
-
-  // Computed properties
+/// Extensions for computed properties (can't be part of Freezed class)
+extension EnhancedOrderExtensions on EnhancedOrder {
   String get formattedOrderNumber => '#$orderNumber';
   
   bool get requiresDeliveryAddress => deliveryType != DeliveryType.pickup;
@@ -247,50 +155,18 @@ class EnhancedOrder {
 }
 
 /// Order Status Change für Status History
-class OrderStatusChange {
-  final EnhancedOrderStatus fromStatus;
-  final EnhancedOrderStatus toStatus;
-  final DateTime changedAt;
-  final String? reason;
-  final String? notes;
-  final String? changedBy;
+@freezed
+abstract class OrderStatusChange with _$OrderStatusChange {
+  const factory OrderStatusChange({
+    @JsonKey(name: 'from_status') required EnhancedOrderStatus fromStatus,
+    @JsonKey(name: 'to_status') required EnhancedOrderStatus toStatus,
+    @JsonKey(name: 'changed_at') required DateTime changedAt,
+    String? reason,
+    String? notes,
+    @JsonKey(name: 'changed_by') String? changedBy,
+  }) = _OrderStatusChange;
 
-  const OrderStatusChange({
-    required this.fromStatus,
-    required this.toStatus,
-    required this.changedAt,
-    this.reason,
-    this.notes,
-    this.changedBy,
-  });
-
-  factory OrderStatusChange.fromJson(Map<String, dynamic> json) {
-    return OrderStatusChange(
-      fromStatus: EnhancedOrderStatus.values.firstWhere(
-        (e) => e.name == json['from_status'],
-        orElse: () => EnhancedOrderStatus.pending,
-      ),
-      toStatus: EnhancedOrderStatus.values.firstWhere(
-        (e) => e.name == json['to_status'],
-        orElse: () => EnhancedOrderStatus.pending,
-      ),
-      changedAt: DateTime.parse(json['changed_at'] as String),
-      reason: json['reason'] as String?,
-      notes: json['notes'] as String?,
-      changedBy: json['changed_by'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'from_status': fromStatus.name,
-      'to_status': toStatus.name,
-      'changed_at': changedAt.toIso8601String(),
-      'reason': reason,
-      'notes': notes,
-      'changed_by': changedBy,
-    };
-  }
+  factory OrderStatusChange.fromJson(Map<String, dynamic> json) => _$OrderStatusChangeFromJson(json);
 }
 
 /// Enhanced Order Summary für Listen und Übersichten

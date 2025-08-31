@@ -17,6 +17,7 @@ import 'package:whisky_hikes/domain/models/basic_payment_result.dart' as _i3;
 import 'package:whisky_hikes/domain/models/hike.dart' as _i11;
 import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i9;
 import 'package:whisky_hikes/domain/models/profile.dart' as _i5;
+import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i15;
 import 'package:whisky_hikes/domain/models/waypoint.dart' as _i14;
 
 // ignore_for_file: type=lint
@@ -488,4 +489,196 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
             ),
           )
           as _i8.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i8.Future<_i15.TastingSet?> getTastingSetForHike(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetForHike, [hikeId]),
+            returnValue: _i8.Future<_i15.TastingSet?>.value(),
+          )
+          as _i8.Future<_i15.TastingSet?>);
+
+  @override
+  _i8.Future<_i15.TastingSet?> getTastingSetById(int? tastingSetId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetById, [tastingSetId]),
+            returnValue: _i8.Future<_i15.TastingSet?>.value(),
+          )
+          as _i8.Future<_i15.TastingSet?>);
+
+  @override
+  _i8.Future<List<_i15.TastingSet>> getAllTastingSets() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllTastingSets, []),
+            returnValue: _i8.Future<List<_i15.TastingSet>>.value(
+              <_i15.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i15.TastingSet>>);
+
+  @override
+  _i8.Future<List<_i15.WhiskySample>> getWhiskySamplesForTastingSet(
+    int? tastingSetId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getWhiskySamplesForTastingSet, [tastingSetId]),
+            returnValue: _i8.Future<List<_i15.WhiskySample>>.value(
+              <_i15.WhiskySample>[],
+            ),
+          )
+          as _i8.Future<List<_i15.WhiskySample>>);
+
+  @override
+  _i8.Future<List<_i15.TastingSet>> searchTastingSets(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#searchTastingSets, [query]),
+            returnValue: _i8.Future<List<_i15.TastingSet>>.value(
+              <_i15.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i15.TastingSet>>);
+
+  @override
+  _i8.Future<List<_i15.TastingSet>> getTastingSetsByRegion(String? region) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetsByRegion, [region]),
+            returnValue: _i8.Future<List<_i15.TastingSet>>.value(
+              <_i15.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i15.TastingSet>>);
+
+  @override
+  _i8.Future<List<_i15.TastingSet>> getCurrentlyAvailableTastingSets() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentlyAvailableTastingSets, []),
+            returnValue: _i8.Future<List<_i15.TastingSet>>.value(
+              <_i15.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i15.TastingSet>>);
+
+  @override
+  _i8.Future<void> updateTastingSetAvailability(
+    int? tastingSetId,
+    bool? isAvailable,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateTastingSetAvailability, [
+              tastingSetId,
+              isAvailable,
+            ]),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
+          )
+          as _i8.Future<void>);
+
+  @override
+  _i8.Future<List<_i15.TastingSet>> getTastingSetsWithPagination({
+    int? limit = 10,
+    int? offset = 0,
+    String? orderBy = 'created_at',
+    bool? ascending = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetsWithPagination, [], {
+              #limit: limit,
+              #offset: offset,
+              #orderBy: orderBy,
+              #ascending: ascending,
+            }),
+            returnValue: _i8.Future<List<_i15.TastingSet>>.value(
+              <_i15.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i15.TastingSet>>);
+
+  @override
+  _i8.Future<_i15.TastingSet> createTastingSet({
+    required int? hikeId,
+    required String? name,
+    required String? description,
+    String? imageUrl,
+    bool? isIncluded = true,
+    bool? isAvailable = true,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createTastingSet, [], {
+              #hikeId: hikeId,
+              #name: name,
+              #description: description,
+              #imageUrl: imageUrl,
+              #isIncluded: isIncluded,
+              #isAvailable: isAvailable,
+              #availableFrom: availableFrom,
+              #availableUntil: availableUntil,
+            }),
+            returnValue: _i8.Future<_i15.TastingSet>.value(
+              _i13.dummyValue<_i15.TastingSet>(
+                this,
+                Invocation.method(#createTastingSet, [], {
+                  #hikeId: hikeId,
+                  #name: name,
+                  #description: description,
+                  #imageUrl: imageUrl,
+                  #isIncluded: isIncluded,
+                  #isAvailable: isAvailable,
+                  #availableFrom: availableFrom,
+                  #availableUntil: availableUntil,
+                }),
+              ),
+            ),
+          )
+          as _i8.Future<_i15.TastingSet>);
+
+  @override
+  _i8.Future<_i15.TastingSet> updateTastingSet({
+    required int? tastingSetId,
+    String? name,
+    String? description,
+    String? imageUrl,
+    bool? isIncluded,
+    bool? isAvailable,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateTastingSet, [], {
+              #tastingSetId: tastingSetId,
+              #name: name,
+              #description: description,
+              #imageUrl: imageUrl,
+              #isIncluded: isIncluded,
+              #isAvailable: isAvailable,
+              #availableFrom: availableFrom,
+              #availableUntil: availableUntil,
+            }),
+            returnValue: _i8.Future<_i15.TastingSet>.value(
+              _i13.dummyValue<_i15.TastingSet>(
+                this,
+                Invocation.method(#updateTastingSet, [], {
+                  #tastingSetId: tastingSetId,
+                  #name: name,
+                  #description: description,
+                  #imageUrl: imageUrl,
+                  #isIncluded: isIncluded,
+                  #isAvailable: isAvailable,
+                  #availableFrom: availableFrom,
+                  #availableUntil: availableUntil,
+                }),
+              ),
+            ),
+          )
+          as _i8.Future<_i15.TastingSet>);
+
+  @override
+  _i8.Future<void> deleteTastingSet(int? tastingSetId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteTastingSet, [tastingSetId]),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
+          )
+          as _i8.Future<void>);
 }

@@ -193,7 +193,9 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                 scale: 0.8,
                 child: Radio<PaymentMethodType>(
                   value: method,
+                  // ignore: deprecated_member_use
                   groupValue: widget.selectedPaymentMethod,
+                  // ignore: deprecated_member_use
                   onChanged: (value) {
                     if (value != null) {
                       _selectPaymentMethod(value);

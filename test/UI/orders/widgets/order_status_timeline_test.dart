@@ -1,36 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/UI/orders/widgets/order_status_timeline.dart';
-import 'package:whisky_hikes/domain/models/basic_order.dart';
-import 'package:whisky_hikes/domain/models/enhanced_order.dart';
+import 'package:whisky_hikes/domain/models/basic_order.dart' as basic;
+import 'package:whisky_hikes/domain/models/enhanced_order.dart' as enhanced;
+import 'package:whisky_hikes/domain/models/delivery_address.dart';
 
 void main() {
   group('OrderStatusTimeline', () {
-    late BasicOrder basicOrder;
-    late EnhancedOrder enhancedOrder;
+    late basic.BasicOrder basicOrder;
+    late enhanced.EnhancedOrder enhancedOrder;
 
     setUp(() {
-      basicOrder = BasicOrder(
+      basicOrder = basic.BasicOrder(
         id: 1,
         orderNumber: 'WH2024-12345',
         hikeId: 1,
         userId: 'test-user-id',
         totalAmount: 49.99,
-        deliveryType: DeliveryType.shipping,
-        status: OrderStatus.confirmed,
+        deliveryType: basic.DeliveryType.shipping,
+        status: basic.OrderStatus.confirmed,
         createdAt: DateTime.now(),
       );
 
-      enhancedOrder = EnhancedOrder(
+      enhancedOrder = enhanced.EnhancedOrder(
         id: 1,
         orderNumber: 'WH2024-12345',
+        companyId: 'test-company-id',
         hikeId: 1,
-        userId: 'test-user-id',
+        customerId: 'test-user-id',
         totalAmount: 49.99,
+        subtotal: 44.99,
         baseAmount: 44.99,
         shippingCost: 5.0,
-        deliveryType: enhanced.DeliveryType.shipping,
-        status: EnhancedOrderStatus.confirmed,
+        deliveryType: enhanced.DeliveryType.standardShipping,
+        deliveryAddress: const DeliveryAddress(
+          firstName: 'John',
+          lastName: 'Doe',
+          addressLine1: 'Test Street 1',
+          city: 'Test City',
+          postalCode: '12345',
+          countryCode: 'DE',
+          countryName: 'Germany',
+        ),
+        status: enhanced.EnhancedOrderStatus.confirmed,
         createdAt: DateTime.now(),
         statusHistory: [],
       );
@@ -155,7 +167,7 @@ void main() {
 
       testWidgets('should show payment pending status', (tester) async {
         final paymentPendingOrder = enhancedOrder.copyWith(
-          status: EnhancedOrderStatus.paymentPending,
+          status: enhanced.EnhancedOrderStatus.paymentPending,
         );
         
         await tester.pumpWidget(
@@ -172,7 +184,7 @@ void main() {
 
       testWidgets('should show out for delivery status', (tester) async {
         final outForDeliveryOrder = enhancedOrder.copyWith(
-          status: EnhancedOrderStatus.outForDelivery,
+          status: enhanced.EnhancedOrderStatus.outForDelivery,
         );
         
         await tester.pumpWidget(
@@ -189,7 +201,7 @@ void main() {
 
       testWidgets('should show refunded status', (tester) async {
         final refundedOrder = enhancedOrder.copyWith(
-          status: EnhancedOrderStatus.refunded,
+          status: enhanced.EnhancedOrderStatus.refunded,
         );
         
         await tester.pumpWidget(
@@ -206,7 +218,7 @@ void main() {
 
       testWidgets('should show failed status', (tester) async {
         final failedOrder = enhancedOrder.copyWith(
-          status: EnhancedOrderStatus.failed,
+          status: enhanced.EnhancedOrderStatus.failed,
         );
         
         await tester.pumpWidget(

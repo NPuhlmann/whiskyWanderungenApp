@@ -6,6 +6,9 @@ import '../../../domain/models/hike.dart';
 import '../../../domain/models/profile.dart';
 import '../../../domain/models/waypoint.dart';
 import '../../../domain/models/basic_order.dart';
+import '../../../domain/models/enhanced_order.dart';
+import '../../../domain/models/delivery_address.dart';
+import '../../../domain/models/tasting_set.dart';
 
 class BackendApiService {
   final SupabaseClient client;
@@ -628,6 +631,881 @@ class BackendApiService {
       dev.log('❌ Error fetching payment history: $e', error: e);
       if (e is PostgrestException) rethrow;
       throw Exception('Failed to fetch payment history: $e');
+    }
+  }
+
+  // ======================================
+  // TASTING SET EXTENSION METHODS
+  // ======================================
+
+  /// Get the tasting set for a specific hike (1:1 relationship)
+  Future<TastingSet?> getTastingSetForHike(int hikeId) async {
+    if (hikeId <= 0) {
+      throw ArgumentError('Hike ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Fetching tasting set for hike: $hikeId');
+
+      final response = await client
+          .from('tasting_sets')
+          .select('*, whisky_samples(*)')
+          .eq('hike_id', hikeId)
+          .maybeSingle();
+
+      if (response == null) {
+        dev.log('❌ No tasting set found for hike $hikeId');
+        return null;
+      }
+
+      dev.log('✅ Tasting set found for hike $hikeId');
+      return TastingSet.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching tasting set for hike $hikeId: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch tasting set for hike: $e');
+    }
+  }
+
+  /// Get a specific tasting set by ID
+  Future<TastingSet?> getTastingSetById(int tastingSetId) async {
+    if (tastingSetId <= 0) {
+      throw ArgumentError('Tasting set ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Fetching tasting set by ID: $tastingSetId');
+
+      final response = await client
+          .from('tasting_sets')
+          .select('*, whisky_samples(*)')
+          .eq('id', tastingSetId)
+          .maybeSingle();
+
+      if (response == null) {
+        dev.log('❌ No tasting set found with ID $tastingSetId');
+        return null;
+      }
+
+      dev.log('✅ Tasting set $tastingSetId fetched successfully');
+      return TastingSet.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching tasting set $tastingSetId: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch tasting set: $e');
+    }
+  }
+
+  /// Get all tasting sets (admin/company management)
+  Future<List<TastingSet>> getAllTastingSets() async {
+    try {
+      dev.log('🔍 Fetching all tasting sets');
+
+      final response = await client
+          .from('tasting_sets')
+          .select('*, whisky_samples(*)')
+          .order('created_at', ascending: false);
+
+      final List<dynamic> tastingSetData = response as List<dynamic>;
+      final List<TastingSet> tastingSets = tastingSetData
+          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${tastingSets.length} tasting sets');
+      return tastingSets;
+
+    } catch (e) {
+      dev.log('❌ Error fetching all tasting sets: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch tasting sets: $e');
+    }
+  }
+
+  /// Get whisky samples for a specific tasting set
+  Future<List<WhiskySample>> getWhiskySamplesForTastingSet(int tastingSetId) async {
+    if (tastingSetId <= 0) {
+      throw ArgumentError('Tasting set ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Fetching whisky samples for tasting set: $tastingSetId');
+
+      final response = await client
+          .from('whisky_samples')
+          .select()
+          .eq('tasting_set_id', tastingSetId)
+          .order('order_index', ascending: true);
+
+      final List<dynamic> sampleData = response as List<dynamic>;
+      final List<WhiskySample> samples = sampleData
+          .map<WhiskySample>((json) => WhiskySample.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${samples.length} whisky samples for tasting set $tastingSetId');
+      return samples;
+
+    } catch (e) {
+      dev.log('❌ Error fetching whisky samples: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch whisky samples: $e');
+    }
+  }
+
+  /// Search tasting sets by name or description
+  Future<List<TastingSet>> searchTastingSets(String query) async {
+    if (query.trim().isEmpty) {
+      return getAllTastingSets();
+    }
+
+    try {
+      dev.log('🔍 Searching tasting sets with query: $query');
+
+      final response = await client
+          .from('tasting_sets')
+          .select('*, whisky_samples(*)')
+          .or('name.ilike.%$query%,description.ilike.%$query%')
+          .order('created_at', ascending: false);
+
+      final List<dynamic> tastingSetData = response as List<dynamic>;
+      final List<TastingSet> tastingSets = tastingSetData
+          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${tastingSets.length} tasting sets matching "$query"');
+      return tastingSets;
+
+    } catch (e) {
+      dev.log('❌ Error searching tasting sets: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to search tasting sets: $e');
+    }
+  }
+
+  /// Get tasting sets by region
+  Future<List<TastingSet>> getTastingSetsByRegion(String region) async {
+    if (region.trim().isEmpty) {
+      throw ArgumentError('Region cannot be empty');
+    }
+
+    try {
+      dev.log('🔍 Fetching tasting sets by region: $region');
+
+      final response = await client
+          .from('tasting_sets')
+          .select('*, whisky_samples!inner(*)')
+          .eq('whisky_samples.region', region)
+          .order('created_at', ascending: false);
+
+      final List<dynamic> tastingSetData = response as List<dynamic>;
+      final List<TastingSet> tastingSets = tastingSetData
+          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${tastingSets.length} tasting sets from region $region');
+      return tastingSets;
+
+    } catch (e) {
+      dev.log('❌ Error fetching tasting sets by region: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch tasting sets by region: $e');
+    }
+  }
+
+  /// Get currently available tasting sets
+  Future<List<TastingSet>> getCurrentlyAvailableTastingSets() async {
+    try {
+      dev.log('🔍 Fetching currently available tasting sets');
+
+      final now = DateTime.now().toIso8601String();
+      final response = await client
+          .from('tasting_sets')
+          .select('*, whisky_samples(*)')
+          .eq('is_available', true)
+          .or('available_from.is.null,available_from.lte.$now')
+          .or('available_until.is.null,available_until.gte.$now')
+          .order('created_at', ascending: false);
+
+      final List<dynamic> tastingSetData = response as List<dynamic>;
+      final List<TastingSet> tastingSets = tastingSetData
+          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${tastingSets.length} currently available tasting sets');
+      return tastingSets;
+
+    } catch (e) {
+      dev.log('❌ Error fetching available tasting sets: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch available tasting sets: $e');
+    }
+  }
+
+  /// Update tasting set availability status
+  Future<void> updateTastingSetAvailability(int tastingSetId, bool isAvailable) async {
+    if (tastingSetId <= 0) {
+      throw ArgumentError('Tasting set ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔄 Updating tasting set $tastingSetId availability: $isAvailable');
+
+      final updateData = {
+        'is_available': isAvailable,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      await client
+          .from('tasting_sets')
+          .update(updateData)
+          .eq('id', tastingSetId);
+
+      dev.log('✅ Tasting set $tastingSetId availability updated');
+
+    } catch (e) {
+      dev.log('❌ Error updating tasting set availability: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to update tasting set availability: $e');
+    }
+  }
+
+  /// Get tasting sets with pagination
+  Future<List<TastingSet>> getTastingSetsWithPagination({
+    int limit = 10,
+    int offset = 0,
+    String? orderBy = 'created_at',
+    bool ascending = false,
+  }) async {
+    if (limit <= 0) {
+      throw ArgumentError('Limit must be greater than 0');
+    }
+    if (offset < 0) {
+      throw ArgumentError('Offset must be non-negative');
+    }
+
+    try {
+      dev.log('🔍 Fetching tasting sets with pagination: limit=$limit, offset=$offset');
+
+      var query = client
+          .from('tasting_sets')
+          .select('*, whisky_samples(*)')
+          .range(offset, offset + limit - 1);
+
+      if (orderBy != null) {
+        query = query.order(orderBy, ascending: ascending);
+      }
+
+      final response = await query;
+      final List<dynamic> tastingSetData = response as List<dynamic>;
+      final List<TastingSet> tastingSets = tastingSetData
+          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${tastingSets.length} tasting sets (page ${offset ~/ limit + 1})');
+      return tastingSets;
+
+    } catch (e) {
+      dev.log('❌ Error fetching tasting sets with pagination: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch tasting sets: $e');
+    }
+  }
+
+  /// Create a new tasting set (company management)
+  Future<TastingSet> createTastingSet({
+    required int hikeId,
+    required String name,
+    required String description,
+    String? imageUrl,
+    bool isIncluded = true,
+    bool isAvailable = true,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) async {
+    if (hikeId <= 0) {
+      throw ArgumentError('Hike ID must be greater than 0');
+    }
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
+    if (description.trim().isEmpty) {
+      throw ArgumentError('Description cannot be empty');
+    }
+
+    try {
+      dev.log('🆕 Creating new tasting set for hike $hikeId: $name');
+
+      final insertData = {
+        'hike_id': hikeId,
+        'name': name.trim(),
+        'description': description.trim(),
+        'price': 0.0, // Always 0 since included in hike price
+        'image_url': imageUrl,
+        'is_included': isIncluded,
+        'is_available': isAvailable,
+        'available_from': availableFrom?.toIso8601String(),
+        'available_until': availableUntil?.toIso8601String(),
+      };
+
+      final response = await client
+          .from('tasting_sets')
+          .insert(insertData)
+          .select('*, whisky_samples(*)')
+          .single();
+
+      dev.log('✅ Tasting set created successfully');
+      return TastingSet.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error creating tasting set: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to create tasting set: $e');
+    }
+  }
+
+  /// Update an existing tasting set (company management)
+  Future<TastingSet> updateTastingSet({
+    required int tastingSetId,
+    String? name,
+    String? description,
+    String? imageUrl,
+    bool? isIncluded,
+    bool? isAvailable,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) async {
+    if (tastingSetId <= 0) {
+      throw ArgumentError('Tasting set ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔄 Updating tasting set $tastingSetId');
+
+      final Map<String, dynamic> updateData = {
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      if (name != null && name.trim().isNotEmpty) updateData['name'] = name.trim();
+      if (description != null && description.trim().isNotEmpty) updateData['description'] = description.trim();
+      if (imageUrl != null) updateData['image_url'] = imageUrl;
+      if (isIncluded != null) updateData['is_included'] = isIncluded;
+      if (isAvailable != null) updateData['is_available'] = isAvailable;
+      if (availableFrom != null) updateData['available_from'] = availableFrom.toIso8601String();
+      if (availableUntil != null) updateData['available_until'] = availableUntil.toIso8601String();
+
+      final response = await client
+          .from('tasting_sets')
+          .update(updateData)
+          .eq('id', tastingSetId)
+          .select('*, whisky_samples(*)')
+          .single();
+
+      dev.log('✅ Tasting set $tastingSetId updated successfully');
+      return TastingSet.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error updating tasting set: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to update tasting set: $e');
+    }
+  }
+
+  /// Delete a tasting set (company management)
+  Future<void> deleteTastingSet(int tastingSetId) async {
+    if (tastingSetId <= 0) {
+      throw ArgumentError('Tasting set ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🗑️ Deleting tasting set $tastingSetId');
+
+      // First delete associated whisky samples (cascade should handle this, but being explicit)
+      await client
+          .from('whisky_samples')
+          .delete()
+          .eq('tasting_set_id', tastingSetId);
+
+      // Then delete the tasting set
+      await client
+          .from('tasting_sets')
+          .delete()
+          .eq('id', tastingSetId);
+
+      dev.log('✅ Tasting set $tastingSetId deleted successfully');
+
+    } catch (e) {
+      dev.log('❌ Error deleting tasting set: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to delete tasting set: $e');
+    }
+  }
+
+  // ================================
+  // Enhanced Order Management
+  // ================================
+
+  /// Create a new enhanced order
+  Future<EnhancedOrder> createEnhancedOrder({
+    required String orderNumber,
+    required String companyId,
+    required String customerId,
+    int? hikeId,
+    required double subtotal,
+    double taxAmount = 0.0,
+    double shippingCost = 0.0,
+    required double totalAmount,
+    String currency = 'EUR',
+    double baseAmount = 0.0,
+    required DeliveryAddress deliveryAddress,
+    DeliveryType deliveryType = DeliveryType.standardShipping,
+    String? customerEmail,
+    String? customerPhone,
+    String? notes,
+    Map<String, dynamic>? metadata,
+    List<String>? tags,
+  }) async {
+    if (orderNumber.trim().isEmpty) {
+      throw ArgumentError('Order number cannot be empty');
+    }
+    if (companyId.trim().isEmpty) {
+      throw ArgumentError('Company ID cannot be empty');
+    }
+    if (customerId.trim().isEmpty) {
+      throw ArgumentError('Customer ID cannot be empty');
+    }
+    if (totalAmount <= 0) {
+      throw ArgumentError('Total amount must be greater than 0');
+    }
+
+    try {
+      dev.log('🆕 Creating enhanced order $orderNumber for customer $customerId');
+
+      final insertData = {
+        'order_number': orderNumber.trim(),
+        'company_id': companyId,
+        'customer_id': customerId,
+        'hike_id': hikeId,
+        'subtotal': subtotal,
+        'tax_amount': taxAmount,
+        'shipping_cost': shippingCost,
+        'total_amount': totalAmount,
+        'currency': currency,
+        'base_amount': baseAmount > 0 ? baseAmount : subtotal,
+        'delivery_type': deliveryType.name,
+        'delivery_address': deliveryAddress.toJson(),
+        'customer_email': customerEmail,
+        'customer_phone': customerPhone,
+        'notes': notes,
+        'metadata': metadata,
+        'tags': tags,
+        'status': 'pending',
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      final response = await client
+          .from('enhanced_orders')
+          .insert(insertData)
+          .select('*, companies(*)')
+          .single();
+
+      dev.log('✅ Enhanced order $orderNumber created successfully');
+      return EnhancedOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error creating enhanced order: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to create enhanced order: $e');
+    }
+  }
+
+  /// Get enhanced order by ID
+  Future<EnhancedOrder?> getEnhancedOrderById(int orderId) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🔍 Fetching enhanced order by ID: $orderId');
+
+      final response = await client
+          .from('enhanced_orders')
+          .select('*, companies(*), order_status_history(*)')
+          .eq('id', orderId)
+          .maybeSingle();
+
+      if (response == null) {
+        dev.log('❌ No enhanced order found with ID $orderId');
+        return null;
+      }
+
+      dev.log('✅ Enhanced order $orderId fetched successfully');
+      return EnhancedOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching enhanced order $orderId: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch enhanced order: $e');
+    }
+  }
+
+  /// Get enhanced order by order number
+  Future<EnhancedOrder?> getEnhancedOrderByNumber(String orderNumber) async {
+    if (orderNumber.trim().isEmpty) {
+      throw ArgumentError('Order number cannot be empty');
+    }
+
+    try {
+      dev.log('🔍 Fetching enhanced order by number: $orderNumber');
+
+      final response = await client
+          .from('enhanced_orders')
+          .select('*, companies(*), order_status_history(*)')
+          .eq('order_number', orderNumber.trim())
+          .maybeSingle();
+
+      if (response == null) {
+        dev.log('❌ No enhanced order found with number $orderNumber');
+        return null;
+      }
+
+      dev.log('✅ Enhanced order $orderNumber fetched successfully');
+      return EnhancedOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching enhanced order by number: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch enhanced order: $e');
+    }
+  }
+
+  /// Get all enhanced orders for a customer
+  Future<List<EnhancedOrder>> getCustomerEnhancedOrders({
+    required String customerId,
+    int limit = 50,
+    int offset = 0,
+    List<String>? statuses,
+  }) async {
+    if (customerId.trim().isEmpty) {
+      throw ArgumentError('Customer ID cannot be empty');
+    }
+
+    try {
+      dev.log('🔍 Fetching enhanced orders for customer $customerId');
+
+      var query = client
+          .from('enhanced_orders')
+          .select('*, companies(*)')
+          .eq('customer_id', customerId)
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
+
+      if (statuses != null && statuses.isNotEmpty) {
+        query = query.inFilter('status', statuses);
+      }
+
+      final response = await query;
+      final List<dynamic> orderData = response as List<dynamic>;
+      final List<EnhancedOrder> orders = orderData
+          .map<EnhancedOrder>((json) => EnhancedOrder.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${orders.length} enhanced orders for customer $customerId');
+      return orders;
+
+    } catch (e) {
+      dev.log('❌ Error fetching customer enhanced orders: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch customer enhanced orders: $e');
+    }
+  }
+
+  /// Get all enhanced orders for a company
+  Future<List<EnhancedOrder>> getCompanyEnhancedOrders({
+    required String companyId,
+    int limit = 100,
+    int offset = 0,
+    List<String>? statuses,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+  }) async {
+    if (companyId.trim().isEmpty) {
+      throw ArgumentError('Company ID cannot be empty');
+    }
+
+    try {
+      dev.log('🔍 Fetching enhanced orders for company $companyId');
+
+      var query = client
+          .from('enhanced_orders')
+          .select()
+          .eq('company_id', companyId)
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
+
+      if (statuses != null && statuses.isNotEmpty) {
+        query = query.inFilter('status', statuses);
+      }
+
+      if (dateFrom != null) {
+        query = query.gte('created_at', dateFrom.toIso8601String());
+      }
+
+      if (dateTo != null) {
+        query = query.lte('created_at', dateTo.toIso8601String());
+      }
+
+      final response = await query;
+      final List<dynamic> orderData = response as List<dynamic>;
+      final List<EnhancedOrder> orders = orderData
+          .map<EnhancedOrder>((json) => EnhancedOrder.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${orders.length} enhanced orders for company $companyId');
+      return orders;
+
+    } catch (e) {
+      dev.log('❌ Error fetching company enhanced orders: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch company enhanced orders: $e');
+    }
+  }
+
+  /// Update enhanced order status with automatic history tracking
+  Future<EnhancedOrder> updateEnhancedOrderStatus({
+    required int orderId,
+    required String newStatus,
+    String? reason,
+    String? notes,
+    String? trackingNumber,
+    String? trackingUrl,
+    String? shippingCarrier,
+    DateTime? estimatedDelivery,
+    Map<String, dynamic>? metadata,
+  }) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+    if (newStatus.trim().isEmpty) {
+      throw ArgumentError('Status cannot be empty');
+    }
+
+    try {
+      dev.log('🔄 Updating enhanced order $orderId status to $newStatus');
+
+      final updateData = <String, dynamic>{
+        'status': newStatus.trim(),
+        'updated_at': DateTime.now().toIso8601String(),
+        if (trackingNumber != null) 'tracking_number': trackingNumber,
+        if (trackingUrl != null) 'tracking_url': trackingUrl,
+        if (shippingCarrier != null) 'shipping_carrier': shippingCarrier,
+        if (estimatedDelivery != null) 'estimated_delivery': estimatedDelivery.toIso8601String(),
+        if (metadata != null) 'metadata': metadata,
+      };
+
+      final response = await client
+          .from('enhanced_orders')
+          .update(updateData)
+          .eq('id', orderId)
+          .select('*, companies(*)')
+          .single();
+
+      dev.log('✅ Enhanced order $orderId status updated to $newStatus');
+      return EnhancedOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error updating enhanced order status: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to update enhanced order status: $e');
+    }
+  }
+
+  /// Add tracking information to enhanced order
+  Future<EnhancedOrder> addTrackingToEnhancedOrder({
+    required int orderId,
+    required String trackingNumber,
+    String? shippingCarrier,
+    String? shippingService,
+    DateTime? estimatedDelivery,
+    String? trackingUrl,
+  }) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+    if (trackingNumber.trim().isEmpty) {
+      throw ArgumentError('Tracking number cannot be empty');
+    }
+
+    try {
+      dev.log('📦 Adding tracking $trackingNumber to enhanced order $orderId');
+
+      // Auto-generate tracking URL if not provided
+      String? finalTrackingUrl = trackingUrl;
+      if (finalTrackingUrl == null && shippingCarrier != null) {
+        finalTrackingUrl = await _generateTrackingUrl(shippingCarrier, trackingNumber);
+      }
+
+      final updateData = {
+        'tracking_number': trackingNumber.trim(),
+        'tracking_url': finalTrackingUrl,
+        'shipping_carrier': shippingCarrier,
+        'shipping_service': shippingService,
+        'estimated_delivery': estimatedDelivery?.toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      final response = await client
+          .from('enhanced_orders')
+          .update(updateData)
+          .eq('id', orderId)
+          .select('*, companies(*)')
+          .single();
+
+      dev.log('✅ Tracking information added to enhanced order $orderId');
+      return EnhancedOrder.fromJson(response);
+
+    } catch (e) {
+      dev.log('❌ Error adding tracking to enhanced order: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to add tracking to enhanced order: $e');
+    }
+  }
+
+  /// Get order status history
+  Future<List<OrderStatusChange>> getOrderStatusHistory(int orderId) async {
+    if (orderId <= 0) {
+      throw ArgumentError('Order ID must be greater than 0');
+    }
+
+    try {
+      dev.log('📋 Fetching status history for enhanced order $orderId');
+
+      final response = await client
+          .from('order_status_history')
+          .select()
+          .eq('order_id', orderId)
+          .order('changed_at', ascending: true);
+
+      final List<dynamic> historyData = response as List<dynamic>;
+      final List<OrderStatusChange> history = historyData
+          .map<OrderStatusChange>((json) => OrderStatusChange.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      dev.log('✅ Found ${history.length} status changes for order $orderId');
+      return history;
+
+    } catch (e) {
+      dev.log('❌ Error fetching order status history: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch order status history: $e');
+    }
+  }
+
+  /// Get available shipping carriers
+  Future<List<Map<String, dynamic>>> getShippingCarriers() async {
+    try {
+      dev.log('🚛 Fetching available shipping carriers');
+
+      final response = await client
+          .from('shipping_carriers')
+          .select()
+          .eq('is_active', true)
+          .order('name', ascending: true);
+
+      dev.log('✅ Found ${(response as List).length} shipping carriers');
+      return List<Map<String, dynamic>>.from(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching shipping carriers: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch shipping carriers: $e');
+    }
+  }
+
+  /// Get shipping methods for a carrier
+  Future<List<Map<String, dynamic>>> getShippingMethods(String carrierCode) async {
+    if (carrierCode.trim().isEmpty) {
+      throw ArgumentError('Carrier code cannot be empty');
+    }
+
+    try {
+      dev.log('📦 Fetching shipping methods for carrier $carrierCode');
+
+      final response = await client
+          .from('shipping_methods')
+          .select('*, shipping_carriers!inner(*)')
+          .eq('shipping_carriers.code', carrierCode)
+          .eq('is_active', true)
+          .order('base_cost', ascending: true);
+
+      dev.log('✅ Found ${(response as List).length} shipping methods for $carrierCode');
+      return List<Map<String, dynamic>>.from(response);
+
+    } catch (e) {
+      dev.log('❌ Error fetching shipping methods: $e', error: e);
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch shipping methods: $e');
+    }
+  }
+
+  /// Convert BasicOrder to EnhancedOrder
+  Future<EnhancedOrder> convertBasicToEnhancedOrder({
+    required BasicOrder basicOrder,
+    required String companyId,
+    required DeliveryAddress deliveryAddress,
+    String? customerEmail,
+    String? customerPhone,
+  }) async {
+    try {
+      dev.log('🔄 Converting basic order ${basicOrder.id} to enhanced order');
+
+      return await createEnhancedOrder(
+        orderNumber: basicOrder.orderNumber,
+        companyId: companyId,
+        customerId: basicOrder.userId,
+        hikeId: basicOrder.hikeId,
+        subtotal: basicOrder.totalAmount - (basicOrder.deliveryType == DeliveryType.shipping ? 5.0 : 0.0),
+        shippingCost: basicOrder.deliveryType == DeliveryType.shipping ? 5.0 : 0.0,
+        totalAmount: basicOrder.totalAmount,
+        baseAmount: basicOrder.totalAmount - (basicOrder.deliveryType == DeliveryType.shipping ? 5.0 : 0.0),
+        deliveryAddress: deliveryAddress,
+        deliveryType: basicOrder.deliveryType == DeliveryType.shipping 
+            ? DeliveryType.standardShipping 
+            : DeliveryType.pickup,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+        metadata: {
+          'converted_from_basic_order': true,
+          'original_basic_order_id': basicOrder.id,
+          'conversion_date': DateTime.now().toIso8601String(),
+        },
+      );
+
+    } catch (e) {
+      dev.log('❌ Error converting basic to enhanced order: $e', error: e);
+      throw Exception('Failed to convert basic to enhanced order: $e');
+    }
+  }
+
+  /// Generate tracking URL from carrier code and tracking number
+  Future<String?> _generateTrackingUrl(String carrierCode, String trackingNumber) async {
+    try {
+      final response = await client
+          .from('shipping_carriers')
+          .select('tracking_url_template')
+          .eq('code', carrierCode)
+          .maybeSingle();
+
+      if (response != null && response['tracking_url_template'] != null) {
+        final template = response['tracking_url_template'] as String;
+        return template.replaceAll('{tracking_number}', trackingNumber);
+      }
+
+      return null;
+
+    } catch (e) {
+      dev.log('⚠️ Warning: Could not generate tracking URL for $carrierCode: $e');
+      return null;
     }
   }
 }
