@@ -79,7 +79,7 @@ class HikeCard extends StatelessWidget {
                                   Icon(Icons.error, color: Colors.red, size: 48),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Bild konnte nicht geladen werden',
+                                    AppLocalizations.of(context)!.imageLoadError,
                                     style: TextStyle(color: Colors.red),
                                     textAlign: TextAlign.center,
                                   ),
@@ -137,7 +137,7 @@ class HikeCard extends StatelessWidget {
                           Icon(Icons.straighten),
                           Text(hike.length.toString(), style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 12)),
-                          Text(' km', style: const TextStyle(
+                          Text(AppLocalizations.of(context)!.kilometers, style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 12)),
                         ],
                       ),

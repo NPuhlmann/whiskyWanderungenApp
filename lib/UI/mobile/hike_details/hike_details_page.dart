@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
-import '../../domain/models/hike.dart';
+import '../../../domain/models/hike.dart';
 import '../hike_map/hike_map_page.dart';
 import 'hike_details_view_model.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
@@ -144,7 +144,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                           Icon(Icons.error, color: Colors.red, size: 48),
                                           const SizedBox(height: 8),
                                           Text(
-                                            'Bild konnte nicht geladen werden',
+                                            AppLocalizations.of(context)!.imageLoadError,
                                             style: TextStyle(color: Colors.red),
                                             textAlign: TextAlign.center,
                                           ),
@@ -249,7 +249,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                 children: [
                                   Icon(Icons.straighten), // Icon für Länge
                                   SizedBox(width: 2),
-                                  Text('${widget.hikeData.length}km',
+                                  Text('${widget.hikeData.length}${AppLocalizations.of(context)!.kilometers}',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold)),
                                 ],
@@ -261,7 +261,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                   Icon(Icons.keyboard_arrow_up_rounded),
                                   // Icon für Höhenmeter
                                   SizedBox(width: 2),
-                                  Text('${widget.hikeData.elevation}m',
+                                  Text('${widget.hikeData.elevation}${AppLocalizations.of(context)!.meters}',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold)),
                                 ],

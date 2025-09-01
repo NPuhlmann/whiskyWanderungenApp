@@ -187,4 +187,172 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get signupSuccess => 'Registrierung erfolgreich!';
+
+  @override
+  String get imageLoadError => 'Bild konnte nicht geladen werden';
+
+  @override
+  String get kilometers => 'km';
+
+  @override
+  String get meters => 'm';
+
+  @override
+  String get orderNotFound => 'Bestellung nicht gefunden';
+
+  @override
+  String get invalidOrderId => 'Ungültige Bestell-ID';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get pickupOnSite => 'Vor Ort abholen';
+
+  @override
+  String get free => 'Kostenlos';
+
+  @override
+  String get shippingByPost => 'Per Post versenden';
+
+  @override
+  String get shippingCost => '+5,00 € Versandkosten';
+
+  @override
+  String get redirectingToCheckout => 'Weiterleitung zum Checkout...';
+
+  @override
+  String get orderTracking => 'Bestellverfolgung';
+
+  @override
+  String get retry => 'Wiederholen';
+
+  @override
+  String get unexpectedState => 'Unexpected state: No order data available';
+
+  @override
+  String get cancelOrder => 'Bestellung stornieren';
+
+  @override
+  String get contactSupport => 'Support kontaktieren';
+
+  @override
+  String get cancelOrderConfirmation =>
+      'Möchtest du diese Bestellung wirklich stornieren?';
+
+  @override
+  String get confirm => 'Bestätigen';
+
+  @override
+  String get cancellationRequested =>
+      'Stornierung der Bestellung wurde angefordert';
+
+  @override
+  String get contactingSupport => 'Kontaktiere Support...';
+
+  @override
+  String get tastingSet => 'Tasting Set';
+
+  @override
+  String get proceedToCheckout => 'Weiter zum Checkout';
+
+  @override
+  String get trackingOpen => 'Tracking öffnen';
+
+  @override
+  String get unknownOrderType => 'Unbekannter Bestelltyp';
+
+  @override
+  String get mobileLayout => 'Mobile Layout';
+
+  @override
+  String get webAppRunning => 'Web-App läuft erfolgreich! 🎉';
+
+  @override
+  String get dashboard => 'Dashboard';
+
+  @override
+  String get hikingRoutes => 'Wanderrouten';
+
+  @override
+  String get orders => 'Bestellungen';
+
+  @override
+  String get flutterWebEnabled => '✅ Flutter Web aktiviert';
+
+  @override
+  String get responsiveLayoutImplemented => '✅ Responsive Layout implementiert';
+
+  @override
+  String get adminDashboardCreated => '✅ Admin-Dashboard erstellt';
+
+  @override
+  String get navigationImplemented => '✅ Navigation implementiert';
+
+  @override
+  String get webDependenciesAdded =>
+      '✅ Web-spezifische Dependencies hinzugefügt';
+
+  @override
+  String get manageHikingRoutes => 'Wanderrouten verwalten';
+
+  @override
+  String get manageHikingRoutesDescription =>
+      'Hier können Sie Wanderrouten erstellen und verwalten';
+
+  @override
+  String get inDevelopment => '🚧 In Entwicklung 🚧';
+
+  @override
+  String get manageOrders => 'Bestellungen verwalten';
+
+  @override
+  String get manageOrdersDescription =>
+      'Hier können Sie alle Bestellungen einsehen und bearbeiten';
+
+  @override
+  String get manageWhiskyCatalog => 'Whisky-Katalog verwalten';
+
+  @override
+  String get manageWhiskyCatalogDescription =>
+      'Hier können Sie den Whisky-Katalog verwalten';
+
+  @override
+  String get adminDashboard => 'Admin Dashboard';
+
+  @override
+  String get newRoute => 'Neue Route';
+
+  @override
+  String get noDataAvailable => 'Keine Daten verfügbar';
+
+  @override
+  String get showAll => 'Alle anzeigen';
+
+  @override
+  String get noOrdersAvailable => 'Keine Bestellungen verfügbar';
+
+  @override
+  String get order => 'Bestellung';
+
+  @override
+  String get customer => 'Kunde';
+
+  @override
+  String get route => 'Route';
+
+  @override
+  String get amount => 'Betrag';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get date => 'Datum';
+
+  @override
+  String get close => 'Schließen';
+
+  @override
+  String get imageTooLarge => 'Bild zu groß';
 }

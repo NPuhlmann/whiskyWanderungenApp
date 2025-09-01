@@ -4,6 +4,7 @@ import 'package:whisky_hikes/domain/models/tasting_set.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/UI/tasting_sets/widgets/tasting_set_info_card.dart';
 import 'package:whisky_hikes/UI/tasting_sets/tasting_set_selection_view_model.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Page for displaying the tasting set included with a hike (1:1 relationship)
 class TastingSetSelectionPage extends StatelessWidget {
@@ -20,7 +21,7 @@ class TastingSetSelectionPage extends StatelessWidget {
       create: (context) => TastingSetSelectionViewModel(hike: hike),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Tasting Set'),
+          title: Text(AppLocalizations.of(context)!.tastingSet),
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
         ),
@@ -56,7 +57,7 @@ class TastingSetSelectionPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: viewModel.refresh,
-                      child: const Text('Erneut versuchen'),
+                      child: Text(AppLocalizations.of(context)!.retry),
                     ),
                   ],
                 ),

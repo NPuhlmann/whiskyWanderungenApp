@@ -65,6 +65,16 @@ dependencies:
   # Google Pay & Apple Pay via pay package
   # Push Notifications
   flutter_local_notifications: ^16.3.2
+  
+  # Offline functionality
+  connectivity_plus: ^6.0.5
+  internet_connection_checker_plus: ^2.5.2
+  
+  # Web-specific dependencies
+  image_picker_web: ^3.1.1
+  file_picker: ^8.1.4
+  fl_chart: ^0.70.0
+  data_table_2: ^2.5.10
 
 dev_dependencies:
   flutter_test:

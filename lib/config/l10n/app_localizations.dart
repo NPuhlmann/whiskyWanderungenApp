@@ -439,6 +439,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registration successful!'**
   String get signupSuccess;
+
+  /// No description provided for @imageLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Image could not be loaded'**
+  String get imageLoadError;
+
+  /// No description provided for @kilometers.
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get kilometers;
+
+  /// No description provided for @meters.
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get meters;
+
+  /// No description provided for @orderNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Order not found'**
+  String get orderNotFound;
+
+  /// No description provided for @invalidOrderId.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid order ID'**
+  String get invalidOrderId;
+
+  /// No description provided for @checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkout;
+
+  /// No description provided for @pickupOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick up on site'**
+  String get pickupOnSite;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// No description provided for @shippingByPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Ship by post'**
+  String get shippingByPost;
+
+  /// No description provided for @shippingCost.
+  ///
+  /// In en, this message translates to:
+  /// **'+5.00 € shipping costs'**
+  String get shippingCost;
+
+  /// No description provided for @redirectingToCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Redirecting to checkout...'**
+  String get redirectingToCheckout;
+
+  /// No description provided for @orderTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Order tracking'**
+  String get orderTracking;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @unexpectedState.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected state: No order data available'**
+  String get unexpectedState;
+
+  /// No description provided for @cancelOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get cancelOrder;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get contactSupport;
+
+  /// No description provided for @cancelOrderConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to cancel this order?'**
+  String get cancelOrderConfirmation;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @cancellationRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancellation has been requested'**
+  String get cancellationRequested;
+
+  /// No description provided for @contactingSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacting support...'**
+  String get contactingSupport;
+
+  /// No description provided for @tastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting Set'**
+  String get tastingSet;
+
+  /// No description provided for @proceedToCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed to checkout'**
+  String get proceedToCheckout;
+
+  /// No description provided for @trackingOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open tracking'**
+  String get trackingOpen;
+
+  /// No description provided for @unknownOrderType.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown order type'**
+  String get unknownOrderType;
+
+  /// No description provided for @mobileLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile Layout'**
+  String get mobileLayout;
+
+  /// No description provided for @webAppRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Web app running successfully! 🎉'**
+  String get webAppRunning;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
+  /// No description provided for @hikingRoutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiking Routes'**
+  String get hikingRoutes;
+
+  /// No description provided for @orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get orders;
+
+  /// No description provided for @flutterWebEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Flutter Web enabled'**
+  String get flutterWebEnabled;
+
+  /// No description provided for @responsiveLayoutImplemented.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Responsive Layout implemented'**
+  String get responsiveLayoutImplemented;
+
+  /// No description provided for @adminDashboardCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Admin Dashboard created'**
+  String get adminDashboardCreated;
+
+  /// No description provided for @navigationImplemented.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Navigation implemented'**
+  String get navigationImplemented;
+
+  /// No description provided for @webDependenciesAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Web-specific dependencies added'**
+  String get webDependenciesAdded;
+
+  /// No description provided for @manageHikingRoutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Hiking Routes'**
+  String get manageHikingRoutes;
+
+  /// No description provided for @manageHikingRoutesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can create and manage hiking routes'**
+  String get manageHikingRoutesDescription;
+
+  /// No description provided for @inDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'🚧 In Development 🚧'**
+  String get inDevelopment;
+
+  /// No description provided for @manageOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Orders'**
+  String get manageOrders;
+
+  /// No description provided for @manageOrdersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can view and process all orders'**
+  String get manageOrdersDescription;
+
+  /// No description provided for @manageWhiskyCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Whisky Catalog'**
+  String get manageWhiskyCatalog;
+
+  /// No description provided for @manageWhiskyCatalogDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can manage the whisky catalog'**
+  String get manageWhiskyCatalogDescription;
+
+  /// No description provided for @adminDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Dashboard'**
+  String get adminDashboard;
+
+  /// No description provided for @newRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'New Route'**
+  String get newRoute;
+
+  /// No description provided for @noDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noDataAvailable;
+
+  /// No description provided for @showAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get showAll;
+
+  /// No description provided for @noOrdersAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders available'**
+  String get noOrdersAvailable;
+
+  /// No description provided for @order.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
+  /// No description provided for @customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get customer;
+
+  /// No description provided for @route.
+  ///
+  /// In en, this message translates to:
+  /// **'Route'**
+  String get route;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @imageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Image too large'**
+  String get imageTooLarge;
 }
 
 class _AppLocalizationsDelegate

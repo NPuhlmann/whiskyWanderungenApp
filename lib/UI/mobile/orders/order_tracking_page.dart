@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../domain/models/enhanced_order.dart' as enhanced;
-import '../../domain/models/basic_order.dart' as basic;
-import '../../domain/models/delivery_address.dart';
+import '../../../domain/models/enhanced_order.dart' as enhanced;
+import '../../../domain/models/basic_order.dart' as basic;
+import '../../../domain/models/delivery_address.dart';
 import 'order_tracking_view_model.dart';
 import 'widgets/order_status_timeline.dart';
 import 'widgets/shipping_info_card.dart';
 import 'widgets/tracking_info_card.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Page for tracking order status and delivery progress
 class OrderTrackingPage extends StatelessWidget {
@@ -28,7 +29,7 @@ class OrderTrackingPage extends StatelessWidget {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Bestellverfolgung'),
+          title: Text(AppLocalizations.of(context)!.orderTracking),
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
@@ -52,7 +53,7 @@ class OrderTrackingPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Fehler beim Laden der Bestellung',
+                      AppLocalizations.of(context)!.errorLoadingHikes,
                       style: Theme.of(context).textTheme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -65,7 +66,7 @@ class OrderTrackingPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: viewModel.retry,
-                      child: const Text('Wiederholen'),
+                      child: Text(AppLocalizations.of(context)!.retry),
                     ),
                   ],
                 ),
@@ -84,13 +85,13 @@ class OrderTrackingPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Bestellung nicht gefunden',
+                      AppLocalizations.of(context)!.orderNotFound,
                       style: Theme.of(context).textTheme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Die angeforderte Bestellung konnte nicht gefunden werden.',
+                      AppLocalizations.of(context)!.orderNotFound,
                       style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -114,11 +115,11 @@ class OrderTrackingPage extends StatelessWidget {
       return _buildEnhancedOrderContent(context, viewModel.enhancedOrder!);
     } else if (viewModel.order != null) {
       return _buildBasicOrderContent(context, viewModel.order!);
-    } else {
-      return const Center(
-        child: Text('Unexpected state: No order data available'),
-      );
-    }
+          } else {
+        return Center(
+          child: Text(AppLocalizations.of(context)!.unexpectedState),
+        );
+      }
   }
 
   Widget _buildEnhancedOrderContent(

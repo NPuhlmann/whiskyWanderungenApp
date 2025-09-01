@@ -5,9 +5,10 @@ import 'dart:developer' as dev;
 import '../../../domain/models/hike.dart';
 import '../../../domain/models/profile.dart';
 import '../../../domain/models/waypoint.dart';
-import '../../../domain/models/basic_order.dart';
-import '../../../domain/models/enhanced_order.dart';
+import '../../../domain/models/basic_order.dart' as basic;
+import '../../../domain/models/enhanced_order.dart' as enhanced;
 import '../../../domain/models/delivery_address.dart';
+import '../../../domain/models/order.dart';
 import '../../../domain/models/tasting_set.dart';
 import '../shipping/shipping_calculation_service.dart';
 
@@ -1549,14 +1550,14 @@ class BackendApiService {
         companyId: companyId,
         customerId: basicOrder.userId,
         hikeId: basicOrder.hikeId,
-        subtotal: basicOrder.totalAmount - (basicOrder.deliveryType == DeliveryType.shipping ? 5.0 : 0.0),
-        shippingCost: basicOrder.deliveryType == DeliveryType.shipping ? 5.0 : 0.0,
+        subtotal: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.shipping ? 5.0 : 0.0),
+        shippingCost: basicOrder.deliveryType == basic.DeliveryType.shipping ? 5.0 : 0.0,
         totalAmount: basicOrder.totalAmount,
-        baseAmount: basicOrder.totalAmount - (basicOrder.deliveryType == DeliveryType.shipping ? 5.0 : 0.0),
+        baseAmount: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.shipping ? 5.0 : 0.0),
         deliveryAddress: deliveryAddress,
-        deliveryType: basicOrder.deliveryType == DeliveryType.shipping 
-            ? DeliveryType.standardShipping 
-            : DeliveryType.pickup,
+        deliveryType: basicOrder.deliveryType == basic.DeliveryType.shipping 
+            ? enhanced.DeliveryType.standardShipping 
+            : enhanced.DeliveryType.pickup,
         customerEmail: customerEmail,
         customerPhone: customerPhone,
         metadata: {

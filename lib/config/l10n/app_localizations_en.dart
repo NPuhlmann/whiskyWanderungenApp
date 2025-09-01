@@ -182,4 +182,170 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupSuccess => 'Registration successful!';
+
+  @override
+  String get imageLoadError => 'Image could not be loaded';
+
+  @override
+  String get kilometers => 'km';
+
+  @override
+  String get meters => 'm';
+
+  @override
+  String get orderNotFound => 'Order not found';
+
+  @override
+  String get invalidOrderId => 'Invalid order ID';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get pickupOnSite => 'Pick up on site';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get shippingByPost => 'Ship by post';
+
+  @override
+  String get shippingCost => '+5.00 € shipping costs';
+
+  @override
+  String get redirectingToCheckout => 'Redirecting to checkout...';
+
+  @override
+  String get orderTracking => 'Order tracking';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get unexpectedState => 'Unexpected state: No order data available';
+
+  @override
+  String get cancelOrder => 'Cancel order';
+
+  @override
+  String get contactSupport => 'Contact support';
+
+  @override
+  String get cancelOrderConfirmation =>
+      'Do you really want to cancel this order?';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get cancellationRequested => 'Order cancellation has been requested';
+
+  @override
+  String get contactingSupport => 'Contacting support...';
+
+  @override
+  String get tastingSet => 'Tasting Set';
+
+  @override
+  String get proceedToCheckout => 'Proceed to checkout';
+
+  @override
+  String get trackingOpen => 'Open tracking';
+
+  @override
+  String get unknownOrderType => 'Unknown order type';
+
+  @override
+  String get mobileLayout => 'Mobile Layout';
+
+  @override
+  String get webAppRunning => 'Web app running successfully! 🎉';
+
+  @override
+  String get dashboard => 'Dashboard';
+
+  @override
+  String get hikingRoutes => 'Hiking Routes';
+
+  @override
+  String get orders => 'Orders';
+
+  @override
+  String get flutterWebEnabled => '✅ Flutter Web enabled';
+
+  @override
+  String get responsiveLayoutImplemented => '✅ Responsive Layout implemented';
+
+  @override
+  String get adminDashboardCreated => '✅ Admin Dashboard created';
+
+  @override
+  String get navigationImplemented => '✅ Navigation implemented';
+
+  @override
+  String get webDependenciesAdded => '✅ Web-specific dependencies added';
+
+  @override
+  String get manageHikingRoutes => 'Manage Hiking Routes';
+
+  @override
+  String get manageHikingRoutesDescription =>
+      'Here you can create and manage hiking routes';
+
+  @override
+  String get inDevelopment => '🚧 In Development 🚧';
+
+  @override
+  String get manageOrders => 'Manage Orders';
+
+  @override
+  String get manageOrdersDescription =>
+      'Here you can view and process all orders';
+
+  @override
+  String get manageWhiskyCatalog => 'Manage Whisky Catalog';
+
+  @override
+  String get manageWhiskyCatalogDescription =>
+      'Here you can manage the whisky catalog';
+
+  @override
+  String get adminDashboard => 'Admin Dashboard';
+
+  @override
+  String get newRoute => 'New Route';
+
+  @override
+  String get noDataAvailable => 'No data available';
+
+  @override
+  String get showAll => 'Show all';
+
+  @override
+  String get noOrdersAvailable => 'No orders available';
+
+  @override
+  String get order => 'Order';
+
+  @override
+  String get customer => 'Customer';
+
+  @override
+  String get route => 'Route';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get imageTooLarge => 'Image too large';
 }
