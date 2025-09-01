@@ -3,7 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/payment/stripe_service.dart';
 import '../services/payment/multi_payment_service.dart';
+import '../services/database/backend_api.dart';
 import '../../domain/models/basic_order.dart';
+import '../../domain/models/enhanced_order.dart';
+import '../../domain/models/delivery_address.dart';
 import '../../domain/models/basic_payment_result.dart';
 import '../../domain/models/payment_intent.dart' show PaymentMethodType;
 
@@ -14,14 +17,17 @@ class PaymentRepository {
   final SupabaseClient _supabaseClient;
   final StripeService _stripeService;
   final MultiPaymentService _multiPaymentService;
+  final BackendApiService _backendApiService;
 
   PaymentRepository({
     required SupabaseClient supabaseClient,
     required StripeService stripeService,
     MultiPaymentService? multiPaymentService,
+    BackendApiService? backendApiService,
   })  : _supabaseClient = supabaseClient,
         _stripeService = stripeService,
-        _multiPaymentService = multiPaymentService ?? MultiPaymentService.instance;
+        _multiPaymentService = multiPaymentService ?? MultiPaymentService.instance,
+        _backendApiService = backendApiService ?? BackendApiService(client: supabaseClient);
 
   /// Create a new order with order items
   Future<BasicOrder> createOrder({
@@ -358,6 +364,249 @@ class PaymentRepository {
       throw ArgumentError('Amount exceeds maximum limit');
     }
   }
+
+  // ================================
+  // Enhanced Order Support
+  // ================================
+
+  /// Create enhanced order with shipping calculation
+  Future<EnhancedOrder> createEnhancedOrder({
+    required int hikeId,
+    required String userId,
+    required String companyId,
+    required double baseAmount,
+    required DeliveryAddress deliveryAddress,
+    DeliveryType deliveryType = DeliveryType.standardShipping,
+    String? customerEmail,
+    String? customerPhone,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      // Validate input parameters
+      if (hikeId <= 0) throw ArgumentError('Hike ID must be greater than 0');
+      if (userId.isEmpty) throw ArgumentError('User ID cannot be empty');
+      if (companyId.isEmpty) throw ArgumentError('Company ID cannot be empty');
+      if (baseAmount <= 0) throw ArgumentError('Base amount must be greater than 0');
+      
+      // Generate unique order number
+      final orderNumber = _generateOrderNumber();
+      
+      dev.log('🔄 Creating enhanced order $orderNumber for user $userId...');
+
+      // Create enhanced order with shipping calculation
+      final enhancedOrder = await _backendApiService.createEnhancedOrderWithShipping(
+        orderNumber: orderNumber,
+        companyId: companyId,
+        customerId: userId,
+        hikeId: hikeId,
+        baseOrderValue: baseAmount,
+        deliveryAddress: deliveryAddress,
+        deliveryType: deliveryType,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+        metadata: metadata,
+      );
+
+      dev.log('✅ Enhanced order $orderNumber created successfully');
+      return enhancedOrder;
+
+    } catch (e) {
+      dev.log('❌ Error creating enhanced order: $e');
+      if (e is PostgrestException) rethrow;
+      if (e is ArgumentError) rethrow;
+      throw Exception('Failed to create enhanced order: $e');
+    }
+  }
+
+  /// Process payment for enhanced order
+  Future<BasicPaymentResult> processEnhancedOrderPayment({
+    required EnhancedOrder order,
+    required PaymentMethodType paymentMethod,
+    String? paymentMethodId,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      dev.log('🔄 Processing ${paymentMethod.name} payment for enhanced order ${order.orderNumber}...');
+
+      // Use MultiPaymentService for all payment methods
+      final paymentResult = await _multiPaymentService.processPayment(
+        paymentMethod: paymentMethod,
+        amount: order.totalAmount,
+        currency: order.currency.toLowerCase(),
+        metadata: {
+          'enhanced_order_id': order.id.toString(),
+          'company_id': order.companyId,
+          'hike_id': order.hikeId?.toString(),
+          'delivery_type': order.deliveryType.name,
+          'order_number': order.orderNumber,
+          ...?metadata,
+        },
+      );
+
+      // Store payment record in database
+      await _createEnhancedOrderPaymentRecord(
+        order: order,
+        paymentMethod: paymentMethod,
+        paymentResult: paymentResult,
+      );
+
+      // Update enhanced order status based on payment result
+      if (paymentResult.isSuccess) {
+        await _backendApiService.updateEnhancedOrderStatus(
+          orderId: order.id,
+          newStatus: 'confirmed',
+          reason: 'Payment confirmed',
+          metadata: {
+            'payment_confirmed_at': DateTime.now().toIso8601String(),
+            'payment_method': paymentMethod.name,
+            'payment_intent_id': paymentResult.paymentIntentId,
+          },
+        );
+        dev.log('✅ Enhanced order payment successful: ${order.orderNumber}');
+      } else if (paymentResult.requiresUserAction) {
+        await _backendApiService.updateEnhancedOrderStatus(
+          orderId: order.id,
+          newStatus: 'paymentPending',
+          reason: 'Payment requires user action',
+        );
+        dev.log('🔐 Enhanced order payment requires authentication: ${order.orderNumber}');
+      } else {
+        await _backendApiService.updateEnhancedOrderStatus(
+          orderId: order.id,
+          newStatus: 'failed',
+          reason: 'Payment failed',
+          metadata: {
+            'payment_failed_at': DateTime.now().toIso8601String(),
+            'failure_reason': paymentResult.errorMessage,
+          },
+        );
+        dev.log('❌ Enhanced order payment failed: ${order.orderNumber}');
+      }
+
+      return paymentResult;
+
+    } catch (e) {
+      dev.log('❌ Error processing enhanced order payment: $e');
+      // Return failed payment result instead of throwing
+      return BasicPaymentResult.failure(
+        error: 'Enhanced order payment processing failed: ${e.toString()}',
+        status: PaymentStatus.failed,
+      );
+    }
+  }
+
+  /// Get enhanced order by ID
+  Future<EnhancedOrder?> getEnhancedOrderById(int orderId) async {
+    try {
+      return await _backendApiService.getEnhancedOrderById(orderId);
+    } catch (e) {
+      dev.log('❌ Error fetching enhanced order $orderId: $e');
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch enhanced order: $e');
+    }
+  }
+
+  /// Get all enhanced orders for a customer
+  Future<List<EnhancedOrder>> getCustomerEnhancedOrders({
+    required String customerId,
+    int limit = 50,
+    int offset = 0,
+    List<String>? statuses,
+  }) async {
+    try {
+      return await _backendApiService.getCustomerEnhancedOrders(
+        customerId: customerId,
+        limit: limit,
+        offset: offset,
+        statuses: statuses,
+      );
+    } catch (e) {
+      dev.log('❌ Error fetching customer enhanced orders: $e');
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to fetch customer enhanced orders: $e');
+    }
+  }
+
+  /// Update enhanced order status
+  Future<EnhancedOrder> updateEnhancedOrderStatus({
+    required int orderId,
+    required String newStatus,
+    String? reason,
+    String? trackingNumber,
+    DateTime? estimatedDelivery,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      return await _backendApiService.updateEnhancedOrderStatus(
+        orderId: orderId,
+        newStatus: newStatus,
+        reason: reason,
+        trackingNumber: trackingNumber,
+        estimatedDelivery: estimatedDelivery,
+        metadata: metadata,
+      );
+    } catch (e) {
+      dev.log('❌ Error updating enhanced order status: $e');
+      if (e is PostgrestException) rethrow;
+      throw Exception('Failed to update enhanced order status: $e');
+    }
+  }
+
+  /// Convert BasicOrder to EnhancedOrder
+  Future<EnhancedOrder> convertToEnhancedOrder({
+    required BasicOrder basicOrder,
+    required String companyId,
+    required DeliveryAddress deliveryAddress,
+    String? customerEmail,
+    String? customerPhone,
+  }) async {
+    try {
+      return await _backendApiService.convertBasicToEnhancedOrder(
+        basicOrder: basicOrder,
+        companyId: companyId,
+        deliveryAddress: deliveryAddress,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+      );
+    } catch (e) {
+      dev.log('❌ Error converting to enhanced order: $e');
+      throw Exception('Failed to convert to enhanced order: $e');
+    }
+  }
+
+  /// Create payment record for enhanced order
+  Future<void> _createEnhancedOrderPaymentRecord({
+    required EnhancedOrder order,
+    required PaymentMethodType paymentMethod,
+    required BasicPaymentResult paymentResult,
+  }) async {
+    try {
+      final paymentData = {
+        'order_id': order.id,
+        'payment_intent_id': paymentResult.paymentIntentId ?? 'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
+        'client_secret': paymentResult.clientSecret,
+        'amount': (order.totalAmount * 100).round(), // Convert to cents
+        'currency': order.currency.toLowerCase(),
+        'status': paymentResult.status?.name ?? 'pending',
+        'payment_method': paymentMethod.name,
+        if (paymentResult.errorMessage != null) 'failure_reason': paymentResult.errorMessage,
+        if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      // Note: This assumes we're using the same payments table for enhanced orders
+      // In production, you might want a separate enhanced_payments table
+      await _supabaseClient
+          .from('payments')
+          .insert(paymentData);
+
+      dev.log('✅ Enhanced order payment record created: ${paymentData['payment_intent_id']}');
+
+    } catch (e) {
+      dev.log('⚠️ Warning: Failed to create enhanced order payment record: $e');
+      // Don't throw here - payment may have succeeded even if record creation failed
+    }
+  }
 }
 
 /// Factory for creating PaymentRepository instances
@@ -366,11 +615,14 @@ class PaymentRepositoryFactory {
     SupabaseClient? supabaseClient,
     StripeService? stripeService,
     MultiPaymentService? multiPaymentService,
+    BackendApiService? backendApiService,
   }) {
+    final client = supabaseClient ?? Supabase.instance.client;
     return PaymentRepository(
-      supabaseClient: supabaseClient ?? Supabase.instance.client,
+      supabaseClient: client,
       stripeService: stripeService ?? StripeService.instance,
       multiPaymentService: multiPaymentService ?? MultiPaymentService.instance,
+      backendApiService: backendApiService ?? BackendApiService(client: client),
     );
   }
 }

@@ -9,13 +9,21 @@ import '../../../domain/models/basic_order.dart';
 import '../../../domain/models/enhanced_order.dart';
 import '../../../domain/models/delivery_address.dart';
 import '../../../domain/models/tasting_set.dart';
+import '../shipping/shipping_calculation_service.dart';
 
 class BackendApiService {
   final SupabaseClient client;
+  late final ShippingCalculationService _shippingService;
   
   // Constructor für Dependency Injection in Tests
   BackendApiService({SupabaseClient? client}) 
-      : client = client ?? Supabase.instance.client;
+      : client = client ?? Supabase.instance.client {
+    _shippingService = ShippingCalculationService(this);
+  }
+
+  // Getter für ShippingCalculationService
+  String get supabaseUrl => client.supabaseUrl;
+  String get supabaseAnonKey => client.supabaseKey;
 
   // get User Profile by id
   Future<Profile> getUserProfileById(String id) async {
@@ -1045,7 +1053,84 @@ class BackendApiService {
   // Enhanced Order Management
   // ================================
 
-  /// Create a new enhanced order
+  /// Create enhanced order with automatic shipping calculation
+  Future<EnhancedOrder> createEnhancedOrderWithShipping({
+    required String orderNumber,
+    required String companyId,
+    required String customerId,
+    int? hikeId,
+    required double baseOrderValue,
+    double taxAmount = 0.0,
+    String currency = 'EUR',
+    required DeliveryAddress deliveryAddress,
+    DeliveryType deliveryType = DeliveryType.standardShipping,
+    String? customerEmail,
+    String? customerPhone,
+    String? notes,
+    Map<String, dynamic>? metadata,
+    List<String>? tags,
+  }) async {
+    try {
+      dev.log('🆕 Creating enhanced order with shipping calculation: $orderNumber');
+
+      // Calculate shipping cost if not pickup
+      ShippingCostResult? shippingResult;
+      double shippingCost = 0.0;
+      
+      if (deliveryType != DeliveryType.pickup) {
+        shippingResult = await _shippingService.calculateShippingCost(
+          companyId: companyId,
+          deliveryAddress: deliveryAddress,
+          orderValue: baseOrderValue,
+          hikeId: hikeId,
+        );
+        shippingCost = shippingResult.cost;
+      }
+
+      final subtotal = baseOrderValue;
+      final totalAmount = subtotal + taxAmount + shippingCost;
+
+      return await createEnhancedOrder(
+        orderNumber: orderNumber,
+        companyId: companyId,
+        customerId: customerId,
+        hikeId: hikeId,
+        subtotal: subtotal,
+        taxAmount: taxAmount,
+        shippingCost: shippingCost,
+        totalAmount: totalAmount,
+        currency: currency,
+        baseAmount: baseOrderValue,
+        deliveryAddress: deliveryAddress,
+        deliveryType: deliveryType,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+        notes: notes,
+        metadata: {
+          if (shippingResult != null) 'shipping_calculation_result': {
+            'cost': shippingResult.cost,
+            'isFreeShipping': shippingResult.isFreeShipping,
+            'serviceName': shippingResult.serviceName,
+            'estimatedDaysMin': shippingResult.estimatedDaysMin,
+            'estimatedDaysMax': shippingResult.estimatedDaysMax,
+            'region': shippingResult.region,
+            'description': shippingResult.description,
+            'trackingAvailable': shippingResult.trackingAvailable,
+            'signatureRequired': shippingResult.signatureRequired,
+          },
+          'auto_calculated_shipping': true,
+          ...?metadata,
+        },
+        tags: tags,
+      );
+
+    } catch (e) {
+      dev.log('❌ Error creating enhanced order with shipping: $e', error: e);
+      throw Exception('Failed to create enhanced order with shipping: $e');
+    }
+  }
+
+  /// Create a new enhanced order (internal method)
   Future<EnhancedOrder> createEnhancedOrder({
     required String orderNumber,
     required String companyId,

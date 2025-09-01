@@ -261,6 +261,276 @@ class SupabaseNotificationService {
     }
   }
 
+  // ================================
+  // Order Tracking Notifications
+  // ================================
+
+  /// Send tracking number assignment notification
+  Future<void> sendOrderTrackingNotification({
+    required String customerId,
+    required int orderId,
+    required String orderNumber,
+    required String trackingNumber,
+    required String shippingCarrier,
+    DateTime? estimatedDelivery,
+  }) async {
+    try {
+      final deliveryText = estimatedDelivery != null 
+          ? ' Voraussichtliche Lieferung: ${_formatDate(estimatedDelivery)}'
+          : '';
+
+      await showNotification(
+        title: '📦 Bestellung versendet',
+        body: 'Deine Bestellung #$orderNumber wurde versendet. Tracking: $trackingNumber$deliveryText',
+        payload: 'order_tracking_$orderId',
+        type: NotificationType.orderUpdate,
+      );
+
+      log("✅ Tracking notification sent for order $orderNumber");
+    } catch (e) {
+      log("❌ Failed to send tracking notification: $e", error: e);
+    }
+  }
+
+  /// Send order status change notification
+  Future<void> sendOrderStatusChangeNotification({
+    required String customerId,
+    required int orderId,
+    required String orderNumber,
+    required String newStatus,
+    String? statusDescription,
+    String? trackingNumber,
+  }) async {
+    try {
+      final statusText = _getStatusDisplayText(newStatus);
+      final description = statusDescription ?? _getStatusDescription(newStatus);
+
+      await showNotification(
+        title: '📋 Bestellstatus aktualisiert',
+        body: 'Bestellung #$orderNumber: $statusText - $description',
+        payload: 'order_status_$orderId',
+        type: NotificationType.orderUpdate,
+      );
+
+      log("✅ Status change notification sent for order $orderNumber");
+    } catch (e) {
+      log("❌ Failed to send status change notification: $e", error: e);
+    }
+  }
+
+  /// Send out for delivery notification
+  Future<void> sendOrderOutForDeliveryNotification({
+    required String customerId,
+    required int orderId,
+    required String orderNumber,
+    DateTime? estimatedDeliveryTime,
+    String? courierName,
+    String? courierPhone,
+  }) async {
+    try {
+      final timeText = estimatedDeliveryTime != null
+          ? ' bis ${_formatTime(estimatedDeliveryTime)}'
+          : '';
+      
+      final courierText = courierName != null
+          ? ' Kurier: $courierName'
+          : '';
+
+      await showNotification(
+        title: '🚛 Zustellung heute!',
+        body: 'Deine Bestellung #$orderNumber wird heute$timeText geliefert.$courierText',
+        payload: 'order_delivery_$orderId',
+        type: NotificationType.urgent,
+      );
+
+      log("✅ Out for delivery notification sent for order $orderNumber");
+    } catch (e) {
+      log("❌ Failed to send out for delivery notification: $e", error: e);
+    }
+  }
+
+  /// Send delivery confirmation notification
+  Future<void> sendOrderDeliveredNotification({
+    required String customerId,
+    required int orderId,
+    required String orderNumber,
+    required DateTime deliveryTime,
+    String? recipientName,
+    String? deliveryProofUrl,
+  }) async {
+    try {
+      final recipientText = recipientName != null
+          ? ' an $recipientName'
+          : '';
+
+      await showNotification(
+        title: '✅ Bestellung zugestellt!',
+        body: 'Deine Bestellung #$orderNumber wurde um ${_formatTime(deliveryTime)}$recipientText zugestellt.',
+        payload: 'order_delivered_$orderId',
+        type: NotificationType.success,
+      );
+
+      log("✅ Delivery confirmation sent for order $orderNumber");
+    } catch (e) {
+      log("❌ Failed to send delivery confirmation: $e", error: e);
+    }
+  }
+
+  /// Subscribe to enhanced order updates
+  Future<void> subscribeToEnhancedOrderUpdates() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) {
+        log("⚠️ User not authenticated, skipping enhanced order updates subscription");
+        return;
+      }
+
+      // Unsubscribe existing channel if any
+      if (_orderUpdatesChannel != null) {
+        await _orderUpdatesChannel!.unsubscribe();
+      }
+
+      _orderUpdatesChannel = _supabase
+          .channel('enhanced_order_updates')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.update,
+            schema: 'public',
+            table: 'enhanced_orders',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'customer_id',
+              value: user.id,
+            ),
+            callback: _handleEnhancedOrderUpdate,
+          )
+          .subscribe();
+
+      log("✅ Subscribed to enhanced order updates for user: ${user.id}");
+    } catch (e) {
+      log("❌ Failed to subscribe to enhanced order updates: $e", error: e);
+    }
+  }
+
+  /// Handle enhanced order update from Supabase Realtime
+  void _handleEnhancedOrderUpdate(PostgresChangePayload payload) {
+    try {
+      log("📨 Received enhanced order update: ${payload.eventType}");
+      
+      if (payload.newRecord != null && payload.oldRecord != null) {
+        final newStatus = payload.newRecord['status'] as String?;
+        final oldStatus = payload.oldRecord['status'] as String?;
+        final orderNumber = payload.newRecord['order_number'] as String?;
+        final trackingNumber = payload.newRecord['tracking_number'] as String?;
+        final orderId = payload.newRecord['id'] as int?;
+
+        if (newStatus != null && oldStatus != null && newStatus != oldStatus && 
+            orderNumber != null && orderId != null) {
+          
+          // Show appropriate notification based on status change
+          if (newStatus == 'shipped' && trackingNumber != null) {
+            sendOrderTrackingNotification(
+              customerId: payload.newRecord['customer_id'],
+              orderId: orderId,
+              orderNumber: orderNumber,
+              trackingNumber: trackingNumber,
+              shippingCarrier: payload.newRecord['shipping_carrier'] ?? 'Carrier',
+              estimatedDelivery: payload.newRecord['estimated_delivery'] != null
+                  ? DateTime.parse(payload.newRecord['estimated_delivery'])
+                  : null,
+            );
+          } else if (newStatus == 'outForDelivery') {
+            sendOrderOutForDeliveryNotification(
+              customerId: payload.newRecord['customer_id'],
+              orderId: orderId,
+              orderNumber: orderNumber,
+              estimatedDeliveryTime: payload.newRecord['estimated_delivery'] != null
+                  ? DateTime.parse(payload.newRecord['estimated_delivery'])
+                  : null,
+            );
+          } else if (newStatus == 'delivered') {
+            sendOrderDeliveredNotification(
+              customerId: payload.newRecord['customer_id'],
+              orderId: orderId,
+              orderNumber: orderNumber,
+              deliveryTime: payload.newRecord['delivered_at'] != null
+                  ? DateTime.parse(payload.newRecord['delivered_at'])
+                  : DateTime.now(),
+            );
+          } else {
+            sendOrderStatusChangeNotification(
+              customerId: payload.newRecord['customer_id'],
+              orderId: orderId,
+              orderNumber: orderNumber,
+              newStatus: newStatus,
+              trackingNumber: trackingNumber,
+            );
+          }
+        }
+      }
+    } catch (e) {
+      log("❌ Error handling enhanced order update: $e", error: e);
+    }
+  }
+
+  // ================================
+  // Helper Methods
+  // ================================
+
+  /// Get display text for order status
+  String _getStatusDisplayText(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return 'Ausstehend';
+      case 'paymentpending': return 'Zahlung ausstehend';
+      case 'confirmed': return 'Bestätigt';
+      case 'processing': return 'In Bearbeitung';
+      case 'shipped': return 'Versendet';
+      case 'outfordelivery': return 'Zustellung unterwegs';
+      case 'delivered': return 'Zugestellt';
+      case 'cancelled': return 'Storniert';
+      case 'refunded': return 'Erstattet';
+      case 'failed': return 'Fehlgeschlagen';
+      default: return status;
+    }
+  }
+
+  /// Get description for order status
+  String _getStatusDescription(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return 'Bestellung eingegangen';
+      case 'paymentpending': return 'Warte auf Zahlungsbestätigung';
+      case 'confirmed': return 'Zahlung bestätigt, Bestellung wird vorbereitet';
+      case 'processing': return 'Bestellung wird bearbeitet';
+      case 'shipped': return 'Paket ist auf dem Weg';
+      case 'outfordelivery': return 'Zustellung erfolgt heute';
+      case 'delivered': return 'Paket wurde zugestellt';
+      case 'cancelled': return 'Bestellung wurde storniert';
+      case 'refunded': return 'Betrag wurde erstattet';
+      case 'failed': return 'Bestellung konnte nicht verarbeitet werden';
+      default: return 'Status wurde aktualisiert';
+    }
+  }
+
+  /// Format date for notifications
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final targetDate = DateTime(date.year, date.month, date.day);
+
+    if (targetDate == today) {
+      return 'heute';
+    } else if (targetDate == tomorrow) {
+      return 'morgen';
+    } else {
+      return '${date.day}.${date.month}.${date.year}';
+    }
+  }
+
+  /// Format time for notifications
+  String _formatTime(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
   /// Dispose the service and unsubscribe from channels
   Future<void> dispose() async {
     try {

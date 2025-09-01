@@ -75,4 +75,6 @@ enum NotificationType {
   orderUpdate,
   deliveryUpdate,
   general,
+  urgent,
+  success,
 }
