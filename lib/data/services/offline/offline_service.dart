@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../domain/models/hike.dart';
 import '../../../domain/models/waypoint.dart';
 import '../../../domain/models/tasting_set.dart';
-import '../../../domain/models/enhanced_order.dart';
 
 /// Erweiterte Offline-Service-Klasse für generisches Caching verschiedener Datentypen
 class OfflineService {

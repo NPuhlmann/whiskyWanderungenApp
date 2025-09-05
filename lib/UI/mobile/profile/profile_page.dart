@@ -291,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
           errorMessage = '🌐 Netzwerkfehler: Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
           backgroundColor = Colors.red[600]!;
           errorIcon = Icons.wifi_off;
-        } else if (e.toString().contains('groß') || e.toString().contains('size')) {
+        } else if (e.toString().contains(AppLocalizations.of(context)!.imageTooLarge) || e.toString().contains('size')) {
           errorMessage = '📏 ${e.toString()}';
           backgroundColor = Colors.orange[700]!;
           errorIcon = Icons.photo_size_select_large;

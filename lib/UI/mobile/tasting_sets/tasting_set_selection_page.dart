@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whisky_hikes/domain/models/tasting_set.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/UI/tasting_sets/widgets/tasting_set_info_card.dart';
 import 'package:whisky_hikes/UI/tasting_sets/tasting_set_selection_view_model.dart';
@@ -210,7 +209,7 @@ class TastingSetSelectionPage extends StatelessWidget {
                               vertical: 12,
                             ),
                           ),
-                          child: const Text('Weiter zum Checkout'),
+                          child: Text(AppLocalizations.of(context)!.proceedToCheckout),
                         ),
                       ],
                     ),
@@ -227,11 +226,11 @@ class TastingSetSelectionPage extends StatelessWidget {
   void _proceedToCheckout(BuildContext context) {
     // Navigate to checkout with the hike (tasting set is automatically included)
     // This will be implemented when the checkout system is ready
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Weiterleitung zum Checkout...'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+          ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.redirectingToCheckout),
+          duration: Duration(seconds: 2),
+        ),
+      );
   }
 }

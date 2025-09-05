@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dashboard/admin_dashboard.dart';
 import '../../shared/guards/admin_guard.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Admin-Router für die Navigation zwischen Admin-Seiten
 class AdminRouter {
@@ -108,11 +109,11 @@ class _AdminRoutesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wanderrouten verwalten'),
+        title: Text(AppLocalizations.of(context)!.manageHikingRoutes),
         backgroundColor: Colors.amber[800],
         foregroundColor: Colors.white,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -123,7 +124,7 @@ class _AdminRoutesPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text('Hier können Sie Wanderrouten erstellen und verwalten'),
+            Text(AppLocalizations.of(context)!.manageHikingRoutesDescription),
             SizedBox(height: 32),
             Text('🚧 In Entwicklung 🚧'),
           ],
@@ -140,11 +141,11 @@ class _AdminOrdersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bestellungen verwalten'),
+        title: Text(AppLocalizations.of(context)!.manageOrders),
         backgroundColor: Colors.amber[800],
         foregroundColor: Colors.white,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -155,7 +156,7 @@ class _AdminOrdersPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text('Hier können Sie alle Bestellungen einsehen und bearbeiten'),
+            Text(AppLocalizations.of(context)!.manageOrdersDescription),
             SizedBox(height: 32),
             Text('🚧 In Entwicklung 🚧'),
           ],
@@ -172,11 +173,11 @@ class _AdminWhiskyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Whisky-Katalog verwalten'),
+        title: Text(AppLocalizations.of(context)!.manageWhiskyCatalog),
         backgroundColor: Colors.amber[800],
         foregroundColor: Colors.white,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -187,7 +188,7 @@ class _AdminWhiskyPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text('Hier können Sie den Whisky-Katalog verwalten'),
+            Text(AppLocalizations.of(context)!.manageWhiskyCatalogDescription),
             SizedBox(height: 32),
             Text('🚧 In Entwicklung 🚧'),
           ],

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../UI/shared/responsive_layout.dart';
 import '../../../../UI/shared/guards/admin_guard.dart';
 import '../../../../UI/shared/components/breadcrumbs.dart';
 import '../../../../data/providers/admin_provider.dart';
 import '../admin_router.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Admin-Dashboard für die Web-App
 class AdminDashboard extends StatefulWidget {
@@ -42,7 +42,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget _buildMobileLayout() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: Text(AppLocalizations.of(context)!.adminDashboard),
         backgroundColor: Colors.amber[800],
         foregroundColor: Colors.white,
       ),
@@ -107,7 +107,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     final navigationItems = [
       {'icon': Icons.dashboard, 'label': 'Dashboard', 'route': '/admin/dashboard'},
       {'icon': Icons.map, 'label': 'Wanderrouten', 'route': '/admin/routes'},
-      {'icon': Icons.shopping_cart, 'label': 'Bestellungen', 'route': '/admin/orders'},
+                    {'icon': Icons.shopping_cart, 'label': AppLocalizations.of(context)!.orders, 'route': '/admin/orders'},
       {'icon': Icons.local_bar, 'label': 'Whisky-Katalog', 'route': '/admin/whisky'},
       {'icon': Icons.analytics, 'label': 'Analytics', 'route': '/admin/analytics'},
       {'icon': Icons.people, 'label': 'Team', 'route': '/admin/team'},
@@ -164,7 +164,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       selectedItemColor: Colors.amber[800],
       unselectedItemColor: Colors.grey[600],
-      items: const [
+            items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.dashboard),
           label: 'Dashboard',
@@ -175,7 +175,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
-          label: 'Bestellungen',
+          label: AppLocalizations.of(context)!.orders,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
@@ -265,7 +265,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 AdminRouter.navigateTo(context, AdminRouter.routesRoute);
               },
               icon: const Icon(Icons.add),
-              label: const Text('Neue Route'),
+                                      label: Text(AppLocalizations.of(context)!.newRoute),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber[800],
                 foregroundColor: Colors.white,
@@ -312,7 +312,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               color: Colors.green,
             ),
             _buildKPICard(
-              title: 'Aktive Bestellungen',
+              title: AppLocalizations.of(context)!.orders,
               value: '${kpis['activeOrders'] ?? 0}',
               subtitle: 'In Bearbeitung',
               icon: Icons.shopping_cart,
@@ -435,7 +435,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -455,7 +455,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               SizedBox(
                 height: 200,
                 child: trend.isEmpty 
-                  ? const Center(child: Text('Keine Daten verfügbar'))
+                  ? Center(child: Text(AppLocalizations.of(context)!.noDataAvailable))
                   : LineChart(
                       LineChartData(
                         gridData: FlGridData(show: false),
@@ -470,7 +470,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             dotData: FlDotData(show: false),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: Colors.amber[800]!.withOpacity(0.1),
+                              color: Colors.amber[800]!.withValues(alpha: 0.1),
                             ),
                           ),
                         ],
@@ -501,7 +501,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -521,7 +521,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               SizedBox(
                 height: 200,
                 child: routes.isEmpty 
-                  ? const Center(child: Text('Keine Daten verfügbar'))
+                  ? Center(child: Text(AppLocalizations.of(context)!.noDataAvailable))
                   : BarChart(
                       BarChartData(
                         alignment: BarChartAlignment.spaceAround,
@@ -569,7 +569,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -583,7 +583,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Aktuelle Bestellungen',
+                    AppLocalizations.of(context)!.orders,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -592,16 +592,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     onPressed: () {
                       print('View all orders');
                     },
-                    child: const Text('Alle anzeigen'),
+                                            child: Text(AppLocalizations.of(context)!.showAll),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               if (orders.isEmpty)
-                const Center(
+                                Center(
                   child: Padding(
                     padding: EdgeInsets.all(32),
-                    child: Text('Keine Bestellungen verfügbar'),
+                    child: Text(AppLocalizations.of(context)!.noOrdersAvailable),
                   ),
                 )
               else
@@ -670,7 +670,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -734,22 +734,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Bestellung ${order['orderNumber']}'),
+        title: Text('${AppLocalizations.of(context)!.order} ${order['orderNumber']}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Kunde: ${order['customerName']}'),
-            Text('Route: ${order['routeName']}'),
-            Text('Betrag: €${(order['amount'] ?? 0.0).toStringAsFixed(2)}'),
-            Text('Status: ${_getStatusDisplayName(order['status'] ?? '')}'),
-            Text('Datum: ${order['createdAt'] ?? 'N/A'}'),
+                            Text('${AppLocalizations.of(context)!.customer}: ${order['customerName']}'),
+                          Text('${AppLocalizations.of(context)!.route}: ${order['routeName']}'),
+              Text('${AppLocalizations.of(context)!.amount}: €${(order['amount'] ?? 0.0).toStringAsFixed(2)}'),
+              Text('${AppLocalizations.of(context)!.status}: ${_getStatusDisplayName(order['status'] ?? '')}'),
+              Text('${AppLocalizations.of(context)!.date}: ${order['createdAt'] ?? 'N/A'}'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Schließen'),
+            child: Text(AppLocalizations.of(context)!.close),
           ),
         ],
       ),

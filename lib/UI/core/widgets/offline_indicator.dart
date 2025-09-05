@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../data/services/connectivity/connectivity_service.dart';
 import '../../../data/services/sync/data_sync_service.dart';

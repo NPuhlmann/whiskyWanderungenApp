@@ -135,7 +135,7 @@ GoRouter router(UserRepository authRepository) => GoRouter(
               if (order == null) {
                 return const Scaffold(
                   body: Center(
-                    child: Text('Bestellung nicht gefunden'),
+                    child: Text(AppLocalizations.of(context)!.orderNotFound),
                   ),
                 );
               }
@@ -180,7 +180,7 @@ GoRouter router(UserRepository authRepository) => GoRouter(
               if (orderId == null) {
                 return const Scaffold(
                   body: Center(
-                    child: Text('Ungültige Bestell-ID'),
+                    child: Text(AppLocalizations.of(context)!.invalidOrderId),
                   ),
                 );
               }

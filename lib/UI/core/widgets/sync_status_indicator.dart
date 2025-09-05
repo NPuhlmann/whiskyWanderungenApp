@@ -55,7 +55,7 @@ class SyncStatusIndicator extends StatelessWidget {
   }
 
   Widget _buildSyncProgressBar() {
-    return Container(
+    return SizedBox(
       height: 4,
       child: const LinearProgressIndicator(
         backgroundColor: Colors.grey,
@@ -89,10 +89,12 @@ class SyncStatusIndicator extends StatelessWidget {
   }
 
   Future<void> _waitForSyncCompletion() async {
-    if (!DataSyncService.instance.syncStatusStream.hasListener) return;
-    
-    await for (final status in DataSyncService.instance.syncStatusStream) {
-      if (!status.isActive) break;
+    try {
+      await for (final status in DataSyncService.instance.syncStatusStream) {
+        if (!status.isActive) break;
+      }
+    } catch (e) {
+      // Stream might be closed or disposed
     }
   }
 }
@@ -129,7 +131,7 @@ class ItemSyncStatusIndicator extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.9),
+                    color: Colors.blue.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const SizedBox(
@@ -249,8 +251,8 @@ class OfflineAvailableBadge extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.green.withOpacity(0.1),
-          border: Border.all(color: Colors.green.withOpacity(0.3)),
+          color: Colors.green.withValues(alpha: 0.1),
+          border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(

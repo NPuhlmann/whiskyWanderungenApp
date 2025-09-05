@@ -35,4 +35,6 @@ const _$NotificationTypeEnumMap = {
   NotificationType.orderUpdate: 'orderUpdate',
   NotificationType.deliveryUpdate: 'deliveryUpdate',
   NotificationType.general: 'general',
+  NotificationType.urgent: 'urgent',
+  NotificationType.success: 'success',
 };

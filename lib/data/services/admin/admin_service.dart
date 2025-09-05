@@ -1,7 +1,4 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../domain/models/order.dart';
-import '../../../domain/models/hike.dart';
-import '../../../domain/models/company.dart';
 
 /// Service für Admin-Funktionalitäten und Dashboard-Daten
 class AdminService {

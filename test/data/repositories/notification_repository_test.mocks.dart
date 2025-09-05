@@ -123,6 +123,107 @@ class MockSupabaseNotificationService extends _i1.Mock
           as _i3.Future<bool>);
 
   @override
+  _i3.Future<void> sendOrderTrackingNotification({
+    required String? customerId,
+    required int? orderId,
+    required String? orderNumber,
+    required String? trackingNumber,
+    required String? shippingCarrier,
+    DateTime? estimatedDelivery,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendOrderTrackingNotification, [], {
+              #customerId: customerId,
+              #orderId: orderId,
+              #orderNumber: orderNumber,
+              #trackingNumber: trackingNumber,
+              #shippingCarrier: shippingCarrier,
+              #estimatedDelivery: estimatedDelivery,
+            }),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendOrderStatusChangeNotification({
+    required String? customerId,
+    required int? orderId,
+    required String? orderNumber,
+    required String? newStatus,
+    String? statusDescription,
+    String? trackingNumber,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendOrderStatusChangeNotification, [], {
+              #customerId: customerId,
+              #orderId: orderId,
+              #orderNumber: orderNumber,
+              #newStatus: newStatus,
+              #statusDescription: statusDescription,
+              #trackingNumber: trackingNumber,
+            }),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendOrderOutForDeliveryNotification({
+    required String? customerId,
+    required int? orderId,
+    required String? orderNumber,
+    DateTime? estimatedDeliveryTime,
+    String? courierName,
+    String? courierPhone,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendOrderOutForDeliveryNotification, [], {
+              #customerId: customerId,
+              #orderId: orderId,
+              #orderNumber: orderNumber,
+              #estimatedDeliveryTime: estimatedDeliveryTime,
+              #courierName: courierName,
+              #courierPhone: courierPhone,
+            }),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendOrderDeliveredNotification({
+    required String? customerId,
+    required int? orderId,
+    required String? orderNumber,
+    required DateTime? deliveryTime,
+    String? recipientName,
+    String? deliveryProofUrl,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendOrderDeliveredNotification, [], {
+              #customerId: customerId,
+              #orderId: orderId,
+              #orderNumber: orderNumber,
+              #deliveryTime: deliveryTime,
+              #recipientName: recipientName,
+              #deliveryProofUrl: deliveryProofUrl,
+            }),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> subscribeToEnhancedOrderUpdates() =>
+      (super.noSuchMethod(
+            Invocation.method(#subscribeToEnhancedOrderUpdates, []),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
   _i3.Future<void> dispose() =>
       (super.noSuchMethod(
             Invocation.method(#dispose, []),

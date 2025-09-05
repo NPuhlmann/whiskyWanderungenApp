@@ -341,4 +341,32 @@ class MockStripeService extends _i1.Mock implements _i3.StripeService {
             ),
           )
           as _i5.Future<_i4.BasicPaymentResult>);
+
+  @override
+  _i5.Future<String> createPaymentMethod({
+    required String? cardNumber,
+    required int? expiryMonth,
+    required int? expiryYear,
+    required String? cvc,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createPaymentMethod, [], {
+              #cardNumber: cardNumber,
+              #expiryMonth: expiryMonth,
+              #expiryYear: expiryYear,
+              #cvc: cvc,
+            }),
+            returnValue: _i5.Future<String>.value(
+              _i6.dummyValue<String>(
+                this,
+                Invocation.method(#createPaymentMethod, [], {
+                  #cardNumber: cardNumber,
+                  #expiryMonth: expiryMonth,
+                  #expiryYear: expiryYear,
+                  #cvc: cvc,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<String>);
 }

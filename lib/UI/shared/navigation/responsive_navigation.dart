@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../responsive_layout.dart';
 
 /// Responsive Navigation für verschiedene Bildschirmgrößen

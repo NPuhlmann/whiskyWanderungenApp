@@ -31,7 +31,7 @@ class OrderStatusTimeline extends StatelessWidget {
       return const Card(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: Text('Unbekannter Bestelltyp'),
+          child: Text(AppLocalizations.of(context)!.unknownOrderType),
         ),
       );
     }

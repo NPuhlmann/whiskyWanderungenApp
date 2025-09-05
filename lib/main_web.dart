@@ -6,6 +6,7 @@ import 'UI/web/admin/dashboard/admin_dashboard.dart';
 import 'UI/web/admin/admin_router.dart';
 import 'data/providers/admin_provider.dart';
 import 'data/services/auth/auth_service.dart';
+import 'config/l10n/app_localizations.dart';
 
 /// Einfache Web-Version der App für Tests
 void main() {

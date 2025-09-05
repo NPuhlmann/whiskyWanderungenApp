@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../domain/models/enhanced_order.dart' as enhanced;
 import '../../../domain/models/basic_order.dart' as basic;
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Widget for displaying tracking information for shipped orders
 class TrackingInfoCard extends StatelessWidget {
@@ -123,7 +124,7 @@ class TrackingInfoCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () => _openTrackingUrl(order.trackingUrl!),
               icon: const Icon(Icons.open_in_new),
-              label: const Text('Tracking öffnen'),
+              label: Text(AppLocalizations.of(context)!.trackingOpen),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
