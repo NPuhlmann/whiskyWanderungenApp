@@ -10,6 +10,7 @@ import '../../../domain/models/enhanced_order.dart' as enhanced;
 import '../../../domain/models/delivery_address.dart';
 import '../../../domain/models/order.dart';
 import '../../../domain/models/tasting_set.dart';
+import '../../../domain/models/review.dart';
 import '../shipping/shipping_calculation_service.dart';
 
 class BackendApiService {
@@ -1592,6 +1593,300 @@ class BackendApiService {
     } catch (e) {
       dev.log('⚠️ Warning: Could not generate tracking URL for $carrierCode: $e');
       return null;
+    }
+  }
+
+  // ==================== REVIEW MANAGEMENT ====================
+
+  /// Get all reviews for a specific hike
+  Future<List<Review>> getReviewsForHike(int hikeId) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .select('''
+            id, hike_id, user_id, rating, comment, created_at,
+            profiles(first_name, last_name)
+          ''')
+          .eq('hike_id', hikeId)
+          .order('created_at', ascending: false);
+
+      return response.map<Review>((data) {
+        final profileData = data['profiles'] as Map<String, dynamic>?;
+        return Review(
+          id: data['id'] as int,
+          hikeId: data['hike_id'] as int,
+          userId: data['user_id'] as String,
+          rating: (data['rating'] as num).toDouble(),
+          comment: data['comment'] as String,
+          createdAt: DateTime.parse(data['created_at'] as String),
+          userFirstName: profileData?['first_name'] as String?,
+          userLastName: profileData?['last_name'] as String?,
+        );
+      }).toList();
+
+    } catch (e) {
+      dev.log('❌ Error getting reviews for hike $hikeId: $e', error: e);
+      throw Exception('Failed to get reviews for hike: $e');
+    }
+  }
+
+  /// Create a new review
+  Future<Review> createReview({
+    required int hikeId,
+    required String userId,
+    required double rating,
+    required String comment,
+  }) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .insert({
+            'hike_id': hikeId,
+            'user_id': userId,
+            'rating': rating,
+            'comment': comment,
+          })
+          .select('''
+            id, hike_id, user_id, rating, comment, created_at,
+            profiles(first_name, last_name)
+          ''')
+          .single();
+
+      final profileData = response['profiles'] as Map<String, dynamic>?;
+      return Review(
+        id: response['id'] as int,
+        hikeId: response['hike_id'] as int,
+        userId: response['user_id'] as String,
+        rating: (response['rating'] as num).toDouble(),
+        comment: response['comment'] as String,
+        createdAt: DateTime.parse(response['created_at'] as String),
+        userFirstName: profileData?['first_name'] as String?,
+        userLastName: profileData?['last_name'] as String?,
+      );
+
+    } catch (e) {
+      dev.log('❌ Error creating review: $e', error: e);
+      throw Exception('Failed to create review: $e');
+    }
+  }
+
+  /// Update an existing review
+  Future<Review> updateReview({
+    required int reviewId,
+    required String userId,
+    double? rating,
+    String? comment,
+  }) async {
+    try {
+      final updates = <String, dynamic>{};
+      if (rating != null) updates['rating'] = rating;
+      if (comment != null) updates['comment'] = comment;
+      updates['updated_at'] = DateTime.now().toIso8601String();
+
+      final response = await client
+          .from('reviews')
+          .update(updates)
+          .eq('id', reviewId)
+          .eq('user_id', userId) // Ensure user can only update their own reviews
+          .select('''
+            id, hike_id, user_id, rating, comment, created_at,
+            profiles(first_name, last_name)
+          ''')
+          .single();
+
+      final profileData = response['profiles'] as Map<String, dynamic>?;
+      return Review(
+        id: response['id'] as int,
+        hikeId: response['hike_id'] as int,
+        userId: response['user_id'] as String,
+        rating: (response['rating'] as num).toDouble(),
+        comment: response['comment'] as String,
+        createdAt: DateTime.parse(response['created_at'] as String),
+        userFirstName: profileData?['first_name'] as String?,
+        userLastName: profileData?['last_name'] as String?,
+      );
+
+    } catch (e) {
+      dev.log('❌ Error updating review $reviewId: $e', error: e);
+      throw Exception('Failed to update review: $e');
+    }
+  }
+
+  /// Delete a review
+  Future<void> deleteReview({
+    required int reviewId,
+    required String userId,
+  }) async {
+    try {
+      await client
+          .from('reviews')
+          .delete()
+          .eq('id', reviewId)
+          .eq('user_id', userId); // Ensure user can only delete their own reviews
+
+    } catch (e) {
+      dev.log('❌ Error deleting review $reviewId: $e', error: e);
+      throw Exception('Failed to delete review: $e');
+    }
+  }
+
+  /// Get all reviews by a specific user
+  Future<List<Review>> getReviewsByUser(String userId) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .select('''
+            id, hike_id, user_id, rating, comment, created_at,
+            profiles(first_name, last_name),
+            hikes(name)
+          ''')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      return response.map<Review>((data) {
+        final profileData = data['profiles'] as Map<String, dynamic>?;
+        return Review(
+          id: data['id'] as int,
+          hikeId: data['hike_id'] as int,
+          userId: data['user_id'] as String,
+          rating: (data['rating'] as num).toDouble(),
+          comment: data['comment'] as String,
+          createdAt: DateTime.parse(data['created_at'] as String),
+          userFirstName: profileData?['first_name'] as String?,
+          userLastName: profileData?['last_name'] as String?,
+        );
+      }).toList();
+
+    } catch (e) {
+      dev.log('❌ Error getting reviews by user $userId: $e', error: e);
+      throw Exception('Failed to get reviews by user: $e');
+    }
+  }
+
+  /// Get average rating for a hike
+  Future<double> getAverageRatingForHike(int hikeId) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .select('rating')
+          .eq('hike_id', hikeId);
+
+      if (response.isEmpty) return 0.0;
+
+      final ratings = response.map<double>((data) => (data['rating'] as num).toDouble());
+      final average = ratings.reduce((a, b) => a + b) / ratings.length;
+      
+      return double.parse(average.toStringAsFixed(1));
+
+    } catch (e) {
+      dev.log('❌ Error getting average rating for hike $hikeId: $e', error: e);
+      throw Exception('Failed to get average rating: $e');
+    }
+  }
+
+  /// Get a user's review for a specific hike
+  Future<Review?> getUserReviewForHike({
+    required int hikeId,
+    required String userId,
+  }) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .select('''
+            id, hike_id, user_id, rating, comment, created_at,
+            profiles(first_name, last_name)
+          ''')
+          .eq('hike_id', hikeId)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (response == null) return null;
+
+      final profileData = response['profiles'] as Map<String, dynamic>?;
+      return Review(
+        id: response['id'] as int,
+        hikeId: response['hike_id'] as int,
+        userId: response['user_id'] as String,
+        rating: (response['rating'] as num).toDouble(),
+        comment: response['comment'] as String,
+        createdAt: DateTime.parse(response['created_at'] as String),
+        userFirstName: profileData?['first_name'] as String?,
+        userLastName: profileData?['last_name'] as String?,
+      );
+
+    } catch (e) {
+      dev.log('❌ Error getting user review for hike $hikeId: $e', error: e);
+      throw Exception('Failed to get user review: $e');
+    }
+  }
+
+  /// Get review statistics for a hike
+  Future<Map<String, dynamic>> getReviewStatsForHike(int hikeId) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .select('rating')
+          .eq('hike_id', hikeId);
+
+      final totalReviews = response.length;
+      if (totalReviews == 0) {
+        return {
+          'totalReviews': 0,
+          'averageRating': 0.0,
+          'ratingDistribution': {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+        };
+      }
+
+      final ratings = response.map<int>((data) => (data['rating'] as num).round());
+      final averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
+      
+      final distribution = <int, int>{1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+      for (final rating in ratings) {
+        distribution[rating] = (distribution[rating] ?? 0) + 1;
+      }
+
+      return {
+        'totalReviews': totalReviews,
+        'averageRating': double.parse(averageRating.toStringAsFixed(1)),
+        'ratingDistribution': distribution,
+      };
+
+    } catch (e) {
+      dev.log('❌ Error getting review stats for hike $hikeId: $e', error: e);
+      throw Exception('Failed to get review statistics: $e');
+    }
+  }
+
+  /// Get recent reviews across the platform
+  Future<List<Review>> getRecentReviews({int limit = 20}) async {
+    try {
+      final response = await client
+          .from('reviews')
+          .select('''
+            id, hike_id, user_id, rating, comment, created_at,
+            profiles(first_name, last_name),
+            hikes(name)
+          ''')
+          .order('created_at', ascending: false)
+          .limit(limit);
+
+      return response.map<Review>((data) {
+        final profileData = data['profiles'] as Map<String, dynamic>?;
+        return Review(
+          id: data['id'] as int,
+          hikeId: data['hike_id'] as int,
+          userId: data['user_id'] as String,
+          rating: (data['rating'] as num).toDouble(),
+          comment: data['comment'] as String,
+          createdAt: DateTime.parse(data['created_at'] as String),
+          userFirstName: profileData?['first_name'] as String?,
+          userLastName: profileData?['last_name'] as String?,
+        );
+      }).toList();
+
+    } catch (e) {
+      dev.log('❌ Error getting recent reviews: $e', error: e);
+      throw Exception('Failed to get recent reviews: $e');
     }
   }
 }

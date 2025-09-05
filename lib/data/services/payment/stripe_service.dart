@@ -114,53 +114,57 @@ class StripeService {
       
       // Use real Stripe SDK to confirm payment
       try {
-        // For real card payments, we need to create a payment method first
-        // This would typically be done with card details from the UI
-        // For now, we'll use a test payment method or the provided one
+        dev.log('🔄 Confirming payment with real Stripe SDK');
         
-        // In production, you would validate and potentially create payment methods
-        if (paymentMethodId.startsWith('pm_test_') || paymentMethodId.startsWith('pm_')) {
-          dev.log('🔄 Using existing payment method: $paymentMethodId');
-        } else {
-          dev.log('🔄 Using simulated payment method: $paymentMethodId');
-        }
-        
-        // For real Stripe integration, we would use the actual confirmPayment API
-        // However, for development purposes, we'll simulate the confirmation
-        
-        // Simulate payment confirmation delay
-        await Future.delayed(const Duration(milliseconds: 800));
-        
-        // Simulate different test scenarios based on payment method ID
-        if (paymentMethodId.contains('declined')) {
-          dev.log('❌ Payment declined (test scenario)');
-          return BasicPaymentResult.failure(
-            error: 'Your card was declined',
-            status: PaymentStatus.failed,
-            metadata: metadata,
-          );
-        }
-        
-        if (paymentMethodId.contains('authentication_required')) {
-          dev.log('🔐 Payment requires authentication (test scenario)');
-          return BasicPaymentResult.requiresAction(
-            clientSecret: clientSecret,
-            metadata: metadata,
-          );
-        }
-        
-        // Simulate successful payment
-        final paymentIntentId = clientSecret.split('_secret_').first;
-        
-        dev.log('✅ Payment confirmed (simulated for development)');
-        
-        return BasicPaymentResult(
-          isSuccess: true,
-          status: PaymentStatus.succeeded,
-          paymentIntentId: paymentIntentId,
-          clientSecret: clientSecret,
-          metadata: metadata,
+        // Use the actual Stripe SDK to confirm the payment
+        // For existing payment methods, we use confirmPayment without additional data
+        final paymentIntent = await Stripe.instance.confirmPayment(
+          paymentIntentClientSecret: clientSecret,
+          data: const PaymentMethodParams.card(
+            paymentMethodData: PaymentMethodData(),
+          ),
         );
+        
+        dev.log('✅ Payment confirmed via Stripe SDK: ${paymentIntent.status}');
+        
+        // Map Stripe SDK result to our BasicPaymentResult
+        switch (paymentIntent.status) {
+          case PaymentIntentsStatus.Succeeded:
+            return BasicPaymentResult(
+              isSuccess: true,
+              status: PaymentStatus.succeeded,
+              paymentIntentId: paymentIntent.id,
+              clientSecret: clientSecret,
+              metadata: metadata,
+            );
+            
+          case PaymentIntentsStatus.RequiresAction:
+            return BasicPaymentResult.requiresAction(
+              clientSecret: clientSecret,
+              metadata: metadata,
+            );
+            
+          case PaymentIntentsStatus.RequiresPaymentMethod:
+            return BasicPaymentResult.failure(
+              error: 'Payment method is invalid or incomplete',
+              status: PaymentStatus.failed,
+              metadata: metadata,
+            );
+            
+          case PaymentIntentsStatus.Canceled:
+            return BasicPaymentResult.failure(
+              error: 'Payment was canceled',
+              status: PaymentStatus.cancelled,
+              metadata: metadata,
+            );
+            
+          default:
+            return BasicPaymentResult.failure(
+              error: 'Payment failed with status: ${paymentIntent.status}',
+              status: PaymentStatus.failed,
+              metadata: metadata,
+            );
+        }
         
       } on StripeException catch (e) {
         dev.log('❌ Stripe error: ${e.error.message}');
@@ -185,6 +189,35 @@ class StripeService {
         status: PaymentStatus.failed,
         metadata: metadata,
       );
+    }
+  }
+  
+  /// Create a payment method from card details
+  Future<String> createPaymentMethod({
+    required String cardNumber,
+    required int expiryMonth,
+    required int expiryYear,
+    required String cvc,
+  }) async {
+    _ensureInitialized();
+    
+    try {
+      dev.log('🔄 Creating payment method with Stripe SDK');
+      
+      final paymentMethod = await Stripe.instance.createPaymentMethod(
+        params: PaymentMethodParams.card(
+          paymentMethodData: PaymentMethodData(
+            billingDetails: const BillingDetails(),
+          ),
+        ),
+      );
+      
+      dev.log('✅ Payment method created: ${paymentMethod.id}');
+      return paymentMethod.id;
+      
+    } on StripeException catch (e) {
+      dev.log('❌ Error creating payment method: ${e.error.message}');
+      throw Exception('Failed to create payment method: ${e.error.message}');
     }
   }
   

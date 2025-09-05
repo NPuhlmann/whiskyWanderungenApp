@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 /// Review-Model für Whisky-Hike-Bewertungen
 class Review {

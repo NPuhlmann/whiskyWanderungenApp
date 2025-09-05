@@ -25,6 +25,42 @@ data "supabase_apikeys" "whisky_hikes" {
   project_ref = supabase_project.whisky_hikes.id
 }
 
+# SQL Migration für Review-System über Supabase Management API
+resource "null_resource" "reviews_schema_migration" {
+  triggers = {
+    reviews_table_hash = filemd5("${path.module}/sql/11_create_reviews_table.sql")
+    reviews_policies_hash = filemd5("${path.module}/sql/12_create_reviews_policies.sql")
+    reviews_functions_hash = filemd5("${path.module}/sql/13_create_reviews_functions.sql")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Erstelle Reviews Tabelle
+      curl -X POST "${supabase_project.whisky_hikes.api_url}/rest/v1/rpc/exec_sql" \
+        -H "apikey: ${data.supabase_apikeys.whisky_hikes.service_role}" \
+        -H "Authorization: Bearer ${data.supabase_apikeys.whisky_hikes.service_role}" \
+        -H "Content-Type: application/json" \
+        -d '{"sql": "'$(cat ${path.module}/sql/11_create_reviews_table.sql | sed 's/"/\\"/g' | tr '\n' ' ')'"}'
+      
+      # Erstelle Reviews Policies
+      curl -X POST "${supabase_project.whisky_hikes.api_url}/rest/v1/rpc/exec_sql" \
+        -H "apikey: ${data.supabase_apikeys.whisky_hikes.service_role}" \
+        -H "Authorization: Bearer ${data.supabase_apikeys.whisky_hikes.service_role}" \
+        -H "Content-Type: application/json" \
+        -d '{"sql": "'$(cat ${path.module}/sql/12_create_reviews_policies.sql | sed 's/"/\\"/g' | tr '\n' ' ')'"}'
+      
+      # Erstelle Reviews Functions
+      curl -X POST "${supabase_project.whisky_hikes.api_url}/rest/v1/rpc/exec_sql" \
+        -H "apikey: ${data.supabase_apikeys.whisky_hikes.service_role}" \
+        -H "Authorization: Bearer ${data.supabase_apikeys.whisky_hikes.service_role}" \
+        -H "Content-Type: application/json" \
+        -d '{"sql": "'$(cat ${path.module}/sql/13_create_reviews_functions.sql | sed 's/"/\\"/g' | tr '\n' ' ')'"}'
+    EOT
+  }
+
+  depends_on = [supabase_project.whisky_hikes]
+}
+
 # SQL Migration für Payment-Tabellen über Supabase Management API
 resource "null_resource" "payment_schema_migration" {
   triggers = {
