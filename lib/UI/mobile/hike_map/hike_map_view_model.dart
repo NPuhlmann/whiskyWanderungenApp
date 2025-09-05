@@ -1,25 +1,204 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../domain/models/waypoint.dart';
-import '../../data/repositories/waypoint_repository.dart';
+import '../../../domain/models/waypoint.dart';
+import '../../../data/repositories/waypoint_repository.dart';
+import '../../../data/services/location/location_service.dart';
+import '../../../data/services/navigation/navigation_service.dart';
 
 class HikeMapViewModel extends ChangeNotifier {
   final int hikeId;
   final WaypointRepository waypointRepository;
+  final LocationService _locationService = LocationService.instance;
+  final NavigationService _navigationService = NavigationService.instance;
 
   List<Waypoint> _waypoints = [];
   bool _isLoading = false;
   String? _error;
+  
+  // GPS-related state
+  Position? _currentPosition;
+  bool _isGpsEnabled = false;
+  bool _isNavigationActive = false;
+  StreamSubscription<Position>? _positionSubscription;
+  StreamSubscription<NavigationStatus>? _navigationSubscription;
 
   HikeMapViewModel({
     required this.hikeId,
     required this.waypointRepository,
-  });
+  }) {
+    _initializeGpsServices();
+  }
 
+  // Basic getters
   List<Waypoint> get waypoints => _waypoints;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  // GPS-related getters
+  Position? get currentPosition => _currentPosition;
+  bool get isGpsEnabled => _isGpsEnabled;
+  bool get isNavigationActive => _isNavigationActive;
+  NavigationService get navigationService => _navigationService;
+  
+  // Convenience getters
+  LatLng? get currentLatLng => _currentPosition != null 
+    ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
+    : null;
+
+  /// Initialisiert GPS Services
+  Future<void> _initializeGpsServices() async {
+    try {
+      _isGpsEnabled = await _locationService.initialize();
+      if (_isGpsEnabled) {
+        // Starte GPS Tracking
+        await _startGpsTracking();
+      }
+    } catch (e) {
+      log('Error initializing GPS services: $e');
+      _isGpsEnabled = false;
+    }
+    notifyListeners();
+  }
+
+  /// Startet GPS-Tracking
+  Future<void> _startGpsTracking() async {
+    try {
+      bool trackingStarted = await _locationService.startTracking();
+      if (trackingStarted) {
+        // Höre auf Position Updates
+        _positionSubscription = _locationService.positionStream.listen(
+          (position) {
+            _currentPosition = position;
+            notifyListeners();
+          },
+          onError: (error) {
+            log('GPS position error: $error');
+          },
+        );
+      }
+    } catch (e) {
+      log('Error starting GPS tracking: $e');
+    }
+  }
+
+  /// Startet Navigation zu allen Waypoints
+  Future<bool> startNavigation() async {
+    if (_waypoints.isEmpty) {
+      _error = 'Keine Waypoints für Navigation verfügbar';
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      bool navigationStarted = await _navigationService.startNavigation(_waypoints);
+      if (navigationStarted) {
+        _isNavigationActive = true;
+        
+        // Höre auf Navigation Status Updates
+        _navigationService.addListener(_onNavigationUpdate);
+        
+        notifyListeners();
+        return true;
+      } else {
+        _error = 'Navigation konnte nicht gestartet werden';
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      log('Error starting navigation: $e');
+      _error = 'Fehler beim Starten der Navigation: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Stoppt die Navigation
+  Future<void> stopNavigation() async {
+    try {
+      await _navigationService.stopNavigation();
+      _navigationService.removeListener(_onNavigationUpdate);
+      _isNavigationActive = false;
+      notifyListeners();
+    } catch (e) {
+      log('Error stopping navigation: $e');
+    }
+  }
+
+  /// Pausiert die Navigation
+  Future<void> pauseNavigation() async {
+    await _navigationService.pauseNavigation();
+    notifyListeners();
+  }
+
+  /// Setzt die Navigation fort
+  Future<void> resumeNavigation() async {
+    await _navigationService.resumeNavigation();
+    notifyListeners();
+  }
+
+  /// Navigation Status Update Handler
+  void _onNavigationUpdate() {
+    notifyListeners();
+  }
+
+  /// Aktiviert/Deaktiviert GPS-Tracking
+  Future<void> toggleGpsTracking() async {
+    if (_isGpsEnabled && _locationService.isTracking) {
+      await _locationService.stopTracking();
+      await _positionSubscription?.cancel();
+      _currentPosition = null;
+    } else {
+      bool initialized = await _locationService.initialize();
+      if (initialized) {
+        await _startGpsTracking();
+        _isGpsEnabled = true;
+      } else {
+        _error = 'GPS konnte nicht aktiviert werden. Bitte überprüfen Sie die Berechtigung.';
+      }
+    }
+    notifyListeners();
+  }
+
+  /// Zentriert die Karte auf die aktuelle Position
+  void centerOnCurrentPosition() {
+    if (_currentPosition != null) {
+      notifyListeners(); // Dies wird vom UI verwendet um die Karte zu zentrieren
+    }
+  }
+
+  /// Berechnet Distanz zu einem Waypoint
+  String? getDistanceToWaypoint(Waypoint waypoint) {
+    if (_currentPosition == null) return null;
+    
+    final distance = _locationService.calculateDistanceToWaypoint(waypoint);
+    return distance != null ? _locationService.formatDistance(distance) : null;
+  }
+
+  /// Berechnet Richtung zu einem Waypoint
+  String? getBearingToWaypoint(Waypoint waypoint) {
+    if (_currentPosition == null) return null;
+    
+    final bearing = _locationService.calculateBearingToWaypoint(waypoint);
+    return bearing != null ? _locationService.bearingToDirectionText(bearing) : null;
+  }
+
+  /// Prüft ob ein Waypoint in der Nähe ist (für UI Hervorhebung)
+  bool isWaypointNearby(Waypoint waypoint, {double thresholdMeters = 50.0}) {
+    if (_currentPosition == null) return false;
+    
+    final distance = _locationService.calculateDistanceToWaypoint(waypoint);
+    return distance != null && distance <= thresholdMeters;
+  }
+
+  /// Findet den nächstgelegenen Waypoint
+  Waypoint? findNearestWaypoint() {
+    return _locationService.findNearestWaypoint(_waypoints);
+  }
 
   Future<void> loadWaypoints() async {
     _isLoading = true;
@@ -173,5 +352,20 @@ class HikeMapViewModel extends ChangeNotifier {
       
       _waypoints.add(waypoint);
     }
+  }
+
+  @override
+  void dispose() {
+    // Cleanup GPS resources
+    _positionSubscription?.cancel();
+    _navigationService.removeListener(_onNavigationUpdate);
+    
+    // Stop services
+    _locationService.stopTracking();
+    if (_isNavigationActive) {
+      _navigationService.stopNavigation();
+    }
+    
+    super.dispose();
   }
 } 
