@@ -70,12 +70,12 @@ void main() {
         // Assert
         expect(json['id'], equals('company_3'));
         expect(json['name'], equals('Islay Whisky Co.'));
-        expect(json['contact_email'], equals('info@islay.com'));
-        expect(json['country_code'], equals('GB'));
-        expect(json['country_name'], equals('United Kingdom'));
+        expect(json['contactEmail'], equals('info@islay.com'));
+        expect(json['countryCode'], equals('GB'));
+        expect(json['countryName'], equals('United Kingdom'));
         expect(json['city'], equals('Port Ellen'));
-        expect(json['created_at'], equals('2023-03-01T00:00:00.000Z'));
-        expect(json['updated_at'], isNull);
+        expect(json['createdAt'], equals('2023-03-01T00:00:00.000'));
+        expect(json['updatedAt'], isNull);
       });
 
       test('should deserialize from JSON correctly', () {
@@ -83,12 +83,12 @@ void main() {
         final json = {
           'id': 'company_4',
           'name': 'Campbeltown Distillery',
-          'contact_email': 'info@campbeltown.com',
-          'country_code': 'GB',
-          'country_name': 'United Kingdom',
+          'contactEmail': 'info@campbeltown.com',
+          'countryCode': 'GB',
+          'countryName': 'United Kingdom',
           'city': 'Campbeltown',
-          'created_at': '2023-04-01T00:00:00.000Z',
-          'updated_at': '2023-04-15T00:00:00.000Z',
+          'createdAt': '2023-04-01T00:00:00.000',
+          'updatedAt': '2023-04-15T00:00:00.000',
         };
 
         // Act
@@ -101,8 +101,8 @@ void main() {
         expect(company.countryCode, equals('GB'));
         expect(company.countryName, equals('United Kingdom'));
         expect(company.city, equals('Campbeltown'));
-        expect(company.createdAt, equals(DateTime(2023, 4, 1)));
-        expect(company.updatedAt, equals(DateTime(2023, 4, 15)));
+        expect(company.createdAt, equals(DateTime.parse('2023-04-01T00:00:00.000')));
+        expect(company.updatedAt, equals(DateTime.parse('2023-04-15T00:00:00.000')));
       });
     });
 

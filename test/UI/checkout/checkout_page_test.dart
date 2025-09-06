@@ -4,12 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
-import 'package:whisky_hikes/UI/checkout/checkout_page.dart';
-import 'package:whisky_hikes/UI/checkout/widgets/order_summary.dart';
-import 'package:whisky_hikes/UI/checkout/widgets/multi_payment_method_selector.dart';
-import 'package:whisky_hikes/UI/checkout/widgets/delivery_address_form.dart';
-import 'package:whisky_hikes/UI/checkout/widgets/checkout_button.dart';
-import 'package:whisky_hikes/UI/checkout/checkout_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/checkout_page.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/widgets/order_summary.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/widgets/multi_payment_method_selector.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/widgets/delivery_address_form.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/widgets/checkout_button.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/checkout_view_model.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 

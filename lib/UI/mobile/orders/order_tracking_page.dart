@@ -192,7 +192,7 @@ class OrderTrackingPage extends StatelessWidget {
           ],
 
           // Shipping Information (if applicable)
-          if (order.deliveryType == basic.DeliveryType.shipping) ...[
+          if (order.deliveryType == basic.DeliveryType.standardShipping) ...[
             ShippingInfoCard.basic(order: order),
             const SizedBox(height: 24),
           ],

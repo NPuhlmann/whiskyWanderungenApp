@@ -65,7 +65,7 @@ class ShippingInfoCard extends StatelessWidget {
   }
 
   Widget _buildBasicShippingInfo(BuildContext context, basic.BasicOrder order) {
-    if (order.deliveryType == basic.DeliveryType.shipping) {
+    if (order.deliveryType == basic.DeliveryType.standardShipping) {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),

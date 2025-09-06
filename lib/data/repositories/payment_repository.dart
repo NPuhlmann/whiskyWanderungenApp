@@ -65,7 +65,7 @@ class PaymentRepository {
           .single();
 
       // Create order item (for now, simple 1:1 mapping with hikes)
-      final basePrice = deliveryType == DeliveryType.shipping 
+      final basePrice = deliveryType == DeliveryType.standardShipping 
           ? amount - 5.0  // Subtract shipping cost
           : amount;
 

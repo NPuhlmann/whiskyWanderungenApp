@@ -222,7 +222,7 @@ void main() {
         );
 
         // Test different statuses
-        final succeededIntent = basePaymentIntent;
+        final succeededIntent = basePaymentIntent.copyWith(status: 'succeeded');
         final requiresActionIntent = basePaymentIntent.copyWith(status: 'requires_action');
         final processingIntent = basePaymentIntent.copyWith(status: 'processing');
         final cancelledIntent = basePaymentIntent.copyWith(status: 'canceled');

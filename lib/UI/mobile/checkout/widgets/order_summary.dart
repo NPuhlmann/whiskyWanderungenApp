@@ -41,7 +41,7 @@ class OrderSummary extends StatelessWidget {
             // Delivery Type
             _buildInfoRow(
               'Lieferart:',
-              order.deliveryType == DeliveryType.shipping 
+              order.deliveryType == DeliveryType.standardShipping 
                   ? 'Versand' 
                   : 'Abholung',
               theme,
@@ -84,7 +84,7 @@ class OrderSummary extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Delivery Info
-            if (order.deliveryType == DeliveryType.shipping)
+            if (order.deliveryType == DeliveryType.standardShipping)
               _buildDeliveryInfo(theme)
             else
               _buildPickupInfo(theme),

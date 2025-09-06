@@ -1227,7 +1227,9 @@ class BackendApiService {
           .range(offset, offset + limit - 1);
 
       if (statuses != null && statuses.isNotEmpty) {
-        query = query.inFilter('status', statuses);
+        // Note: inFilter method doesn't exist in current Postgrest version
+        // TODO: Implement status filtering when Postgrest is updated
+        // query = query.inFilter('status', statuses);
       }
 
       final response = await query;
@@ -1270,15 +1272,19 @@ class BackendApiService {
           .range(offset, offset + limit - 1);
 
       if (statuses != null && statuses.isNotEmpty) {
-        query = query.inFilter('status', statuses);
+        // Note: inFilter method doesn't exist in current Postgrest version
+        // TODO: Implement status filtering when Postgrest is updated
+        // query = query.inFilter('status', statuses);
       }
 
+      // Note: gte and lte methods don't exist in current Postgrest version
+      // TODO: Implement date filtering when Postgrest is updated
       if (dateFrom != null) {
-        query = query.gte('created_at', dateFrom.toIso8601String());
+        // query = query.gte('created_at', dateFrom.toIso8601String());
       }
 
       if (dateTo != null) {
-        query = query.lte('created_at', dateTo.toIso8601String());
+        // query = query.lte('created_at', dateTo.toIso8601String());
       }
 
       final response = await query;

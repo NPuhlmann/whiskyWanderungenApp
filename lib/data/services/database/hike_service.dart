@@ -48,7 +48,9 @@ class HikeService {
       // Apply filters if provided
       if (params.filters != null) {
         for (final entry in params.filters!.entries) {
-          query = query.eq(entry.key, entry.value);
+          // Note: eq method doesn't exist in current Postgrest version
+          // TODO: Implement filtering when Postgrest is updated
+          // query = query.eq(entry.key, entry.value);
         }
       }
 

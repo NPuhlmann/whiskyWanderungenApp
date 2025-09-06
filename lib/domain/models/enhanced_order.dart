@@ -12,6 +12,7 @@ abstract class EnhancedOrder with _$EnhancedOrder {
     required int hikeId,
     required String userId,
     required double totalAmount,
+    required String currency,
     required DeliveryType deliveryType,
     required OrderStatus status,
     required DateTime createdAt,

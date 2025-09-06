@@ -208,7 +208,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               Row(
                 children: [
                   Icon(
-                    order.deliveryType == DeliveryType.shipping 
+                    order.deliveryType == DeliveryType.standardShipping 
                       ? Icons.local_shipping
                       : Icons.store,
                     size: 16,
@@ -216,7 +216,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    order.deliveryType == DeliveryType.shipping 
+                    order.deliveryType == DeliveryType.standardShipping 
                       ? 'Versand'
                       : 'Abholung',
                     style: const TextStyle(color: Colors.grey),
