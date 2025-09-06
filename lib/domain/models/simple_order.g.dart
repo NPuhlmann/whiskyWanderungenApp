@@ -31,7 +31,8 @@ Map<String, dynamic> _$SimpleOrderToJson(_SimpleOrder instance) =>
 
 const _$DeliveryTypeEnumMap = {
   DeliveryType.pickup: 'pickup',
-  DeliveryType.shipping: 'shipping',
+  DeliveryType.standardShipping: 'standardShipping',
+  DeliveryType.expressShipping: 'expressShipping',
 };
 
 const _$OrderStatusEnumMap = {
@@ -41,4 +42,5 @@ const _$OrderStatusEnumMap = {
   OrderStatus.shipped: 'shipped',
   OrderStatus.delivered: 'delivered',
   OrderStatus.cancelled: 'cancelled',
+  OrderStatus.failed: 'failed',
 };

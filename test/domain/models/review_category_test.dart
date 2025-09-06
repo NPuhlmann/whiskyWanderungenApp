@@ -139,11 +139,14 @@ void main() {
     });
 
     test('should implement equality correctly', () {
+      final now = DateTime.now();
       final category1 = ReviewCategory(
         id: 1,
         name: 'Test',
         description: 'Test',
         weight: 0.5,
+        createdAt: now,
+        updatedAt: now,
       );
 
       final category2 = ReviewCategory(
@@ -151,6 +154,8 @@ void main() {
         name: 'Test',
         description: 'Test',
         weight: 0.5,
+        createdAt: now,
+        updatedAt: now,
       );
 
       final category3 = ReviewCategory(
@@ -158,6 +163,8 @@ void main() {
         name: 'Test',
         description: 'Test',
         weight: 0.5,
+        createdAt: now,
+        updatedAt: now,
       );
 
       expect(category1, equals(category2));

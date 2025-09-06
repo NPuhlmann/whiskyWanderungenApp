@@ -5,7 +5,7 @@ part 'tasting_set.g.dart';
 
 /// Represents a single whisky sample within a tasting set
 @freezed
-sealed class WhiskySample with _$WhiskySample {
+abstract class WhiskySample with _$WhiskySample {
   const factory WhiskySample({
     required int id,
     required String name,
@@ -25,7 +25,7 @@ sealed class WhiskySample with _$WhiskySample {
 
 /// Represents a tasting set that is automatically included with a hike (1:1 relationship)
 @freezed
-sealed class TastingSet with _$TastingSet {
+abstract class TastingSet with _$TastingSet {
   const factory TastingSet({
     required int id,
     @JsonKey(name: 'hike_id') required int hikeId,

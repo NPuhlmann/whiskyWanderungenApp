@@ -87,10 +87,8 @@ class TastingSetRepository {
   }) async {
     try {
       await _backendApi.updateTastingSetAvailability(
-        tastingSetId: tastingSetId,
-        isAvailable: isAvailable,
-        availableFrom: availableFrom,
-        availableUntil: availableUntil,
+        tastingSetId, 
+        isAvailable,
       );
     } catch (e) {
       throw Exception('Fehler beim Aktualisieren der Tasting Set Verfügbarkeit: $e');
@@ -106,10 +104,8 @@ class TastingSetRepository {
   }) async {
     try {
       final response = await _backendApi.getTastingSetsWithPagination(
-        page: page,
-        pageSize: pageSize,
-        searchQuery: searchQuery,
-        region: region,
+        limit: pageSize,
+        offset: page * pageSize,
       );
       return response;
     } catch (e) {

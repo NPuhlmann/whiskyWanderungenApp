@@ -1,16 +1,15 @@
-// in dieser Date wird die Logik für ein ViewModel in Flutter geschrieben.
-// das viewmodel ist dafür zuständig, die Daten für die View zu verarbeiten und zu verwalten.
-// in diesem Fall wird das ViewModel für die HikeDetailsPage geschrieben.
-// das ViewModel bekommt Repositories übergeben, die es benutzt, um die Daten für die View zu holen.
+/// ViewModel for the HikeDetailsPage
+/// Responsible for managing data and business logic for the hike details view
+/// Uses repositories to fetch and manage hike-related data
 
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/repositories/hike_images_repository.dart';
-import '../../data/repositories/waypoint_repository.dart';
-import '../../domain/models/hike.dart';
+import '../../../data/repositories/hike_images_repository.dart';
+import '../../../data/repositories/waypoint_repository.dart';
+import '../../../domain/models/hike.dart';
 
 class HikeDetailsPageViewModel extends ChangeNotifier{
 
@@ -18,10 +17,10 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
     required HikeImagesRepository hikeImagesRepository,
     required WaypointRepository? waypointRepository,
   }) : _hikeImagesRepository = hikeImagesRepository {
-    // Sicherstellen, dass das WaypointRepository nicht null ist
+    // Ensure WaypointRepository is not null
     _waypointRepository = waypointRepository;
     if (_waypointRepository == null) {
-      dev.log("WARNUNG: WaypointRepository ist null im HikeDetailsPageViewModel");
+      dev.log("WARNING: WaypointRepository is null in HikeDetailsPageViewModel");
     }
   }
 
@@ -32,44 +31,44 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
   List<String> get hikeImages => _hikeImages;
   set hikeImages(List<String> value) {
     _hikeImages = value;
-    // Wir rufen notifyListeners() nicht direkt auf, um Fehler zu vermeiden
-    // wenn der Widget-Baum gesperrt ist
+    // Don't call notifyListeners() directly to avoid errors
+    // when the widget tree is locked
     Future.microtask(() => notifyListeners());
   }
 
-  // Cache für die Bilder, um wiederholte Netzwerkanfragen zu vermeiden
+  // Cache for images to avoid repeated network requests
   final Map<int, List<String>> _imageCache = {};
 
-  // Methode zum Leeren der Bilder im UI, ohne den Cache zu beeinflussen
+  // Method to clear images in UI without affecting cache
   void clearImagesForUI() {
     _hikeImages = [];
-    // Wir rufen notifyListeners() nicht auf, da setState in der aufrufenden Methode verwendet wird
+    // Don't call notifyListeners() as setState is used in calling method
   }
 
-  // eine Methode um aus dem HikeImage Repository die Bilder für das Hike anhand der Hike ID zu holen
+  /// Get hike images from repository by hike ID
   Future<void> getHikeImages(int hikeId) async {
-    // Zuerst prüfen, ob die Bilder bereits im Cache sind
+    // First check if images are already in cache
     if (_imageCache.containsKey(hikeId)) {
-      _hikeImages = List<String>.from(_imageCache[hikeId]!); // Kopie erstellen, um Referenzprobleme zu vermeiden
-      // Sicheres Aufrufen von notifyListeners()
+      _hikeImages = List<String>.from(_imageCache[hikeId]!); // Create copy to avoid reference issues
+      // Safe call to notifyListeners()
       Future.microtask(() => notifyListeners());
       return;
     }
     
-    // Wenn nicht im Cache, dann vom Repository holen
+    // If not in cache, fetch from repository
     final images = await _hikeImagesRepository.getHikeImages(hikeId);
     
-    // Im Cache speichern
-    _imageCache[hikeId] = List<String>.from(images); // Kopie erstellen, um Referenzprobleme zu vermeiden
+    // Store in cache
+    _imageCache[hikeId] = List<String>.from(images); // Create copy to avoid reference issues
     
-    // Nur aktualisieren, wenn die Hike-ID noch aktuell ist (könnte sich während des Ladens geändert haben)
-    _hikeImages = List<String>.from(images); // Kopie erstellen, um Referenzprobleme zu vermeiden
+    // Only update if hike ID is still current (could have changed during loading)
+    _hikeImages = List<String>.from(images); // Create copy to avoid reference issues
     
-    // Sicheres Aufrufen von notifyListeners()
+    // Safe call to notifyListeners()
     Future.microtask(() => notifyListeners());
   }
   
-  // Cache leeren, wenn nicht mehr benötigt
+  /// Clear cache when no longer needed
   void clearCache() {
     _imageCache.clear();
   }
@@ -164,5 +163,13 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
       dev.log("Fehler beim Löschen der Offline-Daten: $e", error: e);
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    // Clear caches to free memory
+    _imageCache.clear();
+    _hikeImages.clear();
+    super.dispose();
   }
 }

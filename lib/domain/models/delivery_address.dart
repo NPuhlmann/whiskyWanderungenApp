@@ -116,6 +116,87 @@ class DeliveryAddress {
     
     return parts.where((part) => part.isNotEmpty).join(', ');
   }
+
+  /// Validate the address for completeness and correctness
+  AddressValidationResult validate() {
+    final errors = <String>[];
+    final suggestions = <String>[];
+
+    // Required field validation
+    if (firstName.trim().isEmpty) {
+      errors.add('First name is required');
+    }
+    if (lastName.trim().isEmpty) {
+      errors.add('Last name is required');
+    }
+    if (addressLine1.trim().isEmpty) {
+      errors.add('Address line 1 is required');
+    }
+    if (city.trim().isEmpty) {
+      errors.add('City is required');
+    }
+    if (postalCode.trim().isEmpty) {
+      errors.add('Postal code is required');
+    }
+    if (countryCode.trim().isEmpty) {
+      errors.add('Country code is required');
+    }
+    if (countryName.trim().isEmpty) {
+      errors.add('Country name is required');
+    }
+
+    // Country-specific validation
+    if (countryCode.length != 2) {
+      errors.add('Country code must be 2 characters (ISO 3166-1 alpha-2)');
+    }
+
+    // Postal code format validation (basic)
+    if (postalCode.isNotEmpty) {
+      switch (countryCode.toUpperCase()) {
+        case 'DE':
+          if (!RegExp(r'^\d{5}$').hasMatch(postalCode)) {
+            errors.add('German postal codes must be 5 digits');
+          }
+          break;
+        case 'US':
+          if (!RegExp(r'^\d{5}(-\d{4})?$').hasMatch(postalCode)) {
+            errors.add('US postal codes must be 5 digits or ZIP+4 format');
+          }
+          break;
+        case 'UK':
+        case 'GB':
+          if (!RegExp(r'^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$', caseSensitive: false).hasMatch(postalCode)) {
+            errors.add('UK postal codes must follow the correct format');
+          }
+          break;
+      }
+    }
+
+    // Business address validation
+    if (isBusinessAddress && (company?.trim().isEmpty ?? true)) {
+      suggestions.add('Business addresses should include a company name');
+    }
+
+    // Phone number basic validation
+    if (phone != null && phone!.isNotEmpty) {
+      if (!RegExp(r'^[\+]?[\d\s\-\(\)]{7,15}$').hasMatch(phone!)) {
+        errors.add('Phone number format appears invalid');
+      }
+    }
+
+    // Email basic validation
+    if (email != null && email!.isNotEmpty) {
+      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email!)) {
+        errors.add('Email format appears invalid');
+      }
+    }
+
+    return AddressValidationResult(
+      isValid: errors.isEmpty,
+      errors: errors,
+      suggestions: suggestions,
+    );
+  }
 }
 
 /// Address Type für verschiedene Adressarten

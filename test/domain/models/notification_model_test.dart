@@ -120,7 +120,7 @@ void main() {
 
   group('NotificationType', () {
     test('should have correct enum values', () {
-      expect(NotificationType.values.length, 3);
+      expect(NotificationType.values.length, 5);
       expect(NotificationType.orderUpdate, NotificationType.orderUpdate);
       expect(NotificationType.deliveryUpdate, NotificationType.deliveryUpdate);
       expect(NotificationType.general, NotificationType.general);

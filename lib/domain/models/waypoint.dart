@@ -4,7 +4,7 @@ part 'waypoint.freezed.dart';
 part 'waypoint.g.dart';
 
 @freezed
-sealed class Waypoint with _$Waypoint {
+abstract class Waypoint with _$Waypoint {
   const factory Waypoint({
     required int id,
     @JsonKey(name: 'hike_id') required int hikeId,

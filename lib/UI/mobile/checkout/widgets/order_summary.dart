@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../domain/models/basic_order.dart';
+import '../../../../domain/models/basic_order.dart';
 
 /// Widget that displays order details and pricing breakdown
 class OrderSummary extends StatelessWidget {

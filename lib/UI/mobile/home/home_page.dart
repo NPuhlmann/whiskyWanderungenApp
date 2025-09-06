@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
-import 'package:whisky_hikes/UI/home/widgets/card_widget.dart';
+import 'package:whisky_hikes/UI/mobile/home/widgets/card_widget.dart';
 
-import '../../domain/models/hike.dart';
+import '../../../domain/models/hike.dart';
 import 'home_view_model.dart';
 
 class HomePage extends StatefulWidget {

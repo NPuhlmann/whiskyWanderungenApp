@@ -20,7 +20,7 @@ enum PaymentStatus {
 
 /// Result of a payment operation
 @freezed
-class PaymentResult with _$PaymentResult {
+abstract class PaymentResult with _$PaymentResult {
   const factory PaymentResult({
     required bool isSuccess,
     Order? order,

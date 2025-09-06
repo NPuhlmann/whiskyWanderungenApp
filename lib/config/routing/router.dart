@@ -10,12 +10,13 @@ import 'package:whisky_hikes/UI/home/home_page.dart';
 import 'package:whisky_hikes/UI/my_hikes/my_hikes_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_page.dart';
 import 'package:whisky_hikes/UI/profile/profile_view_model.dart';
-import 'package:whisky_hikes/UI/checkout/checkout_page.dart';
-import 'package:whisky_hikes/UI/payment/payment_success_page.dart';
-import 'package:whisky_hikes/UI/payment/payment_failed_page.dart';
-import 'package:whisky_hikes/UI/payment/order_history_page.dart';
-import 'package:whisky_hikes/UI/orders/order_tracking_page.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/checkout_page.dart';
+import 'package:whisky_hikes/UI/mobile/payment/payment_success_page.dart';
+import 'package:whisky_hikes/UI/mobile/payment/payment_failed_page.dart';
+import 'package:whisky_hikes/UI/mobile/payment/order_history_page.dart';
+import 'package:whisky_hikes/UI/mobile/orders/order_tracking_page.dart';
 import 'package:whisky_hikes/config/routing/routes.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
@@ -135,7 +136,7 @@ GoRouter router(UserRepository authRepository) => GoRouter(
               if (order == null) {
                 return const Scaffold(
                   body: Center(
-                    child: Text(AppLocalizations.of(context)!.orderNotFound),
+                    child: Text('Bestellung nicht gefunden'),
                   ),
                 );
               }
@@ -180,7 +181,7 @@ GoRouter router(UserRepository authRepository) => GoRouter(
               if (orderId == null) {
                 return const Scaffold(
                   body: Center(
-                    child: Text(AppLocalizations.of(context)!.invalidOrderId),
+                    child: Text('Ungültige Bestell-ID'),
                   ),
                 );
               }

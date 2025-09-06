@@ -3,28 +3,32 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
-import 'dart:typed_data' as _i9;
-import 'dart:ui' as _i12;
+import 'dart:async' as _i8;
+import 'dart:typed_data' as _i11;
+import 'dart:ui' as _i14;
 
-import 'package:flutter/cupertino.dart' as _i3;
+import 'package:flutter/cupertino.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i10;
-import 'package:shared_preferences/shared_preferences.dart' as _i18;
-import 'package:supabase_flutter/supabase_flutter.dart' as _i4;
+import 'package:mockito/src/dummies.dart' as _i12;
+import 'package:shared_preferences/shared_preferences.dart' as _i21;
+import 'package:supabase_flutter/supabase_flutter.dart' as _i5;
+import 'package:whisky_hikes/data/models/pagination_result.dart' as _i2;
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart'
-    as _i13;
-import 'package:whisky_hikes/data/repositories/hike_repository.dart' as _i5;
-import 'package:whisky_hikes/data/repositories/profile_repository.dart' as _i8;
-import 'package:whisky_hikes/data/repositories/user_repository.dart' as _i11;
+    as _i15;
+import 'package:whisky_hikes/data/repositories/hike_repository.dart' as _i7;
+import 'package:whisky_hikes/data/repositories/profile_repository.dart' as _i10;
+import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart'
+    as _i18;
+import 'package:whisky_hikes/data/repositories/user_repository.dart' as _i13;
 import 'package:whisky_hikes/data/repositories/waypoint_repository.dart'
-    as _i14;
-import 'package:whisky_hikes/data/services/auth/auth_service.dart' as _i16;
+    as _i16;
+import 'package:whisky_hikes/data/services/auth/auth_service.dart' as _i19;
 import 'package:whisky_hikes/data/services/cache/local_cache_service.dart'
-    as _i17;
-import 'package:whisky_hikes/domain/models/hike.dart' as _i7;
-import 'package:whisky_hikes/domain/models/profile.dart' as _i2;
-import 'package:whisky_hikes/domain/models/waypoint.dart' as _i15;
+    as _i20;
+import 'package:whisky_hikes/domain/models/hike.dart' as _i9;
+import 'package:whisky_hikes/domain/models/profile.dart' as _i3;
+import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i6;
+import 'package:whisky_hikes/domain/models/waypoint.dart' as _i17;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -40,85 +44,111 @@ import 'package:whisky_hikes/domain/models/waypoint.dart' as _i15;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeProfile_0 extends _i1.SmartFake implements _i2.Profile {
-  _FakeProfile_0(Object parent, Invocation parentInvocation)
+class _FakePaginationResult_0<T> extends _i1.SmartFake
+    implements _i2.PaginationResult<T> {
+  _FakePaginationResult_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeProfile_1 extends _i1.SmartFake implements _i3.Profile {
+  _FakeProfile_1(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 
   @override
-  String toString({_i3.DiagnosticLevel? minLevel = _i3.DiagnosticLevel.info}) =>
+  String toString({_i4.DiagnosticLevel? minLevel = _i4.DiagnosticLevel.info}) =>
       super.toString();
 }
 
-class _FakeAuthResponse_1 extends _i1.SmartFake implements _i4.AuthResponse {
-  _FakeAuthResponse_1(Object parent, Invocation parentInvocation)
+class _FakeAuthResponse_2 extends _i1.SmartFake implements _i5.AuthResponse {
+  _FakeAuthResponse_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSupabaseClient_2 extends _i1.SmartFake
-    implements _i4.SupabaseClient {
-  _FakeSupabaseClient_2(Object parent, Invocation parentInvocation)
+class _FakeTastingSet_3 extends _i1.SmartFake implements _i6.TastingSet {
+  _FakeTastingSet_3(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSupabaseClient_4 extends _i1.SmartFake
+    implements _i5.SupabaseClient {
+  _FakeSupabaseClient_4(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 /// A class which mocks [HikeRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHikeRepository extends _i1.Mock implements _i5.HikeRepository {
+class MockHikeRepository extends _i1.Mock implements _i7.HikeRepository {
   MockHikeRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<List<_i7.Hike>> getAllAvailableHikes() =>
+  _i8.Future<List<_i9.Hike>> getAllAvailableHikes() =>
       (super.noSuchMethod(
             Invocation.method(#getAllAvailableHikes, []),
-            returnValue: _i6.Future<List<_i7.Hike>>.value(<_i7.Hike>[]),
+            returnValue: _i8.Future<List<_i9.Hike>>.value(<_i9.Hike>[]),
           )
-          as _i6.Future<List<_i7.Hike>>);
+          as _i8.Future<List<_i9.Hike>>);
 
   @override
-  _i6.Future<List<_i7.Hike>> getUserHikes(String? userId) =>
+  _i8.Future<_i2.PaginationResult<_i9.Hike>> getHikesPaginated(
+    _i2.PaginationParams? params,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getHikesPaginated, [params]),
+            returnValue: _i8.Future<_i2.PaginationResult<_i9.Hike>>.value(
+              _FakePaginationResult_0<_i9.Hike>(
+                this,
+                Invocation.method(#getHikesPaginated, [params]),
+              ),
+            ),
+          )
+          as _i8.Future<_i2.PaginationResult<_i9.Hike>>);
+
+  @override
+  _i8.Future<List<_i9.Hike>> getUserHikes(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getUserHikes, [userId]),
-            returnValue: _i6.Future<List<_i7.Hike>>.value(<_i7.Hike>[]),
+            returnValue: _i8.Future<List<_i9.Hike>>.value(<_i9.Hike>[]),
           )
-          as _i6.Future<List<_i7.Hike>>);
+          as _i8.Future<List<_i9.Hike>>);
 }
 
 /// A class which mocks [ProfileRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockProfileRepository extends _i1.Mock implements _i8.ProfileRepository {
+class MockProfileRepository extends _i1.Mock implements _i10.ProfileRepository {
   MockProfileRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<_i2.Profile> getUserProfileById(String? id) =>
+  _i8.Future<_i3.Profile> getUserProfileById(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#getUserProfileById, [id]),
-            returnValue: _i6.Future<_i2.Profile>.value(
-              _FakeProfile_0(
+            returnValue: _i8.Future<_i3.Profile>.value(
+              _FakeProfile_1(
                 this,
                 Invocation.method(#getUserProfileById, [id]),
               ),
             ),
           )
-          as _i6.Future<_i2.Profile>);
+          as _i8.Future<_i3.Profile>);
 
   @override
-  _i6.Future<void> updateUserProfile(_i2.Profile? profile) =>
+  _i8.Future<void> updateUserProfile(_i3.Profile? profile) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserProfile, [profile]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<String> uploadProfileImage(
+  _i8.Future<String> uploadProfileImage(
     String? userId,
-    _i9.Uint8List? imageBytes,
+    _i11.Uint8List? imageBytes,
     String? fileExt,
   ) =>
       (super.noSuchMethod(
@@ -127,8 +157,8 @@ class MockProfileRepository extends _i1.Mock implements _i8.ProfileRepository {
               imageBytes,
               fileExt,
             ]),
-            returnValue: _i6.Future<String>.value(
-              _i10.dummyValue<String>(
+            returnValue: _i8.Future<String>.value(
+              _i12.dummyValue<String>(
                 this,
                 Invocation.method(#uploadProfileImage, [
                   userId,
@@ -138,57 +168,57 @@ class MockProfileRepository extends _i1.Mock implements _i8.ProfileRepository {
               ),
             ),
           )
-          as _i6.Future<String>);
+          as _i8.Future<String>);
 
   @override
-  _i6.Future<String?> getProfileImageUrl(String? userId) =>
+  _i8.Future<String?> getProfileImageUrl(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getProfileImageUrl, [userId]),
-            returnValue: _i6.Future<String?>.value(),
+            returnValue: _i8.Future<String?>.value(),
           )
-          as _i6.Future<String?>);
+          as _i8.Future<String?>);
 
   @override
-  _i6.Future<void> clearUserCache(String? userId) =>
+  _i8.Future<void> clearUserCache(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#clearUserCache, [userId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> clearAllCache() =>
+  _i8.Future<void> clearAllCache() =>
       (super.noSuchMethod(
             Invocation.method(#clearAllCache, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<Map<String, dynamic>> getCacheStats() =>
+  _i8.Future<Map<String, dynamic>> getCacheStats() =>
       (super.noSuchMethod(
             Invocation.method(#getCacheStats, []),
-            returnValue: _i6.Future<Map<String, dynamic>>.value(
+            returnValue: _i8.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
           )
-          as _i6.Future<Map<String, dynamic>>);
+          as _i8.Future<Map<String, dynamic>>);
 
   @override
-  _i6.Future<bool> hasNetworkConnection() =>
+  _i8.Future<bool> hasNetworkConnection() =>
       (super.noSuchMethod(
             Invocation.method(#hasNetworkConnection, []),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 }
 
 /// A class which mocks [UserRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
+class MockUserRepository extends _i1.Mock implements _i13.UserRepository {
   MockUserRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -210,16 +240,16 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
           as bool);
 
   @override
-  _i6.Future<void> signUserOut() =>
+  _i8.Future<void> signUserOut() =>
       (super.noSuchMethod(
             Invocation.method(#signUserOut, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<_i4.AuthResponse> signUpWithEmailPassword(
+  _i8.Future<_i5.AuthResponse> signUpWithEmailPassword(
     String? email,
     String? password, [
     Map<String, dynamic>? data,
@@ -230,8 +260,8 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
               password,
               data,
             ]),
-            returnValue: _i6.Future<_i4.AuthResponse>.value(
-              _FakeAuthResponse_1(
+            returnValue: _i8.Future<_i5.AuthResponse>.value(
+              _FakeAuthResponse_2(
                 this,
                 Invocation.method(#signUpWithEmailPassword, [
                   email,
@@ -241,17 +271,17 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
               ),
             ),
           )
-          as _i6.Future<_i4.AuthResponse>);
+          as _i8.Future<_i5.AuthResponse>);
 
   @override
-  _i6.Future<_i4.AuthResponse> loginWithEmailAndPassword(
+  _i8.Future<_i5.AuthResponse> loginWithEmailAndPassword(
     String? email,
     String? password,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#loginWithEmailAndPassword, [email, password]),
-            returnValue: _i6.Future<_i4.AuthResponse>.value(
-              _FakeAuthResponse_1(
+            returnValue: _i8.Future<_i5.AuthResponse>.value(
+              _FakeAuthResponse_2(
                 this,
                 Invocation.method(#loginWithEmailAndPassword, [
                   email,
@@ -260,7 +290,7 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
               ),
             ),
           )
-          as _i6.Future<_i4.AuthResponse>);
+          as _i8.Future<_i5.AuthResponse>);
 
   @override
   bool isUserLoggedIn() =>
@@ -271,22 +301,22 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
           as bool);
 
   @override
-  _i6.Future<void> updateUserEmail(String? newEmail) =>
+  _i8.Future<void> updateUserEmail(String? newEmail) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserEmail, [newEmail]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  void addListener(_i12.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i14.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#addListener, [listener]),
     returnValueForMissingStub: null,
   );
 
   @override
-  void removeListener(_i12.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i14.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#removeListener, [listener]),
     returnValueForMissingStub: null,
   );
@@ -308,51 +338,51 @@ class MockUserRepository extends _i1.Mock implements _i11.UserRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockHikeImagesRepository extends _i1.Mock
-    implements _i13.HikeImagesRepository {
+    implements _i15.HikeImagesRepository {
   MockHikeImagesRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<void> uploadHikeImages(_i7.Hike? hike, List<String>? imagePaths) =>
+  _i8.Future<void> uploadHikeImages(_i9.Hike? hike, List<String>? imagePaths) =>
       (super.noSuchMethod(
             Invocation.method(#uploadHikeImages, [hike, imagePaths]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<List<String>> getHikeImages(int? hikeId) =>
+  _i8.Future<List<String>> getHikeImages(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getHikeImages, [hikeId]),
-            returnValue: _i6.Future<List<String>>.value(<String>[]),
+            returnValue: _i8.Future<List<String>>.value(<String>[]),
           )
-          as _i6.Future<List<String>>);
+          as _i8.Future<List<String>>);
 }
 
 /// A class which mocks [WaypointRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWaypointRepository extends _i1.Mock
-    implements _i14.WaypointRepository {
+    implements _i16.WaypointRepository {
   MockWaypointRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<List<_i15.Waypoint>> getWaypointsForHike(int? hikeId) =>
+  _i8.Future<List<_i17.Waypoint>> getWaypointsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getWaypointsForHike, [hikeId]),
-            returnValue: _i6.Future<List<_i15.Waypoint>>.value(
-              <_i15.Waypoint>[],
+            returnValue: _i8.Future<List<_i17.Waypoint>>.value(
+              <_i17.Waypoint>[],
             ),
           )
-          as _i6.Future<List<_i15.Waypoint>>);
+          as _i8.Future<List<_i17.Waypoint>>);
 
   @override
-  _i6.Future<void> addWaypoint(
-    _i15.Waypoint? waypoint,
+  _i8.Future<void> addWaypoint(
+    _i17.Waypoint? waypoint,
     int? hikeId, {
     int? orderIndex,
   }) =>
@@ -362,31 +392,31 @@ class MockWaypointRepository extends _i1.Mock
               [waypoint, hikeId],
               {#orderIndex: orderIndex},
             ),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> updateWaypoint(_i15.Waypoint? waypoint) =>
+  _i8.Future<void> updateWaypoint(_i17.Waypoint? waypoint) =>
       (super.noSuchMethod(
             Invocation.method(#updateWaypoint, [waypoint]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
+  _i8.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> updateWaypointOrder(
+  _i8.Future<void> updateWaypointOrder(
     int? hikeId,
     int? waypointId,
     int? newOrderIndex,
@@ -397,30 +427,224 @@ class MockWaypointRepository extends _i1.Mock
               waypointId,
               newOrderIndex,
             ]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
+}
+
+/// A class which mocks [TastingSetRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockTastingSetRepository extends _i1.Mock
+    implements _i18.TastingSetRepository {
+  MockTastingSetRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i8.Future<_i6.TastingSet?> getTastingSetForHike(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetForHike, [hikeId]),
+            returnValue: _i8.Future<_i6.TastingSet?>.value(),
+          )
+          as _i8.Future<_i6.TastingSet?>);
+
+  @override
+  _i8.Future<_i6.TastingSet?> getTastingSetById(int? tastingSetId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetById, [tastingSetId]),
+            returnValue: _i8.Future<_i6.TastingSet?>.value(),
+          )
+          as _i8.Future<_i6.TastingSet?>);
+
+  @override
+  _i8.Future<List<_i6.TastingSet>> getAllTastingSets() =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllTastingSets, []),
+            returnValue: _i8.Future<List<_i6.TastingSet>>.value(
+              <_i6.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i6.TastingSet>>);
+
+  @override
+  _i8.Future<List<_i6.WhiskySample>> getWhiskySamplesForTastingSet(
+    int? tastingSetId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getWhiskySamplesForTastingSet, [tastingSetId]),
+            returnValue: _i8.Future<List<_i6.WhiskySample>>.value(
+              <_i6.WhiskySample>[],
+            ),
+          )
+          as _i8.Future<List<_i6.WhiskySample>>);
+
+  @override
+  _i8.Future<List<_i6.TastingSet>> searchTastingSets(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#searchTastingSets, [query]),
+            returnValue: _i8.Future<List<_i6.TastingSet>>.value(
+              <_i6.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i6.TastingSet>>);
+
+  @override
+  _i8.Future<List<_i6.TastingSet>> getTastingSetsByRegion(String? region) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetsByRegion, [region]),
+            returnValue: _i8.Future<List<_i6.TastingSet>>.value(
+              <_i6.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i6.TastingSet>>);
+
+  @override
+  _i8.Future<List<_i6.TastingSet>> getCurrentlyAvailableTastingSets() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentlyAvailableTastingSets, []),
+            returnValue: _i8.Future<List<_i6.TastingSet>>.value(
+              <_i6.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i6.TastingSet>>);
+
+  @override
+  _i8.Future<void> updateTastingSetAvailability({
+    required int? tastingSetId,
+    required bool? isAvailable,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateTastingSetAvailability, [], {
+              #tastingSetId: tastingSetId,
+              #isAvailable: isAvailable,
+              #availableFrom: availableFrom,
+              #availableUntil: availableUntil,
+            }),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
+          )
+          as _i8.Future<void>);
+
+  @override
+  _i8.Future<List<_i6.TastingSet>> getTastingSetsWithPagination({
+    required int? page,
+    required int? pageSize,
+    String? searchQuery,
+    String? region,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetsWithPagination, [], {
+              #page: page,
+              #pageSize: pageSize,
+              #searchQuery: searchQuery,
+              #region: region,
+            }),
+            returnValue: _i8.Future<List<_i6.TastingSet>>.value(
+              <_i6.TastingSet>[],
+            ),
+          )
+          as _i8.Future<List<_i6.TastingSet>>);
+
+  @override
+  _i8.Future<_i6.TastingSet> createTastingSet({
+    required int? hikeId,
+    required String? name,
+    required String? description,
+    String? imageUrl,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createTastingSet, [], {
+              #hikeId: hikeId,
+              #name: name,
+              #description: description,
+              #imageUrl: imageUrl,
+              #availableFrom: availableFrom,
+              #availableUntil: availableUntil,
+            }),
+            returnValue: _i8.Future<_i6.TastingSet>.value(
+              _FakeTastingSet_3(
+                this,
+                Invocation.method(#createTastingSet, [], {
+                  #hikeId: hikeId,
+                  #name: name,
+                  #description: description,
+                  #imageUrl: imageUrl,
+                  #availableFrom: availableFrom,
+                  #availableUntil: availableUntil,
+                }),
+              ),
+            ),
+          )
+          as _i8.Future<_i6.TastingSet>);
+
+  @override
+  _i8.Future<_i6.TastingSet> updateTastingSet({
+    required int? tastingSetId,
+    String? name,
+    String? description,
+    String? imageUrl,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateTastingSet, [], {
+              #tastingSetId: tastingSetId,
+              #name: name,
+              #description: description,
+              #imageUrl: imageUrl,
+              #availableFrom: availableFrom,
+              #availableUntil: availableUntil,
+            }),
+            returnValue: _i8.Future<_i6.TastingSet>.value(
+              _FakeTastingSet_3(
+                this,
+                Invocation.method(#updateTastingSet, [], {
+                  #tastingSetId: tastingSetId,
+                  #name: name,
+                  #description: description,
+                  #imageUrl: imageUrl,
+                  #availableFrom: availableFrom,
+                  #availableUntil: availableUntil,
+                }),
+              ),
+            ),
+          )
+          as _i8.Future<_i6.TastingSet>);
+
+  @override
+  _i8.Future<void> deleteTastingSet(int? tastingSetId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteTastingSet, [tastingSetId]),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
+          )
+          as _i8.Future<void>);
 }
 
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i16.AuthService {
+class MockAuthService extends _i1.Mock implements _i19.AuthService {
   MockAuthService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.SupabaseClient get client =>
+  _i5.SupabaseClient get client =>
       (super.noSuchMethod(
             Invocation.getter(#client),
-            returnValue: _FakeSupabaseClient_2(
+            returnValue: _FakeSupabaseClient_4(
               this,
               Invocation.getter(#client),
             ),
           )
-          as _i4.SupabaseClient);
+          as _i5.SupabaseClient);
 
   @override
   bool get isDevMode =>
@@ -428,23 +652,23 @@ class MockAuthService extends _i1.Mock implements _i16.AuthService {
           as bool);
 
   @override
-  _i6.Future<_i4.AuthResponse> signInWithEmailPassword(
+  _i8.Future<_i5.AuthResponse> signInWithEmailPassword(
     String? email,
     String? password,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#signInWithEmailPassword, [email, password]),
-            returnValue: _i6.Future<_i4.AuthResponse>.value(
-              _FakeAuthResponse_1(
+            returnValue: _i8.Future<_i5.AuthResponse>.value(
+              _FakeAuthResponse_2(
                 this,
                 Invocation.method(#signInWithEmailPassword, [email, password]),
               ),
             ),
           )
-          as _i6.Future<_i4.AuthResponse>);
+          as _i8.Future<_i5.AuthResponse>);
 
   @override
-  _i6.Future<_i4.AuthResponse> signUpWithEmailPassword(
+  _i8.Future<_i5.AuthResponse> signUpWithEmailPassword(
     String? email,
     String? password, [
     Map<String, dynamic>? data,
@@ -455,8 +679,8 @@ class MockAuthService extends _i1.Mock implements _i16.AuthService {
               password,
               data,
             ]),
-            returnValue: _i6.Future<_i4.AuthResponse>.value(
-              _FakeAuthResponse_1(
+            returnValue: _i8.Future<_i5.AuthResponse>.value(
+              _FakeAuthResponse_2(
                 this,
                 Invocation.method(#signUpWithEmailPassword, [
                   email,
@@ -466,16 +690,16 @@ class MockAuthService extends _i1.Mock implements _i16.AuthService {
               ),
             ),
           )
-          as _i6.Future<_i4.AuthResponse>);
+          as _i8.Future<_i5.AuthResponse>);
 
   @override
-  _i6.Future<void> signOut() =>
+  _i8.Future<void> signOut() =>
       (super.noSuchMethod(
             Invocation.method(#signOut, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
   bool isUserLoggedIn() =>
@@ -486,62 +710,62 @@ class MockAuthService extends _i1.Mock implements _i16.AuthService {
           as bool);
 
   @override
-  _i6.Future<void> updateUserEmail(String? newEmail) =>
+  _i8.Future<void> updateUserEmail(String? newEmail) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserEmail, [newEmail]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> confirmEmailManually() =>
+  _i8.Future<void> confirmEmailManually() =>
       (super.noSuchMethod(
             Invocation.method(#confirmEmailManually, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> handleEmailConfirmation(String? token, String? type) =>
+  _i8.Future<void> handleEmailConfirmation(String? token, String? type) =>
       (super.noSuchMethod(
             Invocation.method(#handleEmailConfirmation, [token, type]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 }
 
 /// A class which mocks [LocalCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLocalCacheService extends _i1.Mock implements _i17.LocalCacheService {
+class MockLocalCacheService extends _i1.Mock implements _i20.LocalCacheService {
   MockLocalCacheService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<void> cacheProfileData(_i2.Profile? profile, String? userId) =>
+  _i8.Future<void> cacheProfileData(_i3.Profile? profile, String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#cacheProfileData, [profile, userId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<_i2.Profile?> getCachedProfileData(String? userId) =>
+  _i8.Future<_i3.Profile?> getCachedProfileData(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getCachedProfileData, [userId]),
-            returnValue: _i6.Future<_i2.Profile?>.value(),
+            returnValue: _i8.Future<_i3.Profile?>.value(),
           )
-          as _i6.Future<_i2.Profile?>);
+          as _i8.Future<_i3.Profile?>);
 
   @override
-  _i6.Future<String?> cacheProfileImage(
+  _i8.Future<String?> cacheProfileImage(
     String? userId,
-    _i9.Uint8List? imageBytes,
+    _i11.Uint8List? imageBytes,
     String? fileExtension,
   ) =>
       (super.noSuchMethod(
@@ -550,93 +774,93 @@ class MockLocalCacheService extends _i1.Mock implements _i17.LocalCacheService {
               imageBytes,
               fileExtension,
             ]),
-            returnValue: _i6.Future<String?>.value(),
+            returnValue: _i8.Future<String?>.value(),
           )
-          as _i6.Future<String?>);
+          as _i8.Future<String?>);
 
   @override
-  _i6.Future<String?> getCachedProfileImagePath(String? userId) =>
+  _i8.Future<String?> getCachedProfileImagePath(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getCachedProfileImagePath, [userId]),
-            returnValue: _i6.Future<String?>.value(),
+            returnValue: _i8.Future<String?>.value(),
           )
-          as _i6.Future<String?>);
+          as _i8.Future<String?>);
 
   @override
-  _i6.Future<bool> hasValidProfileDataCache(String? userId) =>
+  _i8.Future<bool> hasValidProfileDataCache(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#hasValidProfileDataCache, [userId]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> hasValidProfileImageCache(String? userId) =>
+  _i8.Future<bool> hasValidProfileImageCache(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#hasValidProfileImageCache, [userId]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<void> clearProfileDataCache(String? userId) =>
+  _i8.Future<void> clearProfileDataCache(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#clearProfileDataCache, [userId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> clearProfileImageCache(String? userId) =>
+  _i8.Future<void> clearProfileImageCache(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#clearProfileImageCache, [userId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> clearUserCache(String? userId) =>
+  _i8.Future<void> clearUserCache(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#clearUserCache, [userId]),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<void> clearAllCache() =>
+  _i8.Future<void> clearAllCache() =>
       (super.noSuchMethod(
             Invocation.method(#clearAllCache, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 
   @override
-  _i6.Future<Map<String, dynamic>> getCacheStats() =>
+  _i8.Future<Map<String, dynamic>> getCacheStats() =>
       (super.noSuchMethod(
             Invocation.method(#getCacheStats, []),
-            returnValue: _i6.Future<Map<String, dynamic>>.value(
+            returnValue: _i8.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
           )
-          as _i6.Future<Map<String, dynamic>>);
+          as _i8.Future<Map<String, dynamic>>);
 
   @override
-  _i6.Future<bool> hasNetworkConnection() =>
+  _i8.Future<bool> hasNetworkConnection() =>
       (super.noSuchMethod(
             Invocation.method(#hasNetworkConnection, []),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 }
 
 /// A class which mocks [SharedPreferences].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSharedPreferences extends _i1.Mock implements _i18.SharedPreferences {
+class MockSharedPreferences extends _i1.Mock implements _i21.SharedPreferences {
   MockSharedPreferences() {
     _i1.throwOnMissingStub(this);
   }
@@ -683,75 +907,75 @@ class MockSharedPreferences extends _i1.Mock implements _i18.SharedPreferences {
           as List<String>?);
 
   @override
-  _i6.Future<bool> setBool(String? key, bool? value) =>
+  _i8.Future<bool> setBool(String? key, bool? value) =>
       (super.noSuchMethod(
             Invocation.method(#setBool, [key, value]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> setInt(String? key, int? value) =>
+  _i8.Future<bool> setInt(String? key, int? value) =>
       (super.noSuchMethod(
             Invocation.method(#setInt, [key, value]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> setDouble(String? key, double? value) =>
+  _i8.Future<bool> setDouble(String? key, double? value) =>
       (super.noSuchMethod(
             Invocation.method(#setDouble, [key, value]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> setString(String? key, String? value) =>
+  _i8.Future<bool> setString(String? key, String? value) =>
       (super.noSuchMethod(
             Invocation.method(#setString, [key, value]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> setStringList(String? key, List<String>? value) =>
+  _i8.Future<bool> setStringList(String? key, List<String>? value) =>
       (super.noSuchMethod(
             Invocation.method(#setStringList, [key, value]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> remove(String? key) =>
+  _i8.Future<bool> remove(String? key) =>
       (super.noSuchMethod(
             Invocation.method(#remove, [key]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> commit() =>
+  _i8.Future<bool> commit() =>
       (super.noSuchMethod(
             Invocation.method(#commit, []),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<bool> clear() =>
+  _i8.Future<bool> clear() =>
       (super.noSuchMethod(
             Invocation.method(#clear, []),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i8.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i8.Future<bool>);
 
   @override
-  _i6.Future<void> reload() =>
+  _i8.Future<void> reload() =>
       (super.noSuchMethod(
             Invocation.method(#reload, []),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
           )
-          as _i6.Future<void>);
+          as _i8.Future<void>);
 }

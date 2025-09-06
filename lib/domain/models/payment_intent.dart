@@ -81,6 +81,32 @@ class PaymentIntent {
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
+
+  PaymentIntent copyWith({
+    String? id,
+    String? clientSecret,
+    int? amount,
+    String? currency,
+    String? status,
+    List<PaymentMethodType>? paymentMethodTypes,
+    String? description,
+    Map<String, dynamic>? metadata,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return PaymentIntent(
+      id: id ?? this.id,
+      clientSecret: clientSecret ?? this.clientSecret,
+      amount: amount ?? this.amount,
+      currency: currency ?? this.currency,
+      status: status ?? this.status,
+      paymentMethodTypes: paymentMethodTypes ?? this.paymentMethodTypes,
+      description: description ?? this.description,
+      metadata: metadata ?? this.metadata,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 /// Payment intent result for handling payment responses

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/domain/models/simple_order.dart';
+import 'package:whisky_hikes/domain/models/basic_order.dart';
 
 void main() {
   group('SimpleOrder Model Tests (TDD - Green Phase)', () {
@@ -12,7 +13,7 @@ void main() {
         hikeId: 1,
         userId: 'user_456',
         totalAmount: 30.99,
-        deliveryType: DeliveryType.shipping,
+        deliveryType: DeliveryType.standardShipping,
         status: OrderStatus.confirmed,
         createdAt: DateTime.now(),
       );
@@ -22,7 +23,7 @@ void main() {
       expect(order.orderNumber, equals('WH2025-000123'));
       expect(order.hikeId, equals(1));
       expect(order.totalAmount, equals(30.99));
-      expect(order.deliveryType, equals(DeliveryType.shipping));
+      expect(order.deliveryType, equals(DeliveryType.standardShipping));
       expect(order.status, equals(OrderStatus.confirmed));
       expect(order.requiresDeliveryAddress, isTrue);
     });
@@ -35,7 +36,7 @@ void main() {
         hikeId: 1,
         userId: 'user_123',
         totalAmount: 30.99,
-        deliveryType: DeliveryType.shipping,
+        deliveryType: DeliveryType.standardShipping,
         status: OrderStatus.pending,
         createdAt: DateTime.now(),
       );
@@ -82,7 +83,7 @@ void main() {
         hikeId: 1,
         userId: 'user_456',
         totalAmount: 30.99,
-        deliveryType: DeliveryType.shipping,
+        deliveryType: DeliveryType.standardShipping,
         status: OrderStatus.confirmed,
         createdAt: DateTime.parse('2025-01-01T12:00:00Z'),
       );

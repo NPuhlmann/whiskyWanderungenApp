@@ -282,7 +282,7 @@ void main() {
           'hikeId': 1,
           'userId': 'user_123',
           'totalAmount': 25.99,
-          'deliveryType': 'shipping',
+          'deliveryType': 'standardShipping',
           'status': 'confirmed',
           'createdAt': DateTime.now().toIso8601String(),
         };

@@ -28,12 +28,15 @@ class OfflineService {
 
   SharedPreferences? _prefs;
   String? _cacheDirectory;
+  bool _disposed = false;
 
   Future<void> _initializePrefs() async {
+    _checkNotDisposed();
     _prefs ??= await SharedPreferences.getInstance();
   }
 
   Future<void> _initializeCacheDirectory() async {
+    _checkNotDisposed();
     if (_cacheDirectory == null) {
       final directory = await getApplicationDocumentsDirectory();
       _cacheDirectory = '${directory.path}/offline_cache';
@@ -434,6 +437,103 @@ class OfflineService {
       await _prefs!.remove('$key$_metadataSuffix');
     } catch (e) {
       log("❌ Fehler beim Entfernen des Cache-Items $key: $e", error: e);
+    }
+  }
+
+  /// Dispose method for explicit resource cleanup and memory leak prevention
+  Future<void> dispose() async {
+    if (_disposed) return;
+    
+    try {
+      log("🧹 Disposing OfflineService resources...");
+      
+      // Clear any in-memory references
+      _prefs = null;
+      _cacheDirectory = null;
+      
+      // Mark as disposed to prevent further operations
+      _disposed = true;
+      
+      log("✅ OfflineService disposed successfully");
+      
+    } catch (e) {
+      log("❌ Error during OfflineService disposal: $e", error: e);
+    }
+  }
+
+  /// Check if service has been disposed
+  bool get isDisposed => _disposed;
+
+  /// Internal method to check disposal state before operations
+  void _checkNotDisposed() {
+    if (_disposed) {
+      throw StateError('OfflineService has been disposed and cannot be used');
+    }
+  }
+
+  /// Periodic cache cleanup to prevent memory buildup
+  Future<void> performMaintenanceCleanup() async {
+    try {
+      _checkNotDisposed();
+      await _initializePrefs();
+      
+      log("🧹 Performing maintenance cache cleanup...");
+      
+      final keys = _prefs!.getKeys();
+      final cacheKeys = keys.where((key) => key.startsWith(_keyPrefix)).toList();
+      
+      int removedCount = 0;
+      final now = DateTime.now();
+      
+      for (final key in cacheKeys) {
+        if (key.endsWith(_timestampSuffix) || key.endsWith(_metadataSuffix)) continue;
+        
+        final timestampKey = '$key$_timestampSuffix';
+        final timestamp = _prefs!.getInt(timestampKey);
+        
+        if (timestamp == null) {
+          await _removeCachedItem(key);
+          removedCount++;
+          continue;
+        }
+        
+        // Extract type from key to get appropriate TTL
+        final parts = key.split('_');
+        final type = parts.length >= 3 ? parts[2] : 'unknown';
+        final ttl = _getTtlForType(type);
+        
+        final cacheTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+        final isExpired = now.difference(cacheTime) > ttl;
+        
+        if (isExpired) {
+          await _removeCachedItem(key);
+          removedCount++;
+        }
+      }
+      
+      log("✅ Maintenance cleanup completed - Removed $removedCount expired items");
+      
+    } catch (e) {
+      log("❌ Error during maintenance cleanup: $e", error: e);
+    }
+  }
+
+  /// Clean up cache directory files if they exist
+  Future<void> cleanupCacheDirectory() async {
+    try {
+      _checkNotDisposed();
+      await _initializeCacheDirectory();
+      
+      if (_cacheDirectory != null) {
+        final cacheDir = Directory(_cacheDirectory!);
+        if (await cacheDir.exists()) {
+          log("🧹 Cleaning cache directory: $_cacheDirectory");
+          await cacheDir.delete(recursive: true);
+          log("✅ Cache directory cleaned successfully");
+        }
+      }
+    } catch (e) {
+      log("❌ Error cleaning cache directory: $e", error: e);
     }
   }
 }

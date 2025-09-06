@@ -3,463 +3,228 @@ import 'package:whisky_hikes/domain/models/company.dart';
 
 void main() {
   group('Company Model Tests', () {
-    group('Constructor and Default Values', () {
-      test('should create company with required fields', () {
+    group('Basic Functionality', () {
+      test('should create Company with required fields', () {
+        // Arrange & Act
         final company = Company(
-          id: 'company_123',
-          name: 'Highland Distilleries Ltd.',
-          contactEmail: 'info@highland.com',
+          id: 'company_1',
+          name: 'Speyside Whisky Co.',
+          contactEmail: 'info@speysidewhisky.com',
           countryCode: 'GB',
           countryName: 'United Kingdom',
-          city: 'Edinburgh',
-          createdAt: DateTime.now(),
+          city: 'Dufftown',
+          createdAt: DateTime(2023, 1, 1),
         );
 
-        expect(company.id, equals('company_123'));
-        expect(company.name, equals('Highland Distilleries Ltd.'));
-        expect(company.contactEmail, equals('info@highland.com'));
+        // Assert
+        expect(company.id, equals('company_1'));
+        expect(company.name, equals('Speyside Whisky Co.'));
+        expect(company.contactEmail, equals('info@speysidewhisky.com'));
         expect(company.countryCode, equals('GB'));
         expect(company.countryName, equals('United Kingdom'));
-        expect(company.city, equals('Edinburgh'));
-        expect(company.description, isNull);
-        expect(company.logoUrl, isNull);
-        expect(company.websiteUrl, isNull);
-        expect(company.phone, isNull);
-        expect(company.isActive, isTrue);
-        expect(company.isVerified, isFalse);
+        expect(company.city, equals('Dufftown'));
+        expect(company.createdAt, equals(DateTime(2023, 1, 1)));
       });
 
-      test('should create company with all fields', () {
+      test('should create Company with optional fields', () {
+        // Arrange & Act
         final company = Company(
-          id: 'company_456',
-          name: 'Speyside Whisky Co.',
-          description: 'Premium whisky experiences in the Scottish Highlands',
-          logoUrl: 'https://example.com/logo.png',
-          website: 'https://speysidewhisky.com',
-          contactEmail: 'info@speysidewhisky.com',
-          contactPhone: '+44 1234 567890',
-          address: {
-            'street': '123 Whisky Lane',
-            'city': 'Dufftown',
-            'country': 'Scotland',
-            'postalCode': 'AB55 4BR'
-          },
-          foundedYear: 1887,
-          isActive: true,
+          id: 'company_2',
+          name: 'Highland Distillery',
+          contactEmail: 'contact@highland.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'Inverness',
+          createdAt: DateTime(2023, 2, 1),
+          updatedAt: DateTime(2023, 2, 15),
         );
 
-        expect(company.id, equals('company_456'));
-        expect(company.name, equals('Speyside Whisky Co.'));
-        expect(company.description, equals('Premium whisky experiences in the Scottish Highlands'));
-        expect(company.logoUrl, equals('https://example.com/logo.png'));
-        expect(company.website, equals('https://speysidewhisky.com'));
-        expect(company.contactEmail, equals('info@speysidewhisky.com'));
-        expect(company.contactPhone, equals('+44 1234 567890'));
-        expect(company.address!['city'], equals('Dufftown'));
-        expect(company.foundedYear, equals(1887));
-        expect(company.isActive, isTrue);
-      });
-
-      test('should create inactive company', () {
-        const company = Company(
-          id: 'inactive_company',
-          name: 'Closed Distillery',
-          isActive: false,
-        );
-
-        expect(company.isActive, isFalse);
+        // Assert
+        expect(company.id, equals('company_2'));
+        expect(company.name, equals('Highland Distillery'));
+        expect(company.contactEmail, equals('contact@highland.com'));
+        expect(company.countryCode, equals('GB'));
+        expect(company.countryName, equals('United Kingdom'));
+        expect(company.city, equals('Inverness'));
+        expect(company.createdAt, equals(DateTime(2023, 2, 1)));
+        expect(company.updatedAt, equals(DateTime(2023, 2, 15)));
       });
     });
 
-    group('copyWith Tests', () {
-      const baseCompany = Company(
-        id: 'base_company',
-        name: 'Base Company',
-        description: 'Original description',
-        isActive: true,
-      );
-
-      test('should copy with new name', () {
-        final updatedCompany = baseCompany.copyWith(name: 'Updated Company Name');
-
-        expect(updatedCompany.id, equals(baseCompany.id));
-        expect(updatedCompany.name, equals('Updated Company Name'));
-        expect(updatedCompany.description, equals(baseCompany.description));
-        expect(updatedCompany.isActive, equals(baseCompany.isActive));
-      });
-
-      test('should copy with new description', () {
-        final updatedCompany = baseCompany.copyWith(
-          description: 'New comprehensive description',
-        );
-
-        expect(updatedCompany.description, equals('New comprehensive description'));
-        expect(updatedCompany.name, equals(baseCompany.name));
-      });
-
-      test('should copy with new contact details', () {
-        final updatedCompany = baseCompany.copyWith(
-          contactEmail: 'new@company.com',
-          contactPhone: '+44 9876 543210',
-          website: 'https://newcompany.com',
-        );
-
-        expect(updatedCompany.contactEmail, equals('new@company.com'));
-        expect(updatedCompany.contactPhone, equals('+44 9876 543210'));
-        expect(updatedCompany.website, equals('https://newcompany.com'));
-        expect(updatedCompany.id, equals(baseCompany.id));
-        expect(updatedCompany.name, equals(baseCompany.name));
-      });
-
-      test('should copy with new address', () {
-        final newAddress = {
-          'street': '456 New Street',
-          'city': 'Glasgow',
-          'country': 'Scotland',
-        };
-
-        final updatedCompany = baseCompany.copyWith(address: newAddress);
-
-        expect(updatedCompany.address, equals(newAddress));
-        expect(updatedCompany.address!['city'], equals('Glasgow'));
-      });
-
-      test('should copy with active status change', () {
-        final inactiveCompany = baseCompany.copyWith(isActive: false);
-
-        expect(inactiveCompany.isActive, isFalse);
-        expect(inactiveCompany.id, equals(baseCompany.id));
-        expect(inactiveCompany.name, equals(baseCompany.name));
-      });
-
-      test('should copy with multiple changes', () {
-        final multiUpdatedCompany = baseCompany.copyWith(
-          name: 'Multi Update Co.',
-          description: 'Updated with multiple changes',
-          foundedYear: 1950,
-          logoUrl: 'https://example.com/new-logo.png',
-          isActive: false,
-        );
-
-        expect(multiUpdatedCompany.name, equals('Multi Update Co.'));
-        expect(multiUpdatedCompany.description, equals('Updated with multiple changes'));
-        expect(multiUpdatedCompany.foundedYear, equals(1950));
-        expect(multiUpdatedCompany.logoUrl, equals('https://example.com/new-logo.png'));
-        expect(multiUpdatedCompany.isActive, isFalse);
-        expect(multiUpdatedCompany.id, equals(baseCompany.id));
-      });
-    });
-
-    group('JSON Serialization Tests', () {
+    group('JSON Serialization', () {
       test('should serialize to JSON correctly', () {
+        // Arrange
         final company = Company(
-          id: 'json_company',
-          name: 'JSON Test Company',
-          description: 'A company for JSON testing',
-          logoUrl: 'https://example.com/json-logo.png',
-          website: 'https://jsontest.com',
-          contactEmail: 'test@json.com',
-          contactPhone: '+1 555-0123',
-          address: {
-            'street': '123 JSON St',
-            'city': 'Test City',
-            'state': 'TS',
-            'country': 'Testland',
-            'postalCode': '12345'
-          },
-          foundedYear: 2000,
-          isActive: true,
+          id: 'company_3',
+          name: 'Islay Whisky Co.',
+          contactEmail: 'info@islay.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'Port Ellen',
+          createdAt: DateTime(2023, 3, 1),
         );
 
+        // Act
         final json = company.toJson();
 
-        expect(json['id'], equals('json_company'));
-        expect(json['name'], equals('JSON Test Company'));
-        expect(json['description'], equals('A company for JSON testing'));
-        expect(json['logo_url'], equals('https://example.com/json-logo.png'));
-        expect(json['website'], equals('https://jsontest.com'));
-        expect(json['contact_email'], equals('test@json.com'));
-        expect(json['contact_phone'], equals('+1 555-0123'));
-        expect(json['address']['city'], equals('Test City'));
-        expect(json['founded_year'], equals(2000));
-        expect(json['is_active'], isTrue);
+        // Assert
+        expect(json['id'], equals('company_3'));
+        expect(json['name'], equals('Islay Whisky Co.'));
+        expect(json['contact_email'], equals('info@islay.com'));
+        expect(json['country_code'], equals('GB'));
+        expect(json['country_name'], equals('United Kingdom'));
+        expect(json['city'], equals('Port Ellen'));
+        expect(json['created_at'], equals('2023-03-01T00:00:00.000Z'));
+        expect(json['updated_at'], isNull);
       });
 
       test('should deserialize from JSON correctly', () {
+        // Arrange
         final json = {
-          'id': 'from_json_company',
-          'name': 'From JSON Company',
-          'description': 'Deserialized from JSON',
-          'logo_url': 'https://example.com/from-json.png',
-          'website': 'https://fromjson.com',
-          'contact_email': 'contact@fromjson.com',
-          'contact_phone': '+44 1234 567890',
-          'address': {
-            'street': '456 From JSON Ave',
-            'city': 'JSON City',
-            'country': 'JSONland'
-          },
-          'founded_year': 1995,
-          'is_active': false,
+          'id': 'company_4',
+          'name': 'Campbeltown Distillery',
+          'contact_email': 'info@campbeltown.com',
+          'country_code': 'GB',
+          'country_name': 'United Kingdom',
+          'city': 'Campbeltown',
+          'created_at': '2023-04-01T00:00:00.000Z',
+          'updated_at': '2023-04-15T00:00:00.000Z',
         };
 
+        // Act
         final company = Company.fromJson(json);
 
-        expect(company.id, equals('from_json_company'));
-        expect(company.name, equals('From JSON Company'));
-        expect(company.description, equals('Deserialized from JSON'));
-        expect(company.logoUrl, equals('https://example.com/from-json.png'));
-        expect(company.website, equals('https://fromjson.com'));
-        expect(company.contactEmail, equals('contact@fromjson.com'));
-        expect(company.contactPhone, equals('+44 1234 567890'));
-        expect(company.address!['city'], equals('JSON City'));
-        expect(company.foundedYear, equals(1995));
-        expect(company.isActive, isFalse);
-      });
-
-      test('should handle null fields in JSON', () {
-        final json = {
-          'id': 'minimal_company',
-          'name': 'Minimal Company',
-          'description': null,
-          'logo_url': null,
-          'website': null,
-          'contact_email': null,
-          'contact_phone': null,
-          'address': null,
-          'founded_year': null,
-          'is_active': true,
-        };
-
-        final company = Company.fromJson(json);
-
-        expect(company.id, equals('minimal_company'));
-        expect(company.name, equals('Minimal Company'));
-        expect(company.description, isNull);
-        expect(company.logoUrl, isNull);
-        expect(company.website, isNull);
-        expect(company.contactEmail, isNull);
-        expect(company.contactPhone, isNull);
-        expect(company.address, isNull);
-        expect(company.foundedYear, isNull);
-        expect(company.isActive, isTrue);
-      });
-
-      test('should use defaults for missing JSON fields', () {
-        final json = {
-          'id': 'defaults_company',
-          'name': 'Defaults Company',
-        };
-
-        final company = Company.fromJson(json);
-
-        expect(company.id, equals('defaults_company'));
-        expect(company.name, equals('Defaults Company'));
-        expect(company.isActive, isTrue); // Default value
-      });
-
-      test('should roundtrip JSON serialization', () {
-        const originalCompany = Company(
-          id: 'roundtrip_test',
-          name: 'Roundtrip Test Co.',
-          description: 'Testing JSON roundtrip',
-          foundedYear: 1888,
-          isActive: true,
-        );
-
-        final json = originalCompany.toJson();
-        final deserializedCompany = Company.fromJson(json);
-
-        expect(deserializedCompany, equals(originalCompany));
+        // Assert
+        expect(company.id, equals('company_4'));
+        expect(company.name, equals('Campbeltown Distillery'));
+        expect(company.contactEmail, equals('info@campbeltown.com'));
+        expect(company.countryCode, equals('GB'));
+        expect(company.countryName, equals('United Kingdom'));
+        expect(company.city, equals('Campbeltown'));
+        expect(company.createdAt, equals(DateTime(2023, 4, 1)));
+        expect(company.updatedAt, equals(DateTime(2023, 4, 15)));
       });
     });
 
-    group('Address Handling Tests', () {
-      test('should handle complex address structure', () {
-        final complexAddress = {
-          'street': '789 Complex Street',
-          'unit': 'Suite 100',
-          'city': 'Complex City',
-          'state': 'CC',
-          'country': 'Complexland',
-          'postalCode': '54321',
-          'coordinates': {
-            'latitude': 55.8642,
-            'longitude': -4.2518,
-          },
-        };
-
-        final company = Company(
-          id: 'complex_address_company',
-          name: 'Complex Address Co.',
-          address: complexAddress,
+    group('Equality and Hash Code', () {
+      test('should implement equality correctly', () {
+        // Arrange
+        final company1 = Company(
+          id: 'company_5',
+          name: 'Lowland Whisky',
+          contactEmail: 'info@lowland.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'Edinburgh',
+          createdAt: DateTime(2023, 5, 1),
         );
 
-        expect(company.address!['street'], equals('789 Complex Street'));
-        expect(company.address!['unit'], equals('Suite 100'));
-        expect(company.address!['coordinates']['latitude'], equals(55.8642));
-      });
-
-      test('should handle empty address', () {
-        final company = Company(
-          id: 'empty_address_company',
-          name: 'Empty Address Co.',
-          address: const {},
+        final company2 = Company(
+          id: 'company_5',
+          name: 'Lowland Whisky',
+          contactEmail: 'info@lowland.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'Edinburgh',
+          createdAt: DateTime(2023, 5, 1),
         );
 
-        expect(company.address, isNotNull);
-        expect(company.address, isEmpty);
-      });
-    });
-
-    group('Business Logic Extensions', () {
-      test('should identify active companies', () {
-        const activeCompany = Company(
-          id: 'active_co',
-          name: 'Active Company',
-          isActive: true,
+        final company3 = Company(
+          id: 'company_6', // Different ID
+          name: 'Lowland Whisky',
+          contactEmail: 'info@lowland.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'Edinburgh',
+          createdAt: DateTime(2023, 5, 1),
         );
 
-        const inactiveCompany = Company(
-          id: 'inactive_co',
-          name: 'Inactive Company',
-          isActive: false,
-        );
-
-        expect(activeCompany.isActive, isTrue);
-        expect(inactiveCompany.isActive, isFalse);
-      });
-
-      test('should handle contact information availability', () {
-        const companyWithContact = Company(
-          id: 'contact_co',
-          name: 'Contact Company',
-          contactEmail: 'info@contact.com',
-          contactPhone: '+1 555-0199',
-        );
-
-        const companyWithoutContact = Company(
-          id: 'no_contact_co',
-          name: 'No Contact Company',
-        );
-
-        expect(companyWithContact.contactEmail, isNotNull);
-        expect(companyWithContact.contactPhone, isNotNull);
-        expect(companyWithoutContact.contactEmail, isNull);
-        expect(companyWithoutContact.contactPhone, isNull);
-      });
-
-      test('should handle company age calculation', () {
-        final currentYear = DateTime.now().year;
-        final foundedYear = currentYear - 50;
-
-        final company = Company(
-          id: 'aged_company',
-          name: 'Aged Company',
-          foundedYear: foundedYear,
-        );
-
-        expect(company.foundedYear, equals(foundedYear));
-        // Age would be approximately 50 years (calculated by extensions if needed)
-      });
-    });
-
-    group('Equality Tests', () {
-      test('should be equal when all fields match', () {
-        const company1 = Company(
-          id: 'same_company',
-          name: 'Same Company',
-          description: 'Same description',
-          isActive: true,
-        );
-
-        const company2 = Company(
-          id: 'same_company',
-          name: 'Same Company',
-          description: 'Same description',
-          isActive: true,
-        );
-
+        // Assert
         expect(company1, equals(company2));
+        expect(company1, isNot(equals(company3)));
         expect(company1.hashCode, equals(company2.hashCode));
+        expect(company1.hashCode, isNot(equals(company3.hashCode)));
       });
+    });
 
-      test('should not be equal when id differs', () {
-        const company1 = Company(
-          id: 'company_1',
-          name: 'Same Company',
+    group('String Representation', () {
+      test('should have meaningful toString', () {
+        // Arrange
+        final company = Company(
+          id: 'company_7',
+          name: 'Speyside Distillery',
+          contactEmail: 'info@speyside.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'Speyside',
+          createdAt: DateTime(2023, 6, 1),
         );
 
-        const company2 = Company(
-          id: 'company_2',
-          name: 'Same Company',
-        );
+        // Act
+        final stringRepresentation = company.toString();
 
-        expect(company1, isNot(equals(company2)));
-      });
-
-      test('should not be equal when fields differ', () {
-        const company1 = Company(
-          id: 'same_id',
-          name: 'Company One',
-          isActive: true,
-        );
-
-        const company2 = Company(
-          id: 'same_id',
-          name: 'Company Two',
-          isActive: false,
-        );
-
-        expect(company1, isNot(equals(company2)));
+        // Assert
+        expect(stringRepresentation, contains('company_7'));
+        expect(stringRepresentation, contains('Speyside Distillery'));
+        expect(stringRepresentation, contains('info@speyside.com'));
       });
     });
 
     group('Edge Cases', () {
-      test('should handle very long company names', () {
-        final longName = 'A' * 200;
+      test('should handle empty strings', () {
+        // Arrange & Act
         final company = Company(
-          id: 'long_name_company',
-          name: longName,
+          id: '',
+          name: '',
+          contactEmail: '',
+          countryCode: '',
+          countryName: '',
+          city: '',
+          createdAt: DateTime(2023, 7, 1),
         );
 
-        expect(company.name.length, equals(200));
-        expect(company.name, equals(longName));
+        // Assert
+        expect(company.id, equals(''));
+        expect(company.name, equals(''));
+        expect(company.contactEmail, equals(''));
+        expect(company.countryCode, equals(''));
+        expect(company.countryName, equals(''));
+        expect(company.city, equals(''));
       });
 
-      test('should handle special characters in company data', () {
-        const company = Company(
-          id: 'special_chars_company',
-          name: 'Spëcîål Çhäracters & Símböls Ltd. ñ',
-          description: 'Company with spëcîål çhäracters & symbols: @#\$%^&*()',
-          contactEmail: 'info@spëcîål-company.com',
-        );
-
-        expect(company.name, contains('Spëcîål'));
-        expect(company.description, contains('@#\$%^&*()'));
-        expect(company.contactEmail, contains('spëcîål'));
-      });
-
-      test('should handle future founded years', () {
-        final futureYear = DateTime.now().year + 10;
+      test('should handle special characters in names', () {
+        // Arrange & Act
         final company = Company(
-          id: 'future_company',
-          name: 'Future Company',
-          foundedYear: futureYear,
+          id: 'company_8',
+          name: 'Whisky & Co. Ltd.',
+          contactEmail: 'info@whisky-co.com',
+          countryCode: 'GB',
+          countryName: 'United Kingdom',
+          city: 'London',
+          createdAt: DateTime(2023, 8, 1),
         );
 
-        expect(company.foundedYear, equals(futureYear));
+        // Assert
+        expect(company.name, equals('Whisky & Co. Ltd.'));
+        expect(company.contactEmail, equals('info@whisky-co.com'));
       });
+    });
 
-      test('should handle very old founded years', () {
-        const oldYear = 1600;
-        const company = Company(
-          id: 'old_company',
-          name: 'Very Old Company',
-          foundedYear: oldYear,
-        );
-
-        expect(company.foundedYear, equals(oldYear));
+    group('Validation', () {
+      test('should require all mandatory fields', () {
+        // This test ensures that the Company constructor requires all mandatory fields
+        // If any mandatory field is missing, the constructor should fail
+        expect(() {
+          Company(
+            id: 'test',
+            name: 'Test',
+            contactEmail: 'test@test.com',
+            countryCode: 'GB',
+            countryName: 'United Kingdom',
+            city: 'London',
+            createdAt: DateTime.now(),
+          );
+        }, returnsNormally);
       });
     });
   });

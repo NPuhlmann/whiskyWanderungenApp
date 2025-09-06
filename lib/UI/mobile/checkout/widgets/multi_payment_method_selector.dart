@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 
-import '../../../domain/models/payment_intent.dart';
-import '../../../data/services/payment/multi_payment_service.dart';
+import '../../../../domain/models/payment_intent.dart';
+import '../../../../data/services/payment/multi_payment_service.dart';
 
 /// Enhanced widget for selecting from multiple payment methods
 /// Supports Credit Cards, Apple Pay, Google Pay, PayPal, and SEPA

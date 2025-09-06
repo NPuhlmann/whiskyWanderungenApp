@@ -127,7 +127,10 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _WhiskySample():
-return $default(_that);}
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -186,7 +189,10 @@ return $default(_that.id,_that.name,_that.distillery,_that.age,_that.region,_tha
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String distillery,  int age,  String region, @JsonKey(name: 'tasting_notes')  String tastingNotes, @JsonKey(name: 'image_url')  String imageUrl,  double abv,  String? category, @JsonKey(name: 'sample_size_ml')  double sampleSizeMl, @JsonKey(name: 'order_index')  int orderIndex)  $default,) {final _that = this;
 switch (_that) {
 case _WhiskySample():
-return $default(_that.id,_that.name,_that.distillery,_that.age,_that.region,_that.tastingNotes,_that.imageUrl,_that.abv,_that.category,_that.sampleSizeMl,_that.orderIndex);}
+return $default(_that.id,_that.name,_that.distillery,_that.age,_that.region,_that.tastingNotes,_that.imageUrl,_that.abv,_that.category,_that.sampleSizeMl,_that.orderIndex);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -420,7 +426,10 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _TastingSet():
-return $default(_that);}
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -479,7 +488,10 @@ return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.samples
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'hike_id')  int hikeId,  String name,  String description,  List<WhiskySample> samples,  double price, @JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'is_included')  bool isIncluded, @JsonKey(name: 'is_available')  bool isAvailable, @JsonKey(name: 'available_from')  DateTime? availableFrom, @JsonKey(name: 'available_until')  DateTime? availableUntil, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _TastingSet():
-return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.samples,_that.price,_that.imageUrl,_that.isIncluded,_that.isAvailable,_that.availableFrom,_that.availableUntil,_that.createdAt,_that.updatedAt);}
+return $default(_that.id,_that.hikeId,_that.name,_that.description,_that.samples,_that.price,_that.imageUrl,_that.isIncluded,_that.isAvailable,_that.availableFrom,_that.availableUntil,_that.createdAt,_that.updatedAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `when` that fallback to returning `null`
 ///

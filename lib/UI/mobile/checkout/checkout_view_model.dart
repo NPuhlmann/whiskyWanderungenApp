@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:developer' as dev;
 
-import '../../data/repositories/payment_repository.dart';
-import '../../domain/models/basic_order.dart';
-import '../../domain/models/basic_payment_result.dart';
-import '../../domain/models/payment_intent.dart';
-import '../../config/routing/routes.dart';
+import '../../../data/repositories/payment_repository.dart';
+import '../../../domain/models/basic_order.dart';
+import '../../../domain/models/basic_payment_result.dart';
+import '../../../domain/models/payment_intent.dart';
+import '../../../config/routing/routes.dart';
 
 /// ViewModel for managing checkout state and payment processing
 class CheckoutViewModel extends ChangeNotifier {
@@ -54,7 +54,7 @@ class CheckoutViewModel extends ChangeNotifier {
     }
     
     // For shipping orders, delivery address is required
-    if (_order.deliveryType == DeliveryType.shipping) {
+    if (_order.deliveryType == DeliveryType.standardShipping || _order.deliveryType == DeliveryType.expressShipping) {
       if (_deliveryAddress == null) return false;
       
       // Check required address fields
@@ -129,7 +129,7 @@ class CheckoutViewModel extends ChangeNotifier {
 
       // Update order with delivery address if shipping
       BasicOrder orderToProcess = _order;
-      if (_order.deliveryType == DeliveryType.shipping && _deliveryAddress != null) {
+      if ((_order.deliveryType == DeliveryType.standardShipping || _order.deliveryType == DeliveryType.expressShipping) && _deliveryAddress != null) {
         orderToProcess = _order.copyWith(deliveryAddress: _deliveryAddress);
       }
 

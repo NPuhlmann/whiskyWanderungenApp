@@ -29,7 +29,7 @@ class LocationService {
   // Configuration constants
   static const double _waypointReachRadiusMeters = 10.0; // 10 Meter Radius
   static const int _locationUpdateIntervalMs = 2000; // 2 Sekunden
-  static const double _minimumDistanceFilterMeters = 5.0; // 5 Meter minimum bewegung
+  static const int _minimumDistanceFilterMeters = 5; // 5 Meter minimum bewegung
 
   /// Aktuelle GPS-Position als Stream
   Stream<Position> get positionStream {

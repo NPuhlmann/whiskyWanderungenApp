@@ -6,8 +6,9 @@ import 'widgets/order_summary.dart';
 import 'widgets/multi_payment_method_selector.dart';
 import 'widgets/delivery_address_form.dart';
 import 'widgets/checkout_button.dart';
-import '../../domain/models/basic_order.dart';
-import '../../data/repositories/payment_repository.dart';
+import '../../../domain/models/basic_order.dart';
+import '../../../data/repositories/payment_repository.dart';
+import '../../../config/l10n/app_localizations.dart';
 
 /// Main checkout page for processing hike purchases
 class CheckoutPage extends StatefulWidget {
@@ -107,7 +108,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       const SizedBox(height: 24),
 
                       // Delivery Address Form (only for shipping orders)
-                      if (widget.order.deliveryType == DeliveryType.shipping) ...[
+                      if (widget.order.requiresDeliveryAddress) ...[
                         const Text(
                           'Lieferadresse',
                           style: TextStyle(

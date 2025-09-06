@@ -155,7 +155,10 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _Hike():
-return $default(_that);}
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -214,7 +217,10 @@ return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_th
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  double length,  double steep,  int elevation,  String description,  double price,  Difficulty difficulty, @JsonKey(name: 'thumbnail_image_url')  String? thumbnailImageUrl, @JsonKey(name: 'is_favorite')  bool isFavorite, @JsonKey(name: 'company_id')  String? companyId,  Company? company,  bool isAvailable,  DateTime? availableFrom,  DateTime? availableUntil,  String category,  List<String> tags,  double averageRating,  int reviewCount, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Hike():
-return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite,_that.companyId,_that.company,_that.isAvailable,_that.availableFrom,_that.availableUntil,_that.category,_that.tags,_that.averageRating,_that.reviewCount,_that.createdAt,_that.updatedAt);}
+return $default(_that.id,_that.name,_that.length,_that.steep,_that.elevation,_that.description,_that.price,_that.difficulty,_that.thumbnailImageUrl,_that.isFavorite,_that.companyId,_that.company,_that.isAvailable,_that.availableFrom,_that.availableUntil,_that.category,_that.tags,_that.averageRating,_that.reviewCount,_that.createdAt,_that.updatedAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `when` that fallback to returning `null`
 ///

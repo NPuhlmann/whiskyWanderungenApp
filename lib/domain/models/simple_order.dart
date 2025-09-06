@@ -26,13 +26,13 @@ abstract class SimpleOrder with _$SimpleOrder {
 /// Extension for business logic on SimpleOrder
 extension SimpleOrderExtensions on SimpleOrder {
   /// Check if the order requires a delivery address
-  bool get requiresDeliveryAddress => deliveryType == DeliveryType.shipping;
+  bool get requiresDeliveryAddress => deliveryType == DeliveryType.standardShipping || deliveryType == DeliveryType.expressShipping;
   
   /// Check if the order can be cancelled
   bool get canBeCancelled => status == OrderStatus.pending || status == OrderStatus.confirmed;
   
   /// Get the delivery cost based on delivery type
-  double get deliveryCost => deliveryType == DeliveryType.shipping ? 5.0 : 0.0;
+  double get deliveryCost => (deliveryType == DeliveryType.standardShipping || deliveryType == DeliveryType.expressShipping) ? 5.0 : 0.0;
   
   /// Get base price (total minus delivery cost)
   double get basePrice => totalAmount - deliveryCost;

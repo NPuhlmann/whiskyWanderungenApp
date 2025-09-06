@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:typed_data';
 import 'dart:developer' as dev;
 
@@ -12,98 +13,47 @@ import '../../../domain/models/order.dart';
 import '../../../domain/models/tasting_set.dart';
 import '../../../domain/models/review.dart';
 import '../shipping/shipping_calculation_service.dart';
+import '../error/error_handler.dart';
+import 'profile_service.dart';
+import 'hike_service.dart';
+import '../../models/pagination_result.dart';
 
 class BackendApiService {
   final SupabaseClient client;
   late final ShippingCalculationService _shippingService;
+  late final ProfileService _profileService;
+  late final HikeService _hikeService;
   
   // Constructor für Dependency Injection in Tests
   BackendApiService({SupabaseClient? client}) 
       : client = client ?? Supabase.instance.client {
     _shippingService = ShippingCalculationService(this);
+    _profileService = ProfileService(client: client);
+    _hikeService = HikeService(client: client);
   }
 
   // Getter für ShippingCalculationService
-  String get supabaseUrl => client.supabaseUrl;
-  String get supabaseAnonKey => client.supabaseKey;
+  String get supabaseUrl => dotenv.env['SUPABASE_URL']!;
+  String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY']!;
 
   // get User Profile by id
   Future<Profile> getUserProfileById(String id) async {
-    final response = await client.from('profiles').select().eq('id', id);
-    if ((response as List<dynamic>).isEmpty) {
-      // Profil nicht gefunden - erstelle ein leeres Profil für die UI
-      dev.log('Profil nicht gefunden für Benutzer-ID: $id. Erstelle leeres Profil.');
-      return Profile(id: id);
-    }
-    
-    // Konvertiere die Antwort in ein Profil-Objekt
-    final Map<String, dynamic> profileData = response.first;
-    
-    // Erstelle ein neues Profil mit den Daten aus der Datenbank
-    return Profile.fromJson(profileData);
+    return await _profileService.getUserProfileById(id);
   }
   
   // get a list of hikes from the 'hikes' table
   Future<List<Hike>> fetchHikes() async {
-    final response = await client.from('hikes').select();
-    final List<dynamic> hikeData = response as List<dynamic>;
+    return await _hikeService.fetchHikes();
+  }
 
-    return hikeData.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
+  // get paginated hikes
+  Future<PaginationResult<Hike>> fetchHikesPaginated(PaginationParams params) async {
+    return await _hikeService.fetchHikesPaginated(params);
   }
 
   // get a list of hikes purchased by a user
   Future<List<Hike>> fetchUserHikes(String userId) async {
-    try {
-      // Verwende die korrekte Tabelle 'purchased_hikes'
-      final response = await client
-          .from('purchased_hikes')
-          .select('hike_id')
-          .eq('user_id', userId);
-      
-      final List<dynamic> userHikeData = response as List<dynamic>;
-      if (userHikeData.isEmpty) {
-        return [];
-      }
-
-      // Extrahiere die Hike-IDs und behandle mögliche Typprobleme
-      final List<int> hikeIds = [];
-      for (final element in userHikeData) {
-        if (element['hike_id'] != null) {
-          // Konvertiere zu int, unabhängig davon, ob es als String oder int gespeichert ist
-          hikeIds.add(int.parse(element['hike_id'].toString()));
-        }
-      }
-      
-      if (hikeIds.isEmpty) {
-        return [];
-      }
-
-      // Holen Sie sich die vollständigen Hike-Objekte für die IDs
-      List<Hike> userHikes = [];
-      for (final hikeId in hikeIds) {
-        try {
-          final hikeResponse = await client
-              .from('hikes')
-              .select()
-              .eq('id', hikeId);
-          
-          final List<dynamic> hikeDataList = hikeResponse as List<dynamic>;
-          if (hikeDataList.isNotEmpty) {
-            final hikeData = hikeDataList.first as Map<String, dynamic>;
-            userHikes.add(Hike.fromJson(hikeData));
-          }
-        } catch (e) {
-          // logging: 'Fehler beim Laden der Hike mit ID $hikeId: $e');
-          // Fahre mit der nächsten Hike fort
-          continue;
-        }
-      }
-      
-      return userHikes;
-    } catch (e) {
-      // logging: 'Fehler beim Laden der Benutzer-Hikes: $e');
-      return [];
-    }
+    return await _hikeService.fetchUserHikes(userId);
   }
 
   // Section for Hike Images
@@ -194,18 +144,7 @@ class BackendApiService {
       dev.log("Generierte öffentliche URL: $imageUrl");
       return imageUrl;
     } catch (e) {
-      dev.log("Fehler beim Hochladen des Profilbilds: $e", error: e);
-      
-      // Detaillierte Fehleranalyse
-      if (e.toString().contains('permission denied')) {
-        throw Exception("Keine Berechtigung zum Hochladen in den 'avatars' Bucket. Bitte überprüfen Sie die Supabase-Berechtigungen.");
-      } else if (e.toString().contains('network')) {
-        throw Exception("Netzwerkfehler beim Hochladen. Bitte überprüfen Sie Ihre Internetverbindung.");
-      } else if (e.toString().contains('PlatformException')) {
-        throw Exception("Plattformspezifischer Fehler: $e. Dies kann im Simulator auftreten.");
-      }
-      
-      rethrow;
+      throw ErrorHandler.createSafeException('Profile image upload', e);
     }
   }
 
@@ -431,7 +370,7 @@ class BackendApiService {
   // ======================================
 
   /// Fetch all orders for a specific user
-  Future<List<BasicOrder>> fetchUserOrders(String userId) async {
+  Future<List<basic.BasicOrder>> fetchUserOrders(String userId) async {
     if (userId.isEmpty) {
       throw ArgumentError('User ID cannot be empty');
     }
@@ -447,8 +386,8 @@ class BackendApiService {
 
       final List<dynamic> orderData = response as List<dynamic>;
 
-      List<BasicOrder> orders = orderData
-          .map<BasicOrder>((json) => BasicOrder.fromJson(json as Map<String, dynamic>))
+      List<basic.BasicOrder> orders = orderData
+          .map<basic.BasicOrder>((json) => basic.BasicOrder.fromJson(json as Map<String, dynamic>))
           .toList();
 
       dev.log('✅ Found ${orders.length} orders for user $userId');
@@ -462,7 +401,7 @@ class BackendApiService {
   }
 
   /// Fetch a specific order by ID
-  Future<BasicOrder> fetchOrderById(int orderId) async {
+  Future<basic.BasicOrder> fetchOrderById(int orderId) async {
     if (orderId <= 0) {
       throw ArgumentError('Order ID must be greater than 0');
     }
@@ -477,7 +416,7 @@ class BackendApiService {
           .single();
 
       dev.log('✅ Order $orderId fetched successfully');
-      return BasicOrder.fromJson(response);
+      return basic.BasicOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error fetching order $orderId: $e', error: e);
@@ -551,7 +490,7 @@ class BackendApiService {
   }
 
   /// Fetch order with payment details
-  Future<BasicOrder> fetchOrderWithPaymentDetails(int orderId) async {
+  Future<basic.BasicOrder> fetchOrderWithPaymentDetails(int orderId) async {
     if (orderId <= 0) {
       throw ArgumentError('Order ID must be greater than 0');
     }
@@ -566,7 +505,7 @@ class BackendApiService {
           .single();
 
       dev.log('✅ Order $orderId with payment details fetched');
-      return BasicOrder.fromJson(response);
+      return basic.BasicOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error fetching order with payment details: $e', error: e);
@@ -576,9 +515,9 @@ class BackendApiService {
   }
 
   /// Update order status after payment processing
-  Future<BasicOrder> updateOrderAfterPayment({
+  Future<basic.BasicOrder> updateOrderAfterPayment({
     required int orderId,
-    required OrderStatus status,
+    required basic.OrderStatus status,
     required String paymentIntentId,
   }) async {
     if (orderId <= 0) {
@@ -605,7 +544,7 @@ class BackendApiService {
           .single();
 
       dev.log('✅ Order $orderId updated after payment');
-      return BasicOrder.fromJson(response);
+      return basic.BasicOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error updating order after payment: $e', error: e);
@@ -1056,7 +995,7 @@ class BackendApiService {
   // ================================
 
   /// Create enhanced order with automatic shipping calculation
-  Future<EnhancedOrder> createEnhancedOrderWithShipping({
+  Future<enhanced.EnhancedOrder> createEnhancedOrderWithShipping({
     required String orderNumber,
     required String companyId,
     required String customerId,
@@ -1065,7 +1004,7 @@ class BackendApiService {
     double taxAmount = 0.0,
     String currency = 'EUR',
     required DeliveryAddress deliveryAddress,
-    DeliveryType deliveryType = DeliveryType.standardShipping,
+    basic.DeliveryType deliveryType = basic.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
     String? notes,
@@ -1079,7 +1018,7 @@ class BackendApiService {
       ShippingCostResult? shippingResult;
       double shippingCost = 0.0;
       
-      if (deliveryType != DeliveryType.pickup) {
+      if (deliveryType != basic.DeliveryType.pickup) {
         shippingResult = await _shippingService.calculateShippingCost(
           companyId: companyId,
           deliveryAddress: deliveryAddress,
@@ -1133,7 +1072,7 @@ class BackendApiService {
   }
 
   /// Create a new enhanced order (internal method)
-  Future<EnhancedOrder> createEnhancedOrder({
+  Future<enhanced.EnhancedOrder> createEnhancedOrder({
     required String orderNumber,
     required String companyId,
     required String customerId,
@@ -1145,7 +1084,7 @@ class BackendApiService {
     String currency = 'EUR',
     double baseAmount = 0.0,
     required DeliveryAddress deliveryAddress,
-    DeliveryType deliveryType = DeliveryType.standardShipping,
+    basic.DeliveryType deliveryType = basic.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
     String? notes,
@@ -1197,7 +1136,7 @@ class BackendApiService {
           .single();
 
       dev.log('✅ Enhanced order $orderNumber created successfully');
-      return EnhancedOrder.fromJson(response);
+      return enhanced.EnhancedOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error creating enhanced order: $e', error: e);
@@ -1207,7 +1146,7 @@ class BackendApiService {
   }
 
   /// Get enhanced order by ID
-  Future<EnhancedOrder?> getEnhancedOrderById(int orderId) async {
+  Future<enhanced.EnhancedOrder?> getEnhancedOrderById(int orderId) async {
     if (orderId <= 0) {
       throw ArgumentError('Order ID must be greater than 0');
     }
@@ -1227,7 +1166,7 @@ class BackendApiService {
       }
 
       dev.log('✅ Enhanced order $orderId fetched successfully');
-      return EnhancedOrder.fromJson(response);
+      return enhanced.EnhancedOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error fetching enhanced order $orderId: $e', error: e);
@@ -1237,7 +1176,7 @@ class BackendApiService {
   }
 
   /// Get enhanced order by order number
-  Future<EnhancedOrder?> getEnhancedOrderByNumber(String orderNumber) async {
+  Future<enhanced.EnhancedOrder?> getEnhancedOrderByNumber(String orderNumber) async {
     if (orderNumber.trim().isEmpty) {
       throw ArgumentError('Order number cannot be empty');
     }
@@ -1257,7 +1196,7 @@ class BackendApiService {
       }
 
       dev.log('✅ Enhanced order $orderNumber fetched successfully');
-      return EnhancedOrder.fromJson(response);
+      return enhanced.EnhancedOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error fetching enhanced order by number: $e', error: e);
@@ -1267,7 +1206,7 @@ class BackendApiService {
   }
 
   /// Get all enhanced orders for a customer
-  Future<List<EnhancedOrder>> getCustomerEnhancedOrders({
+  Future<List<enhanced.EnhancedOrder>> getCustomerEnhancedOrders({
     required String customerId,
     int limit = 50,
     int offset = 0,
@@ -1293,8 +1232,8 @@ class BackendApiService {
 
       final response = await query;
       final List<dynamic> orderData = response as List<dynamic>;
-      final List<EnhancedOrder> orders = orderData
-          .map<EnhancedOrder>((json) => EnhancedOrder.fromJson(json as Map<String, dynamic>))
+      final List<enhanced.EnhancedOrder> orders = orderData
+          .map<enhanced.EnhancedOrder>((json) => enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>))
           .toList();
 
       dev.log('✅ Found ${orders.length} enhanced orders for customer $customerId');
@@ -1308,7 +1247,7 @@ class BackendApiService {
   }
 
   /// Get all enhanced orders for a company
-  Future<List<EnhancedOrder>> getCompanyEnhancedOrders({
+  Future<List<enhanced.EnhancedOrder>> getCompanyEnhancedOrders({
     required String companyId,
     int limit = 100,
     int offset = 0,
@@ -1344,8 +1283,8 @@ class BackendApiService {
 
       final response = await query;
       final List<dynamic> orderData = response as List<dynamic>;
-      final List<EnhancedOrder> orders = orderData
-          .map<EnhancedOrder>((json) => EnhancedOrder.fromJson(json as Map<String, dynamic>))
+      final List<enhanced.EnhancedOrder> orders = orderData
+          .map<enhanced.EnhancedOrder>((json) => enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>))
           .toList();
 
       dev.log('✅ Found ${orders.length} enhanced orders for company $companyId');
@@ -1359,7 +1298,7 @@ class BackendApiService {
   }
 
   /// Update enhanced order status with automatic history tracking
-  Future<EnhancedOrder> updateEnhancedOrderStatus({
+  Future<enhanced.EnhancedOrder> updateEnhancedOrderStatus({
     required int orderId,
     required String newStatus,
     String? reason,
@@ -1398,7 +1337,7 @@ class BackendApiService {
           .single();
 
       dev.log('✅ Enhanced order $orderId status updated to $newStatus');
-      return EnhancedOrder.fromJson(response);
+      return enhanced.EnhancedOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error updating enhanced order status: $e', error: e);
@@ -1408,7 +1347,7 @@ class BackendApiService {
   }
 
   /// Add tracking information to enhanced order
-  Future<EnhancedOrder> addTrackingToEnhancedOrder({
+  Future<enhanced.EnhancedOrder> addTrackingToEnhancedOrder({
     required int orderId,
     required String trackingNumber,
     String? shippingCarrier,
@@ -1449,7 +1388,7 @@ class BackendApiService {
           .single();
 
       dev.log('✅ Tracking information added to enhanced order $orderId');
-      return EnhancedOrder.fromJson(response);
+      return enhanced.EnhancedOrder.fromJson(response);
 
     } catch (e) {
       dev.log('❌ Error adding tracking to enhanced order: $e', error: e);
@@ -1459,7 +1398,7 @@ class BackendApiService {
   }
 
   /// Get order status history
-  Future<List<OrderStatusChange>> getOrderStatusHistory(int orderId) async {
+  Future<List<enhanced.OrderStatusChange>> getOrderStatusHistory(int orderId) async {
     if (orderId <= 0) {
       throw ArgumentError('Order ID must be greater than 0');
     }
@@ -1474,8 +1413,8 @@ class BackendApiService {
           .order('changed_at', ascending: true);
 
       final List<dynamic> historyData = response as List<dynamic>;
-      final List<OrderStatusChange> history = historyData
-          .map<OrderStatusChange>((json) => OrderStatusChange.fromJson(json as Map<String, dynamic>))
+      final List<enhanced.OrderStatusChange> history = historyData
+          .map<enhanced.OrderStatusChange>((json) => enhanced.OrderStatusChange.fromJson(json as Map<String, dynamic>))
           .toList();
 
       dev.log('✅ Found ${history.length} status changes for order $orderId');
@@ -1536,8 +1475,8 @@ class BackendApiService {
   }
 
   /// Convert BasicOrder to EnhancedOrder
-  Future<EnhancedOrder> convertBasicToEnhancedOrder({
-    required BasicOrder basicOrder,
+  Future<enhanced.EnhancedOrder> convertBasicToEnhancedOrder({
+    required basic.BasicOrder basicOrder,
     required String companyId,
     required DeliveryAddress deliveryAddress,
     String? customerEmail,
@@ -1551,14 +1490,14 @@ class BackendApiService {
         companyId: companyId,
         customerId: basicOrder.userId,
         hikeId: basicOrder.hikeId,
-        subtotal: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.shipping ? 5.0 : 0.0),
-        shippingCost: basicOrder.deliveryType == basic.DeliveryType.shipping ? 5.0 : 0.0,
+        subtotal: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.standardShipping ? 5.0 : 0.0),
+        shippingCost: basicOrder.deliveryType == basic.DeliveryType.standardShipping ? 5.0 : 0.0,
         totalAmount: basicOrder.totalAmount,
-        baseAmount: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.shipping ? 5.0 : 0.0),
+        baseAmount: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.standardShipping ? 5.0 : 0.0),
         deliveryAddress: deliveryAddress,
-        deliveryType: basicOrder.deliveryType == basic.DeliveryType.shipping 
-            ? enhanced.DeliveryType.standardShipping 
-            : enhanced.DeliveryType.pickup,
+        deliveryType: basicOrder.deliveryType == basic.DeliveryType.standardShipping 
+            ? basic.DeliveryType.standardShipping 
+            : basic.DeliveryType.pickup,
         customerEmail: customerEmail,
         customerPhone: customerPhone,
         metadata: {

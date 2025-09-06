@@ -645,8 +645,44 @@ class OrderTrackingPage extends StatelessWidget {
   }
 
   String _formatEnhancedAddress(DeliveryAddress address) {
-    // TODO: Implement proper address formatting when DeliveryAddress model is available
-    return 'Adresse verfügbar';
+    final parts = <String>[];
+    
+    // Add full name
+    parts.add(address.fullName);
+    
+    // Add company if business address
+    if (address.company?.isNotEmpty == true) {
+      parts.add(address.company!);
+    }
+    
+    // Add address lines
+    parts.add(address.addressLine1);
+    if (address.addressLine2?.isNotEmpty == true) {
+      parts.add(address.addressLine2!);
+    }
+    
+    // Add city and postal code
+    parts.add('${address.postalCode} ${address.city}');
+    
+    // Add state if available
+    if (address.state?.isNotEmpty == true) {
+      parts.add(address.state!);
+    }
+    
+    // Add country
+    parts.add(address.countryName);
+    
+    // Add phone if available
+    if (address.phone?.isNotEmpty == true) {
+      parts.add('Tel: ${address.phone}');
+    }
+    
+    // Add delivery instructions if available
+    if (address.deliveryInstructions?.isNotEmpty == true) {
+      parts.add('Hinweise: ${address.deliveryInstructions}');
+    }
+    
+    return parts.join('\n');
   }
 
   void _showCancelOrderDialog(BuildContext context, dynamic order) {
@@ -676,23 +712,152 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  void _cancelOrder(BuildContext context, dynamic order) {
-    // TODO: Implement order cancellation logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Stornierung der Bestellung wurde angefordert'),
-        backgroundColor: Colors.orange,
+  void _cancelOrder(BuildContext context, dynamic order) async {
+    final viewModel = Provider.of<OrderTrackingViewModel>(context, listen: false);
+    
+    try {
+      // Show loading state
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+      
+      // Attempt to cancel the order
+      await viewModel.cancelOrder();
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Bestellung wurde erfolgreich storniert'),
+          backgroundColor: Colors.green,
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
+      );
+      
+      // Refresh order data
+      viewModel.retry();
+      
+    } catch (e) {
+      // Close loading dialog if open
+      Navigator.of(context).pop();
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Fehler beim Stornieren: ${e.toString()}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          action: SnackBarAction(
+            label: 'Erneut versuchen',
+            onPressed: () => _cancelOrder(context, order),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _contactSupport(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: Icon(
+          Icons.support_agent,
+          color: Theme.of(context).colorScheme.primary,
+          size: 48,
+        ),
+        title: const Text('Support kontaktieren'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Wie möchten Sie uns erreichen?',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: const Text('E-Mail Support'),
+              subtitle: const Text('support@whisky-hikes.de'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _openEmailSupport(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.phone),
+              title: const Text('Telefon Support'),
+              subtitle: const Text('+49 (0) 123 456 7890'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _openPhoneSupport(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.chat),
+              title: const Text('Live Chat'),
+              subtitle: const Text('Mo-Fr 9:00-18:00 Uhr'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _openLiveChat(context);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Abbrechen'),
+          ),
+        ],
       ),
     );
   }
 
-  void _contactSupport(BuildContext context) {
-    // TODO: Implement contact support logic
+  void _openEmailSupport(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Kontaktiere Support...'),
-        backgroundColor: Colors.blue,
+      SnackBar(
+        content: const Text('E-Mail-App wird geöffnet...'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(seconds: 2),
       ),
     );
+    
+    // Here you would implement email launching:
+    // await launch('mailto:support@whisky-hikes.de?subject=Bestellungsanfrage');
+  }
+
+  void _openPhoneSupport(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Telefon-App wird geöffnet...'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // Here you would implement phone calling:
+    // await launch('tel:+491234567890');
+  }
+
+  void _openLiveChat(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Live Chat wird geöffnet...'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // Here you would implement live chat integration:
+    // Navigator.push(context, MaterialPageRoute(builder: (_) => LiveChatPage()));
   }
 }
