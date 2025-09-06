@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mockito/mockito.dart';
-import 'package:whisky_hikes/UI/hike_map/hike_map_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/hike_map/hike_map_view_model.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
 
 import '../../mocks/mock_repositories.dart';

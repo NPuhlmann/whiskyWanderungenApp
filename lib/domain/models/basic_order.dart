@@ -22,7 +22,7 @@ enum DeliveryType {
 }
 
 @freezed
-class BasicOrder with _$BasicOrder {
+abstract class BasicOrder with _$BasicOrder {
   const factory BasicOrder({
     required int id,
     required String orderNumber,

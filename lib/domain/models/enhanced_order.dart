@@ -5,7 +5,7 @@ part 'enhanced_order.freezed.dart';
 part 'enhanced_order.g.dart';
 
 @freezed
-class EnhancedOrder with _$EnhancedOrder {
+abstract class EnhancedOrder with _$EnhancedOrder {
   const factory EnhancedOrder({
     required int id,
     required String orderNumber,
@@ -34,7 +34,7 @@ class EnhancedOrder with _$EnhancedOrder {
 }
 
 @freezed
-class OrderStatusChange with _$OrderStatusChange {
+abstract class OrderStatusChange with _$OrderStatusChange {
   const factory OrderStatusChange({
     required int id,
     required int orderId,

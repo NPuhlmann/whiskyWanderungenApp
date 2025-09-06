@@ -1,35 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'basic_order.dart';
 
 part 'order.freezed.dart';
 part 'order.g.dart';
 
-/// Order status enum for tracking order progression
-enum OrderStatus {
-  @JsonValue('pending')
-  pending,
-  @JsonValue('confirmed')
-  confirmed,
-  @JsonValue('processing')
-  processing,
-  @JsonValue('shipped')
-  shipped,
-  @JsonValue('delivered')
-  delivered,
-  @JsonValue('cancelled')
-  cancelled
-}
-
-/// Delivery type enum for order fulfillment
-enum DeliveryType {
-  @JsonValue('pickup')
-  pickup,
-  @JsonValue('shipping')
-  shipping
-}
+// Use enums from basic_order.dart
 
 /// Order model representing a completed purchase
 @freezed
-class Order with _$Order {
+abstract class Order with _$Order {
   const factory Order({
     required int id,
     required String orderNumber,
