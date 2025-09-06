@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'basic_order.freezed.dart';
 part 'basic_order.g.dart';
 
+
 /// Order status enum for tracking order progression
 enum OrderStatus {
   pending,

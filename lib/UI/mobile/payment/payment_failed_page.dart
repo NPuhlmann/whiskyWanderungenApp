@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../config/routing/routes.dart';
+import '../../../config/routing/routes.dart';
 
 /// Page displayed after failed payment
 class PaymentFailedPage extends StatelessWidget {

@@ -15,7 +15,7 @@ _EnhancedOrder _$EnhancedOrderFromJson(Map<String, dynamic> json) =>
       totalAmount: (json['totalAmount'] as num).toDouble(),
       currency: json['currency'] as String,
       deliveryType: $enumDecode(_$DeliveryTypeEnumMap, json['deliveryType']),
-      status: $enumDecode(_$OrderStatusEnumMap, json['status']),
+      status: $enumDecode(_$EnhancedOrderStatusEnumMap, json['status']),
       createdAt: DateTime.parse(json['createdAt'] as String),
       estimatedDelivery:
           json['estimatedDelivery'] == null
@@ -39,6 +39,14 @@ _EnhancedOrder _$EnhancedOrderFromJson(Map<String, dynamic> json) =>
               .toList(),
       shippingDetails: json['shippingDetails'] as Map<String, dynamic>?,
       canBeTracked: json['canBeTracked'] as bool?,
+      baseAmount: (json['baseAmount'] as num?)?.toDouble(),
+      shippingCost: (json['shippingCost'] as num?)?.toDouble(),
+      shippingService: json['shippingService'] as String?,
+      actualDelivery:
+          json['actualDelivery'] == null
+              ? null
+              : DateTime.parse(json['actualDelivery'] as String),
+      trackingUrl: json['trackingUrl'] as String?,
     );
 
 Map<String, dynamic> _$EnhancedOrderToJson(_EnhancedOrder instance) =>
@@ -50,7 +58,7 @@ Map<String, dynamic> _$EnhancedOrderToJson(_EnhancedOrder instance) =>
       'totalAmount': instance.totalAmount,
       'currency': instance.currency,
       'deliveryType': _$DeliveryTypeEnumMap[instance.deliveryType]!,
-      'status': _$OrderStatusEnumMap[instance.status]!,
+      'status': _$EnhancedOrderStatusEnumMap[instance.status]!,
       'createdAt': instance.createdAt.toIso8601String(),
       'estimatedDelivery': instance.estimatedDelivery?.toIso8601String(),
       'trackingNumber': instance.trackingNumber,
@@ -63,6 +71,11 @@ Map<String, dynamic> _$EnhancedOrderToJson(_EnhancedOrder instance) =>
       'statusHistory': instance.statusHistory,
       'shippingDetails': instance.shippingDetails,
       'canBeTracked': instance.canBeTracked,
+      'baseAmount': instance.baseAmount,
+      'shippingCost': instance.shippingCost,
+      'shippingService': instance.shippingService,
+      'actualDelivery': instance.actualDelivery?.toIso8601String(),
+      'trackingUrl': instance.trackingUrl,
     };
 
 const _$DeliveryTypeEnumMap = {
@@ -71,34 +84,47 @@ const _$DeliveryTypeEnumMap = {
   DeliveryType.expressShipping: 'expressShipping',
 };
 
-const _$OrderStatusEnumMap = {
-  OrderStatus.pending: 'pending',
-  OrderStatus.confirmed: 'confirmed',
-  OrderStatus.processing: 'processing',
-  OrderStatus.shipped: 'shipped',
-  OrderStatus.delivered: 'delivered',
-  OrderStatus.cancelled: 'cancelled',
-  OrderStatus.failed: 'failed',
+const _$EnhancedOrderStatusEnumMap = {
+  EnhancedOrderStatus.pending: 'pending',
+  EnhancedOrderStatus.paymentPending: 'paymentPending',
+  EnhancedOrderStatus.confirmed: 'confirmed',
+  EnhancedOrderStatus.processing: 'processing',
+  EnhancedOrderStatus.shipped: 'shipped',
+  EnhancedOrderStatus.outForDelivery: 'outForDelivery',
+  EnhancedOrderStatus.delivered: 'delivered',
+  EnhancedOrderStatus.cancelled: 'cancelled',
+  EnhancedOrderStatus.refunded: 'refunded',
+  EnhancedOrderStatus.failed: 'failed',
 };
 
 _OrderStatusChange _$OrderStatusChangeFromJson(Map<String, dynamic> json) =>
     _OrderStatusChange(
       id: (json['id'] as num).toInt(),
       orderId: (json['orderId'] as num).toInt(),
-      oldStatus: $enumDecode(_$OrderStatusEnumMap, json['oldStatus']),
-      newStatus: $enumDecode(_$OrderStatusEnumMap, json['newStatus']),
+      oldStatus: $enumDecode(_$EnhancedOrderStatusEnumMap, json['oldStatus']),
+      newStatus: $enumDecode(_$EnhancedOrderStatusEnumMap, json['newStatus']),
       changedAt: DateTime.parse(json['changedAt'] as String),
       reason: json['reason'] as String?,
       changedBy: json['changedBy'] as String?,
+      fromStatus: $enumDecodeNullable(
+        _$EnhancedOrderStatusEnumMap,
+        json['from_status'],
+      ),
+      toStatus: $enumDecodeNullable(
+        _$EnhancedOrderStatusEnumMap,
+        json['to_status'],
+      ),
     );
 
 Map<String, dynamic> _$OrderStatusChangeToJson(_OrderStatusChange instance) =>
     <String, dynamic>{
       'id': instance.id,
       'orderId': instance.orderId,
-      'oldStatus': _$OrderStatusEnumMap[instance.oldStatus]!,
-      'newStatus': _$OrderStatusEnumMap[instance.newStatus]!,
+      'oldStatus': _$EnhancedOrderStatusEnumMap[instance.oldStatus]!,
+      'newStatus': _$EnhancedOrderStatusEnumMap[instance.newStatus]!,
       'changedAt': instance.changedAt.toIso8601String(),
       'reason': instance.reason,
       'changedBy': instance.changedBy,
+      'from_status': _$EnhancedOrderStatusEnumMap[instance.fromStatus],
+      'to_status': _$EnhancedOrderStatusEnumMap[instance.toStatus],
     };

@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../data/services/database/backend_api.dart';
-import '../../domain/models/basic_order.dart';
-import '../../config/routing/routes.dart';
+import '../../../data/services/database/backend_api.dart';
+import '../../../domain/models/basic_order.dart';
+import '../../../config/routing/routes.dart';
 
 /// Page displaying user's order history
 class OrderHistoryPage extends StatefulWidget {
@@ -319,6 +319,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         backgroundColor = Colors.red.withValues(alpha:0.2);
         textColor = Colors.red.shade700;
         text = 'Storniert';
+        break;
+      case OrderStatus.failed:
+        backgroundColor = Colors.red.withValues(alpha:0.2);
+        textColor = Colors.red.shade700;
+        text = 'Fehlgeschlagen';
         break;
     }
 

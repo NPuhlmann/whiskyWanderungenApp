@@ -42,7 +42,7 @@ void main() {
           hikeId: 42,
           userId: 'integration-test-user',
           totalAmount: 35.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );
@@ -145,7 +145,7 @@ void main() {
           hikeId: 10,
           userId: 'shipping-test-user',
           totalAmount: 30.99, // 25.99 + 5.00 shipping
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
           deliveryAddress: {
@@ -248,7 +248,7 @@ void main() {
           hikeId: 8,
           userId: '3ds-test-user',
           totalAmount: 55.00,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );
@@ -375,6 +375,10 @@ void main() {
               expect(order.canBeCancelled, isFalse);
               expect(order.isFinalStatus, isTrue);
               break;
+            case OrderStatus.failed:
+              expect(order.canBeCancelled, isFalse);
+              expect(order.isFinalStatus, isTrue);
+              break;
           }
         }
 
@@ -389,7 +393,7 @@ void main() {
           hikeId: 1,
           userId: 'cost-test-user',
           totalAmount: 30.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );
@@ -474,7 +478,7 @@ void main() {
           hikeId: 20,
           userId: 'consistency-test-user',
           totalAmount: 35.00,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );

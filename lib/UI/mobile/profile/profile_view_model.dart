@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 
-import '../../data/repositories/user_repository.dart';
-import '../../domain/models/profile.dart';
+import '../../../data/repositories/user_repository.dart';
+import '../../../domain/models/profile.dart';
 
 class ProfilePageViewModel extends ChangeNotifier{
   ProfilePageViewModel({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../domain/models/enhanced_order.dart';
-import '../../../domain/models/basic_order.dart';
+import '../../../../domain/models/enhanced_order.dart';
+import '../../../../domain/models/basic_order.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Widget for displaying order status progression in a timeline format
 class OrderStatusTimeline extends StatelessWidget {
@@ -28,9 +29,9 @@ class OrderStatusTimeline extends StatelessWidget {
     } else if (order is BasicOrder) {
       return _buildBasicTimeline(context, order as BasicOrder);
     } else {
-      return const Card(
+      return Card(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Text(AppLocalizations.of(context)!.unknownOrderType),
         ),
       );
@@ -61,7 +62,7 @@ class OrderStatusTimeline extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            _buildTimelineSteps(context, _getEnhancedStatusSteps(currentStatus), statusHistory),
+            _buildTimelineSteps(context, _getEnhancedStatusSteps(currentStatus), statusHistory ?? []),
           ],
         ),
       ),
@@ -327,6 +328,8 @@ class OrderStatusTimeline extends StatelessWidget {
         return 'Zugestellt';
       case OrderStatus.cancelled:
         return 'Storniert';
+      case OrderStatus.failed:
+        return 'Fehlgeschlagen';
     }
   }
 
@@ -369,6 +372,8 @@ class OrderStatusTimeline extends StatelessWidget {
         return 'Dein Paket wurde erfolgreich zugestellt';
       case OrderStatus.cancelled:
         return 'Bestellung wurde storniert';
+      case OrderStatus.failed:
+        return 'Bestellung konnte nicht verarbeitet werden';
     }
   }
 

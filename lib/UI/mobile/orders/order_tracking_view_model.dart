@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../domain/models/enhanced_order.dart';
-import '../../domain/models/basic_order.dart';
-import '../../data/repositories/payment_repository.dart';
-import '../../data/services/payment/stripe_service.dart';
+import '../../../domain/models/enhanced_order.dart';
+import '../../../domain/models/basic_order.dart';
+import '../../../data/repositories/payment_repository.dart';
+import '../../../data/services/payment/stripe_service.dart';
 
 /// ViewModel for managing order tracking state and business logic
 class OrderTrackingViewModel extends ChangeNotifier {
@@ -163,18 +163,22 @@ class OrderTrackingViewModel extends ChangeNotifier {
   /// Get order status history
   List<OrderStatusChange> getOrderStatusHistory() {
     if (useEnhancedOrder && _enhancedOrder != null) {
-      return _enhancedOrder!.statusHistory;
+      return _enhancedOrder!.statusHistory ?? [];
     }
     
     // For basic orders, create a simple history from current status
     if (_order != null) {
       return [
         OrderStatusChange(
-          fromStatus: _mapBasicToEnhancedStatus(_order!.status),
-          toStatus: _mapBasicToEnhancedStatus(_order!.status),
+          id: 0, // Temporary ID for basic orders
+          orderId: _order!.id,
+          oldStatus: _mapBasicToEnhancedStatus(_order!.status),
+          newStatus: _mapBasicToEnhancedStatus(_order!.status),
           changedAt: _order!.createdAt,
           reason: 'Bestellung erstellt',
           changedBy: 'system',
+          fromStatus: _mapBasicToEnhancedStatus(_order!.status),
+          toStatus: _mapBasicToEnhancedStatus(_order!.status),
         ),
       ];
     }
@@ -197,6 +201,8 @@ class OrderTrackingViewModel extends ChangeNotifier {
         return EnhancedOrderStatus.delivered;
       case OrderStatus.cancelled:
         return EnhancedOrderStatus.cancelled;
+      case OrderStatus.failed:
+        return EnhancedOrderStatus.failed;
     }
   }
 
@@ -213,7 +219,7 @@ class OrderTrackingViewModel extends ChangeNotifier {
   /// Check if order can be tracked
   bool get canTrackOrder {
     if (useEnhancedOrder && _enhancedOrder != null) {
-      return _enhancedOrder!.canBeTracked;
+      return _enhancedOrder!.canBeTracked ?? false;
     } else if (_order != null) {
       return _order!.trackingNumber?.isNotEmpty == true &&
              [OrderStatus.shipped, OrderStatus.delivered].contains(_order!.status);

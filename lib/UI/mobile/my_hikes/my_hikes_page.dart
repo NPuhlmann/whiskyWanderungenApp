@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
-import 'package:whisky_hikes/UI/home/widgets/card_widget.dart';
-import 'package:whisky_hikes/UI/my_hikes/my_hikes_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/home/widgets/card_widget.dart';
+import 'package:whisky_hikes/UI/mobile/my_hikes/my_hikes_view_model.dart';
 
-import '../../domain/models/hike.dart';
+import '../../../domain/models/hike.dart';
 
 class MyHikesPage extends StatefulWidget {
   const MyHikesPage({super.key, required this.viewModel});

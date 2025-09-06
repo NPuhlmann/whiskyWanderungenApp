@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:whisky_hikes/UI/auth/login/login_page.dart';
-import 'package:whisky_hikes/UI/auth/login/login_page_view_model.dart';
-import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
-import 'package:whisky_hikes/UI/hike_details/hike_details_page.dart';
-import 'package:whisky_hikes/UI/hike_map/hike_map_page.dart';
-import 'package:whisky_hikes/UI/home/home_page.dart';
-import 'package:whisky_hikes/UI/my_hikes/my_hikes_page.dart';
-import 'package:whisky_hikes/UI/profile/profile_page.dart';
-import 'package:whisky_hikes/UI/profile/profile_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/auth/login/login_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/login/login_page_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/auth/signup/signup_page.dart';
+import 'package:whisky_hikes/UI/mobile/hike_details/hike_details_page.dart';
+import 'package:whisky_hikes/UI/mobile/hike_map/hike_map_page.dart';
+import 'package:whisky_hikes/UI/mobile/home/home_page.dart';
+import 'package:whisky_hikes/UI/mobile/my_hikes/my_hikes_page.dart';
+import 'package:whisky_hikes/UI/mobile/profile/profile_page.dart';
+import 'package:whisky_hikes/UI/mobile/profile/profile_view_model.dart';
 import 'package:whisky_hikes/UI/mobile/checkout/checkout_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/payment_success_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/payment_failed_page.dart';
@@ -21,11 +21,11 @@ import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 
-import '../../UI/auth/signup/sign_up_page_view_model.dart';
+import '../../UI/mobile/auth/signup/sign_up_page_view_model.dart';
 import '../../UI/core/scaffold_with_navigation_bar.dart';
-import '../../UI/hike_details/hike_details_view_model.dart';
-import '../../UI/home/home_view_model.dart';
-import '../../UI/my_hikes/my_hikes_view_model.dart';
+import '../../UI/mobile/hike_details/hike_details_view_model.dart';
+import '../../UI/mobile/home/home_view_model.dart';
+import '../../UI/mobile/my_hikes/my_hikes_view_model.dart';
 
 GoRouter router(UserRepository authRepository) => GoRouter(
         initialLocation: Routes.home,

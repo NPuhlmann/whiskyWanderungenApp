@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../domain/models/enhanced_order.dart' as enhanced;
-import '../../../domain/models/basic_order.dart' as basic;
+import '../../../../domain/models/enhanced_order.dart' as enhanced;
+import '../../../../domain/models/basic_order.dart' as basic;
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Widget for displaying tracking information for shipped orders
@@ -34,7 +34,7 @@ class TrackingInfoCard extends StatelessWidget {
   }
 
   Widget _buildEnhancedTrackingInfo(BuildContext context, enhanced.EnhancedOrder order) {
-    if (!order.canBeTracked) {
+    if (!(order.canBeTracked ?? false)) {
       return const SizedBox.shrink();
     }
 

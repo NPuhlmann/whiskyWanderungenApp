@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../domain/models/enhanced_order.dart' as enhanced;
-import '../../../domain/models/basic_order.dart' as basic;
+import '../../../../domain/models/enhanced_order.dart' as enhanced;
+import '../../../../domain/models/basic_order.dart' as basic;
 
 /// Widget for displaying shipping information for orders
 class ShippingInfoCard extends StatelessWidget {
@@ -33,7 +33,7 @@ class ShippingInfoCard extends StatelessWidget {
   }
 
   Widget _buildEnhancedShippingInfo(BuildContext context, enhanced.EnhancedOrder order) {
-    if (order.deliveryType == enhanced.DeliveryType.pickup) {
+    if (order.deliveryType == basic.DeliveryType.pickup) {
       return const SizedBox.shrink();
     }
 
@@ -112,7 +112,7 @@ class ShippingInfoCard extends StatelessWidget {
         _buildInfoRow(
           context,
           'Versandkosten',
-          '€${order.shippingCost.toStringAsFixed(2)}',
+          '€${(order.shippingCost ?? 0.0).toStringAsFixed(2)}',
         ),
         const SizedBox(height: 8),
 

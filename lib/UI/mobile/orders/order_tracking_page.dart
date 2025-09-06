@@ -146,13 +146,13 @@ class OrderTrackingPage extends StatelessWidget {
           ],
 
           // Shipping Information (if applicable)
-          if (order.deliveryType != enhanced.DeliveryType.pickup) ...[
+          if (order.deliveryType != basic.DeliveryType.pickup) ...[
             ShippingInfoCard.enhanced(order: order),
             const SizedBox(height: 24),
           ],
 
           // Tracking Information (if available)
-          if (order.canBeTracked) ...[
+          if (order.canBeTracked ?? false) ...[
             TrackingInfoCard.enhanced(order: order),
             const SizedBox(height: 24),
           ],
@@ -361,7 +361,7 @@ class OrderTrackingPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              _formatEnhancedAddress(order.deliveryAddress!),
+              _formatEnhancedAddressFromMap(order.deliveryAddress!),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
@@ -433,14 +433,14 @@ class OrderTrackingPage extends StatelessWidget {
             _buildInfoRow(
               context,
               'Basispreis',
-              '€${order.baseAmount.toStringAsFixed(2)}',
+              '€${(order.baseAmount ?? 0.0).toStringAsFixed(2)}',
             ),
-            if (order.shippingCost > 0) ...[
+            if ((order.shippingCost ?? 0.0) > 0) ...[
               const SizedBox(height: 8),
               _buildInfoRow(
                 context,
                 'Versandkosten',
-                '€${order.shippingCost.toStringAsFixed(2)}',
+                '€${(order.shippingCost ?? 0.0).toStringAsFixed(2)}',
               ),
             ],
             if (order.estimatedDelivery != null) ...[
@@ -610,6 +610,7 @@ class OrderTrackingPage extends StatelessWidget {
       case basic.OrderStatus.delivered:
         return Colors.green;
       case basic.OrderStatus.cancelled:
+      case basic.OrderStatus.failed:
         return Theme.of(context).colorScheme.error;
     }
   }
@@ -628,6 +629,8 @@ class OrderTrackingPage extends StatelessWidget {
         return 'Zugestellt';
       case basic.OrderStatus.cancelled:
         return 'Storniert';
+      case basic.OrderStatus.failed:
+        return 'Fehlgeschlagen';
     }
   }
 
@@ -680,6 +683,60 @@ class OrderTrackingPage extends StatelessWidget {
     // Add delivery instructions if available
     if (address.deliveryInstructions?.isNotEmpty == true) {
       parts.add('Hinweise: ${address.deliveryInstructions}');
+    }
+    
+    return parts.join('\n');
+  }
+
+  String _formatEnhancedAddressFromMap(Map<String, dynamic> addressMap) {
+    final parts = <String>[];
+    
+    // Add full name
+    if (addressMap['fullName'] != null) {
+      parts.add(addressMap['fullName']);
+    }
+    
+    // Add company if business address
+    if (addressMap['company']?.isNotEmpty == true) {
+      parts.add(addressMap['company']);
+    }
+    
+    // Add address lines
+    if (addressMap['addressLine1'] != null) {
+      parts.add(addressMap['addressLine1']);
+    }
+    if (addressMap['addressLine2']?.isNotEmpty == true) {
+      parts.add(addressMap['addressLine2']);
+    }
+    
+    // Add city, state, postal code
+    final cityStateZip = <String>[];
+    if (addressMap['city'] != null) {
+      cityStateZip.add(addressMap['city']);
+    }
+    if (addressMap['state']?.isNotEmpty == true) {
+      cityStateZip.add(addressMap['state']);
+    }
+    if (addressMap['postalCode'] != null) {
+      cityStateZip.add(addressMap['postalCode']);
+    }
+    if (cityStateZip.isNotEmpty) {
+      parts.add(cityStateZip.join(', '));
+    }
+    
+    // Add country
+    if (addressMap['country'] != null) {
+      parts.add(addressMap['country']);
+    }
+    
+    // Add phone if available
+    if (addressMap['phone']?.isNotEmpty == true) {
+      parts.add('Tel: ${addressMap['phone']}');
+    }
+    
+    // Add delivery instructions if available
+    if (addressMap['deliveryInstructions']?.isNotEmpty == true) {
+      parts.add('Hinweise: ${addressMap['deliveryInstructions']}');
     }
     
     return parts.join('\n');

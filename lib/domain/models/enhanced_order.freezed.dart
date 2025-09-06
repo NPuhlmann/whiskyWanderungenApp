@@ -15,8 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EnhancedOrder {
 
- int get id; String get orderNumber; int get hikeId; String get userId; double get totalAmount; String get currency; DeliveryType get deliveryType; OrderStatus get status; DateTime get createdAt; DateTime? get estimatedDelivery; String? get trackingNumber; Map<String, dynamic>? get deliveryAddress; String? get paymentIntentId; DateTime? get updatedAt;// Enhanced fields
- String? get companyId; String? get customerEmail; String? get customerPhone; List<OrderStatusChange>? get statusHistory; Map<String, dynamic>? get shippingDetails; bool? get canBeTracked;
+ int get id; String get orderNumber; int get hikeId; String get userId; double get totalAmount; String get currency; DeliveryType get deliveryType; EnhancedOrderStatus get status; DateTime get createdAt; DateTime? get estimatedDelivery; String? get trackingNumber; Map<String, dynamic>? get deliveryAddress; String? get paymentIntentId; DateTime? get updatedAt;// Enhanced fields
+ String? get companyId; String? get customerEmail; String? get customerPhone; List<OrderStatusChange>? get statusHistory; Map<String, dynamic>? get shippingDetails; bool? get canBeTracked;// Additional fields for enhanced functionality
+ double? get baseAmount; double? get shippingCost; String? get shippingService; DateTime? get actualDelivery; String? get trackingUrl;
 /// Create a copy of EnhancedOrder
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +30,16 @@ $EnhancedOrderCopyWith<EnhancedOrder> get copyWith => _$EnhancedOrderCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnhancedOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.orderNumber, orderNumber) || other.orderNumber == orderNumber)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.deliveryType, deliveryType) || other.deliveryType == deliveryType)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.estimatedDelivery, estimatedDelivery) || other.estimatedDelivery == estimatedDelivery)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&const DeepCollectionEquality().equals(other.deliveryAddress, deliveryAddress)&&(identical(other.paymentIntentId, paymentIntentId) || other.paymentIntentId == paymentIntentId)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.customerEmail, customerEmail) || other.customerEmail == customerEmail)&&(identical(other.customerPhone, customerPhone) || other.customerPhone == customerPhone)&&const DeepCollectionEquality().equals(other.statusHistory, statusHistory)&&const DeepCollectionEquality().equals(other.shippingDetails, shippingDetails)&&(identical(other.canBeTracked, canBeTracked) || other.canBeTracked == canBeTracked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnhancedOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.orderNumber, orderNumber) || other.orderNumber == orderNumber)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.deliveryType, deliveryType) || other.deliveryType == deliveryType)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.estimatedDelivery, estimatedDelivery) || other.estimatedDelivery == estimatedDelivery)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&const DeepCollectionEquality().equals(other.deliveryAddress, deliveryAddress)&&(identical(other.paymentIntentId, paymentIntentId) || other.paymentIntentId == paymentIntentId)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.customerEmail, customerEmail) || other.customerEmail == customerEmail)&&(identical(other.customerPhone, customerPhone) || other.customerPhone == customerPhone)&&const DeepCollectionEquality().equals(other.statusHistory, statusHistory)&&const DeepCollectionEquality().equals(other.shippingDetails, shippingDetails)&&(identical(other.canBeTracked, canBeTracked) || other.canBeTracked == canBeTracked)&&(identical(other.baseAmount, baseAmount) || other.baseAmount == baseAmount)&&(identical(other.shippingCost, shippingCost) || other.shippingCost == shippingCost)&&(identical(other.shippingService, shippingService) || other.shippingService == shippingService)&&(identical(other.actualDelivery, actualDelivery) || other.actualDelivery == actualDelivery)&&(identical(other.trackingUrl, trackingUrl) || other.trackingUrl == trackingUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,orderNumber,hikeId,userId,totalAmount,currency,deliveryType,status,createdAt,estimatedDelivery,trackingNumber,const DeepCollectionEquality().hash(deliveryAddress),paymentIntentId,updatedAt,companyId,customerEmail,customerPhone,const DeepCollectionEquality().hash(statusHistory),const DeepCollectionEquality().hash(shippingDetails),canBeTracked]);
+int get hashCode => Object.hashAll([runtimeType,id,orderNumber,hikeId,userId,totalAmount,currency,deliveryType,status,createdAt,estimatedDelivery,trackingNumber,const DeepCollectionEquality().hash(deliveryAddress),paymentIntentId,updatedAt,companyId,customerEmail,customerPhone,const DeepCollectionEquality().hash(statusHistory),const DeepCollectionEquality().hash(shippingDetails),canBeTracked,baseAmount,shippingCost,shippingService,actualDelivery,trackingUrl]);
 
 @override
 String toString() {
-  return 'EnhancedOrder(id: $id, orderNumber: $orderNumber, hikeId: $hikeId, userId: $userId, totalAmount: $totalAmount, currency: $currency, deliveryType: $deliveryType, status: $status, createdAt: $createdAt, estimatedDelivery: $estimatedDelivery, trackingNumber: $trackingNumber, deliveryAddress: $deliveryAddress, paymentIntentId: $paymentIntentId, updatedAt: $updatedAt, companyId: $companyId, customerEmail: $customerEmail, customerPhone: $customerPhone, statusHistory: $statusHistory, shippingDetails: $shippingDetails, canBeTracked: $canBeTracked)';
+  return 'EnhancedOrder(id: $id, orderNumber: $orderNumber, hikeId: $hikeId, userId: $userId, totalAmount: $totalAmount, currency: $currency, deliveryType: $deliveryType, status: $status, createdAt: $createdAt, estimatedDelivery: $estimatedDelivery, trackingNumber: $trackingNumber, deliveryAddress: $deliveryAddress, paymentIntentId: $paymentIntentId, updatedAt: $updatedAt, companyId: $companyId, customerEmail: $customerEmail, customerPhone: $customerPhone, statusHistory: $statusHistory, shippingDetails: $shippingDetails, canBeTracked: $canBeTracked, baseAmount: $baseAmount, shippingCost: $shippingCost, shippingService: $shippingService, actualDelivery: $actualDelivery, trackingUrl: $trackingUrl)';
 }
 
 
@@ -49,7 +50,7 @@ abstract mixin class $EnhancedOrderCopyWith<$Res>  {
   factory $EnhancedOrderCopyWith(EnhancedOrder value, $Res Function(EnhancedOrder) _then) = _$EnhancedOrderCopyWithImpl;
 @useResult
 $Res call({
- int id, String orderNumber, int hikeId, String userId, double totalAmount, String currency, DeliveryType deliveryType, OrderStatus status, DateTime createdAt, DateTime? estimatedDelivery, String? trackingNumber, Map<String, dynamic>? deliveryAddress, String? paymentIntentId, DateTime? updatedAt, String? companyId, String? customerEmail, String? customerPhone, List<OrderStatusChange>? statusHistory, Map<String, dynamic>? shippingDetails, bool? canBeTracked
+ int id, String orderNumber, int hikeId, String userId, double totalAmount, String currency, DeliveryType deliveryType, EnhancedOrderStatus status, DateTime createdAt, DateTime? estimatedDelivery, String? trackingNumber, Map<String, dynamic>? deliveryAddress, String? paymentIntentId, DateTime? updatedAt, String? companyId, String? customerEmail, String? customerPhone, List<OrderStatusChange>? statusHistory, Map<String, dynamic>? shippingDetails, bool? canBeTracked, double? baseAmount, double? shippingCost, String? shippingService, DateTime? actualDelivery, String? trackingUrl
 });
 
 
@@ -66,7 +67,7 @@ class _$EnhancedOrderCopyWithImpl<$Res>
 
 /// Create a copy of EnhancedOrder
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderNumber = null,Object? hikeId = null,Object? userId = null,Object? totalAmount = null,Object? currency = null,Object? deliveryType = null,Object? status = null,Object? createdAt = null,Object? estimatedDelivery = freezed,Object? trackingNumber = freezed,Object? deliveryAddress = freezed,Object? paymentIntentId = freezed,Object? updatedAt = freezed,Object? companyId = freezed,Object? customerEmail = freezed,Object? customerPhone = freezed,Object? statusHistory = freezed,Object? shippingDetails = freezed,Object? canBeTracked = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderNumber = null,Object? hikeId = null,Object? userId = null,Object? totalAmount = null,Object? currency = null,Object? deliveryType = null,Object? status = null,Object? createdAt = null,Object? estimatedDelivery = freezed,Object? trackingNumber = freezed,Object? deliveryAddress = freezed,Object? paymentIntentId = freezed,Object? updatedAt = freezed,Object? companyId = freezed,Object? customerEmail = freezed,Object? customerPhone = freezed,Object? statusHistory = freezed,Object? shippingDetails = freezed,Object? canBeTracked = freezed,Object? baseAmount = freezed,Object? shippingCost = freezed,Object? shippingService = freezed,Object? actualDelivery = freezed,Object? trackingUrl = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,orderNumber: null == orderNumber ? _self.orderNumber : orderNumber // ignore: cast_nullable_to_non_nullable
@@ -76,7 +77,7 @@ as String,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // 
 as double,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,deliveryType: null == deliveryType ? _self.deliveryType : deliveryType // ignore: cast_nullable_to_non_nullable
 as DeliveryType,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as OrderStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,estimatedDelivery: freezed == estimatedDelivery ? _self.estimatedDelivery : estimatedDelivery // ignore: cast_nullable_to_non_nullable
 as DateTime?,trackingNumber: freezed == trackingNumber ? _self.trackingNumber : trackingNumber // ignore: cast_nullable_to_non_nullable
 as String?,deliveryAddress: freezed == deliveryAddress ? _self.deliveryAddress : deliveryAddress // ignore: cast_nullable_to_non_nullable
@@ -88,7 +89,12 @@ as String?,customerPhone: freezed == customerPhone ? _self.customerPhone : custo
 as String?,statusHistory: freezed == statusHistory ? _self.statusHistory : statusHistory // ignore: cast_nullable_to_non_nullable
 as List<OrderStatusChange>?,shippingDetails: freezed == shippingDetails ? _self.shippingDetails : shippingDetails // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,canBeTracked: freezed == canBeTracked ? _self.canBeTracked : canBeTracked // ignore: cast_nullable_to_non_nullable
-as bool?,
+as bool?,baseAmount: freezed == baseAmount ? _self.baseAmount : baseAmount // ignore: cast_nullable_to_non_nullable
+as double?,shippingCost: freezed == shippingCost ? _self.shippingCost : shippingCost // ignore: cast_nullable_to_non_nullable
+as double?,shippingService: freezed == shippingService ? _self.shippingService : shippingService // ignore: cast_nullable_to_non_nullable
+as String?,actualDelivery: freezed == actualDelivery ? _self.actualDelivery : actualDelivery // ignore: cast_nullable_to_non_nullable
+as DateTime?,trackingUrl: freezed == trackingUrl ? _self.trackingUrl : trackingUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -173,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String orderNumber,  int hikeId,  String userId,  double totalAmount,  String currency,  DeliveryType deliveryType,  OrderStatus status,  DateTime createdAt,  DateTime? estimatedDelivery,  String? trackingNumber,  Map<String, dynamic>? deliveryAddress,  String? paymentIntentId,  DateTime? updatedAt,  String? companyId,  String? customerEmail,  String? customerPhone,  List<OrderStatusChange>? statusHistory,  Map<String, dynamic>? shippingDetails,  bool? canBeTracked)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String orderNumber,  int hikeId,  String userId,  double totalAmount,  String currency,  DeliveryType deliveryType,  EnhancedOrderStatus status,  DateTime createdAt,  DateTime? estimatedDelivery,  String? trackingNumber,  Map<String, dynamic>? deliveryAddress,  String? paymentIntentId,  DateTime? updatedAt,  String? companyId,  String? customerEmail,  String? customerPhone,  List<OrderStatusChange>? statusHistory,  Map<String, dynamic>? shippingDetails,  bool? canBeTracked,  double? baseAmount,  double? shippingCost,  String? shippingService,  DateTime? actualDelivery,  String? trackingUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EnhancedOrder() when $default != null:
-return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.totalAmount,_that.currency,_that.deliveryType,_that.status,_that.createdAt,_that.estimatedDelivery,_that.trackingNumber,_that.deliveryAddress,_that.paymentIntentId,_that.updatedAt,_that.companyId,_that.customerEmail,_that.customerPhone,_that.statusHistory,_that.shippingDetails,_that.canBeTracked);case _:
+return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.totalAmount,_that.currency,_that.deliveryType,_that.status,_that.createdAt,_that.estimatedDelivery,_that.trackingNumber,_that.deliveryAddress,_that.paymentIntentId,_that.updatedAt,_that.companyId,_that.customerEmail,_that.customerPhone,_that.statusHistory,_that.shippingDetails,_that.canBeTracked,_that.baseAmount,_that.shippingCost,_that.shippingService,_that.actualDelivery,_that.trackingUrl);case _:
   return orElse();
 
 }
@@ -194,10 +200,10 @@ return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.total
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String orderNumber,  int hikeId,  String userId,  double totalAmount,  String currency,  DeliveryType deliveryType,  OrderStatus status,  DateTime createdAt,  DateTime? estimatedDelivery,  String? trackingNumber,  Map<String, dynamic>? deliveryAddress,  String? paymentIntentId,  DateTime? updatedAt,  String? companyId,  String? customerEmail,  String? customerPhone,  List<OrderStatusChange>? statusHistory,  Map<String, dynamic>? shippingDetails,  bool? canBeTracked)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String orderNumber,  int hikeId,  String userId,  double totalAmount,  String currency,  DeliveryType deliveryType,  EnhancedOrderStatus status,  DateTime createdAt,  DateTime? estimatedDelivery,  String? trackingNumber,  Map<String, dynamic>? deliveryAddress,  String? paymentIntentId,  DateTime? updatedAt,  String? companyId,  String? customerEmail,  String? customerPhone,  List<OrderStatusChange>? statusHistory,  Map<String, dynamic>? shippingDetails,  bool? canBeTracked,  double? baseAmount,  double? shippingCost,  String? shippingService,  DateTime? actualDelivery,  String? trackingUrl)  $default,) {final _that = this;
 switch (_that) {
 case _EnhancedOrder():
-return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.totalAmount,_that.currency,_that.deliveryType,_that.status,_that.createdAt,_that.estimatedDelivery,_that.trackingNumber,_that.deliveryAddress,_that.paymentIntentId,_that.updatedAt,_that.companyId,_that.customerEmail,_that.customerPhone,_that.statusHistory,_that.shippingDetails,_that.canBeTracked);case _:
+return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.totalAmount,_that.currency,_that.deliveryType,_that.status,_that.createdAt,_that.estimatedDelivery,_that.trackingNumber,_that.deliveryAddress,_that.paymentIntentId,_that.updatedAt,_that.companyId,_that.customerEmail,_that.customerPhone,_that.statusHistory,_that.shippingDetails,_that.canBeTracked,_that.baseAmount,_that.shippingCost,_that.shippingService,_that.actualDelivery,_that.trackingUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -214,10 +220,10 @@ return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.total
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String orderNumber,  int hikeId,  String userId,  double totalAmount,  String currency,  DeliveryType deliveryType,  OrderStatus status,  DateTime createdAt,  DateTime? estimatedDelivery,  String? trackingNumber,  Map<String, dynamic>? deliveryAddress,  String? paymentIntentId,  DateTime? updatedAt,  String? companyId,  String? customerEmail,  String? customerPhone,  List<OrderStatusChange>? statusHistory,  Map<String, dynamic>? shippingDetails,  bool? canBeTracked)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String orderNumber,  int hikeId,  String userId,  double totalAmount,  String currency,  DeliveryType deliveryType,  EnhancedOrderStatus status,  DateTime createdAt,  DateTime? estimatedDelivery,  String? trackingNumber,  Map<String, dynamic>? deliveryAddress,  String? paymentIntentId,  DateTime? updatedAt,  String? companyId,  String? customerEmail,  String? customerPhone,  List<OrderStatusChange>? statusHistory,  Map<String, dynamic>? shippingDetails,  bool? canBeTracked,  double? baseAmount,  double? shippingCost,  String? shippingService,  DateTime? actualDelivery,  String? trackingUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _EnhancedOrder() when $default != null:
-return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.totalAmount,_that.currency,_that.deliveryType,_that.status,_that.createdAt,_that.estimatedDelivery,_that.trackingNumber,_that.deliveryAddress,_that.paymentIntentId,_that.updatedAt,_that.companyId,_that.customerEmail,_that.customerPhone,_that.statusHistory,_that.shippingDetails,_that.canBeTracked);case _:
+return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.totalAmount,_that.currency,_that.deliveryType,_that.status,_that.createdAt,_that.estimatedDelivery,_that.trackingNumber,_that.deliveryAddress,_that.paymentIntentId,_that.updatedAt,_that.companyId,_that.customerEmail,_that.customerPhone,_that.statusHistory,_that.shippingDetails,_that.canBeTracked,_that.baseAmount,_that.shippingCost,_that.shippingService,_that.actualDelivery,_that.trackingUrl);case _:
   return null;
 
 }
@@ -229,7 +235,7 @@ return $default(_that.id,_that.orderNumber,_that.hikeId,_that.userId,_that.total
 @JsonSerializable()
 
 class _EnhancedOrder implements EnhancedOrder {
-  const _EnhancedOrder({required this.id, required this.orderNumber, required this.hikeId, required this.userId, required this.totalAmount, required this.currency, required this.deliveryType, required this.status, required this.createdAt, this.estimatedDelivery, this.trackingNumber, final  Map<String, dynamic>? deliveryAddress, this.paymentIntentId, this.updatedAt, this.companyId, this.customerEmail, this.customerPhone, final  List<OrderStatusChange>? statusHistory, final  Map<String, dynamic>? shippingDetails, this.canBeTracked}): _deliveryAddress = deliveryAddress,_statusHistory = statusHistory,_shippingDetails = shippingDetails;
+  const _EnhancedOrder({required this.id, required this.orderNumber, required this.hikeId, required this.userId, required this.totalAmount, required this.currency, required this.deliveryType, required this.status, required this.createdAt, this.estimatedDelivery, this.trackingNumber, final  Map<String, dynamic>? deliveryAddress, this.paymentIntentId, this.updatedAt, this.companyId, this.customerEmail, this.customerPhone, final  List<OrderStatusChange>? statusHistory, final  Map<String, dynamic>? shippingDetails, this.canBeTracked, this.baseAmount, this.shippingCost, this.shippingService, this.actualDelivery, this.trackingUrl}): _deliveryAddress = deliveryAddress,_statusHistory = statusHistory,_shippingDetails = shippingDetails;
   factory _EnhancedOrder.fromJson(Map<String, dynamic> json) => _$EnhancedOrderFromJson(json);
 
 @override final  int id;
@@ -239,7 +245,7 @@ class _EnhancedOrder implements EnhancedOrder {
 @override final  double totalAmount;
 @override final  String currency;
 @override final  DeliveryType deliveryType;
-@override final  OrderStatus status;
+@override final  EnhancedOrderStatus status;
 @override final  DateTime createdAt;
 @override final  DateTime? estimatedDelivery;
 @override final  String? trackingNumber;
@@ -277,6 +283,12 @@ class _EnhancedOrder implements EnhancedOrder {
 }
 
 @override final  bool? canBeTracked;
+// Additional fields for enhanced functionality
+@override final  double? baseAmount;
+@override final  double? shippingCost;
+@override final  String? shippingService;
+@override final  DateTime? actualDelivery;
+@override final  String? trackingUrl;
 
 /// Create a copy of EnhancedOrder
 /// with the given fields replaced by the non-null parameter values.
@@ -291,16 +303,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnhancedOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.orderNumber, orderNumber) || other.orderNumber == orderNumber)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.deliveryType, deliveryType) || other.deliveryType == deliveryType)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.estimatedDelivery, estimatedDelivery) || other.estimatedDelivery == estimatedDelivery)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&const DeepCollectionEquality().equals(other._deliveryAddress, _deliveryAddress)&&(identical(other.paymentIntentId, paymentIntentId) || other.paymentIntentId == paymentIntentId)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.customerEmail, customerEmail) || other.customerEmail == customerEmail)&&(identical(other.customerPhone, customerPhone) || other.customerPhone == customerPhone)&&const DeepCollectionEquality().equals(other._statusHistory, _statusHistory)&&const DeepCollectionEquality().equals(other._shippingDetails, _shippingDetails)&&(identical(other.canBeTracked, canBeTracked) || other.canBeTracked == canBeTracked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnhancedOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.orderNumber, orderNumber) || other.orderNumber == orderNumber)&&(identical(other.hikeId, hikeId) || other.hikeId == hikeId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.deliveryType, deliveryType) || other.deliveryType == deliveryType)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.estimatedDelivery, estimatedDelivery) || other.estimatedDelivery == estimatedDelivery)&&(identical(other.trackingNumber, trackingNumber) || other.trackingNumber == trackingNumber)&&const DeepCollectionEquality().equals(other._deliveryAddress, _deliveryAddress)&&(identical(other.paymentIntentId, paymentIntentId) || other.paymentIntentId == paymentIntentId)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.customerEmail, customerEmail) || other.customerEmail == customerEmail)&&(identical(other.customerPhone, customerPhone) || other.customerPhone == customerPhone)&&const DeepCollectionEquality().equals(other._statusHistory, _statusHistory)&&const DeepCollectionEquality().equals(other._shippingDetails, _shippingDetails)&&(identical(other.canBeTracked, canBeTracked) || other.canBeTracked == canBeTracked)&&(identical(other.baseAmount, baseAmount) || other.baseAmount == baseAmount)&&(identical(other.shippingCost, shippingCost) || other.shippingCost == shippingCost)&&(identical(other.shippingService, shippingService) || other.shippingService == shippingService)&&(identical(other.actualDelivery, actualDelivery) || other.actualDelivery == actualDelivery)&&(identical(other.trackingUrl, trackingUrl) || other.trackingUrl == trackingUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,orderNumber,hikeId,userId,totalAmount,currency,deliveryType,status,createdAt,estimatedDelivery,trackingNumber,const DeepCollectionEquality().hash(_deliveryAddress),paymentIntentId,updatedAt,companyId,customerEmail,customerPhone,const DeepCollectionEquality().hash(_statusHistory),const DeepCollectionEquality().hash(_shippingDetails),canBeTracked]);
+int get hashCode => Object.hashAll([runtimeType,id,orderNumber,hikeId,userId,totalAmount,currency,deliveryType,status,createdAt,estimatedDelivery,trackingNumber,const DeepCollectionEquality().hash(_deliveryAddress),paymentIntentId,updatedAt,companyId,customerEmail,customerPhone,const DeepCollectionEquality().hash(_statusHistory),const DeepCollectionEquality().hash(_shippingDetails),canBeTracked,baseAmount,shippingCost,shippingService,actualDelivery,trackingUrl]);
 
 @override
 String toString() {
-  return 'EnhancedOrder(id: $id, orderNumber: $orderNumber, hikeId: $hikeId, userId: $userId, totalAmount: $totalAmount, currency: $currency, deliveryType: $deliveryType, status: $status, createdAt: $createdAt, estimatedDelivery: $estimatedDelivery, trackingNumber: $trackingNumber, deliveryAddress: $deliveryAddress, paymentIntentId: $paymentIntentId, updatedAt: $updatedAt, companyId: $companyId, customerEmail: $customerEmail, customerPhone: $customerPhone, statusHistory: $statusHistory, shippingDetails: $shippingDetails, canBeTracked: $canBeTracked)';
+  return 'EnhancedOrder(id: $id, orderNumber: $orderNumber, hikeId: $hikeId, userId: $userId, totalAmount: $totalAmount, currency: $currency, deliveryType: $deliveryType, status: $status, createdAt: $createdAt, estimatedDelivery: $estimatedDelivery, trackingNumber: $trackingNumber, deliveryAddress: $deliveryAddress, paymentIntentId: $paymentIntentId, updatedAt: $updatedAt, companyId: $companyId, customerEmail: $customerEmail, customerPhone: $customerPhone, statusHistory: $statusHistory, shippingDetails: $shippingDetails, canBeTracked: $canBeTracked, baseAmount: $baseAmount, shippingCost: $shippingCost, shippingService: $shippingService, actualDelivery: $actualDelivery, trackingUrl: $trackingUrl)';
 }
 
 
@@ -311,7 +323,7 @@ abstract mixin class _$EnhancedOrderCopyWith<$Res> implements $EnhancedOrderCopy
   factory _$EnhancedOrderCopyWith(_EnhancedOrder value, $Res Function(_EnhancedOrder) _then) = __$EnhancedOrderCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String orderNumber, int hikeId, String userId, double totalAmount, String currency, DeliveryType deliveryType, OrderStatus status, DateTime createdAt, DateTime? estimatedDelivery, String? trackingNumber, Map<String, dynamic>? deliveryAddress, String? paymentIntentId, DateTime? updatedAt, String? companyId, String? customerEmail, String? customerPhone, List<OrderStatusChange>? statusHistory, Map<String, dynamic>? shippingDetails, bool? canBeTracked
+ int id, String orderNumber, int hikeId, String userId, double totalAmount, String currency, DeliveryType deliveryType, EnhancedOrderStatus status, DateTime createdAt, DateTime? estimatedDelivery, String? trackingNumber, Map<String, dynamic>? deliveryAddress, String? paymentIntentId, DateTime? updatedAt, String? companyId, String? customerEmail, String? customerPhone, List<OrderStatusChange>? statusHistory, Map<String, dynamic>? shippingDetails, bool? canBeTracked, double? baseAmount, double? shippingCost, String? shippingService, DateTime? actualDelivery, String? trackingUrl
 });
 
 
@@ -328,7 +340,7 @@ class __$EnhancedOrderCopyWithImpl<$Res>
 
 /// Create a copy of EnhancedOrder
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderNumber = null,Object? hikeId = null,Object? userId = null,Object? totalAmount = null,Object? currency = null,Object? deliveryType = null,Object? status = null,Object? createdAt = null,Object? estimatedDelivery = freezed,Object? trackingNumber = freezed,Object? deliveryAddress = freezed,Object? paymentIntentId = freezed,Object? updatedAt = freezed,Object? companyId = freezed,Object? customerEmail = freezed,Object? customerPhone = freezed,Object? statusHistory = freezed,Object? shippingDetails = freezed,Object? canBeTracked = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderNumber = null,Object? hikeId = null,Object? userId = null,Object? totalAmount = null,Object? currency = null,Object? deliveryType = null,Object? status = null,Object? createdAt = null,Object? estimatedDelivery = freezed,Object? trackingNumber = freezed,Object? deliveryAddress = freezed,Object? paymentIntentId = freezed,Object? updatedAt = freezed,Object? companyId = freezed,Object? customerEmail = freezed,Object? customerPhone = freezed,Object? statusHistory = freezed,Object? shippingDetails = freezed,Object? canBeTracked = freezed,Object? baseAmount = freezed,Object? shippingCost = freezed,Object? shippingService = freezed,Object? actualDelivery = freezed,Object? trackingUrl = freezed,}) {
   return _then(_EnhancedOrder(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,orderNumber: null == orderNumber ? _self.orderNumber : orderNumber // ignore: cast_nullable_to_non_nullable
@@ -338,7 +350,7 @@ as String,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // 
 as double,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,deliveryType: null == deliveryType ? _self.deliveryType : deliveryType // ignore: cast_nullable_to_non_nullable
 as DeliveryType,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as OrderStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,estimatedDelivery: freezed == estimatedDelivery ? _self.estimatedDelivery : estimatedDelivery // ignore: cast_nullable_to_non_nullable
 as DateTime?,trackingNumber: freezed == trackingNumber ? _self.trackingNumber : trackingNumber // ignore: cast_nullable_to_non_nullable
 as String?,deliveryAddress: freezed == deliveryAddress ? _self._deliveryAddress : deliveryAddress // ignore: cast_nullable_to_non_nullable
@@ -350,7 +362,12 @@ as String?,customerPhone: freezed == customerPhone ? _self.customerPhone : custo
 as String?,statusHistory: freezed == statusHistory ? _self._statusHistory : statusHistory // ignore: cast_nullable_to_non_nullable
 as List<OrderStatusChange>?,shippingDetails: freezed == shippingDetails ? _self._shippingDetails : shippingDetails // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,canBeTracked: freezed == canBeTracked ? _self.canBeTracked : canBeTracked // ignore: cast_nullable_to_non_nullable
-as bool?,
+as bool?,baseAmount: freezed == baseAmount ? _self.baseAmount : baseAmount // ignore: cast_nullable_to_non_nullable
+as double?,shippingCost: freezed == shippingCost ? _self.shippingCost : shippingCost // ignore: cast_nullable_to_non_nullable
+as double?,shippingService: freezed == shippingService ? _self.shippingService : shippingService // ignore: cast_nullable_to_non_nullable
+as String?,actualDelivery: freezed == actualDelivery ? _self.actualDelivery : actualDelivery // ignore: cast_nullable_to_non_nullable
+as DateTime?,trackingUrl: freezed == trackingUrl ? _self.trackingUrl : trackingUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -361,7 +378,7 @@ as bool?,
 /// @nodoc
 mixin _$OrderStatusChange {
 
- int get id; int get orderId; OrderStatus get oldStatus; OrderStatus get newStatus; DateTime get changedAt; String? get reason; String? get changedBy;
+ int get id; int get orderId; EnhancedOrderStatus get oldStatus; EnhancedOrderStatus get newStatus; DateTime get changedAt; String? get reason; String? get changedBy;@JsonKey(name: 'from_status') EnhancedOrderStatus? get fromStatus;@JsonKey(name: 'to_status') EnhancedOrderStatus? get toStatus;
 /// Create a copy of OrderStatusChange
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -374,16 +391,16 @@ $OrderStatusChangeCopyWith<OrderStatusChange> get copyWith => _$OrderStatusChang
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderStatusChange&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.oldStatus, oldStatus) || other.oldStatus == oldStatus)&&(identical(other.newStatus, newStatus) || other.newStatus == newStatus)&&(identical(other.changedAt, changedAt) || other.changedAt == changedAt)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.changedBy, changedBy) || other.changedBy == changedBy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderStatusChange&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.oldStatus, oldStatus) || other.oldStatus == oldStatus)&&(identical(other.newStatus, newStatus) || other.newStatus == newStatus)&&(identical(other.changedAt, changedAt) || other.changedAt == changedAt)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.changedBy, changedBy) || other.changedBy == changedBy)&&(identical(other.fromStatus, fromStatus) || other.fromStatus == fromStatus)&&(identical(other.toStatus, toStatus) || other.toStatus == toStatus));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,orderId,oldStatus,newStatus,changedAt,reason,changedBy);
+int get hashCode => Object.hash(runtimeType,id,orderId,oldStatus,newStatus,changedAt,reason,changedBy,fromStatus,toStatus);
 
 @override
 String toString() {
-  return 'OrderStatusChange(id: $id, orderId: $orderId, oldStatus: $oldStatus, newStatus: $newStatus, changedAt: $changedAt, reason: $reason, changedBy: $changedBy)';
+  return 'OrderStatusChange(id: $id, orderId: $orderId, oldStatus: $oldStatus, newStatus: $newStatus, changedAt: $changedAt, reason: $reason, changedBy: $changedBy, fromStatus: $fromStatus, toStatus: $toStatus)';
 }
 
 
@@ -394,7 +411,7 @@ abstract mixin class $OrderStatusChangeCopyWith<$Res>  {
   factory $OrderStatusChangeCopyWith(OrderStatusChange value, $Res Function(OrderStatusChange) _then) = _$OrderStatusChangeCopyWithImpl;
 @useResult
 $Res call({
- int id, int orderId, OrderStatus oldStatus, OrderStatus newStatus, DateTime changedAt, String? reason, String? changedBy
+ int id, int orderId, EnhancedOrderStatus oldStatus, EnhancedOrderStatus newStatus, DateTime changedAt, String? reason, String? changedBy,@JsonKey(name: 'from_status') EnhancedOrderStatus? fromStatus,@JsonKey(name: 'to_status') EnhancedOrderStatus? toStatus
 });
 
 
@@ -411,16 +428,18 @@ class _$OrderStatusChangeCopyWithImpl<$Res>
 
 /// Create a copy of OrderStatusChange
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderId = null,Object? oldStatus = null,Object? newStatus = null,Object? changedAt = null,Object? reason = freezed,Object? changedBy = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderId = null,Object? oldStatus = null,Object? newStatus = null,Object? changedAt = null,Object? reason = freezed,Object? changedBy = freezed,Object? fromStatus = freezed,Object? toStatus = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
 as int,oldStatus: null == oldStatus ? _self.oldStatus : oldStatus // ignore: cast_nullable_to_non_nullable
-as OrderStatus,newStatus: null == newStatus ? _self.newStatus : newStatus // ignore: cast_nullable_to_non_nullable
-as OrderStatus,changedAt: null == changedAt ? _self.changedAt : changedAt // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus,newStatus: null == newStatus ? _self.newStatus : newStatus // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus,changedAt: null == changedAt ? _self.changedAt : changedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String?,changedBy: freezed == changedBy ? _self.changedBy : changedBy // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,fromStatus: freezed == fromStatus ? _self.fromStatus : fromStatus // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus?,toStatus: freezed == toStatus ? _self.toStatus : toStatus // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus?,
   ));
 }
 
@@ -505,10 +524,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int orderId,  OrderStatus oldStatus,  OrderStatus newStatus,  DateTime changedAt,  String? reason,  String? changedBy)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int orderId,  EnhancedOrderStatus oldStatus,  EnhancedOrderStatus newStatus,  DateTime changedAt,  String? reason,  String? changedBy, @JsonKey(name: 'from_status')  EnhancedOrderStatus? fromStatus, @JsonKey(name: 'to_status')  EnhancedOrderStatus? toStatus)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrderStatusChange() when $default != null:
-return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.changedAt,_that.reason,_that.changedBy);case _:
+return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.changedAt,_that.reason,_that.changedBy,_that.fromStatus,_that.toStatus);case _:
   return orElse();
 
 }
@@ -526,10 +545,10 @@ return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.cha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int orderId,  OrderStatus oldStatus,  OrderStatus newStatus,  DateTime changedAt,  String? reason,  String? changedBy)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int orderId,  EnhancedOrderStatus oldStatus,  EnhancedOrderStatus newStatus,  DateTime changedAt,  String? reason,  String? changedBy, @JsonKey(name: 'from_status')  EnhancedOrderStatus? fromStatus, @JsonKey(name: 'to_status')  EnhancedOrderStatus? toStatus)  $default,) {final _that = this;
 switch (_that) {
 case _OrderStatusChange():
-return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.changedAt,_that.reason,_that.changedBy);case _:
+return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.changedAt,_that.reason,_that.changedBy,_that.fromStatus,_that.toStatus);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -546,10 +565,10 @@ return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.cha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int orderId,  OrderStatus oldStatus,  OrderStatus newStatus,  DateTime changedAt,  String? reason,  String? changedBy)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int orderId,  EnhancedOrderStatus oldStatus,  EnhancedOrderStatus newStatus,  DateTime changedAt,  String? reason,  String? changedBy, @JsonKey(name: 'from_status')  EnhancedOrderStatus? fromStatus, @JsonKey(name: 'to_status')  EnhancedOrderStatus? toStatus)?  $default,) {final _that = this;
 switch (_that) {
 case _OrderStatusChange() when $default != null:
-return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.changedAt,_that.reason,_that.changedBy);case _:
+return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.changedAt,_that.reason,_that.changedBy,_that.fromStatus,_that.toStatus);case _:
   return null;
 
 }
@@ -561,16 +580,18 @@ return $default(_that.id,_that.orderId,_that.oldStatus,_that.newStatus,_that.cha
 @JsonSerializable()
 
 class _OrderStatusChange implements OrderStatusChange {
-  const _OrderStatusChange({required this.id, required this.orderId, required this.oldStatus, required this.newStatus, required this.changedAt, this.reason, this.changedBy});
+  const _OrderStatusChange({required this.id, required this.orderId, required this.oldStatus, required this.newStatus, required this.changedAt, this.reason, this.changedBy, @JsonKey(name: 'from_status') this.fromStatus, @JsonKey(name: 'to_status') this.toStatus});
   factory _OrderStatusChange.fromJson(Map<String, dynamic> json) => _$OrderStatusChangeFromJson(json);
 
 @override final  int id;
 @override final  int orderId;
-@override final  OrderStatus oldStatus;
-@override final  OrderStatus newStatus;
+@override final  EnhancedOrderStatus oldStatus;
+@override final  EnhancedOrderStatus newStatus;
 @override final  DateTime changedAt;
 @override final  String? reason;
 @override final  String? changedBy;
+@override@JsonKey(name: 'from_status') final  EnhancedOrderStatus? fromStatus;
+@override@JsonKey(name: 'to_status') final  EnhancedOrderStatus? toStatus;
 
 /// Create a copy of OrderStatusChange
 /// with the given fields replaced by the non-null parameter values.
@@ -585,16 +606,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderStatusChange&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.oldStatus, oldStatus) || other.oldStatus == oldStatus)&&(identical(other.newStatus, newStatus) || other.newStatus == newStatus)&&(identical(other.changedAt, changedAt) || other.changedAt == changedAt)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.changedBy, changedBy) || other.changedBy == changedBy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderStatusChange&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.oldStatus, oldStatus) || other.oldStatus == oldStatus)&&(identical(other.newStatus, newStatus) || other.newStatus == newStatus)&&(identical(other.changedAt, changedAt) || other.changedAt == changedAt)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.changedBy, changedBy) || other.changedBy == changedBy)&&(identical(other.fromStatus, fromStatus) || other.fromStatus == fromStatus)&&(identical(other.toStatus, toStatus) || other.toStatus == toStatus));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,orderId,oldStatus,newStatus,changedAt,reason,changedBy);
+int get hashCode => Object.hash(runtimeType,id,orderId,oldStatus,newStatus,changedAt,reason,changedBy,fromStatus,toStatus);
 
 @override
 String toString() {
-  return 'OrderStatusChange(id: $id, orderId: $orderId, oldStatus: $oldStatus, newStatus: $newStatus, changedAt: $changedAt, reason: $reason, changedBy: $changedBy)';
+  return 'OrderStatusChange(id: $id, orderId: $orderId, oldStatus: $oldStatus, newStatus: $newStatus, changedAt: $changedAt, reason: $reason, changedBy: $changedBy, fromStatus: $fromStatus, toStatus: $toStatus)';
 }
 
 
@@ -605,7 +626,7 @@ abstract mixin class _$OrderStatusChangeCopyWith<$Res> implements $OrderStatusCh
   factory _$OrderStatusChangeCopyWith(_OrderStatusChange value, $Res Function(_OrderStatusChange) _then) = __$OrderStatusChangeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int orderId, OrderStatus oldStatus, OrderStatus newStatus, DateTime changedAt, String? reason, String? changedBy
+ int id, int orderId, EnhancedOrderStatus oldStatus, EnhancedOrderStatus newStatus, DateTime changedAt, String? reason, String? changedBy,@JsonKey(name: 'from_status') EnhancedOrderStatus? fromStatus,@JsonKey(name: 'to_status') EnhancedOrderStatus? toStatus
 });
 
 
@@ -622,16 +643,18 @@ class __$OrderStatusChangeCopyWithImpl<$Res>
 
 /// Create a copy of OrderStatusChange
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderId = null,Object? oldStatus = null,Object? newStatus = null,Object? changedAt = null,Object? reason = freezed,Object? changedBy = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderId = null,Object? oldStatus = null,Object? newStatus = null,Object? changedAt = null,Object? reason = freezed,Object? changedBy = freezed,Object? fromStatus = freezed,Object? toStatus = freezed,}) {
   return _then(_OrderStatusChange(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
 as int,oldStatus: null == oldStatus ? _self.oldStatus : oldStatus // ignore: cast_nullable_to_non_nullable
-as OrderStatus,newStatus: null == newStatus ? _self.newStatus : newStatus // ignore: cast_nullable_to_non_nullable
-as OrderStatus,changedAt: null == changedAt ? _self.changedAt : changedAt // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus,newStatus: null == newStatus ? _self.newStatus : newStatus // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus,changedAt: null == changedAt ? _self.changedAt : changedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String?,changedBy: freezed == changedBy ? _self.changedBy : changedBy // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,fromStatus: freezed == fromStatus ? _self.fromStatus : fromStatus // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus?,toStatus: freezed == toStatus ? _self.toStatus : toStatus // ignore: cast_nullable_to_non_nullable
+as EnhancedOrderStatus?,
   ));
 }
 

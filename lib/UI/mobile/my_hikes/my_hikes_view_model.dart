@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:whisky_hikes/data/repositories/hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 
-import '../../domain/models/hike.dart';
+import '../../../domain/models/hike.dart';
 
 class MyHikesViewModel extends ChangeNotifier {
   MyHikesViewModel({
