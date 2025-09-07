@@ -24,22 +24,21 @@ class OrderTrackingService {
   Future<EnhancedOrder> assignTrackingNumber({
     required int orderId,
     required String trackingNumber,
-    required String shippingCarrier,
-    String? shippingService,
+    required String shippingService,
     DateTime? estimatedDelivery,
   }) async {
     try {
       dev.log('📦 Assigning tracking number $trackingNumber to order $orderId');
 
       // Validate tracking number format
-      _validateTrackingNumber(trackingNumber, shippingCarrier);
+      _validateTrackingNumber(trackingNumber, shippingService);
 
       // Update order with tracking information and mark as shipped
       final updatedOrder = await _backendApi.updateEnhancedOrderStatus(
         orderId: orderId,
         newStatus: 'shipped',
         trackingNumber: trackingNumber,
-        shippingCarrier: shippingCarrier,
+        shippingService: shippingService,
         estimatedDelivery: estimatedDelivery,
         metadata: {
           'tracking_assigned_at': DateTime.now().toIso8601String(),
@@ -50,11 +49,11 @@ class OrderTrackingService {
 
       // Send notification to customer
       await _notificationService.sendOrderTrackingNotification(
-        customerId: updatedOrder.customerId,
+        customerId: updatedOrder.userId,
         orderId: orderId,
         orderNumber: updatedOrder.orderNumber,
         trackingNumber: trackingNumber,
-        shippingCarrier: shippingCarrier,
+        shippingService: shippingService,
         estimatedDelivery: estimatedDelivery,
       );
 
@@ -113,7 +112,7 @@ class OrderTrackingService {
       // Send real-time notification for significant status changes
       if (_isSignificantStatusChange(orderStatus)) {
         await _notificationService.sendOrderStatusChangeNotification(
-          customerId: updatedOrder.customerId,
+          customerId: updatedOrder.userId,
           orderId: orderId,
           orderNumber: updatedOrder.orderNumber,
           newStatus: orderStatus,
@@ -156,7 +155,7 @@ class OrderTrackingService {
 
       // Send urgent notification - delivery today
       await _notificationService.sendOrderOutForDeliveryNotification(
-        customerId: updatedOrder.customerId,
+        customerId: updatedOrder.userId,
         orderId: orderId,
         orderNumber: updatedOrder.orderNumber,
         estimatedDeliveryTime: estimatedDeliveryTime,
@@ -199,7 +198,7 @@ class OrderTrackingService {
 
       // Send delivery confirmation
       await _notificationService.sendOrderDeliveredNotification(
-        customerId: updatedOrder.customerId,
+        customerId: updatedOrder.userId,
         orderId: orderId,
         orderNumber: updatedOrder.orderNumber,
         deliveryTime: deliveryTime ?? DateTime.now(),
@@ -226,7 +225,7 @@ class OrderTrackingService {
         throw Exception('Order not found');
       }
 
-      if (order.trackingNumber == null || order.shippingCarrier == null) {
+      if (order.trackingNumber == null || order.shippingService == null) {
         return {
           'hasTracking': false,
           'status': order.status.name,
@@ -237,7 +236,7 @@ class OrderTrackingService {
       // Get carrier-specific tracking details
       final trackingDetails = await _getCarrierTrackingDetails(
         order.trackingNumber!,
-        order.shippingCarrier!,
+        order.shippingService!,
       );
 
       // Get status history
@@ -246,7 +245,7 @@ class OrderTrackingService {
       return {
         'hasTracking': true,
         'trackingNumber': order.trackingNumber,
-        'shippingCarrier': order.shippingCarrier,
+        'shippingService': order.shippingService,
         'trackingUrl': order.trackingUrl,
         'currentStatus': order.status.name,
         'estimatedDelivery': order.estimatedDelivery?.toIso8601String(),

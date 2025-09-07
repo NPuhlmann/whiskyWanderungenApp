@@ -5,6 +5,7 @@ import '../../../domain/models/enhanced_order.dart';
 import '../../../domain/models/delivery_address.dart';
 import '../../../domain/models/basic_payment_result.dart';
 import '../../../domain/models/payment_intent.dart' show PaymentMethodType;
+import '../../../domain/models/basic_order.dart' show DeliveryType;
 import '../database/backend_api.dart';
 import '../../../data/repositories/payment_repository.dart';
 import '../tracking/order_tracking_service.dart';
@@ -188,12 +189,12 @@ class OrderTrackingIntegration {
       final validations = <String, bool>{
         'order_has_id': order.id > 0,
         'order_has_number': order.orderNumber.isNotEmpty,
-        'order_has_customer': order.customerId == customerId,
+        'order_has_customer': order.userId == customerId,
         'order_has_company': order.companyId == companyId,
         'order_has_hike': order.hikeId == hikeId,
-        'order_has_delivery_address': order.deliveryAddress.isValid,
-        'order_has_shipping_cost': order.shippingCost >= 0,
-        'order_total_correct': order.totalAmount == order.subtotal + order.shippingCost + order.taxAmount,
+        'order_has_delivery_address': order.deliveryAddress != null,
+        'order_has_shipping_cost': (order.shippingCost ?? 0) >= 0,
+        'order_total_correct': order.totalAmount == (order.baseAmount ?? 0) + (order.shippingCost ?? 0),
         'order_status_pending': order.status == EnhancedOrderStatus.pending,
       };
 
@@ -289,7 +290,7 @@ class OrderTrackingIntegration {
         'transition_allowed': canTransition,
         'status_updated': updatedOrder.status == toStatus,
         'order_updated': updatedOrder.updatedAt != null,
-        'metadata_contains_transition': updatedOrder.metadata?['status_transition'] != null,
+        'metadata_contains_transition': updatedOrder.shippingDetails?['status_transition'] != null,
       };
 
       final allValid = validations.values.every((v) => v);
@@ -320,19 +321,18 @@ class OrderTrackingIntegration {
       dev.log('📦 Validating tracking assignment...');
 
       final trackingNumber = 'TN${DateTime.now().millisecondsSinceEpoch}';
-      const shippingCarrier = 'DHL_EXPRESS';
+      const shippingService = 'DHL_EXPRESS';
 
       final updatedOrder = await _trackingService.assignTrackingNumber(
         orderId: orderId,
         trackingNumber: trackingNumber,
-        shippingCarrier: shippingCarrier,
         shippingService: 'Express Worldwide',
         estimatedDelivery: DateTime.now().add(const Duration(days: 2)),
       );
 
       final validations = <String, bool>{
         'tracking_number_assigned': updatedOrder.trackingNumber == trackingNumber,
-        'shipping_carrier_set': updatedOrder.shippingCarrier == shippingCarrier,
+        'shipping_carrier_set': updatedOrder.shippingService == shippingService,
         'tracking_url_generated': updatedOrder.trackingUrl?.isNotEmpty == true,
         'estimated_delivery_set': updatedOrder.estimatedDelivery != null,
         'status_is_shipped': updatedOrder.status == EnhancedOrderStatus.shipped,
@@ -371,7 +371,7 @@ class OrderTrackingIntegration {
       final validations = <String, bool>{
         'has_tracking': trackingInfo['hasTracking'] == true,
         'has_tracking_number': trackingInfo['trackingNumber'] != null,
-        'has_carrier': trackingInfo['shippingCarrier'] != null,
+        'has_carrier': trackingInfo['shippingService'] != null,
         'has_tracking_url': trackingInfo['trackingUrl'] != null,
         'has_current_status': trackingInfo['currentStatus'] != null,
         'has_status_history': trackingInfo['statusHistory'] != null,

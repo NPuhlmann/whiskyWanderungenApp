@@ -94,7 +94,7 @@ class NavigationViewModel extends ChangeNotifier {
       _isPaused = false;
       
       // Sprich erste Anweisung
-      await _speakCurrentInstruction();
+      await speakCurrentInstruction();
 
       notifyListeners();
       log('Navigation started with ${_waypoints.length} waypoints');
@@ -143,7 +143,7 @@ class NavigationViewModel extends ChangeNotifier {
     if (_isNavigating && _isPaused) {
       await _navigationService.resumeNavigation();
       _isPaused = false;
-      await _speakCurrentInstruction();
+      await speakCurrentInstruction();
       notifyListeners();
     }
   }
@@ -154,7 +154,7 @@ class NavigationViewModel extends ChangeNotifier {
       await _navigationService.skipToNextWaypoint();
       _currentWaypointIndex++;
       _updateProgress();
-      await _speakCurrentInstruction();
+      await speakCurrentInstruction();
       notifyListeners();
     }
   }
@@ -165,7 +165,7 @@ class NavigationViewModel extends ChangeNotifier {
       await _navigationService.skipToPreviousWaypoint();
       _currentWaypointIndex--;
       _updateProgress();
-      await _speakCurrentInstruction();
+      await speakCurrentInstruction();
       notifyListeners();
     }
   }
@@ -212,7 +212,7 @@ class NavigationViewModel extends ChangeNotifier {
 
     // Auto-speak new instructions
     if (_audioEnabled && _currentInstruction != null) {
-      _speakCurrentInstruction();
+      speakCurrentInstruction();
     }
 
     notifyListeners();

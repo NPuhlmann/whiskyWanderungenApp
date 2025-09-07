@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
-import 'package:whisky_hikes/UI/tasting_sets/widgets/tasting_set_info_card.dart';
-import 'package:whisky_hikes/UI/tasting_sets/tasting_set_selection_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/tasting_sets/widgets/tasting_set_info_card.dart';
+import 'package:whisky_hikes/UI/mobile/tasting_sets/tasting_set_selection_view_model.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
 /// Page for displaying the tasting set included with a hike (1:1 relationship)

@@ -185,7 +185,7 @@ class OrderStatusWorkflow {
 
     if (significantChanges.contains(toStatus)) {
       await _notificationService.sendOrderStatusChangeNotification(
-        customerId: order.customerId,
+        customerId: order.userId,
         orderId: order.id,
         orderNumber: order.orderNumber,
         newStatus: toStatus.name,

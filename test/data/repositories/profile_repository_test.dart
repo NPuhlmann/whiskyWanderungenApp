@@ -5,7 +5,6 @@ import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 
-import '../../mocks/mock_backend_api_service.dart';
 import '../../mocks/mock_repositories.dart';
 
 void main() {
