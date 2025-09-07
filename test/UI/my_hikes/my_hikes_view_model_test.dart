@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:whisky_hikes/UI/my_hikes/my_hikes_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/my_hikes/my_hikes_view_model.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 
 import '../../mocks/mock_repositories.dart';

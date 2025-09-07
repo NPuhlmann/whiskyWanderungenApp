@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:whisky_hikes/UI/orders/order_tracking_page.dart';
-import 'package:whisky_hikes/UI/orders/order_tracking_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/orders/order_tracking_page.dart';
+import 'package:whisky_hikes/UI/mobile/orders/order_tracking_view_model.dart';
 
 void main() {
   group('OrderTrackingPage', () {

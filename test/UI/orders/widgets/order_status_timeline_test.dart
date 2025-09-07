@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:whisky_hikes/UI/orders/widgets/order_status_timeline.dart';
+import 'package:whisky_hikes/UI/mobile/orders/widgets/order_status_timeline.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart' as basic;
 import 'package:whisky_hikes/domain/models/enhanced_order.dart' as enhanced;
 import 'package:whisky_hikes/domain/models/delivery_address.dart';
@@ -17,7 +17,7 @@ void main() {
         hikeId: 1,
         userId: 'test-user-id',
         totalAmount: 49.99,
-        deliveryType: basic.DeliveryType.shipping,
+        deliveryType: basic.DeliveryType.standardShipping,
         status: basic.OrderStatus.confirmed,
         createdAt: DateTime.now(),
       );

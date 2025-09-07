@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:whisky_hikes/UI/hike_details/hike_details_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/hike_details/hike_details_view_model.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
 

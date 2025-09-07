@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:whisky_hikes/UI/checkout/checkout_page.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/checkout_page.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 
@@ -210,7 +210,7 @@ void main() {
           hikeId: 2,
           userId: 'flow-test-user',
           totalAmount: 30.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );
@@ -305,7 +305,7 @@ void main() {
           hikeId: 5,
           userId: 'specific-user',
           totalAmount: 99.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:whisky_hikes/UI/auth/login/login_page_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/auth/login/login_page_view_model.dart';
 
 import '../../mocks/mock_repositories.dart';
 

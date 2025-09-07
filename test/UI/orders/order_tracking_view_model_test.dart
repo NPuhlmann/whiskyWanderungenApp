@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:whisky_hikes/UI/orders/order_tracking_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/orders/order_tracking_view_model.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 
@@ -21,7 +21,7 @@ void main() {
       hikeId: 1,
       userId: 'test-user-id',
       totalAmount: 49.99,
-      deliveryType: DeliveryType.shipping,
+      deliveryType: DeliveryType.standardShipping,
       status: OrderStatus.confirmed,
       createdAt: DateTime.now(),
     );

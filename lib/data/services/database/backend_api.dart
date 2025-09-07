@@ -235,7 +235,7 @@ class BackendApiService {
       final response = await client
           .from('waypoints')
           .select()
-          .inFilter('id', waypointIds);
+          .filter('id', 'in', waypointIds);
       
       final List<dynamic> waypointData = response as List<dynamic>;
       

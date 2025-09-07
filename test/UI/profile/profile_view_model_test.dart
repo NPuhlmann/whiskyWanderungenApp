@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:whisky_hikes/UI/profile/profile_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/profile/profile_view_model.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 
 import '../../mocks/mock_repositories.dart';

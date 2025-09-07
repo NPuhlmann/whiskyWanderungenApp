@@ -27,7 +27,7 @@ void main() {
           hikeId: 42,
           userId: 'integration-test-user',
           totalAmount: 35.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
           deliveryAddress: {
@@ -148,7 +148,7 @@ void main() {
           hikeId: 20,
           userId: 'shipping-user',
           totalAmount: 30.99, // 25.99 + 5.00 shipping
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
           deliveryAddress: {
@@ -456,7 +456,7 @@ void main() {
           hikeId: 100,
           userId: 'final-test-user',
           totalAmount: 99.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
           deliveryAddress: {

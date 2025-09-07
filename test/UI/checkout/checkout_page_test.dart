@@ -37,7 +37,7 @@ void main() {
         hikeId: 1,
         userId: 'test-user',
         totalAmount: 30.99,
-        deliveryType: DeliveryType.shipping,
+        deliveryType: DeliveryType.standardShipping,
         status: OrderStatus.pending,
         createdAt: DateTime.now(),
       );
@@ -88,7 +88,7 @@ void main() {
           hikeId: 1,
           userId: 'test-user',
           totalAmount: 30.99,
-          deliveryType: DeliveryType.shipping,
+          deliveryType: DeliveryType.standardShipping,
           status: OrderStatus.pending,
           createdAt: DateTime.now(),
         );

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
-import 'package:whisky_hikes/UI/checkout/checkout_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/checkout_view_model.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
@@ -26,7 +26,7 @@ void main() {
         hikeId: 1,
         userId: 'test-user',
         totalAmount: 30.99,
-        deliveryType: DeliveryType.shipping,
+        deliveryType: DeliveryType.standardShipping,
         status: OrderStatus.pending,
         createdAt: DateTime.now(),
       );
@@ -46,7 +46,7 @@ void main() {
         // Act & Assert
         expect(viewModel.order.orderNumber, equals('WH2025-TEST-001'));
         expect(viewModel.order.totalAmount, equals(30.99));
-        expect(viewModel.order.deliveryType, equals(DeliveryType.shipping));
+        expect(viewModel.order.deliveryType, equals(DeliveryType.standardShipping));
         expect(viewModel.isLoading, isFalse);
         expect(viewModel.errorMessage, isNull);
         expect(viewModel.selectedPaymentMethod, isNull);

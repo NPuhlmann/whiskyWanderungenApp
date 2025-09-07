@@ -4,9 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:whisky_hikes/UI/auth/login/login_page.dart';
-import 'package:whisky_hikes/UI/auth/login/login_page_view_model.dart';
-import 'package:whisky_hikes/UI/auth/signup/signup_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/login/login_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/login/login_page_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,21 +19,7 @@ void main() {
     setUp(() {
       mockViewModel = MockLoginPageViewModel();
       
-      // Setup all mocks before tests
-      when(mockViewModel.loginWithEmailAndPassword(any, any))
-          .thenAnswer((_) async => AuthResponse());
-      
-      when(mockViewModel.loginWithEmailAndPassword('test@example.com', 'wrongpassword'))
-          .thenThrow(Exception('Login failed'));
-      
-      when(mockViewModel.loginWithEmailAndPassword('test@example.com', 'password123'))
-          .thenAnswer((_) async => AuthResponse());
-      
-      when(mockViewModel.loginWithEmailAndPassword('test@example.com', 'password123'))
-          .thenAnswer((_) async => AuthResponse());
-      
-      when(mockViewModel.loginWithEmailAndPassword('test@example.com', 'password123'))
-          .thenThrow(Exception('Network error'));
+      // Setup default mock behavior
     });
 
     Widget createTestWidget(Widget child) {
