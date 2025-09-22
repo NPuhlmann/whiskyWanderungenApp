@@ -16,6 +16,8 @@ import '../data/services/auth/auth_service.dart';
 import '../data/services/cache/local_cache_service.dart';
 import '../data/services/offline/offline_service.dart';
 import '../data/services/database/backend_api.dart';
+import '../data/services/admin/order_management_service.dart';
+import '../data/providers/order_management_provider.dart';
 
 List<SingleChildWidget> get providers {
   return [
@@ -31,6 +33,9 @@ List<SingleChildWidget> get providers {
     ),
     Provider<OfflineService>(
       create: (_) => OfflineService(),
+    ),
+    Provider<OrderManagementService>(
+      create: (_) => OrderManagementService(),
     ),
     
     // Dann alle Repositories
@@ -80,6 +85,14 @@ List<SingleChildWidget> get providers {
         userRepository: context.read(),
       ),
     ),
+
+    // Admin-Provider
+    ChangeNotifierProvider<OrderManagementProvider>(
+      create: (context) => OrderManagementProvider(
+        orderManagementService: context.read<OrderManagementService>(),
+      ),
+    ),
+
     // HikeMapViewModel wird in HikeMapScreen erstellt
   ];
 }
