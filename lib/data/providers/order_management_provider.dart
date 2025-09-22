@@ -21,6 +21,14 @@ class OrderManagementProvider extends ChangeNotifier {
   String _currentFilter = 'all';
   String _searchTerm = '';
 
+  // Filter state
+  DateTime? _startDate;
+  DateTime? _endDate;
+  double? _minAmount;
+  double? _maxAmount;
+  String _searchQuery = '';
+  String _selectedPeriod = 'month';
+
   // Getters
   List<Map<String, dynamic>> get orders => _orders;
   Map<String, dynamic>? get selectedOrder => _selectedOrder;
@@ -31,6 +39,15 @@ class OrderManagementProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get currentFilter => _currentFilter;
   String get searchTerm => _searchTerm;
+
+  // Filter getters
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
+  double? get minAmount => _minAmount;
+  double? get maxAmount => _maxAmount;
+  String get searchQuery => _searchQuery;
+  String get selectedPeriod => _selectedPeriod;
+  Map<String, dynamic> get statistics => _orderStatistics;
 
   // Setter for testing purposes
   set selectedOrder(Map<String, dynamic>? order) {
@@ -517,4 +534,59 @@ class OrderManagementProvider extends ChangeNotifier {
 
   /// Gibt die Anzahl aller Bestellungen zurück
   int get totalOrderCount => _orders.length;
+
+  // Additional filter methods for UI integration
+
+  /// Wendet Status-Filter an
+  void applyStatusFilter(String status) {
+    _currentFilter = status;
+    filterOrdersByStatus(status);
+  }
+
+  /// Setzt Mindestbetrag für Filter
+  void setMinAmount(double? amount) {
+    _minAmount = amount;
+    notifyListeners();
+  }
+
+  /// Setzt Maximalbetrag für Filter
+  void setMaxAmount(double? amount) {
+    _maxAmount = amount;
+    notifyListeners();
+  }
+
+  /// Setzt Datumsbereich für Filter
+  void setDateRange(DateTime startDate, DateTime endDate) {
+    _startDate = startDate;
+    _endDate = endDate;
+    notifyListeners();
+  }
+
+  /// Löscht Datumsfilter
+  void clearDateFilter() {
+    _startDate = null;
+    _endDate = null;
+    notifyListeners();
+  }
+
+  /// Wendet alle Filter an
+  Future<void> applyFilters() async {
+    // Implementation would apply all active filters
+    // For now, just refresh the data
+    await loadOrders();
+  }
+
+  /// Setzt Zeitraum für Statistiken
+  void setStatisticsPeriod(String period) {
+    _selectedPeriod = period;
+    notifyListeners();
+    // Reload statistics with new period
+    loadOrderStatistics();
+  }
+
+  /// Setzt Suchbegriff
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    searchOrders(query);
+  }
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'dashboard/admin_dashboard.dart';
 import '../../shared/guards/admin_guard.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
+import 'order_management/order_management_page.dart';
 
 /// Admin-Router für die Navigation zwischen Admin-Seiten
 class AdminRouter {
@@ -36,7 +37,7 @@ class AdminRouter {
         path: ordersRoute,
         name: 'AdminOrders',
         builder: (context, state) => const AdminGuard(
-          child: _AdminOrdersPage(),
+          child: OrderManagementPage(),
         ),
       ),
       GoRoute(
@@ -134,37 +135,6 @@ class _AdminRoutesPage extends StatelessWidget {
   }
 }
 
-class _AdminOrdersPage extends StatelessWidget {
-  const _AdminOrdersPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.manageOrders),
-        backgroundColor: Colors.amber[800],
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.shopping_cart, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Bestellverwaltung',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.manageOrdersDescription),
-            SizedBox(height: 32),
-            Text('🚧 In Entwicklung 🚧'),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _AdminWhiskyPage extends StatelessWidget {
   const _AdminWhiskyPage();
