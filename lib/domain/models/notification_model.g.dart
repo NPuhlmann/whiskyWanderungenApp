@@ -14,10 +14,9 @@ NotificationModel _$NotificationModelFromJson(Map<String, dynamic> json) =>
       type: $enumDecode(_$NotificationTypeEnumMap, json['type']),
       data: json['data'] as Map<String, dynamic>,
       isRead: json['isRead'] as bool? ?? false,
-      createdAt:
-          json['createdAt'] == null
-              ? null
-              : DateTime.parse(json['createdAt'] as String),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$NotificationModelToJson(NotificationModel instance) =>

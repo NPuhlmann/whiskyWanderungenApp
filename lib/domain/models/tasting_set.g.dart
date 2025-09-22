@@ -41,30 +41,25 @@ _TastingSet _$TastingSetFromJson(Map<String, dynamic> json) => _TastingSet(
   hikeId: (json['hike_id'] as num).toInt(),
   name: json['name'] as String,
   description: json['description'] as String,
-  samples:
-      (json['samples'] as List<dynamic>)
-          .map((e) => WhiskySample.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  samples: (json['samples'] as List<dynamic>)
+      .map((e) => WhiskySample.fromJson(e as Map<String, dynamic>))
+      .toList(),
   price: (json['price'] as num?)?.toDouble() ?? 0.0,
   imageUrl: json['image_url'] as String?,
   isIncluded: json['is_included'] as bool? ?? true,
   isAvailable: json['is_available'] as bool? ?? true,
-  availableFrom:
-      json['available_from'] == null
-          ? null
-          : DateTime.parse(json['available_from'] as String),
-  availableUntil:
-      json['available_until'] == null
-          ? null
-          : DateTime.parse(json['available_until'] as String),
-  createdAt:
-      json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-  updatedAt:
-      json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+  availableFrom: json['available_from'] == null
+      ? null
+      : DateTime.parse(json['available_from'] as String),
+  availableUntil: json['available_until'] == null
+      ? null
+      : DateTime.parse(json['available_until'] as String),
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
+      ? null
+      : DateTime.parse(json['updated_at'] as String),
 );
 
 Map<String, dynamic> _$TastingSetToJson(_TastingSet instance) =>

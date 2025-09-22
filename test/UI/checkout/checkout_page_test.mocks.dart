@@ -30,6 +30,7 @@ import 'package:whisky_hikes/UI/mobile/checkout/checkout_view_model.dart'
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeBasicOrder_0 extends _i1.SmartFake implements _i2.BasicOrder {
   _FakeBasicOrder_0(Object parent, Invocation parentInvocation)

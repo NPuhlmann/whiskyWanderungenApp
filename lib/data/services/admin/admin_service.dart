@@ -19,21 +19,21 @@ class AdminService {
       final monthlyRoutesResult = await _client
           .from('orders')
           .select('id, created_at')
-          .gte('created_at', startOfMonth.toIso8601String())
+          .filter('created_at', 'gte', startOfMonth.toIso8601String())
           .eq('status', 'delivered');
 
       // Umsatz (diesen Monat)
       final monthlyRevenueResult = await _client
           .from('orders')
           .select('total_amount, created_at')
-          .gte('created_at', startOfMonth.toIso8601String())
+          .filter('created_at', 'gte', startOfMonth.toIso8601String())
           .eq('status', 'delivered');
 
       // Aktive Bestellungen
       final activeOrdersResult = await _client
           .from('orders')
           .select('id, status')
-          .inFilter('status', ['pending', 'confirmed', 'processing', 'shipped']);
+          .filter('status', 'in', '(pending,confirmed,processing,shipped)');
 
       // Durchschnittliche Kundenbewertung
       final ratingResult = await _client
@@ -84,7 +84,7 @@ class AdminService {
       final result = await _client
           .from('orders')
           .select('total_amount')
-          .gte('created_at', startOfWeek.toIso8601String())
+          .filter('created_at', 'gte', startOfWeek.toIso8601String())
           .eq('status', 'delivered');
 
       return result.fold<double>(
@@ -103,7 +103,7 @@ class AdminService {
       final result = await _client
           .from('orders')
           .select('total_amount')
-          .gte('created_at', startOfDay.toIso8601String())
+          .filter('created_at', 'gte', startOfDay.toIso8601String())
           .eq('status', 'delivered');
 
       return result.fold<double>(
@@ -158,8 +158,8 @@ class AdminService {
       final result = await _client
           .from('orders')
           .select('total_amount, created_at')
-          .gte('created_at', startDate.toIso8601String())
-          .lte('created_at', endDate.toIso8601String())
+          .filter('created_at', 'gte', startDate.toIso8601String())
+          .filter('created_at', 'lte', endDate.toIso8601String())
           .eq('status', 'delivered')
           .order('created_at');
 

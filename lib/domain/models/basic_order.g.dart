@@ -15,17 +15,15 @@ _BasicOrder _$BasicOrderFromJson(Map<String, dynamic> json) => _BasicOrder(
   deliveryType: $enumDecode(_$DeliveryTypeEnumMap, json['deliveryType']),
   status: $enumDecode(_$OrderStatusEnumMap, json['status']),
   createdAt: DateTime.parse(json['createdAt'] as String),
-  estimatedDelivery:
-      json['estimatedDelivery'] == null
-          ? null
-          : DateTime.parse(json['estimatedDelivery'] as String),
+  estimatedDelivery: json['estimatedDelivery'] == null
+      ? null
+      : DateTime.parse(json['estimatedDelivery'] as String),
   trackingNumber: json['trackingNumber'] as String?,
   deliveryAddress: json['deliveryAddress'] as Map<String, dynamic>?,
   paymentIntentId: json['paymentIntentId'] as String?,
-  updatedAt:
-      json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+  updatedAt: json['updatedAt'] == null
+      ? null
+      : DateTime.parse(json['updatedAt'] as String),
 );
 
 Map<String, dynamic> _$BasicOrderToJson(_BasicOrder instance) =>

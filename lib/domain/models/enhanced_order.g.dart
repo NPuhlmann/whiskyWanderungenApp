@@ -17,35 +17,29 @@ _EnhancedOrder _$EnhancedOrderFromJson(Map<String, dynamic> json) =>
       deliveryType: $enumDecode(_$DeliveryTypeEnumMap, json['deliveryType']),
       status: $enumDecode(_$EnhancedOrderStatusEnumMap, json['status']),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      estimatedDelivery:
-          json['estimatedDelivery'] == null
-              ? null
-              : DateTime.parse(json['estimatedDelivery'] as String),
+      estimatedDelivery: json['estimatedDelivery'] == null
+          ? null
+          : DateTime.parse(json['estimatedDelivery'] as String),
       trackingNumber: json['trackingNumber'] as String?,
       deliveryAddress: json['deliveryAddress'] as Map<String, dynamic>?,
       paymentIntentId: json['paymentIntentId'] as String?,
-      updatedAt:
-          json['updatedAt'] == null
-              ? null
-              : DateTime.parse(json['updatedAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
       companyId: json['companyId'] as String?,
       customerEmail: json['customerEmail'] as String?,
       customerPhone: json['customerPhone'] as String?,
-      statusHistory:
-          (json['statusHistory'] as List<dynamic>?)
-              ?.map(
-                (e) => OrderStatusChange.fromJson(e as Map<String, dynamic>),
-              )
-              .toList(),
+      statusHistory: (json['statusHistory'] as List<dynamic>?)
+          ?.map((e) => OrderStatusChange.fromJson(e as Map<String, dynamic>))
+          .toList(),
       shippingDetails: json['shippingDetails'] as Map<String, dynamic>?,
       canBeTracked: json['canBeTracked'] as bool?,
       baseAmount: (json['baseAmount'] as num?)?.toDouble(),
       shippingCost: (json['shippingCost'] as num?)?.toDouble(),
       shippingService: json['shippingService'] as String?,
-      actualDelivery:
-          json['actualDelivery'] == null
-              ? null
-              : DateTime.parse(json['actualDelivery'] as String),
+      actualDelivery: json['actualDelivery'] == null
+          ? null
+          : DateTime.parse(json['actualDelivery'] as String),
       trackingUrl: json['trackingUrl'] as String?,
     );
 

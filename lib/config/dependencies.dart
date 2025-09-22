@@ -14,6 +14,7 @@ import '../data/repositories/profile_repository.dart';
 import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
 import '../data/services/cache/local_cache_service.dart';
+import '../data/services/offline/offline_service.dart';
 import '../data/services/database/backend_api.dart';
 
 List<SingleChildWidget> get providers {
@@ -27,6 +28,9 @@ List<SingleChildWidget> get providers {
     ),
     Provider<LocalCacheService>(
       create: (_) => LocalCacheService(),
+    ),
+    Provider<OfflineService>(
+      create: (_) => OfflineService(),
     ),
     
     // Dann alle Repositories

@@ -9,10 +9,9 @@ part of 'payment_result.dart';
 _PaymentResult _$PaymentResultFromJson(Map<String, dynamic> json) =>
     _PaymentResult(
       isSuccess: json['isSuccess'] as bool,
-      order:
-          json['order'] == null
-              ? null
-              : Order.fromJson(json['order'] as Map<String, dynamic>),
+      order: json['order'] == null
+          ? null
+          : Order.fromJson(json['order'] as Map<String, dynamic>),
       clientSecret: json['clientSecret'] as String?,
       errorMessage: json['errorMessage'] as String?,
       status: $enumDecodeNullable(_$PaymentStatusEnumMap, json['status']),

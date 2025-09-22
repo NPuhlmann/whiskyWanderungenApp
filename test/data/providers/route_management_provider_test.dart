@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -130,6 +131,8 @@ void main() {
           'is_active': true,
         };
 
+        when(mockService.validateRouteData(routeData))
+            .thenReturn(true);
         when(mockService.createRoute(routeData))
             .thenAnswer((_) async => createdRoute);
         when(mockService.getAllRoutesForAdmin())
@@ -155,6 +158,8 @@ void main() {
         };
         const errorMessage = 'Failed to create route';
 
+        when(mockService.validateRouteData(routeData))
+            .thenReturn(true);
         when(mockService.createRoute(routeData))
             .thenThrow(Exception(errorMessage));
 
@@ -292,6 +297,8 @@ void main() {
           'longitude': 13.4050,
         };
 
+        when(mockService.validateWaypointData(waypointData))
+            .thenReturn(true);
         when(mockService.addWaypointToRoute(routeId, waypointData))
             .thenAnswer((_) async => createdWaypoint);
         when(mockService.getRouteWaypoints(routeId))
@@ -303,8 +310,11 @@ void main() {
               }
             ]);
 
-        // Set selected route
-        provider.selectedRoute = {'id': routeId, 'name': 'Test Route'};
+        // Set selected route through selectRoute method
+        final testRoute = {'id': routeId, 'name': 'Test Route'};
+        when(mockService.getRouteWaypoints(routeId))
+            .thenAnswer((_) async => []);
+        await provider.selectRoute(testRoute);
 
         // Act
         await provider.addWaypoint(routeId, waypointData);
@@ -341,8 +351,11 @@ void main() {
               },
             ]);
 
-        // Set selected route
-        provider.selectedRoute = {'id': routeId, 'name': 'Test Route'};
+        // Set selected route through selectRoute method
+        final testRoute = {'id': routeId, 'name': 'Test Route'};
+        when(mockService.getRouteWaypoints(routeId))
+            .thenAnswer((_) async => []);
+        await provider.selectRoute(testRoute);
 
         // Act
         await provider.reorderWaypoints(routeId, newOrder);
@@ -364,16 +377,27 @@ void main() {
 
         when(mockService.removeWaypointFromRoute(routeId, waypointId))
             .thenAnswer((_) async => {});
-        when(mockService.getRouteWaypoints(routeId))
-            .thenAnswer((_) async => []); // Empty after removal
 
-        // Set selected route and initial waypoints
-        provider.selectedRoute = {'id': routeId, 'name': 'Test Route'};
-        provider.waypoints.add({
-          'waypoint_id': waypointId,
-          'order_index': 1,
-          'waypoints': {'id': waypointId, 'name': 'Waypoint to Remove'},
-        });
+        int callCount = 0;
+        when(mockService.getRouteWaypoints(routeId))
+            .thenAnswer((_) async {
+              callCount++;
+              if (callCount == 1) {
+                // First call: return the initial waypoint
+                return [{
+                  'waypoint_id': waypointId,
+                  'order_index': 1,
+                  'waypoints': {'id': waypointId, 'name': 'Waypoint to Remove'},
+                }];
+              } else {
+                // Second call after removal: return empty list
+                return [];
+              }
+            });
+
+        // Set selected route through selectRoute method
+        final testRoute = {'id': routeId, 'name': 'Test Route'};
+        await provider.selectRoute(testRoute);
 
         // Act
         await provider.removeWaypoint(routeId, waypointId);
@@ -392,7 +416,7 @@ void main() {
         // Arrange
         const routeId = 123;
         const fileName = 'route_image.jpg';
-        final imageBytes = [1, 2, 3, 4, 5];
+        final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
         const imageUrl = 'https://storage.supabase.co/route_images/route_123_image.jpg';
 
         when(mockService.uploadRouteImage(routeId, imageBytes, fileName))
@@ -412,7 +436,7 @@ void main() {
         // Arrange
         const routeId = 123;
         const fileName = 'route_image.jpg';
-        final imageBytes = [1, 2, 3, 4, 5];
+        final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
         const errorMessage = 'Upload failed';
 
         when(mockService.uploadRouteImage(routeId, imageBytes, fileName))
@@ -471,7 +495,7 @@ void main() {
         // Arrange
         const routeId = 123;
         const fileName = 'route_image.jpg';
-        final imageBytes = [1, 2, 3, 4, 5];
+        final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
 
         when(mockService.uploadRouteImage(routeId, imageBytes, fileName))
             .thenAnswer((_) async {
@@ -509,9 +533,16 @@ void main() {
 
       test('should retry failed operations', () async {
         // Arrange
+        int callCount = 0;
         when(mockService.getAllRoutesForAdmin())
-            .thenThrow(Exception('Network error'))
-            .thenAnswer((_) async => []); // Success on retry
+            .thenAnswer((_) async {
+              callCount++;
+              if (callCount == 1) {
+                throw Exception('Network error');
+              } else {
+                return [];
+              }
+            });
 
         // Act - First call fails
         await provider.loadRoutes();

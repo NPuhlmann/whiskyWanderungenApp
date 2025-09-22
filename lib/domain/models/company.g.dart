@@ -25,10 +25,9 @@ _Company _$CompanyFromJson(Map<String, dynamic> json) => _Company(
   isActive: json['isActive'] as bool? ?? true,
   isVerified: json['isVerified'] as bool? ?? false,
   createdAt: DateTime.parse(json['createdAt'] as String),
-  updatedAt:
-      json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+  updatedAt: json['updatedAt'] == null
+      ? null
+      : DateTime.parse(json['updatedAt'] as String),
 );
 
 Map<String, dynamic> _$CompanyToJson(_Company instance) => <String, dynamic>{
@@ -70,10 +69,9 @@ _CompanyShippingRule _$CompanyShippingRuleFromJson(
   signatureRequired: json['signatureRequired'] as bool? ?? false,
   isActive: json['isActive'] as bool? ?? true,
   createdAt: DateTime.parse(json['createdAt'] as String),
-  updatedAt:
-      json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+  updatedAt: json['updatedAt'] == null
+      ? null
+      : DateTime.parse(json['updatedAt'] as String),
 );
 
 Map<String, dynamic> _$CompanyShippingRuleToJson(

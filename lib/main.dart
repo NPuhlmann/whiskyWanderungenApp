@@ -7,7 +7,10 @@ import 'package:whisky_hikes/config/routing/router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:async';
 import 'config/dependencies.dart';
+import 'config/lifecycle/app_lifecycle_manager.dart';
 import 'data/services/payment/multi_payment_service.dart';
+import 'data/services/offline/offline_service.dart';
+import 'data/services/cache/local_cache_service.dart';
 
 
 void main() async {
@@ -69,17 +72,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late StreamSubscription<AuthState> _linkSubscription;
+  AppLifecycleManager? _lifecycleManager;
 
   @override
   void initState() {
     super.initState();
     _handleInitialLink();
     _handleIncomingLinks();
+    _initializeLifecycleManager();
   }
 
   @override
   void dispose() {
     _linkSubscription.cancel();
+    if (_lifecycleManager != null && !_lifecycleManager!.isDisposed) {
+      // Schedule disposal for the next event loop iteration
+      // since dispose() cannot be async in StatefulWidget
+      Future.microtask(() => _lifecycleManager!.dispose());
+    }
     super.dispose();
   }
 
@@ -102,6 +112,25 @@ class _MyAppState extends State<MyApp> {
         if (_isDebugMode()) debugPrint('User confirmed email and signed in');
       }
     });
+  }
+
+  void _initializeLifecycleManager() async {
+    try {
+      // Create shared instances that will be managed by the lifecycle manager
+      final offlineService = OfflineService();
+      final localCacheService = LocalCacheService();
+      
+      _lifecycleManager = AppLifecycleManager(
+        offlineService: offlineService,
+        localCacheService: localCacheService,
+      );
+      
+      _lifecycleManager!.initialize();
+      
+      if (_isDebugMode()) debugPrint('✅ AppLifecycleManager initialized successfully');
+    } catch (e) {
+      debugPrint('⚠️ AppLifecycleManager initialization failed: $e');
+    }
   }
 
   // This widget is the root of your application.

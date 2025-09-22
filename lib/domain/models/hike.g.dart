@@ -20,33 +20,28 @@ _Hike _$HikeFromJson(Map<String, dynamic> json) => _Hike(
   thumbnailImageUrl: json['thumbnail_image_url'] as String?,
   isFavorite: json['is_favorite'] as bool? ?? false,
   companyId: json['company_id'] as String?,
-  company:
-      json['company'] == null
-          ? null
-          : Company.fromJson(json['company'] as Map<String, dynamic>),
+  company: json['company'] == null
+      ? null
+      : Company.fromJson(json['company'] as Map<String, dynamic>),
   isAvailable: json['isAvailable'] as bool? ?? true,
-  availableFrom:
-      json['availableFrom'] == null
-          ? null
-          : DateTime.parse(json['availableFrom'] as String),
-  availableUntil:
-      json['availableUntil'] == null
-          ? null
-          : DateTime.parse(json['availableUntil'] as String),
+  availableFrom: json['availableFrom'] == null
+      ? null
+      : DateTime.parse(json['availableFrom'] as String),
+  availableUntil: json['availableUntil'] == null
+      ? null
+      : DateTime.parse(json['availableUntil'] as String),
   category: json['category'] as String? ?? 'Whisky',
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
   averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
   reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
-  createdAt:
-      json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-  updatedAt:
-      json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
+      ? null
+      : DateTime.parse(json['updated_at'] as String),
 );
 
 Map<String, dynamic> _$HikeToJson(_Hike instance) => <String, dynamic>{

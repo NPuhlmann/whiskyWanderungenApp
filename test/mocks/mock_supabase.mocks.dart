@@ -25,6 +25,7 @@ import 'package:supabase/supabase.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeFunctionsClient_0 extends _i1.SmartFake
     implements _i2.FunctionsClient {
@@ -255,26 +256,26 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
           as _i2.GoTrueClient);
 
   @override
-  set functions(_i2.FunctionsClient? _functions) => super.noSuchMethod(
-    Invocation.setter(#functions, _functions),
+  set functions(_i2.FunctionsClient? value) => super.noSuchMethod(
+    Invocation.setter(#functions, value),
     returnValueForMissingStub: null,
   );
 
   @override
-  set storage(_i2.SupabaseStorageClient? _storage) => super.noSuchMethod(
-    Invocation.setter(#storage, _storage),
+  set storage(_i2.SupabaseStorageClient? value) => super.noSuchMethod(
+    Invocation.setter(#storage, value),
     returnValueForMissingStub: null,
   );
 
   @override
-  set realtime(_i2.RealtimeClient? _realtime) => super.noSuchMethod(
-    Invocation.setter(#realtime, _realtime),
+  set realtime(_i2.RealtimeClient? value) => super.noSuchMethod(
+    Invocation.setter(#realtime, value),
     returnValueForMissingStub: null,
   );
 
   @override
-  set rest(_i2.PostgrestClient? _rest) => super.noSuchMethod(
-    Invocation.setter(#rest, _rest),
+  set rest(_i2.PostgrestClient? value) => super.noSuchMethod(
+    Invocation.setter(#rest, value),
     returnValueForMissingStub: null,
   );
 
@@ -1111,11 +1112,12 @@ class MockPostgrestFilterBuilder<T> extends _i1.Mock
   ]) =>
       (super.noSuchMethod(
             Invocation.method(#count, [count]),
-            returnValue: _FakeResponsePostgrestBuilder_15<
-              _i2.PostgrestResponse<T>,
-              T,
-              T
-            >(this, Invocation.method(#count, [count])),
+            returnValue:
+                _FakeResponsePostgrestBuilder_15<
+                  _i2.PostgrestResponse<T>,
+                  T,
+                  T
+                >(this, Invocation.method(#count, [count])),
           )
           as _i2.ResponsePostgrestBuilder<_i2.PostgrestResponse<T>, T, T>);
 
@@ -1139,11 +1141,12 @@ class MockPostgrestFilterBuilder<T> extends _i1.Mock
   geojson() =>
       (super.noSuchMethod(
             Invocation.method(#geojson, []),
-            returnValue: _FakeResponsePostgrestBuilder_15<
-              Map<String, dynamic>,
-              Map<String, dynamic>,
-              Map<String, dynamic>
-            >(this, Invocation.method(#geojson, [])),
+            returnValue:
+                _FakeResponsePostgrestBuilder_15<
+                  Map<String, dynamic>,
+                  Map<String, dynamic>,
+                  Map<String, dynamic>
+                >(this, Invocation.method(#geojson, [])),
           )
           as _i2.ResponsePostgrestBuilder<
             Map<String, dynamic>,
@@ -1490,8 +1493,8 @@ class MockSupabaseStorageClient extends _i1.Mock
           as _i4.Fetch);
 
   @override
-  set storageFetch(_i4.Fetch? _storageFetch) => super.noSuchMethod(
-    Invocation.setter(#storageFetch, _storageFetch),
+  set storageFetch(_i4.Fetch? value) => super.noSuchMethod(
+    Invocation.setter(#storageFetch, value),
     returnValueForMissingStub: null,
   );
 
@@ -2041,14 +2044,14 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
           as Map<String, String>);
 
   @override
-  set admin(_i2.GoTrueAdminApi? _admin) => super.noSuchMethod(
-    Invocation.setter(#admin, _admin),
+  set admin(_i2.GoTrueAdminApi? value) => super.noSuchMethod(
+    Invocation.setter(#admin, value),
     returnValueForMissingStub: null,
   );
 
   @override
-  set mfa(_i2.GoTrueMFAApi? _mfa) => super.noSuchMethod(
-    Invocation.setter(#mfa, _mfa),
+  set mfa(_i2.GoTrueMFAApi? value) => super.noSuchMethod(
+    Invocation.setter(#mfa, value),
     returnValueForMissingStub: null,
   );
 
