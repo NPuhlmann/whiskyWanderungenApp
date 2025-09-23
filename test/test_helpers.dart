@@ -1,6 +1,7 @@
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
+import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 class TestHelpers {
   static List<Hike> createSampleHikes() {
@@ -364,4 +365,190 @@ class TestHelpers {
   static Exception createDatabaseError([String message = 'Database error']) {
     return Exception('database: $message');
   }
+
+  /// TastingSet and WhiskySample helpers
+  static TastingSet createTestTastingSet({
+    int id = 1,
+    int hikeId = 1,
+    String name = 'Test Tasting Set',
+    String description = 'A test tasting set with premium whiskies',
+    List<WhiskySample> samples = const [],
+    double price = 0.0,
+    String? imageUrl,
+    bool isIncluded = true,
+    bool isAvailable = true,
+    DateTime? availableFrom,
+    DateTime? availableUntil,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return TastingSet(
+      id: id,
+      hikeId: hikeId,
+      name: name,
+      description: description,
+      samples: samples.isEmpty ? createSampleWhiskySamples() : samples,
+      price: price,
+      imageUrl: imageUrl,
+      isIncluded: isIncluded,
+      isAvailable: isAvailable,
+      availableFrom: availableFrom,
+      availableUntil: availableUntil,
+      createdAt: createdAt ?? DateTime.now(),
+      updatedAt: updatedAt ?? DateTime.now(),
+    );
+  }
+
+  static WhiskySample createTestWhiskySample({
+    int id = 1,
+    String name = 'Test Whisky',
+    String distillery = 'Test Distillery',
+    int age = 12,
+    String region = 'Speyside',
+    String tastingNotes = 'Smooth and complex with notes of honey and vanilla',
+    String imageUrl = 'https://example.com/whisky.jpg',
+    double abv = 43.0,
+    String? category = 'Single Malt',
+    double sampleSizeMl = 5.0,
+    int orderIndex = 0,
+  }) {
+    return WhiskySample(
+      id: id,
+      name: name,
+      distillery: distillery,
+      age: age,
+      region: region,
+      tastingNotes: tastingNotes,
+      imageUrl: imageUrl,
+      abv: abv,
+      category: category,
+      sampleSizeMl: sampleSizeMl,
+      orderIndex: orderIndex,
+    );
+  }
+
+  static List<WhiskySample> createSampleWhiskySamples() {
+    return [
+      createTestWhiskySample(
+        id: 1,
+        name: 'Glenfiddich 12',
+        distillery: 'Glenfiddich',
+        age: 12,
+        region: 'Speyside',
+        abv: 40.0,
+        orderIndex: 0,
+      ),
+      createTestWhiskySample(
+        id: 2,
+        name: 'Macallan 15',
+        distillery: 'Macallan',
+        age: 15,
+        region: 'Speyside',
+        abv: 43.0,
+        orderIndex: 1,
+      ),
+      createTestWhiskySample(
+        id: 3,
+        name: 'Ardbeg 10',
+        distillery: 'Ardbeg',
+        age: 10,
+        region: 'Islay',
+        abv: 46.0,
+        orderIndex: 2,
+      ),
+    ];
+  }
+
+  static List<TastingSet> createSampleTastingSets() {
+    return [
+      createTestTastingSet(
+        id: 1,
+        hikeId: 1,
+        name: 'Highland Collection',
+        description: 'A selection of premium Highland whiskies',
+        samples: [
+          createTestWhiskySample(id: 1, name: 'Glenlivet 12', region: 'Speyside'),
+          createTestWhiskySample(id: 2, name: 'Macallan 15', region: 'Speyside'),
+          createTestWhiskySample(id: 3, name: 'Balvenie 14', region: 'Speyside'),
+        ],
+      ),
+      createTestTastingSet(
+        id: 2,
+        hikeId: 2,
+        name: 'Islay Experience',
+        description: 'Smoky and peated whiskies from Islay',
+        samples: [
+          createTestWhiskySample(id: 4, name: 'Ardbeg 10', region: 'Islay'),
+          createTestWhiskySample(id: 5, name: 'Laphroaig 10', region: 'Islay'),
+          createTestWhiskySample(id: 6, name: 'Lagavulin 16', region: 'Islay'),
+        ],
+      ),
+      createTestTastingSet(
+        id: 3,
+        hikeId: 3,
+        name: 'Mixed Regions',
+        description: 'A diverse selection from various Scottish regions',
+        samples: [
+          createTestWhiskySample(id: 7, name: 'Oban 14', region: 'Highlands'),
+          createTestWhiskySample(id: 8, name: 'Springbank 12', region: 'Campbeltown'),
+          createTestWhiskySample(id: 9, name: 'Auchentoshan 12', region: 'Lowlands'),
+        ],
+      ),
+    ];
+  }
+
+  /// Utility methods for TastingSet assertions
+  static bool areTastingSetsEqual(TastingSet set1, TastingSet set2) {
+    return set1.id == set2.id &&
+        set1.hikeId == set2.hikeId &&
+        set1.name == set2.name &&
+        set1.description == set2.description &&
+        set1.price == set2.price &&
+        set1.imageUrl == set2.imageUrl &&
+        set1.isIncluded == set2.isIncluded &&
+        set1.isAvailable == set2.isAvailable &&
+        _areWhiskySampleListsEqual(set1.samples, set2.samples);
+  }
+
+  static bool areWhiskySamplesEqual(WhiskySample sample1, WhiskySample sample2) {
+    return sample1.id == sample2.id &&
+        sample1.name == sample2.name &&
+        sample1.distillery == sample2.distillery &&
+        sample1.age == sample2.age &&
+        sample1.region == sample2.region &&
+        sample1.tastingNotes == sample2.tastingNotes &&
+        sample1.imageUrl == sample2.imageUrl &&
+        sample1.abv == sample2.abv &&
+        sample1.category == sample2.category &&
+        sample1.sampleSizeMl == sample2.sampleSizeMl &&
+        sample1.orderIndex == sample2.orderIndex;
+  }
+
+  static bool _areWhiskySampleListsEqual(List<WhiskySample> list1, List<WhiskySample> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (!areWhiskySamplesEqual(list1[i], list2[i])) return false;
+    }
+    return true;
+  }
+
+  /// Constants for whisky testing
+  static const List<String> whiskyRegions = [
+    'Speyside',
+    'Highlands',
+    'Islay',
+    'Lowlands',
+    'Campbeltown'
+  ];
+
+  static const List<String> whiskyCategories = [
+    'Single Malt',
+    'Blended Malt',
+    'Single Grain',
+    'Blended Grain',
+    'Blended Scotch'
+  ];
+
+  static const List<double> validAbvValues = [40.0, 43.0, 46.0, 48.0, 50.0, 57.1];
+  static const List<int> validAgeValues = [3, 8, 10, 12, 15, 18, 21, 25, 30];
 }

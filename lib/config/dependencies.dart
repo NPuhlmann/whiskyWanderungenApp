@@ -18,6 +18,9 @@ import '../data/services/offline/offline_service.dart';
 import '../data/services/database/backend_api.dart';
 import '../data/services/admin/order_management_service.dart';
 import '../data/providers/order_management_provider.dart';
+import '../data/services/whisky/whisky_management_service.dart';
+import '../data/providers/whisky_management_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 List<SingleChildWidget> get providers {
   return [
@@ -36,6 +39,9 @@ List<SingleChildWidget> get providers {
     ),
     Provider<OrderManagementService>(
       create: (_) => OrderManagementService(),
+    ),
+    Provider<WhiskyManagementService>(
+      create: (_) => WhiskyManagementService(Supabase.instance.client),
     ),
     
     // Dann alle Repositories
@@ -90,6 +96,11 @@ List<SingleChildWidget> get providers {
     ChangeNotifierProvider<OrderManagementProvider>(
       create: (context) => OrderManagementProvider(
         orderManagementService: context.read<OrderManagementService>(),
+      ),
+    ),
+    ChangeNotifierProvider<WhiskyManagementProvider>(
+      create: (context) => WhiskyManagementProvider(
+        context.read<WhiskyManagementService>(),
       ),
     ),
 

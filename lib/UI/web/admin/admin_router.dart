@@ -4,6 +4,7 @@ import 'dashboard/admin_dashboard.dart';
 import '../../shared/guards/admin_guard.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'order_management/order_management_page.dart';
+import 'whisky_catalog/whisky_catalog_page.dart';
 
 /// Admin-Router für die Navigation zwischen Admin-Seiten
 class AdminRouter {
@@ -44,7 +45,7 @@ class AdminRouter {
         path: whiskyRoute,
         name: 'AdminWhisky',
         builder: (context, state) => const AdminGuard(
-          child: _AdminWhiskyPage(),
+          child: WhiskyCatalogPage(),
         ),
       ),
       GoRoute(
@@ -136,37 +137,6 @@ class _AdminRoutesPage extends StatelessWidget {
 }
 
 
-class _AdminWhiskyPage extends StatelessWidget {
-  const _AdminWhiskyPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.manageWhiskyCatalog),
-        backgroundColor: Colors.amber[800],
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.local_bar, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Whisky-Katalog',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.manageWhiskyCatalogDescription),
-            SizedBox(height: 32),
-            Text('🚧 In Entwicklung 🚧'),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _AdminAnalyticsPage extends StatelessWidget {
   const _AdminAnalyticsPage();
