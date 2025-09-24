@@ -79,14 +79,16 @@ flutter create --platforms web .
 
 ### 2.2 Admin-Berechtigungssystem
 
-#### Schritt 7: Role-based Access Control implementieren
-- **Merchant Role**: Kann eigene Wanderrouten und Bestellungen verwalten
-- **Admin Role**: Kann alle Daten und alle Unternehmen verwalten
-- **Staff Role**: Kann Bestellungen bearbeiten, aber keine Routen ändern
+#### 🔄 Schritt 7: Role-based Access Control implementieren (NOCH AUSSTEHEND)
+- **Status**: Nur Basic AdminGuard vorhanden (`/lib/UI/shared/guards/admin_guard.dart`)
+- **Fehlend**: Merchant Role, Admin Role, Staff Role System
+- **Fehlend**: Rollen-basierte UI-Beschränkungen
+- **Fehlend**: Backend-Rollen-Validierung
 
-#### Schritt 8: Admin-Guard implementieren
-- Prüfung der Benutzerrolle vor Zugriff auf Admin-Seiten
-- Automatische Weiterleitung bei fehlenden Berechtigungen
+#### 🔄 Schritt 8: Admin-Guard erweitern (GRUNDLAGEN VORHANDEN)
+- ✅ **Basic Guard**: AdminGuard existiert für Route-Protection
+- 🔄 **Rollen-Prüfung**: Benutzerrolle-Validierung fehlt noch
+- 🔄 **Automatische Weiterleitung**: Nur für nicht-authentifizierte User
 
 ## 🚀 Phase 3: Wanderrouten-Verwaltung
 
@@ -456,16 +458,17 @@ flutter create --platforms web .
 ### 🎯 **Nächste Prioritäten:**
 1. ✅ **Phase 4**: Order Management & Fulfillment System (**ABGESCHLOSSEN!**)
 2. ✅ **Phase 5**: Whisky-Katalog-Verwaltung (**ABGESCHLOSSEN!**)
-3. **Phase 6**: Provision & Abrechnung (nächste Priorität)
-4. **Phase 2 Vervollständigung**: Charts für Revenue Development
-5. **Phase 2 Vervollständigung**: Role-based Access Control
+3. **🔥 SOFORTIGE PRIORITÄT**: Test-Suite Reparatur (Kompilierungsfehler beheben)
+4. **Phase 2 Vervollständigung**: Role-based Access Control (ÜBERSCHÄTZT - nur Grundlagen vorhanden)
+5. **Phase 6**: Provision & Abrechnung (bereit für TDD-Implementierung)
 6. **Phase 3 Vervollständigung**: Erweiterte Karten-Integration
 
 ### 📈 **Neue Erkenntnisse (Januar 2025):**
-- **TDD-Ansatz etabliert**: Testinfrastruktur ist bereit für neue Features
-- **Kompilierungsstabilität**: Alle kritischen Build-Probleme behoben
-- **Mock-System funktionsfähig**: Provider-Tests können zuverlässig ausgeführt werden
+- **TDD-Ansatz etabliert**: Testinfrastruktur ist größtenteils bereit für neue Features
+- ⚠️ **Kompilierungsstabilität**: EINIGE Test-Suites haben noch Kompilierungsfehler
+- **Mock-System gemischt**: Provider-Tests laufen (WhiskyProvider: 32/32 ✅), Service-Tests haben Probleme
 - **TestHelpers-Library**: Wiederverwendbare Test-Daten-Generierung implementiert
+- **Realitäts-Check**: Einige im Plan als "abgeschlossen" markierte Features sind nur Platzhalter
 
 ### 📈 **Testabdeckung:**
 - **Dashboard Tests**: 18 Service + 26 Provider = 44 Tests ✅
@@ -495,4 +498,27 @@ Mit der Vollendung von Phase 5 sind jetzt **5 von 10 Hauptphasen** (50%) der Web
 ✅ Phase 4: Order Management & Fulfillment
 ✅ Phase 5: Whisky Catalog Management
 
-**Nächste Ziele**: Phase 6 (Provision & Abrechnung) und Vervollständigung der ausstehenden Features aus Phase 2 & 3.
+**Nächste Ziele**: Test-Suite Reparatur, dann Phase 6 (Provision & Abrechnung)
+
+---
+
+## 🚨 **SOFORTIGE HANDLUNGSNOTWENDIGKEITEN (Januar 2025)**
+
+### **1. Test-Suite Reparatur (KRITISCH)**
+**Problem**: Einige Service-Tests kompilieren nicht aufgrund von Supabase-Mock-Problemen
+**Betroffene Tests:**
+- `test/data/services/admin/dashboard_metrics_service_test.dart` - PostgrestFilterBuilder Casting-Fehler
+- Möglicherweise weitere Service-Tests
+
+**Lösung**: Mock-Probleme für Service-Layer beheben, bevor neue Features implementiert werden
+
+### **2. Realitäts-Abgleich Admin-Features**
+**Problem**: Einige als "implementiert" markierte Features sind nur Platzhalter
+**Betroffene Seiten:**
+- Analytics Page: "🚧 In Entwicklung 🚧"
+- Team Page: "🚧 In Entwicklung 🚧"
+- Finances Page: "🚧 In Entwicklung 🚧"
+
+### **3. Nächste Feature-Implementierung: Phase 6**
+**Bereit für TDD-Implementierung**: Provision & Abrechnung
+**Voraussetzung**: Test-Suite muss erst funktionsfähig sein
