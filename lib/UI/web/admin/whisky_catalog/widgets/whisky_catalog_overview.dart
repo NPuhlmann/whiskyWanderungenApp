@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:whisky_hikes/data/providers/whisky_management_provider.dart';
 import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Overview widget showing key statistics for the whisky catalog
 class WhiskyCatalogOverview extends StatelessWidget {
@@ -139,7 +140,7 @@ class WhiskyCatalogOverview extends StatelessWidget {
           context,
           title: AppLocalizations.of(context)!.totalSamples,
           value: statistics?['totalSamples']?.toString() ??
-                 provider.tastingSets.fold<int>(0, (sum, set) => sum + set.sampleCount).toString(),
+                 provider.tastingSets.fold(0, (int sum, set) => sum + set.sampleCount).toString(),
           icon: Icons.inventory,
           color: Colors.orange,
         ),

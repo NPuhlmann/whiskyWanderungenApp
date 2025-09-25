@@ -763,6 +763,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Image too large'**
   String get imageTooLarge;
+
+  /// No description provided for @overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// No description provided for @tastingSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting Sets'**
+  String get tastingSets;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @createNewTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Tasting Set'**
+  String get createNewTastingSet;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @catalogOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog Overview'**
+  String get catalogOverview;
+
+  /// No description provided for @totalSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Sets'**
+  String get totalSets;
+
+  /// No description provided for @availableSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Sets'**
+  String get availableSets;
+
+  /// No description provided for @totalSamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Samples'**
+  String get totalSamples;
+
+  /// No description provided for @avgSamplesPerSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Samples per Set'**
+  String get avgSamplesPerSet;
+
+  /// No description provided for @regions.
+  ///
+  /// In en, this message translates to:
+  /// **'Regions'**
+  String get regions;
+
+  /// No description provided for @distilleries.
+  ///
+  /// In en, this message translates to:
+  /// **'Distilleries'**
+  String get distilleries;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @samples.
+  ///
+  /// In en, this message translates to:
+  /// **'Samples'**
+  String get samples;
+
+  /// No description provided for @searchTastingSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Search tasting sets'**
+  String get searchTastingSets;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loading;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @newTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'New Tasting Set'**
+  String get newTastingSet;
+
+  /// No description provided for @sampleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Count'**
+  String get sampleCount;
+
+  /// No description provided for @averageAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Age'**
+  String get averageAge;
+
+  /// No description provided for @region.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get region;
+
+  /// No description provided for @addTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Tasting Set'**
+  String get addTastingSet;
+
+  /// No description provided for @errorLoadingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get errorLoadingData;
+
+  /// No description provided for @noTastingSetsMatchFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasting sets match the current filter'**
+  String get noTastingSetsMatchFilter;
+
+  /// No description provided for @noTastingSetsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasting sets created yet'**
+  String get noTastingSetsYet;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting the filters or'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @createFirstTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first tasting set'**
+  String get createFirstTastingSet;
+
+  /// No description provided for @createTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Tasting Set'**
+  String get createTastingSet;
+
+  /// No description provided for @editTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Tasting Set'**
+  String get editTastingSet;
+
+  /// No description provided for @deleteTastingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Tasting Set'**
+  String get deleteTastingSet;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, distillery, or region'**
+  String get searchPlaceholder;
+
+  /// No description provided for @deleteTastingSetConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the tasting set \'{name}\'?'**
+  String deleteTastingSetConfirmation(String name);
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @allRegions.
+  ///
+  /// In en, this message translates to:
+  /// **'All Regions'**
+  String get allRegions;
+
+  /// No description provided for @distillery.
+  ///
+  /// In en, this message translates to:
+  /// **'Distillery'**
+  String get distillery;
+
+  /// No description provided for @allDistilleries.
+  ///
+  /// In en, this message translates to:
+  /// **'All Distilleries'**
+  String get allDistilleries;
+
+  /// No description provided for @quickFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Filters'**
+  String get quickFilters;
+
+  /// No description provided for @availableOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Only'**
+  String get availableOnly;
+
+  /// No description provided for @hasImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Has Images'**
+  String get hasImages;
+
+  /// No description provided for @newThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'New This Month'**
+  String get newThisMonth;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get unavailable;
+
+  /// No description provided for @avgAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Age'**
+  String get avgAge;
+
+  /// No description provided for @avgAbv.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg ABV'**
+  String get avgAbv;
+
+  /// No description provided for @hikeId.
+  ///
+  /// In en, this message translates to:
+  /// **'Hike ID'**
+  String get hikeId;
+
+  /// No description provided for @basicInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Information'**
+  String get basicInformation;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get availability;
+
+  /// No description provided for @sampleDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Details'**
+  String get sampleDetails;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @uploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Image'**
+  String get uploadImage;
+
+  /// No description provided for @chooseImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Image'**
+  String get chooseImage;
+
+  /// No description provided for @removeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Image'**
+  String get removeImage;
+
+  /// No description provided for @imageUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Image uploaded successfully'**
+  String get imageUploaded;
+
+  /// No description provided for @imageRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Image removed successfully'**
+  String get imageRemoved;
+
+  /// No description provided for @errorUploadingImageGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading image'**
+  String get errorUploadingImageGeneral;
+
+  /// No description provided for @errorRemovingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error removing image'**
+  String get errorRemovingImage;
+
+  /// No description provided for @noImageSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No image selected'**
+  String get noImageSelected;
+
+  /// No description provided for @years.
+  ///
+  /// In en, this message translates to:
+  /// **'years'**
+  String get years;
 }
 
 class _AppLocalizationsDelegate

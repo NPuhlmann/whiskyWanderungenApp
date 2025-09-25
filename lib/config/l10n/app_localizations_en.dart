@@ -348,4 +348,202 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imageTooLarge => 'Image too large';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get tastingSets => 'Tasting Sets';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get createNewTastingSet => 'Create New Tasting Set';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get catalogOverview => 'Catalog Overview';
+
+  @override
+  String get totalSets => 'Total Sets';
+
+  @override
+  String get availableSets => 'Available Sets';
+
+  @override
+  String get totalSamples => 'Total Samples';
+
+  @override
+  String get avgSamplesPerSet => 'Avg Samples per Set';
+
+  @override
+  String get regions => 'Regions';
+
+  @override
+  String get distilleries => 'Distilleries';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get samples => 'Samples';
+
+  @override
+  String get searchTastingSets => 'Search tasting sets';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get loading => 'Loading';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get newTastingSet => 'New Tasting Set';
+
+  @override
+  String get sampleCount => 'Sample Count';
+
+  @override
+  String get averageAge => 'Average Age';
+
+  @override
+  String get region => 'Region';
+
+  @override
+  String get addTastingSet => 'Add Tasting Set';
+
+  @override
+  String get errorLoadingData => 'Error loading data';
+
+  @override
+  String get noTastingSetsMatchFilter =>
+      'No tasting sets match the current filter';
+
+  @override
+  String get noTastingSetsYet => 'No tasting sets created yet';
+
+  @override
+  String get tryAdjustingFilters => 'Try adjusting the filters or';
+
+  @override
+  String get createFirstTastingSet => 'Create your first tasting set';
+
+  @override
+  String get createTastingSet => 'Create Tasting Set';
+
+  @override
+  String get editTastingSet => 'Edit Tasting Set';
+
+  @override
+  String get deleteTastingSet => 'Delete Tasting Set';
+
+  @override
+  String get searchPlaceholder => 'Search by name, distillery, or region';
+
+  @override
+  String deleteTastingSetConfirmation(String name) {
+    return 'Are you sure you want to delete the tasting set \'$name\'?';
+  }
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get allRegions => 'All Regions';
+
+  @override
+  String get distillery => 'Distillery';
+
+  @override
+  String get allDistilleries => 'All Distilleries';
+
+  @override
+  String get quickFilters => 'Quick Filters';
+
+  @override
+  String get availableOnly => 'Available Only';
+
+  @override
+  String get hasImages => 'Has Images';
+
+  @override
+  String get newThisMonth => 'New This Month';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get unavailable => 'Unavailable';
+
+  @override
+  String get avgAge => 'Avg Age';
+
+  @override
+  String get avgAbv => 'Avg ABV';
+
+  @override
+  String get hikeId => 'Hike ID';
+
+  @override
+  String get basicInformation => 'Basic Information';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get availability => 'Availability';
+
+  @override
+  String get sampleDetails => 'Sample Details';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get uploadImage => 'Upload Image';
+
+  @override
+  String get chooseImage => 'Choose Image';
+
+  @override
+  String get removeImage => 'Remove Image';
+
+  @override
+  String get imageUploaded => 'Image uploaded successfully';
+
+  @override
+  String get imageRemoved => 'Image removed successfully';
+
+  @override
+  String get errorUploadingImageGeneral => 'Error uploading image';
+
+  @override
+  String get errorRemovingImage => 'Error removing image';
+
+  @override
+  String get noImageSelected => 'No image selected';
+
+  @override
+  String get years => 'years';
 }

@@ -355,4 +355,202 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get imageTooLarge => 'Bild zu groß';
+
+  @override
+  String get overview => 'Übersicht';
+
+  @override
+  String get tastingSets => 'Tasting Sets';
+
+  @override
+  String get filters => 'Filter';
+
+  @override
+  String get createNewTastingSet => 'Neues Tasting Set erstellen';
+
+  @override
+  String get create => 'Erstellen';
+
+  @override
+  String get catalogOverview => 'Katalog Übersicht';
+
+  @override
+  String get totalSets => 'Gesamtsets';
+
+  @override
+  String get availableSets => 'Verfügbare Sets';
+
+  @override
+  String get totalSamples => 'Gesamtproben';
+
+  @override
+  String get avgSamplesPerSet => 'Durchschn. Proben pro Set';
+
+  @override
+  String get regions => 'Regionen';
+
+  @override
+  String get distilleries => 'Brennereien';
+
+  @override
+  String get sortBy => 'Sortieren nach';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get samples => 'Proben';
+
+  @override
+  String get searchTastingSets => 'Tasting Sets suchen';
+
+  @override
+  String get clearFilters => 'Filter löschen';
+
+  @override
+  String get all => 'Alle';
+
+  @override
+  String get loading => 'Lädt';
+
+  @override
+  String get edit => 'Bearbeiten';
+
+  @override
+  String get delete => 'Löschen';
+
+  @override
+  String get newTastingSet => 'Neues Tasting Set';
+
+  @override
+  String get sampleCount => 'Probenanzahl';
+
+  @override
+  String get averageAge => 'Durchschnittsalter';
+
+  @override
+  String get region => 'Region';
+
+  @override
+  String get addTastingSet => 'Tasting Set hinzufügen';
+
+  @override
+  String get errorLoadingData => 'Fehler beim Laden der Daten';
+
+  @override
+  String get noTastingSetsMatchFilter =>
+      'Keine Tasting Sets entsprechen dem aktuellen Filter';
+
+  @override
+  String get noTastingSetsYet => 'Noch keine Tasting Sets erstellt';
+
+  @override
+  String get tryAdjustingFilters => 'Versuchen Sie, die Filter anzupassen oder';
+
+  @override
+  String get createFirstTastingSet => 'Erstellen Sie Ihr erstes Tasting Set';
+
+  @override
+  String get createTastingSet => 'Tasting Set erstellen';
+
+  @override
+  String get editTastingSet => 'Tasting Set bearbeiten';
+
+  @override
+  String get deleteTastingSet => 'Tasting Set löschen';
+
+  @override
+  String get searchPlaceholder => 'Nach Name, Brennerei oder Region suchen';
+
+  @override
+  String deleteTastingSetConfirmation(String name) {
+    return 'Sind Sie sicher, dass Sie das Tasting Set \'$name\' löschen möchten?';
+  }
+
+  @override
+  String get clearAll => 'Alle löschen';
+
+  @override
+  String get search => 'Suche';
+
+  @override
+  String get allRegions => 'Alle Regionen';
+
+  @override
+  String get distillery => 'Brennerei';
+
+  @override
+  String get allDistilleries => 'Alle Brennereien';
+
+  @override
+  String get quickFilters => 'Schnellfilter';
+
+  @override
+  String get availableOnly => 'Nur Verfügbare';
+
+  @override
+  String get hasImages => 'Mit Bildern';
+
+  @override
+  String get newThisMonth => 'Neu in diesem Monat';
+
+  @override
+  String get available => 'Verfügbar';
+
+  @override
+  String get unavailable => 'Nicht verfügbar';
+
+  @override
+  String get avgAge => 'Durchschn. Alter';
+
+  @override
+  String get avgAbv => 'Durchschn. Alkoholgehalt';
+
+  @override
+  String get hikeId => 'Wanderungs-ID';
+
+  @override
+  String get basicInformation => 'Grundinformationen';
+
+  @override
+  String get description => 'Beschreibung';
+
+  @override
+  String get availability => 'Verfügbarkeit';
+
+  @override
+  String get sampleDetails => 'Probendetails';
+
+  @override
+  String get viewDetails => 'Details anzeigen';
+
+  @override
+  String get quickActions => 'Schnellaktionen';
+
+  @override
+  String get uploadImage => 'Bild hochladen';
+
+  @override
+  String get chooseImage => 'Bild wählen';
+
+  @override
+  String get removeImage => 'Bild entfernen';
+
+  @override
+  String get imageUploaded => 'Bild erfolgreich hochgeladen';
+
+  @override
+  String get imageRemoved => 'Bild erfolgreich entfernt';
+
+  @override
+  String get errorUploadingImageGeneral => 'Fehler beim Hochladen des Bildes';
+
+  @override
+  String get errorRemovingImage => 'Fehler beim Entfernen des Bildes';
+
+  @override
+  String get noImageSelected => 'Kein Bild ausgewählt';
+
+  @override
+  String get years => 'Jahre';
 }

@@ -2,6 +2,7 @@ import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
+import 'package:whisky_hikes/domain/models/commission.dart';
 
 class TestHelpers {
   static List<Hike> createSampleHikes() {
@@ -551,4 +552,109 @@ class TestHelpers {
 
   static const List<double> validAbvValues = [40.0, 43.0, 46.0, 48.0, 50.0, 57.1];
   static const List<int> validAgeValues = [3, 8, 10, 12, 15, 18, 21, 25, 30];
+
+  /// Commission test helpers
+  static Commission createTestCommission({
+    int id = 1,
+    int hikeId = 100,
+    String companyId = 'company-123',
+    String orderId = 'order-456',
+    double commissionRate = 0.15,
+    double baseAmount = 50.0,
+    double? commissionAmount,
+    CommissionStatus status = CommissionStatus.pending,
+    DateTime? createdAt,
+    DateTime? paidAt,
+    String? billingPeriodId,
+    String? notes,
+    DateTime? updatedAt,
+  }) {
+    return Commission(
+      id: id,
+      hikeId: hikeId,
+      companyId: companyId,
+      orderId: orderId,
+      commissionRate: commissionRate,
+      baseAmount: baseAmount,
+      commissionAmount: commissionAmount ?? (baseAmount * commissionRate),
+      status: status,
+      createdAt: createdAt ?? DateTime(2025, 1, 15),
+      paidAt: paidAt,
+      billingPeriodId: billingPeriodId,
+      notes: notes,
+      updatedAt: updatedAt,
+    );
+  }
+
+  static List<Commission> createSampleCommissions() {
+    return [
+      createTestCommission(
+        id: 1,
+        hikeId: 100,
+        companyId: 'company-123',
+        orderId: 'order-456',
+        commissionRate: 0.15,
+        baseAmount: 50.0,
+        status: CommissionStatus.pending,
+        createdAt: DateTime(2025, 1, 10),
+      ),
+      createTestCommission(
+        id: 2,
+        hikeId: 101,
+        companyId: 'company-123',
+        orderId: 'order-457',
+        commissionRate: 0.20,
+        baseAmount: 75.0,
+        status: CommissionStatus.paid,
+        createdAt: DateTime(2025, 1, 8),
+        paidAt: DateTime(2025, 1, 20),
+        billingPeriodId: 'period-2025-01',
+      ),
+      createTestCommission(
+        id: 3,
+        hikeId: 102,
+        companyId: 'company-123',
+        orderId: 'order-458',
+        commissionRate: 0.15,
+        baseAmount: 30.0,
+        status: CommissionStatus.calculated,
+        createdAt: DateTime(2025, 1, 12),
+      ),
+    ];
+  }
+
+  /// Utility methods for Commission assertions
+  static bool areCommissionsEqual(Commission comm1, Commission comm2) {
+    return comm1.id == comm2.id &&
+        comm1.hikeId == comm2.hikeId &&
+        comm1.companyId == comm2.companyId &&
+        comm1.orderId == comm2.orderId &&
+        comm1.commissionRate == comm2.commissionRate &&
+        comm1.baseAmount == comm2.baseAmount &&
+        comm1.commissionAmount == comm2.commissionAmount &&
+        comm1.status == comm2.status &&
+        comm1.createdAt == comm2.createdAt &&
+        comm1.paidAt == comm2.paidAt &&
+        comm1.billingPeriodId == comm2.billingPeriodId &&
+        comm1.notes == comm2.notes &&
+        comm1.updatedAt == comm2.updatedAt;
+  }
+
+  /// Constants for commission testing
+  static const List<double> validCommissionRates = [0.10, 0.15, 0.20, 0.25];
+  static const List<CommissionStatus> allCommissionStatuses = [
+    CommissionStatus.pending,
+    CommissionStatus.calculated,
+    CommissionStatus.paid,
+    CommissionStatus.cancelled,
+  ];
+
+  /// Commission error scenarios
+  static Exception createCommissionCalculationError([String message = 'Invalid commission calculation']) {
+    return Exception('commission calculation: $message');
+  }
+
+  static Exception createCommissionStatusError([String message = 'Invalid status transition']) {
+    return Exception('commission status: $message');
+  }
 }
