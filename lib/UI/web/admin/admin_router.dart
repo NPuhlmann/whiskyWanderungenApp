@@ -5,6 +5,7 @@ import '../../shared/guards/admin_guard.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'order_management/order_management_page.dart';
 import 'whisky_catalog/whisky_catalog_page.dart';
+import 'commission_management/commission_management_page.dart';
 
 /// Admin-Router für die Navigation zwischen Admin-Seiten
 class AdminRouter {
@@ -66,7 +67,7 @@ class AdminRouter {
         path: financesRoute,
         name: 'AdminFinances',
         builder: (context, state) => const AdminGuard(
-          child: _AdminFinancesPage(),
+          child: CommissionManagementPage(),
         ),
       ),
       GoRoute(
@@ -97,7 +98,7 @@ class AdminRouter {
     if (path == whiskyRoute) return 'Whisky-Katalog';
     if (path == analyticsRoute) return 'Analytics';
     if (path == teamRoute) return 'Team';
-    if (path == financesRoute) return 'Finanzen';
+    if (path == financesRoute) return 'Provisionen';
     if (path == settingsRoute) return 'Einstellungen';
     return 'Dashboard';
   }
@@ -202,37 +203,6 @@ class _AdminTeamPage extends StatelessWidget {
   }
 }
 
-class _AdminFinancesPage extends StatelessWidget {
-  const _AdminFinancesPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Finanzen & Abrechnung'),
-        backgroundColor: Colors.amber[800],
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.account_balance_wallet, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Finanzen & Abrechnung',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Hier finden Sie Finanzberichte und Abrechnungen'),
-            SizedBox(height: 32),
-            Text('🚧 In Entwicklung 🚧'),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _AdminSettingsPage extends StatelessWidget {
   const _AdminSettingsPage();
