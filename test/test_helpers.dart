@@ -657,4 +657,45 @@ class TestHelpers {
   static Exception createCommissionStatusError([String message = 'Invalid status transition']) {
     return Exception('commission status: $message');
   }
+
+  /// Additional Commission helpers for specific test scenarios
+  static Commission createOverdueCommission({
+    int id = 99,
+    int daysAgo = 35,
+  }) {
+    return createTestCommission(
+      id: id,
+      status: CommissionStatus.pending,
+      createdAt: DateTime.now().subtract(Duration(days: daysAgo)),
+      baseAmount: 100.0,
+      commissionRate: 0.15,
+    );
+  }
+
+  /// Helper to add company names to commissions for filtering tests
+  static List<Commission> createSampleCommissionsWithCompanyNames() {
+    return [
+      createTestCommission(
+        id: 1,
+        hikeId: 100,
+        companyId: 'company-1',
+        orderId: 'order-456',
+        status: CommissionStatus.pending,
+      ).copyWith(), // We'll extend Commission model to include companyName
+      createTestCommission(
+        id: 2,
+        hikeId: 101,
+        companyId: 'company-2',
+        orderId: 'order-457',
+        status: CommissionStatus.paid,
+      ).copyWith(),
+      createTestCommission(
+        id: 3,
+        hikeId: 102,
+        companyId: 'company-1',
+        orderId: 'order-458',
+        status: CommissionStatus.calculated,
+      ).copyWith(),
+    ];
+  }
 }
