@@ -197,7 +197,7 @@ flutter create --platforms web .
 - ✅ **Thematische Sets** (Region, Alter, Brennerei) - Regional & Category Filtering
 - ✅ **Preisberechnung** automatisch - Always 0.0 (included in hike price)
 
-## ✅ Phase 6: Provision & Abrechnung (40% abgeschlossen)
+## ✅ Phase 6: Provision & Abrechnung (60% abgeschlossen)
 
 ### 6.1 Provision-System ✅
 
@@ -218,12 +218,14 @@ flutter create --platforms web .
 - **Date Range Operations**: Filtering, overdue detection, age calculations
 - **Business Rule Validation**: Rate bounds, calculation accuracy, status transitions
 
-#### 🔄 Schritt 21: Abrechnungsberichte (In Progress)
-- 🔄 **CommissionProvider**: State Management für UI Components
-- 🔄 **Commission Management UI**: Admin interface für Commission oversight
-- 🔄 **Provisions-Übersicht** pro Periode (UI pending)
-- 🔄 **Detaillierte Aufschlüsselung** pro Route (UI pending)
-- 🔄 **Export-Funktionen** (PDF, Excel, CSV) (service layer ready)
+#### ✅ Schritt 21: Commission Management UI implementiert (Januar 2025)
+- ✅ **CommissionProvider**: State Management mit 18 Unit Tests (100% Pass-Rate)
+- ✅ **Commission Management UI**: Vollständige Admin-Oberfläche implementiert
+- ✅ **Provisions-Übersicht**: KPI-Dashboard mit 6 Metriken-Karten
+- ✅ **Commission Management Page**: Responsive Admin-Seite (/admin/finances)
+- ✅ **UI Components**: StatusChip, FilterWidget, ListWidget, DetailsDialog
+- ✅ **Admin Router Integration**: Nahtlose Navigation und Dependency Injection
+- 🔄 **Export-Funktionen** (PDF, Excel, CSV) (service layer ready, UI pending)
 - 🔄 **Zahlungsabwicklung** (Überweisung, PayPal, etc.)
 
 ### 6.2 Finanz-Übersicht
@@ -491,19 +493,20 @@ flutter create --platforms web .
 - **TestHelpers-Library**: Wiederverwendbare Test-Daten-Generierung implementiert
 - **Realitäts-Check**: Einige im Plan als "abgeschlossen" markierte Features sind nur Platzhalter
 
-### 📈 **Testabdeckung:**
+### 📈 **Testabdeckung (Updated Januar 2025):**
 - **Dashboard Tests**: 18 Service + 26 Provider = 44 Tests ✅
 - **Route Management Tests**: Umfassende Test Suite ✅
 - **Order Management Tests**: 16 Service + 31 Provider + Widget Tests = 47+ Tests ✅
 - **Whisky Management Tests**: 32 Provider Tests (100% Pass-Rate) ✅
+- **Commission Management Tests**: 18 Provider + 4 Widget Test Suites = 22+ Tests ✅
 - **UI Widget Tests**: Umfassende Abdeckung aller Admin-UI-Komponenten ✅
-- **Gesamtabdeckung**: >80% für alle implementierten Features (Phasen 1-5) ✅
+- **Gesamtabdeckung**: >80% für alle implementierten Features (Phasen 1-6) ✅
 
 **Phase 4 Status**: ✅ **VOLLSTÄNDIG ABGESCHLOSSEN** - Order Management System mit TDD erfolgreich implementiert!
 
 **Phase 5 Status**: ✅ **VOLLSTÄNDIG ABGESCHLOSSEN** - Whisky Catalog Management mit TDD erfolgreich implementiert!
 
-**Phase 6 Status**: 🔄 **IN PROGRESS (40%)** - Commission System Foundation mit TDD implementiert!
+**Phase 6 Status**: ✅ **MAJOR PROGRESS (60%)** - Commission System UI & State Management komplett implementiert!
 
 ## 🆕 **Commission System Implementation Details (Januar 2025)**
 
@@ -581,9 +584,9 @@ Mit der Foundation-Implementierung von Phase 6 sind jetzt **6 von 10 Hauptphasen
 ✅ Phase 3: Route Management (85%, Karten ausstehend)
 ✅ Phase 4: Order Management & Fulfillment (100%)
 ✅ Phase 5: Whisky Catalog Management (100%)
-🔄 Phase 6: Commission & Billing System (40% - Foundation implementiert)
+✅ Phase 6: Commission & Billing System (60% - UI & State Management implementiert)
 
-**Nächste Ziele**: Complete Phase 6 UI & State Management, dann Phase 7 (Analytics & Reporting)
+**Nächste Ziele**: Complete Phase 6 Export/Reporting Features, dann Phase 7 (Analytics & Reporting)
 
 ---
 
@@ -596,17 +599,25 @@ Mit der Foundation-Implementierung von Phase 6 sind jetzt **6 von 10 Hauptphasen
 - Mock-Probleme durch vereinfachte Business Logic Tests umgangen
 - Commission System Tests: 41+ Tests mit 100% Pass-Rate implementiert
 
-### **2. 🔄 Phase 6 Commission System Vervollständigung (IN PROGRESS)**
+### **2. ✅ Phase 6 Commission System UI (MAJOR MILESTONE ERREICHT!)**
 **✅ Abgeschlossen**: Commission Model & Service Layer (Foundation)
-**🔄 In Progress**: UI & State Management Layer
-**🔄 Ausstehend**: Admin Integration & Export Features
+**✅ Abgeschlossen**: CommissionProvider mit State Management (18 Unit Tests)
+**✅ Abgeschlossen**: Commission Admin UI Components (5 Widgets mit TDD)
+**✅ Abgeschlossen**: Admin Integration & Routing (/admin/finances ersetzt)
+**🔄 Verbleibend**: Export & Advanced Reporting Features
 
-**Sofortige nächste Schritte:**
-1. **CommissionProvider** für State Management implementieren (TDD)
-2. **Commission Admin UI** Components erstellen
-3. **Integration** mit bestehender Admin-Navigation
-4. **Export-Funktionalität** (PDF/CSV) für Abrechnungen
-5. **Commission Dashboard** für Unternehmens-Übersicht
+**Implementierte UI-Komponenten (Januar 2025):**
+- ✅ **CommissionStatusChip**: Farbkodierte Status-Chips mit Edit-Funktionalität
+- ✅ **CommissionFilterWidget**: Erweiterte Filter (Status, Datum, Suche, responsive)
+- ✅ **CommissionStatisticsWidget**: KPI-Dashboard mit 6 Metriken-Karten
+- ✅ **CommissionListWidget**: Responsive Tabelle/Karten (Mobile/Desktop Layouts)
+- ✅ **CommissionDetailsDialog**: Vollständige Details mit Status-Update-Workflow
+- ✅ **CommissionManagementPage**: Komplette Admin-Seite mit responsive Design
+
+**Verbleibende Features für Phase 6:**
+1. **Export-Funktionalität** (PDF/CSV) für Abrechnungsberichte
+2. **Commission Dashboard Charts** für erweiterte Analytics
+3. **Automatic Commission Creation** bei Order-Completion-Events
 
 ### **3. 🔄 Admin-Features Realitäts-Abgleich**
 **Status**: Teilweise behoben durch Commission System Implementation
