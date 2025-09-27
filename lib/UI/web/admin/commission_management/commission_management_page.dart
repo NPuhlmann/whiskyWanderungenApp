@@ -5,6 +5,7 @@ import 'package:whisky_hikes/data/providers/commission_provider.dart';
 import 'widgets/commission_statistics_widget.dart';
 import 'widgets/commission_filter_widget.dart';
 import 'widgets/commission_list_widget.dart';
+import 'widgets/commission_export_widget.dart';
 
 /// Admin-Seite für die Verwaltung von Provisionen
 class CommissionManagementPage extends StatefulWidget {
@@ -71,6 +72,8 @@ class _CommissionManagementPageState extends State<CommissionManagementPage> {
             );
           },
         ),
+        const SizedBox(width: 8),
+        CommissionExportWidget(companyId: _companyId),
         const SizedBox(width: 8),
       ],
     );
