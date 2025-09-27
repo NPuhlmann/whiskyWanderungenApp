@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/UI/core/responsive_layout.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
-import 'widgets/commission_statistics_widget.dart';
+import 'widgets/commission_statistics_with_charts_widget.dart';
 import 'widgets/commission_filter_widget.dart';
 import 'widgets/commission_list_widget.dart';
 import 'widgets/commission_export_widget.dart';
@@ -82,7 +82,7 @@ class _CommissionManagementPageState extends State<CommissionManagementPage> {
   Widget _buildMobileLayout(BuildContext context) {
     return Column(
       children: [
-        const CommissionStatisticsWidget(),
+        CommissionStatisticsWithChartsWidget(companyId: _companyId),
         const SizedBox(height: 8),
         const CommissionFilterWidget(),
         const SizedBox(height: 8),
@@ -107,7 +107,7 @@ class _CommissionManagementPageState extends State<CommissionManagementPage> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          const CommissionStatisticsWidget(),
+          CommissionStatisticsWithChartsWidget(companyId: _companyId),
           const SizedBox(height: 16),
           const CommissionFilterWidget(),
           const SizedBox(height: 16),
@@ -132,7 +132,7 @@ class _CommissionManagementPageState extends State<CommissionManagementPage> {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const CommissionStatisticsWidget(),
+          CommissionStatisticsWithChartsWidget(companyId: _companyId),
           const SizedBox(height: 24),
           const CommissionFilterWidget(),
           const SizedBox(height: 24),
