@@ -3,6 +3,10 @@ import 'package:whisky_hikes/domain/models/profile.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
+import 'package:whisky_hikes/domain/models/analytics/sales_statistics.dart';
+import 'package:whisky_hikes/domain/models/analytics/route_performance.dart';
+import 'package:whisky_hikes/domain/models/analytics/customer_insights.dart';
+import 'package:whisky_hikes/domain/models/analytics/performance_metrics.dart';
 
 class TestHelpers {
   static List<Hike> createSampleHikes() {
@@ -697,5 +701,167 @@ class TestHelpers {
         status: CommissionStatus.calculated,
       ).copyWith(),
     ];
+  }
+
+  // ========== ANALYTICS TEST HELPERS ==========
+
+  /// Creates a test SalesStatistics instance
+  static SalesStatistics createTestSalesStatistics({
+    int totalOrders = 100,
+    double totalRevenue = 5000.0,
+    double? averageOrderValue,
+    Map<String, int>? ordersByRoute,
+    Map<String, double>? revenueByRoute,
+    Map<String, int>? ordersByDate,
+    Map<String, double>? revenueByDate,
+  }) {
+    return SalesStatistics(
+      totalOrders: totalOrders,
+      totalRevenue: totalRevenue,
+      averageOrderValue: averageOrderValue ?? (totalOrders > 0 ? totalRevenue / totalOrders : 0.0),
+      ordersByRoute: ordersByRoute ?? {'1': 40, '2': 35, '3': 25},
+      revenueByRoute: revenueByRoute ?? {'1': 2000.0, '2': 1750.0, '3': 1250.0},
+      ordersByDate: ordersByDate ?? {
+        '2025-01-01': 20,
+        '2025-01-02': 30,
+        '2025-01-03': 25,
+        '2025-01-04': 25,
+      },
+      revenueByDate: revenueByDate ?? {
+        '2025-01-01': 1000.0,
+        '2025-01-02': 1500.0,
+        '2025-01-03': 1250.0,
+        '2025-01-04': 1250.0,
+      },
+    );
+  }
+
+  /// Creates a test RoutePerformance instance
+  static RoutePerformance createTestRoutePerformance({
+    int routeId = 1,
+    String routeName = 'Test Route',
+    int totalSales = 50,
+    double totalRevenue = 2500.0,
+    double averageRating = 4.5,
+    int reviewCount = 20,
+    double conversionRate = 0.25,
+    int totalViews = 200,
+    Map<String, int>? salesByMonth,
+  }) {
+    return RoutePerformance(
+      routeId: routeId,
+      routeName: routeName,
+      totalSales: totalSales,
+      totalRevenue: totalRevenue,
+      averageRating: averageRating,
+      reviewCount: reviewCount,
+      conversionRate: conversionRate,
+      totalViews: totalViews,
+      salesByMonth: salesByMonth ?? {
+        '2025-01': 15,
+        '2025-02': 20,
+        '2025-03': 15,
+      },
+    );
+  }
+
+  /// Creates a test CustomerInsights instance
+  static CustomerInsights createTestCustomerInsights({
+    int totalCustomers = 500,
+    int newCustomers = 150,
+    int returningCustomers = 350,
+    double repeatPurchaseRate = 0.4,
+    double averageLifetimeValue = 250.0,
+    Map<String, int>? customersByLocation,
+    Map<int, int>? orderFrequencyDistribution,
+  }) {
+    return CustomerInsights(
+      totalCustomers: totalCustomers,
+      newCustomers: newCustomers,
+      returningCustomers: returningCustomers,
+      repeatPurchaseRate: repeatPurchaseRate,
+      averageLifetimeValue: averageLifetimeValue,
+      customersByLocation: customersByLocation ?? {
+        'Berlin': 150,
+        'Munich': 120,
+        'Hamburg': 100,
+        'Cologne': 80,
+        'Frankfurt': 50,
+      },
+      orderFrequencyDistribution: orderFrequencyDistribution ?? {
+        1: 200, // 200 customers with 1 order
+        2: 150, // 150 customers with 2 orders
+        3: 100, // 100 customers with 3 orders
+        4: 50,  // 50 customers with 4+ orders
+      },
+    );
+  }
+
+  /// Creates a test PerformanceMetrics instance
+  static PerformanceMetrics createTestPerformanceMetrics({
+    double conversionRate = 0.08,
+    double averageOrderValue = 125.0,
+    double customerLifetimeValue = 450.0,
+    int totalViews = 1000,
+    int totalPurchases = 80,
+    Map<String, double>? metricsByPeriod,
+  }) {
+    return PerformanceMetrics(
+      conversionRate: conversionRate,
+      averageOrderValue: averageOrderValue,
+      customerLifetimeValue: customerLifetimeValue,
+      totalViews: totalViews,
+      totalPurchases: totalPurchases,
+      metricsByPeriod: metricsByPeriod ?? {
+        '2025-01': 0.06,
+        '2025-02': 0.08,
+        '2025-03': 0.10,
+      },
+    );
+  }
+
+  /// Creates sample analytics data for comprehensive testing
+  static List<RoutePerformance> createSampleRoutePerformances() {
+    return [
+      createTestRoutePerformance(
+        routeId: 1,
+        routeName: 'Highland Trail',
+        totalSales: 100,
+        totalRevenue: 5000.0,
+        averageRating: 4.8,
+        reviewCount: 50,
+        conversionRate: 0.3,
+        totalViews: 333,
+      ),
+      createTestRoutePerformance(
+        routeId: 2,
+        routeName: 'Valley Walk',
+        totalSales: 75,
+        totalRevenue: 3750.0,
+        averageRating: 4.5,
+        reviewCount: 35,
+        conversionRate: 0.25,
+        totalViews: 300,
+      ),
+      createTestRoutePerformance(
+        routeId: 3,
+        routeName: 'Forest Path',
+        totalSales: 50,
+        totalRevenue: 2500.0,
+        averageRating: 4.2,
+        reviewCount: 20,
+        conversionRate: 0.2,
+        totalViews: 250,
+      ),
+    ];
+  }
+
+  /// Analytics error scenarios
+  static Exception createAnalyticsError([String message = 'Analytics calculation error']) {
+    return Exception('analytics: $message');
+  }
+
+  static Exception createDataAggregationError([String message = 'Data aggregation failed']) {
+    return Exception('aggregation: $message');
   }
 }
