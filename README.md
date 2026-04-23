@@ -88,7 +88,15 @@ whisky_hikes/
 
 ### .env Datei erstellen
 
-Erstelle eine `.env` Datei im Hauptverzeichnis:
+Kopiere `.env.example` (im Projekt-Root eingecheckt) nach `.env` und fülle die Werte ein:
+
+```bash
+cp .env.example .env
+```
+
+`.env` ist in `.gitignore` und wird zusätzlich per `pubspec.yaml` (`flutter.assets: - .env`) als Flutter-Asset gebündelt. **Nur öffentliche / clientseitig sichere Werte hier ablegen** — alles, was im Bundle auftaucht, ist für Endnutzer lesbar. Operator-Geheimnisse (z. B. `SUPABASE_ACCESS_TOKEN`, Stripe Secret Keys) werden nur lokal fürs Provisioning / Terraform-Deployment gebraucht.
+
+Erwartete Variablen (siehe `.env.example` für die vollständige Vorlage):
 
 ```bash
 # Supabase Konfiguration
@@ -132,6 +140,19 @@ Füge diese Secrets in deinem GitHub Repository hinzu:
 - `IOS_APP_STORE_CONNECT_KEY_ID`
 
 ## 🗄️ Supabase Setup
+
+### Bestehendes Supabase-Projekt wiederverwenden
+
+Das Projekt enthält bereits die vollständige Supabase-Konfiguration. Vor dem Provisionieren eines neuen Projekts die folgenden Stellen prüfen:
+
+- `terraform-supabase/main.tf`, `variables.tf`, `outputs.tf`, `vault_secrets.tf` — Infrastructure-as-Code für das Supabase-Projekt (Terraform).
+- `terraform-supabase/supabase/config.toml` — lokale Supabase-CLI-Konfiguration.
+- `terraform-supabase/supabase/migrations/20250821151237_initial_schema.sql` — initiales DB-Schema.
+- `supabase_trigger_profile_creation.sql`, `migration_existing_users.sql` — zusätzliche SQL, die nach der Schema-Migration eingespielt wird.
+- `lib/main.dart` — Laufzeit-Initialisierung via `Supabase.initialize(url: dotenv.env['SUPABASE_URL'], anonKey: dotenv.env['SUPABASE_ANON_KEY'])`.
+- `lib/data/services/database/backend_api.dart` — zentraler Zugriffspunkt für Supabase-Aufrufe aus dem App-Code.
+
+Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANON_KEY` aus dem Supabase-Dashboard (Settings → API) in die lokale `.env` eintragen — kein Re-Provisioning nötig. Für ein neues Projekt siehe den Abschnitt **Automatisches Deployment** unten.
 
 ### Automatisches Deployment
 
