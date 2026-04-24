@@ -54,7 +54,7 @@ class OrderFilterWidget extends StatelessWidget {
         Text('Status', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: provider.currentFilter == 'all'
+          initialValue: provider.currentFilter == 'all'
               ? null
               : provider.currentFilter,
           decoration: const InputDecoration(

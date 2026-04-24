@@ -124,7 +124,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
           horizontalInterval: _calculateHorizontalInterval(),
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: colorScheme.outline.withOpacity(0.2),
+              color: colorScheme.outline.withValues(alpha: 0.2),
               strokeWidth: 1,
             );
           },
@@ -156,7 +156,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
         ),
         borderData: FlBorderData(
           show: true,
-          border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
         ),
         barGroups: _createBarGroups(context),
         barTouchData: BarTouchData(
@@ -320,7 +320,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
             toY: hikeData.commissionAmount,
             color: isTouched
                 ? colorScheme.primary
-                : colorScheme.primary.withOpacity(0.8),
+                : colorScheme.primary.withValues(alpha: 0.8),
             width: isTouched ? 20 : 16,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(4),
@@ -329,7 +329,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
             gradient: LinearGradient(
               colors: [
                 colorScheme.primary,
-                colorScheme.primary.withOpacity(0.7),
+                colorScheme.primary.withValues(alpha: 0.7),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,

@@ -1,9 +1,6 @@
 import 'dart:developer' as dev;
 import '../../../domain/models/enhanced_order.dart';
 import '../commission/commission_service.dart';
-import '../database/backend_api.dart';
-import '../notifications/supabase_notification_service.dart';
-import '../tracking/order_tracking_service.dart';
 import 'order_status_workflow.dart';
 
 /// Enhanced Order Status Workflow mit automatischer Commission-Erstellung
@@ -11,16 +8,11 @@ class EnhancedOrderWorkflowWithCommission extends OrderStatusWorkflow {
   final CommissionService _commissionService;
 
   EnhancedOrderWorkflowWithCommission({
-    required BackendApiService backendApi,
-    required SupabaseNotificationService notificationService,
-    required OrderTrackingService trackingService,
+    required super.backendApi,
+    required super.notificationService,
+    required super.trackingService,
     required CommissionService commissionService,
-  }) : _commissionService = commissionService,
-       super(
-         backendApi: backendApi,
-         notificationService: notificationService,
-         trackingService: trackingService,
-       );
+  }) : _commissionService = commissionService;
 
   /// Override der Order-Delivered-Behandlung mit Commission-Erstellung
   @override

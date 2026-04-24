@@ -62,7 +62,7 @@ class OrderListWidget extends StatelessWidget {
                   size: 64,
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.5),
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -145,7 +145,7 @@ class OrderListWidget extends StatelessWidget {
                         size: 16,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -162,7 +162,7 @@ class OrderListWidget extends StatelessWidget {
                         size: 16,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -243,7 +243,7 @@ class OrderListWidget extends StatelessWidget {
                     Icons.chevron_right,
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.5),
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ],
               ),
@@ -281,7 +281,8 @@ class OrderListWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: DataTable(
                 headingRowHeight: 56,
-                dataRowHeight: 72,
+                dataRowMinHeight: 72,
+                dataRowMaxHeight: 72,
                 columns: [
                   DataColumn(
                     label: Text(
@@ -467,7 +468,7 @@ class OrderListWidget extends StatelessWidget {
               Text('Aktueller Status: ${order['status']}'),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: selectedStatus,
+                initialValue: selectedStatus,
                 decoration: const InputDecoration(
                   labelText: 'Neuer Status',
                   border: OutlineInputBorder(),

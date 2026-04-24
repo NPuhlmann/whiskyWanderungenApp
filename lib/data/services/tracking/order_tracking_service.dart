@@ -45,7 +45,7 @@ class OrderTrackingService {
           'tracking_assigned_at': DateTime.now().toIso8601String(),
           'tracking_assigned_by': 'system',
           'shipping_carrier': shippingCarrier,
-          if (shippingService != null) 'shipping_service': shippingService,
+          'shipping_service': ?shippingService,
         },
       );
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PopularRoutesWidget extends StatelessWidget {
   final List<Map<String, dynamic>> routes;
 
-  const PopularRoutesWidget({Key? key, required this.routes}) : super(key: key);
+  const PopularRoutesWidget({super.key, required this.routes});
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +40,10 @@ class _RouteListItem extends StatelessWidget {
   final List<Map<String, dynamic>> routes;
 
   const _RouteListItem({
-    Key? key,
     required this.route,
     required this.rank,
     required this.routes,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +54,7 @@ class _RouteListItem extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
       leading: CircleAvatar(
         radius: 20,
-        backgroundColor: _getRankColor(rank).withOpacity(0.1),
+        backgroundColor: _getRankColor(rank).withValues(alpha: 0.1),
         child: Text(
           rank.toString(),
           style: TextStyle(
@@ -125,11 +124,7 @@ class _SalesProgressBar extends StatelessWidget {
   final int sales;
   final int maxSales;
 
-  const _SalesProgressBar({
-    Key? key,
-    required this.sales,
-    required this.maxSales,
-  }) : super(key: key);
+  const _SalesProgressBar({required this.sales, required this.maxSales});
 
   @override
   Widget build(BuildContext context) {

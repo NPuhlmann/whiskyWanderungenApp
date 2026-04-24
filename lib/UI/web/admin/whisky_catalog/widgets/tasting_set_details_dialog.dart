@@ -11,7 +11,7 @@ class TastingSetDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.8,
         child: Column(
@@ -73,7 +73,7 @@ class TastingSetDetailsDialog extends StatelessWidget {
                     Text(
                       '${AppLocalizations.of(context)!.hikeId}: ${tastingSet.hikeId}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

@@ -1,3 +1,6 @@
+// Web-only export helper: uses dart:html to trigger a browser download.
+// Migration to package:web + dart:js_interop is tracked separately.
+// ignore_for_file: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -87,6 +90,8 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
       _isExporting = true;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       final provider = context.read<CommissionProvider>();
 
@@ -106,7 +111,7 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Export erfolgreich abgeschlossen'),
             backgroundColor: Colors.green,
@@ -115,7 +120,7 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Fehler beim Export: $e'),
             backgroundColor: Colors.red,

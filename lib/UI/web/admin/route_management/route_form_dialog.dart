@@ -136,7 +136,7 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _selectedDifficulty,
+                    initialValue: _selectedDifficulty,
                     decoration: const InputDecoration(
                       labelText: 'Schwierigkeit *',
                       border: OutlineInputBorder(),
@@ -326,7 +326,7 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                   _isActive = value;
                 });
               },
-              activeColor: Colors.amber[800],
+              activeThumbColor: Colors.amber[800],
             ),
 
             const SizedBox(height: 16),

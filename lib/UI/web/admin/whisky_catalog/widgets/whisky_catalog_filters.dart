@@ -135,7 +135,7 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String?>(
-          value: provider.selectedRegion,
+          initialValue: provider.selectedRegion,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             isDense: true,
@@ -174,7 +174,7 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String?>(
-          value: provider.selectedDistillery,
+          initialValue: provider.selectedDistillery,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             isDense: true,

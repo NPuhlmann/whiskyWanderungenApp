@@ -7,8 +7,10 @@ import 'package:whisky_hikes/UI/web/admin/dashboard/widgets/popular_routes_widge
 import 'package:whisky_hikes/UI/core/responsive_layout.dart';
 
 class DashboardOverviewPage extends StatefulWidget {
+  const DashboardOverviewPage({super.key});
+
   @override
-  _DashboardOverviewPageState createState() => _DashboardOverviewPageState();
+  State<DashboardOverviewPage> createState() => _DashboardOverviewPageState();
 }
 
 class _DashboardOverviewPageState extends State<DashboardOverviewPage> {

@@ -62,7 +62,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onPrimaryContainer.withOpacity(0.8),
+                    ).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -432,7 +432,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
               Text('Aktueller Status: ${widget.order['status']}'),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: selectedStatus,
+                initialValue: selectedStatus,
                 decoration: const InputDecoration(
                   labelText: 'Neuer Status',
                   border: OutlineInputBorder(),

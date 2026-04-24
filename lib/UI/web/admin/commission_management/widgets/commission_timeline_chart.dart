@@ -153,13 +153,13 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
           verticalInterval: 1,
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: colorScheme.outline.withOpacity(0.2),
+              color: colorScheme.outline.withValues(alpha: 0.2),
               strokeWidth: 1,
             );
           },
           getDrawingVerticalLine: (value) {
             return FlLine(
-              color: colorScheme.outline.withOpacity(0.2),
+              color: colorScheme.outline.withValues(alpha: 0.2),
               strokeWidth: 1,
             );
           },
@@ -192,7 +192,7 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
         ),
         borderData: FlBorderData(
           show: true,
-          border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
         ),
         minX: 0,
         maxX: (widget.data.dataPoints.length - 1).toDouble(),
@@ -205,7 +205,7 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
             gradient: LinearGradient(
               colors: [
                 colorScheme.primary,
-                colorScheme.primary.withOpacity(0.8),
+                colorScheme.primary.withValues(alpha: 0.8),
               ],
             ),
             barWidth: 3,
@@ -225,8 +225,8 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  colorScheme.primary.withOpacity(0.3),
-                  colorScheme.primary.withOpacity(0.1),
+                  colorScheme.primary.withValues(alpha: 0.3),
+                  colorScheme.primary.withValues(alpha: 0.1),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
