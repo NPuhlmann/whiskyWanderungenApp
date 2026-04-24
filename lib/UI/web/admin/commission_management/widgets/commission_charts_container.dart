@@ -11,31 +11,31 @@ import 'commission_by_hike_chart.dart';
 class CommissionChartsContainer extends StatefulWidget {
   final String companyId;
 
-  const CommissionChartsContainer({
-    super.key,
-    required this.companyId,
-  });
+  const CommissionChartsContainer({super.key, required this.companyId});
 
   @override
-  State<CommissionChartsContainer> createState() => _CommissionChartsContainerState();
+  State<CommissionChartsContainer> createState() =>
+      _CommissionChartsContainerState();
 }
 
 class _CommissionChartsContainerState extends State<CommissionChartsContainer> {
   late final CommissionChartService _chartService;
-  
+
   bool _isLoading = false;
   String? _errorMessage;
-  
+
   CommissionTimelineData? _timelineData;
   CommissionStatusDistributionData? _statusData;
   CommissionByHikeData? _hikeData;
-  
+
   ChartPeriod _selectedPeriod = ChartPeriod.monthly;
 
   @override
   void initState() {
     super.initState();
-    _chartService = CommissionChartService(CommissionService(Supabase.instance.client));
+    _chartService = CommissionChartService(
+      CommissionService(Supabase.instance.client),
+    );
     _loadChartData();
   }
 
@@ -67,7 +67,7 @@ class _CommissionChartsContainerState extends State<CommissionChartsContainer> {
             const SizedBox(width: 8),
             IconButton(
               onPressed: _isLoading ? null : _loadChartData,
-              icon: _isLoading 
+              icon: _isLoading
                   ? const SizedBox(
                       width: 20,
                       height: 20,
@@ -312,7 +312,7 @@ class _CommissionChartsContainerState extends State<CommissionChartsContainer> {
         months: _selectedPeriod == ChartPeriod.monthly ? 6 : null,
         weeks: _selectedPeriod == ChartPeriod.weekly ? 8 : null,
       );
-      
+
       setState(() {
         _timelineData = data;
       });
@@ -327,7 +327,7 @@ class _CommissionChartsContainerState extends State<CommissionChartsContainer> {
       final data = await _chartService.getStatusDistributionChartData(
         companyId: widget.companyId,
       );
-      
+
       setState(() {
         _statusData = data;
       });
@@ -342,7 +342,7 @@ class _CommissionChartsContainerState extends State<CommissionChartsContainer> {
         companyId: widget.companyId,
         limit: 10,
       );
-      
+
       setState(() {
         _hikeData = data;
       });

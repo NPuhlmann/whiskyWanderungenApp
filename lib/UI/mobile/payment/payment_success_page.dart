@@ -6,11 +6,8 @@ import '../../../config/routing/routes.dart';
 /// Page displayed after successful payment
 class PaymentSuccessPage extends StatelessWidget {
   final String? orderNumber;
-  
-  const PaymentSuccessPage({
-    super.key,
-    this.orderNumber,
-  });
+
+  const PaymentSuccessPage({super.key, this.orderNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -40,27 +37,21 @@ class PaymentSuccessPage extends StatelessWidget {
                   size: 64,
                 ),
               ),
-              
+
               const SizedBox(height: 24),
 
               // Success message
               const Text(
                 'Zahlung erfolgreich!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 8),
 
               const Text(
                 'Ihre Bestellung wurde erfolgreich abgeschlossen.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
 
@@ -72,14 +63,14 @@ class PaymentSuccessPage extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'Bestellnummer: $orderNumber',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
@@ -98,9 +89,9 @@ class PaymentSuccessPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   OutlinedButton.icon(
                     onPressed: () => context.go(Routes.home),
                     icon: const Icon(Icons.home),
@@ -117,10 +108,7 @@ class PaymentSuccessPage extends StatelessWidget {
               // Additional info
               const Text(
                 'Sie erhalten eine Bestätigungsmail mit allen Details.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
             ],

@@ -21,12 +21,14 @@ class MultiPaymentMethodSelector extends StatefulWidget {
   });
 
   @override
-  State<MultiPaymentMethodSelector> createState() => _MultiPaymentMethodSelectorState();
+  State<MultiPaymentMethodSelector> createState() =>
+      _MultiPaymentMethodSelectorState();
 }
 
-class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector> {
+class _MultiPaymentMethodSelectorState
+    extends State<MultiPaymentMethodSelector> {
   final MultiPaymentService _paymentService = MultiPaymentService.instance;
-  
+
   // Card form controllers (only used for credit card)
   final _formKey = GlobalKey<FormState>();
   final _cardNumberController = TextEditingController();
@@ -57,10 +59,7 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
             // Payment Method Header
             Row(
               children: [
-                Icon(
-                  Icons.payment,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.payment, color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   'Zahlungsmethode',
@@ -73,8 +72,10 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
             const SizedBox(height: 16),
 
             // Payment Method Options
-            ...widget.availablePaymentMethods.map((method) => _buildPaymentMethodOption(method)),
-            
+            ...widget.availablePaymentMethods.map(
+              (method) => _buildPaymentMethodOption(method),
+            ),
+
             const SizedBox(height: 16),
 
             // Card Details Form (only shown if card is selected)
@@ -89,7 +90,9 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -121,7 +124,7 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
     final isSelected = widget.selectedPaymentMethod == method;
     final displayName = _paymentService.getPaymentMethodDisplayName(method);
     final iconName = _paymentService.getPaymentMethodIcon(method);
-    
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: InkWell(
@@ -131,14 +134,18 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             border: Border.all(
-              color: isSelected 
+              color: isSelected
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                  : Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.5),
               width: isSelected ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(8),
-            color: isSelected 
-                ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1)
+            color: isSelected
+                ? Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.1)
                 : null,
           ),
           child: Row(
@@ -148,21 +155,23 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                  color: isSelected
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1)
                       : Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   _getIconData(iconName),
-                  color: isSelected 
+                  color: isSelected
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
               ),
               const SizedBox(width: 16),
-              
+
               // Payment Method Name and Description
               Expanded(
                 child: Column(
@@ -171,8 +180,10 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                     Text(
                       displayName,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        color: isSelected 
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                        color: isSelected
                             ? Theme.of(context).colorScheme.primary
                             : null,
                       ),
@@ -187,7 +198,7 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                   ],
                 ),
               ),
-              
+
               // Selection Radio
               Transform.scale(
                 scale: 0.8,
@@ -219,9 +230,9 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
         children: [
           Text(
             'Kartendetails',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
 
@@ -306,24 +317,26 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                     if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(value)) {
                       return 'Format: MM/JJ';
                     }
-                    
+
                     // Check if date is in the future
                     final parts = value.split('/');
                     final month = int.tryParse(parts[0]);
                     final year = int.tryParse('20${parts[1]}');
-                    
-                    if (month == null || year == null || 
-                        month < 1 || month > 12) {
+
+                    if (month == null ||
+                        year == null ||
+                        month < 1 ||
+                        month > 12) {
                       return 'Ungültiges Datum';
                     }
-                    
+
                     final now = DateTime.now();
                     final expiryDate = DateTime(year, month + 1, 0);
-                    
+
                     if (expiryDate.isBefore(now)) {
                       return 'Karte ist abgelaufen';
                     }
-                    
+
                     return null;
                   },
                   onChanged: (value) {
@@ -332,7 +345,9 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                     if (formatted != value) {
                       _expiryController.value = TextEditingValue(
                         text: formatted,
-                        selection: TextSelection.collapsed(offset: formatted.length),
+                        selection: TextSelection.collapsed(
+                          offset: formatted.length,
+                        ),
                       );
                     }
                     _updateCardPaymentMethod();
@@ -340,7 +355,7 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
                 ),
               ),
               const SizedBox(width: 16),
-              
+
               // CVV
               Expanded(
                 child: TextFormField(
@@ -381,16 +396,16 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
       widget.onPaymentMethodChanged(method, null);
     } else {
       // For other methods, immediately provide a mock payment method ID
-      final paymentMethodId = 'pm_${method.name}_test_${DateTime.now().millisecondsSinceEpoch}';
+      final paymentMethodId =
+          'pm_${method.name}_test_${DateTime.now().millisecondsSinceEpoch}';
       widget.onPaymentMethodChanged(method, paymentMethodId);
     }
   }
 
   void _updateCardPaymentMethod([String? _]) async {
     if (widget.selectedPaymentMethod == PaymentMethodType.card &&
-        _formKey.currentState?.validate() == true && 
+        _formKey.currentState?.validate() == true &&
         _isCardFormComplete()) {
-      
       try {
         // Create real Stripe payment method from card details
         final paymentMethod = await stripe.Stripe.instance.createPaymentMethod(
@@ -402,13 +417,13 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
             ),
           ),
         );
-        
+
         widget.onPaymentMethodChanged(PaymentMethodType.card, paymentMethod.id);
-        
       } catch (e) {
         // For development/testing, fall back to test payment method ID
         final cardNumber = _cardNumberController.text.replaceAll(' ', '');
-        final paymentMethodId = 'pm_card_${cardNumber.substring(cardNumber.length - 4)}';
+        final paymentMethodId =
+            'pm_card_${cardNumber.substring(cardNumber.length - 4)}';
         widget.onPaymentMethodChanged(PaymentMethodType.card, paymentMethodId);
       }
     } else if (widget.selectedPaymentMethod == PaymentMethodType.card) {
@@ -419,15 +434,15 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
 
   bool _isCardFormComplete() {
     return _cardHolderController.text.isNotEmpty &&
-           _cardNumberController.text.isNotEmpty &&
-           _expiryController.text.isNotEmpty &&
-           _cvvController.text.isNotEmpty;
+        _cardNumberController.text.isNotEmpty &&
+        _expiryController.text.isNotEmpty &&
+        _cvvController.text.isNotEmpty;
   }
 
   String _formatCardNumber(String value) {
     // Remove all non-digit characters
     final cleanValue = value.replaceAll(RegExp(r'\D'), '');
-    
+
     // Add spaces every 4 digits
     final buffer = StringBuffer();
     for (int i = 0; i < cleanValue.length; i++) {
@@ -436,14 +451,14 @@ class _MultiPaymentMethodSelectorState extends State<MultiPaymentMethodSelector>
       }
       buffer.write(cleanValue[i]);
     }
-    
+
     return buffer.toString();
   }
 
   String _formatExpiryDate(String value) {
     // Remove all non-digit characters
     final cleanValue = value.replaceAll(RegExp(r'\D'), '');
-    
+
     if (cleanValue.length <= 2) {
       return cleanValue;
     } else {

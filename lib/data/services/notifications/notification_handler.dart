@@ -30,7 +30,8 @@ class NotificationHandler {
     return NotificationModel(
       id: _generateNotificationId(data),
       title: 'Versand-Updates',
-      body: 'Bestellung #$orderNumber wurde versendet. Tracking: $trackingNumber',
+      body:
+          'Bestellung #$orderNumber wurde versendet. Tracking: $trackingNumber',
       type: NotificationType.deliveryUpdate,
       data: data,
     );
@@ -56,10 +57,10 @@ class NotificationHandler {
     // Create a deterministic hash based on the data content
     final jsonString = jsonEncode(data);
     final hash = jsonString.hashCode;
-    
+
     // Add some randomness to ensure uniqueness
     final random = _random.nextInt(10000);
-    
+
     return 'notification_${hash}_$random';
   }
 
@@ -70,7 +71,7 @@ class NotificationHandler {
     required String location,
   }) {
     final formattedDate = '${hikeDate.day}.${hikeDate.month}.${hikeDate.year}';
-    
+
     return NotificationModel(
       id: _generateNotificationId({
         'hike_name': hikeName,
@@ -78,7 +79,8 @@ class NotificationHandler {
         'location': location,
       }),
       title: 'Hike-Erinnerung',
-      body: 'Dein Hike "$hikeName" findet am $formattedDate in $location statt.',
+      body:
+          'Dein Hike "$hikeName" findet am $formattedDate in $location statt.',
       type: NotificationType.general,
       data: {
         'hike_name': hikeName,
@@ -96,7 +98,7 @@ class NotificationHandler {
     required String paymentMethod,
   }) {
     final formattedAmount = amount.toStringAsFixed(2);
-    
+
     return NotificationModel(
       id: _generateNotificationId({
         'order_number': orderNumber,
@@ -104,7 +106,8 @@ class NotificationHandler {
         'payment_method': paymentMethod,
       }),
       title: 'Zahlung bestätigt',
-      body: 'Deine Zahlung für Bestellung #$orderNumber (€$formattedAmount) wurde erfolgreich mit $paymentMethod abgewickelt.',
+      body:
+          'Deine Zahlung für Bestellung #$orderNumber (€$formattedAmount) wurde erfolgreich mit $paymentMethod abgewickelt.',
       type: NotificationType.orderUpdate,
       data: {
         'order_number': orderNumber,
@@ -123,12 +126,13 @@ class NotificationHandler {
     Duration? estimatedDuration,
   }) {
     String body = description;
-    
+
     if (scheduledTime != null) {
-      final formattedTime = '${scheduledTime.hour}:${scheduledTime.minute.toString().padLeft(2, '0')}';
+      final formattedTime =
+          '${scheduledTime.hour}:${scheduledTime.minute.toString().padLeft(2, '0')}';
       body += ' Geplante Zeit: $formattedTime Uhr.';
     }
-    
+
     if (estimatedDuration != null) {
       final hours = estimatedDuration.inHours;
       final minutes = estimatedDuration.inMinutes % 60;

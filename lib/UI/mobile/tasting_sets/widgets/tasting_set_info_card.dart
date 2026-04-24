@@ -5,18 +5,13 @@ import 'package:whisky_hikes/domain/models/tasting_set.dart';
 class TastingSetInfoCard extends StatelessWidget {
   final TastingSet tastingSet;
 
-  const TastingSetInfoCard({
-    Key? key,
-    required this.tastingSet,
-  }) : super(key: key);
+  const TastingSetInfoCard({super.key, required this.tastingSet});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -65,9 +60,9 @@ class TastingSetInfoCard extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-                
+
                 const SizedBox(width: 20),
-                
+
                 // Basic info
                 Expanded(
                   child: Column(
@@ -75,9 +70,8 @@ class TastingSetInfoCard extends StatelessWidget {
                     children: [
                       Text(
                         tastingSet.name,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Container(
@@ -103,9 +97,9 @@ class TastingSetInfoCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Description
             Text(
               tastingSet.description,
@@ -114,9 +108,9 @@ class TastingSetInfoCard extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Statistics
             Container(
               padding: const EdgeInsets.all(16),
@@ -151,20 +145,22 @@ class TastingSetInfoCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Samples section
             Text(
               'Enthaltene Whisky Samples',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             if (tastingSet.hasSamples) ...[
-              ...tastingSet.samples.map((sample) => _SampleItem(sample: sample)),
+              ...tastingSet.samples.map(
+                (sample) => _SampleItem(sample: sample),
+              ),
             ] else ...[
               Container(
                 padding: const EdgeInsets.all(16),
@@ -174,11 +170,7 @@ class TastingSetInfoCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.grey[600],
-                      size: 20,
-                    ),
+                    Icon(Icons.info_outline, color: Colors.grey[600], size: 20),
                     const SizedBox(width: 12),
                     Text(
                       'Keine Samples verfügbar',
@@ -191,18 +183,22 @@ class TastingSetInfoCard extends StatelessWidget {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 24),
-            
+
             // Additional info
             if (tastingSet.hasSamples) ...[
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha:0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha:0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -221,13 +217,15 @@ class TastingSetInfoCard extends StatelessWidget {
                         Expanded(
                           child: _InfoItem(
                             label: 'Durchschnittsalter',
-                            value: '${tastingSet.averageAge.toStringAsFixed(1)} Jahre',
+                            value:
+                                '${tastingSet.averageAge.toStringAsFixed(1)} Jahre',
                           ),
                         ),
                         Expanded(
                           child: _InfoItem(
                             label: 'Durchschnitts-ABV',
-                            value: '${tastingSet.averageAbv.toStringAsFixed(1)}%',
+                            value:
+                                '${tastingSet.averageAbv.toStringAsFixed(1)}%',
                           ),
                         ),
                       ],
@@ -259,23 +257,19 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: Theme.of(context).colorScheme.primary,
-          size: 24,
-        ),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
         const SizedBox(height: 8),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
         ),
       ],
     );
@@ -299,7 +293,7 @@ class _SampleItem extends StatelessWidget {
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -308,48 +302,33 @@ class _SampleItem extends StatelessWidget {
       child: Row(
         children: [
           // Sample image
-          if (sample.imageUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                sample.imageUrl,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.wine_bar,
-                      size: 24,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
-              ),
-            )
-          else
-            Container(
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              sample.imageUrl,
               width: 60,
               height: 60,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.wine_bar,
-                size: 24,
-                color: Colors.grey,
-              ),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.wine_bar,
+                    size: 24,
+                    color: Colors.grey,
+                  ),
+                );
+              },
             ),
-          
+          ),
+
           const SizedBox(width: 16),
-          
+
           // Sample info
           Expanded(
             child: Column(
@@ -364,9 +343,9 @@ class _SampleItem extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   sample.distillery,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -445,10 +424,7 @@ class _InfoItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoItem({
-    required this.label,
-    required this.value,
-  });
+  const _InfoItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -457,16 +433,16 @@ class _InfoItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
       ],
     );

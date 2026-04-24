@@ -4,16 +4,16 @@ import '../services/admin/admin_service.dart';
 /// Provider für Admin-Dashboard-Daten
 class AdminProvider extends ChangeNotifier {
   final AdminService _adminService;
-  
-  AdminProvider({AdminService? adminService}) 
-      : _adminService = adminService ?? AdminService();
+
+  AdminProvider({AdminService? adminService})
+    : _adminService = adminService ?? AdminService();
 
   // Dashboard-Daten
   Map<String, dynamic> _dashboardKPIs = {};
   List<Map<String, dynamic>> _recentOrders = [];
   List<Map<String, dynamic>> _revenueTrend = [];
   List<Map<String, dynamic>> _topRoutes = [];
-  
+
   // Loading-States
   bool _isLoadingKPIs = false;
   bool _isLoadingOrders = false;
@@ -25,7 +25,7 @@ class AdminProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get recentOrders => _recentOrders;
   List<Map<String, dynamic>> get revenueTrend => _revenueTrend;
   List<Map<String, dynamic>> get topRoutes => _topRoutes;
-  
+
   bool get isLoadingKPIs => _isLoadingKPIs;
   bool get isLoadingOrders => _isLoadingOrders;
   bool get isLoadingTrend => _isLoadingTrend;
@@ -49,7 +49,7 @@ class AdminProvider extends ChangeNotifier {
     try {
       _dashboardKPIs = await _adminService.getDashboardKPIs();
     } catch (e) {
-      print('Fehler beim Laden der Dashboard-KPIs: $e');
+      debugPrint('Fehler beim Laden der Dashboard-KPIs: $e');
       _dashboardKPIs = {
         'monthlyRoutes': 0,
         'monthlyRevenue': 0.0,
@@ -72,7 +72,7 @@ class AdminProvider extends ChangeNotifier {
     try {
       _recentOrders = await _adminService.getRecentOrders(limit: 10);
     } catch (e) {
-      print('Fehler beim Laden der aktuellen Bestellungen: $e');
+      debugPrint('Fehler beim Laden der aktuellen Bestellungen: $e');
       _recentOrders = [];
     } finally {
       _isLoadingOrders = false;
@@ -88,7 +88,7 @@ class AdminProvider extends ChangeNotifier {
     try {
       _revenueTrend = await _adminService.getRevenueTrend(days: 30);
     } catch (e) {
-      print('Fehler beim Laden der Umsatz-Entwicklung: $e');
+      debugPrint('Fehler beim Laden der Umsatz-Entwicklung: $e');
       _revenueTrend = [];
     } finally {
       _isLoadingTrend = false;
@@ -104,7 +104,7 @@ class AdminProvider extends ChangeNotifier {
     try {
       _topRoutes = await _adminService.getTopRoutes(limit: 5);
     } catch (e) {
-      print('Fehler beim Laden der beliebtesten Routen: $e');
+      debugPrint('Fehler beim Laden der beliebtesten Routen: $e');
       _topRoutes = [];
     } finally {
       _isLoadingRoutes = false;
@@ -117,15 +117,17 @@ class AdminProvider extends ChangeNotifier {
     try {
       // Hier würde der API-Call erfolgen
       // await _adminService.updateOrderStatus(orderId, newStatus);
-      
+
       // Aktualisiere lokale Daten
-      final orderIndex = _recentOrders.indexWhere((order) => order['id'] == orderId);
+      final orderIndex = _recentOrders.indexWhere(
+        (order) => order['id'] == orderId,
+      );
       if (orderIndex != -1) {
         _recentOrders[orderIndex]['status'] = newStatus;
         notifyListeners();
       }
     } catch (e) {
-      print('Fehler beim Aktualisieren des Bestellstatus: $e');
+      debugPrint('Fehler beim Aktualisieren des Bestellstatus: $e');
     }
   }
 

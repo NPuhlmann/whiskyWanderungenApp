@@ -24,58 +24,48 @@ class AdminRouter {
       GoRoute(
         path: dashboardRoute,
         name: 'AdminDashboard',
-        builder: (context, state) => const AdminGuard(
-          child: AdminDashboard(),
-        ),
+        builder: (context, state) => const AdminGuard(child: AdminDashboard()),
       ),
       GoRoute(
         path: routesRoute,
         name: 'AdminRoutes',
-        builder: (context, state) => const AdminGuard(
-          child: _AdminRoutesPage(),
-        ),
+        builder: (context, state) =>
+            const AdminGuard(child: _AdminRoutesPage()),
       ),
       GoRoute(
         path: ordersRoute,
         name: 'AdminOrders',
-        builder: (context, state) => const AdminGuard(
-          child: OrderManagementPage(),
-        ),
+        builder: (context, state) =>
+            const AdminGuard(child: OrderManagementPage()),
       ),
       GoRoute(
         path: whiskyRoute,
         name: 'AdminWhisky',
-        builder: (context, state) => const AdminGuard(
-          child: WhiskyCatalogPage(),
-        ),
+        builder: (context, state) =>
+            const AdminGuard(child: WhiskyCatalogPage()),
       ),
       GoRoute(
         path: analyticsRoute,
         name: 'AdminAnalytics',
-        builder: (context, state) => const AdminGuard(
-          child: _AdminAnalyticsPage(),
-        ),
+        builder: (context, state) =>
+            const AdminGuard(child: _AdminAnalyticsPage()),
       ),
       GoRoute(
         path: teamRoute,
         name: 'AdminTeam',
-        builder: (context, state) => const AdminGuard(
-          child: _AdminTeamPage(),
-        ),
+        builder: (context, state) => const AdminGuard(child: _AdminTeamPage()),
       ),
       GoRoute(
         path: financesRoute,
         name: 'AdminFinances',
-        builder: (context, state) => const AdminGuard(
-          child: CommissionManagementPage(),
-        ),
+        builder: (context, state) =>
+            const AdminGuard(child: CommissionManagementPage()),
       ),
       GoRoute(
         path: settingsRoute,
         name: 'AdminSettings',
-        builder: (context, state) => const AdminGuard(
-          child: _AdminSettingsPage(),
-        ),
+        builder: (context, state) =>
+            const AdminGuard(child: _AdminSettingsPage()),
       ),
     ];
   }
@@ -136,8 +126,6 @@ class _AdminRoutesPage extends StatelessWidget {
     );
   }
 }
-
-
 
 class _AdminAnalyticsPage extends StatelessWidget {
   const _AdminAnalyticsPage();
@@ -202,7 +190,6 @@ class _AdminTeamPage extends StatelessWidget {
     );
   }
 }
-
 
 class _AdminSettingsPage extends StatelessWidget {
   const _AdminSettingsPage();

@@ -5,15 +5,12 @@ import '../../../../domain/models/basic_order.dart';
 class OrderSummary extends StatelessWidget {
   final BasicOrder order;
 
-  const OrderSummary({
-    super.key,
-    required this.order,
-  });
+  const OrderSummary({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 2,
       child: Padding(
@@ -31,18 +28,14 @@ class OrderSummary extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Order Number
-            _buildInfoRow(
-              'Bestellnummer:',
-              order.formattedOrderNumber,
-              theme,
-            ),
+            _buildInfoRow('Bestellnummer:', order.formattedOrderNumber, theme),
             const SizedBox(height: 8),
 
             // Delivery Type
             _buildInfoRow(
               'Lieferart:',
-              order.deliveryType == DeliveryType.standardShipping 
-                  ? 'Versand' 
+              order.deliveryType == DeliveryType.standardShipping
+                  ? 'Versand'
                   : 'Abholung',
               theme,
             ),
@@ -58,7 +51,7 @@ class OrderSummary extends StatelessWidget {
               theme,
               isSubtotal: true,
             ),
-            
+
             if (order.deliveryCost > 0) ...[
               const SizedBox(height: 8),
               _buildPriceRow(
@@ -74,12 +67,7 @@ class OrderSummary extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Total
-            _buildPriceRow(
-              'Gesamt:',
-              order.totalAmount,
-              theme,
-              isTotal: true,
-            ),
+            _buildPriceRow('Gesamt:', order.totalAmount, theme, isTotal: true),
 
             const SizedBox(height: 16),
 
@@ -122,8 +110,8 @@ class OrderSummary extends StatelessWidget {
   }
 
   Widget _buildPriceRow(
-    String label, 
-    double amount, 
+    String label,
+    double amount,
     ThemeData theme, {
     bool isSubtotal = false,
     bool isTotal = false,
@@ -136,7 +124,7 @@ class OrderSummary extends StatelessWidget {
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: isTotal 
+              color: isTotal
                   ? theme.colorScheme.onSurface
                   : theme.colorScheme.onSurfaceVariant,
             ),

@@ -14,9 +14,7 @@ class OrderListWidget extends StatelessWidget {
     return Consumer<OrderManagementProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading && provider.orders.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (provider.errorMessage != null) {
@@ -62,7 +60,9 @@ class OrderListWidget extends StatelessWidget {
                 Icon(
                   Icons.shopping_cart_outlined,
                   size: 64,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -98,7 +98,11 @@ class OrderListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileList(BuildContext context, List<Map<String, dynamic>> orders, OrderManagementProvider provider) {
+  Widget _buildMobileList(
+    BuildContext context,
+    List<Map<String, dynamic>> orders,
+    OrderManagementProvider provider,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: orders.length,
@@ -118,9 +122,8 @@ class OrderListWidget extends StatelessWidget {
                     children: [
                       Text(
                         'Bestellung #${order['id']}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const Spacer(),
                       OrderStatusChip(status: order['status'] ?? 'pending'),
@@ -140,7 +143,9 @@ class OrderListWidget extends StatelessWidget {
                       Icon(
                         Icons.person_outline,
                         size: 16,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -155,7 +160,9 @@ class OrderListWidget extends StatelessWidget {
                       Icon(
                         Icons.access_time,
                         size: 16,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -173,7 +180,11 @@ class OrderListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletList(BuildContext context, List<Map<String, dynamic>> orders, OrderManagementProvider provider) {
+  Widget _buildTabletList(
+    BuildContext context,
+    List<Map<String, dynamic>> orders,
+    OrderManagementProvider provider,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: orders.length,
@@ -195,9 +206,8 @@ class OrderListWidget extends StatelessWidget {
                       children: [
                         Text(
                           'Bestellung #${order['id']}',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -213,10 +223,11 @@ class OrderListWidget extends StatelessWidget {
                       children: [
                         Text(
                           provider.formatOrderAmount(order),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -230,7 +241,9 @@ class OrderListWidget extends StatelessWidget {
                   const SizedBox(width: 8),
                   Icon(
                     Icons.chevron_right,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.5),
                   ),
                 ],
               ),
@@ -241,7 +254,11 @@ class OrderListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopTable(BuildContext context, List<Map<String, dynamic>> orders, OrderManagementProvider provider) {
+  Widget _buildDesktopTable(
+    BuildContext context,
+    List<Map<String, dynamic>> orders,
+    OrderManagementProvider provider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -326,9 +343,8 @@ class OrderListWidget extends StatelessWidget {
                           children: [
                             Text(
                               '#${order['id']}',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             if (order['hike_id'] != null)
                               Text(
@@ -347,10 +363,11 @@ class OrderListWidget extends StatelessWidget {
                       DataCell(
                         Text(
                           provider.formatOrderAmount(order),
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                       ),
                       DataCell(
@@ -367,13 +384,18 @@ class OrderListWidget extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              onPressed: () => _showOrderDetails(context, order, provider),
+                              onPressed: () =>
+                                  _showOrderDetails(context, order, provider),
                               icon: const Icon(Icons.visibility),
                               tooltip: 'Details anzeigen',
                             ),
                             if (provider.canModifyOrder(order))
                               IconButton(
-                                onPressed: () => _showStatusUpdateDialog(context, order, provider),
+                                onPressed: () => _showStatusUpdateDialog(
+                                  context,
+                                  order,
+                                  provider,
+                                ),
                                 icon: const Icon(Icons.edit),
                                 tooltip: 'Status ändern',
                               ),
@@ -391,12 +413,21 @@ class OrderListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSortDropdown(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildSortDropdown(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     return DropdownButton<String>(
       value: 'created_at',
       items: [
-        DropdownMenuItem(value: 'created_at', child: Text('Nach Datum sortieren')),
-        DropdownMenuItem(value: 'total_amount', child: Text('Nach Betrag sortieren')),
+        DropdownMenuItem(
+          value: 'created_at',
+          child: Text('Nach Datum sortieren'),
+        ),
+        DropdownMenuItem(
+          value: 'total_amount',
+          child: Text('Nach Betrag sortieren'),
+        ),
         DropdownMenuItem(value: 'status', child: Text('Nach Status sortieren')),
         DropdownMenuItem(value: 'id', child: Text('Nach ID sortieren')),
       ],
@@ -408,14 +439,22 @@ class OrderListWidget extends StatelessWidget {
     );
   }
 
-  void _showOrderDetails(BuildContext context, Map<String, dynamic> order, OrderManagementProvider provider) {
+  void _showOrderDetails(
+    BuildContext context,
+    Map<String, dynamic> order,
+    OrderManagementProvider provider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => OrderDetailsDialog(order: order),
     );
   }
 
-  void _showStatusUpdateDialog(BuildContext context, Map<String, dynamic> order, OrderManagementProvider provider) {
+  void _showStatusUpdateDialog(
+    BuildContext context,
+    Map<String, dynamic> order,
+    OrderManagementProvider provider,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
@@ -433,11 +472,12 @@ class OrderListWidget extends StatelessWidget {
                   labelText: 'Neuer Status',
                   border: OutlineInputBorder(),
                 ),
-                items: provider.getValidOrderStatuses()
-                    .map((status) => DropdownMenuItem(
-                          value: status,
-                          child: Text(status),
-                        ))
+                items: provider
+                    .getValidOrderStatuses()
+                    .map(
+                      (status) =>
+                          DropdownMenuItem(value: status, child: Text(status)),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) {

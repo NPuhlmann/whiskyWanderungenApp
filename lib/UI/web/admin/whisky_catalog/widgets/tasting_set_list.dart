@@ -24,7 +24,10 @@ class TastingSetList extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileLayout(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildMobileLayout(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Scaffold(
       body: _buildListContent(context, provider),
       floatingActionButton: FloatingActionButton(
@@ -35,46 +38,48 @@ class TastingSetList extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletLayout(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildTabletLayout(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Column(
       children: [
         _buildToolbar(context, provider),
-        Expanded(
-          child: _buildListContent(context, provider),
-        ),
+        Expanded(child: _buildListContent(context, provider)),
       ],
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Column(
       children: [
         _buildToolbar(context, provider),
-        Expanded(
-          child: _buildListContent(context, provider),
-        ),
+        Expanded(child: _buildListContent(context, provider)),
       ],
     );
   }
 
-  Widget _buildToolbar(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildToolbar(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
+          bottom: BorderSide(color: Theme.of(context).dividerColor, width: 1),
         ),
       ),
       child: Row(
         children: [
           Text(
             '${AppLocalizations.of(context)!.tastingSets} (${provider.filteredTastingSets.length})',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const Spacer(),
           // Sort dropdown
@@ -92,7 +97,11 @@ class TastingSetList extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(AppLocalizations.of(context)!.name),
                     if (provider.sortBy == TastingSetSortBy.name)
-                      Icon(provider.sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                      Icon(
+                        provider.sortAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                      ),
                   ],
                 ),
               ),
@@ -104,7 +113,11 @@ class TastingSetList extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(AppLocalizations.of(context)!.sampleCount),
                     if (provider.sortBy == TastingSetSortBy.sampleCount)
-                      Icon(provider.sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                      Icon(
+                        provider.sortAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                      ),
                   ],
                 ),
               ),
@@ -116,7 +129,11 @@ class TastingSetList extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(AppLocalizations.of(context)!.averageAge),
                     if (provider.sortBy == TastingSetSortBy.averageAge)
-                      Icon(provider.sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                      Icon(
+                        provider.sortAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                      ),
                   ],
                 ),
               ),
@@ -128,7 +145,11 @@ class TastingSetList extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(AppLocalizations.of(context)!.region),
                     if (provider.sortBy == TastingSetSortBy.region)
-                      Icon(provider.sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                      Icon(
+                        provider.sortAscending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                      ),
                   ],
                 ),
               ),
@@ -149,11 +170,12 @@ class TastingSetList extends StatelessWidget {
     );
   }
 
-  Widget _buildListContent(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildListContent(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     if (provider.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (provider.error != null) {
@@ -161,11 +183,7 @@ class TastingSetList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red[300],
-            ),
+            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.errorLoadingData,
@@ -175,9 +193,9 @@ class TastingSetList extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               provider.error!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -198,16 +216,12 @@ class TastingSetList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.local_bar_outlined,
-              size: 64,
-              color: Colors.grey[300],
-            ),
+            Icon(Icons.local_bar_outlined, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
               provider.searchQuery.isNotEmpty ||
-              provider.selectedRegion != null ||
-              provider.selectedDistillery != null
+                      provider.selectedRegion != null ||
+                      provider.selectedDistillery != null
                   ? AppLocalizations.of(context)!.noTastingSetsMatchFilter
                   : AppLocalizations.of(context)!.noTastingSetsYet,
               style: Theme.of(context).textTheme.headlineSmall,
@@ -216,13 +230,13 @@ class TastingSetList extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               provider.searchQuery.isNotEmpty ||
-              provider.selectedRegion != null ||
-              provider.selectedDistillery != null
+                      provider.selectedRegion != null ||
+                      provider.selectedDistillery != null
                   ? AppLocalizations.of(context)!.tryAdjustingFilters
                   : AppLocalizations.of(context)!.createFirstTastingSet,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -256,7 +270,11 @@ class TastingSetList extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileList(BuildContext context, WhiskyManagementProvider provider, List<TastingSet> tastingSets) {
+  Widget _buildMobileList(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+    List<TastingSet> tastingSets,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: tastingSets.length,
@@ -275,7 +293,11 @@ class TastingSetList extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletGrid(BuildContext context, WhiskyManagementProvider provider, List<TastingSet> tastingSets) {
+  Widget _buildTabletGrid(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+    List<TastingSet> tastingSets,
+  ) {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -297,7 +319,11 @@ class TastingSetList extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopGrid(BuildContext context, WhiskyManagementProvider provider, List<TastingSet> tastingSets) {
+  Widget _buildDesktopGrid(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+    List<TastingSet> tastingSets,
+  ) {
     return GridView.builder(
       padding: const EdgeInsets.all(24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -378,7 +404,9 @@ class TastingSetList extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteTastingSet),
         content: Text(
-          AppLocalizations.of(context)!.deleteTastingSetConfirmation(tastingSet.name),
+          AppLocalizations.of(
+            context,
+          )!.deleteTastingSetConfirmation(tastingSet.name),
         ),
         actions: [
           TextButton(
@@ -388,7 +416,9 @@ class TastingSetList extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.read<WhiskyManagementProvider>().deleteTastingSet(tastingSet.id);
+              context.read<WhiskyManagementProvider>().deleteTastingSet(
+                tastingSet.id,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

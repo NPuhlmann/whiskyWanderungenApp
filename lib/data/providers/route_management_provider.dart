@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../services/admin/route_management_service.dart';
 
@@ -8,7 +7,8 @@ class RouteManagementProvider extends ChangeNotifier {
   final RouteManagementService _routeManagementService;
 
   RouteManagementProvider({RouteManagementService? routeManagementService})
-      : _routeManagementService = routeManagementService ?? RouteManagementService();
+    : _routeManagementService =
+          routeManagementService ?? RouteManagementService();
 
   // State
   List<Map<String, dynamic>> _routes = [];
@@ -197,7 +197,10 @@ class RouteManagementProvider extends ChangeNotifier {
   }
 
   /// Fügt einen neuen Wegpunkt zu einer Route hinzu
-  Future<void> addWaypoint(int routeId, Map<String, dynamic> waypointData) async {
+  Future<void> addWaypoint(
+    int routeId,
+    Map<String, dynamic> waypointData,
+  ) async {
     setLoading(true);
     clearError();
 
@@ -229,7 +232,10 @@ class RouteManagementProvider extends ChangeNotifier {
   }
 
   /// Aktualisiert einen Wegpunkt
-  Future<void> updateWaypoint(int waypointId, Map<String, dynamic> updateData) async {
+  Future<void> updateWaypoint(
+    int waypointId,
+    Map<String, dynamic> updateData,
+  ) async {
     setLoading(true);
     clearError();
 
@@ -260,10 +266,15 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Removing waypoint $waypointId from route $routeId');
 
-      await _routeManagementService.removeWaypointFromRoute(routeId, waypointId);
+      await _routeManagementService.removeWaypointFromRoute(
+        routeId,
+        waypointId,
+      );
 
       // Entferne Wegpunkt aus lokaler Liste
-      _waypoints.removeWhere((waypoint) => waypoint['waypoints']['id'] == waypointId);
+      _waypoints.removeWhere(
+        (waypoint) => waypoint['waypoints']['id'] == waypointId,
+      );
 
       log('Waypoint removed successfully');
     } catch (e) {
@@ -275,7 +286,10 @@ class RouteManagementProvider extends ChangeNotifier {
   }
 
   /// Ändert die Reihenfolge der Wegpunkte
-  Future<void> reorderWaypoints(int routeId, List<Map<String, dynamic>> newOrder) async {
+  Future<void> reorderWaypoints(
+    int routeId,
+    List<Map<String, dynamic>> newOrder,
+  ) async {
     setLoading(true);
     clearError();
 
@@ -299,7 +313,11 @@ class RouteManagementProvider extends ChangeNotifier {
   // Bild-Management
 
   /// Lädt ein Bild für eine Route hoch
-  Future<String?> uploadRouteImage(int routeId, Uint8List imageBytes, String fileName) async {
+  Future<String?> uploadRouteImage(
+    int routeId,
+    Uint8List imageBytes,
+    String fileName,
+  ) async {
     setUploading(true);
     clearError();
 
@@ -340,7 +358,11 @@ class RouteManagementProvider extends ChangeNotifier {
   }
 
   /// Lädt ein Bild für einen Wegpunkt hoch
-  Future<String?> uploadWaypointImage(int waypointId, Uint8List imageBytes, String fileName) async {
+  Future<String?> uploadWaypointImage(
+    int waypointId,
+    Uint8List imageBytes,
+    String fileName,
+  ) async {
     setUploading(true);
     clearError();
 
@@ -380,8 +402,8 @@ class RouteManagementProvider extends ChangeNotifier {
       final difficulty = route['difficulty']?.toString().toLowerCase() ?? '';
 
       return name.contains(lowerSearchTerm) ||
-             description.contains(lowerSearchTerm) ||
-             difficulty.contains(lowerSearchTerm);
+          description.contains(lowerSearchTerm) ||
+          difficulty.contains(lowerSearchTerm);
     }).toList();
   }
 
@@ -404,7 +426,10 @@ class RouteManagementProvider extends ChangeNotifier {
   }
 
   /// Sortiert Routen nach verschiedenen Kriterien
-  List<Map<String, dynamic>> sortRoutes(String sortBy, {bool ascending = true}) {
+  List<Map<String, dynamic>> sortRoutes(
+    String sortBy, {
+    bool ascending = true,
+  }) {
     final sortedRoutes = List<Map<String, dynamic>>.from(_routes);
 
     sortedRoutes.sort((a, b) {
@@ -456,10 +481,21 @@ class RouteManagementProvider extends ChangeNotifier {
       };
     }
 
-    final activeRoutes = _routes.where((route) => route['is_active'] == true).length;
-    final totalPrice = _routes.fold<double>(0.0, (sum, route) => sum + (route['price'] ?? 0.0));
-    final totalDistance = _routes.fold<double>(0.0, (sum, route) => sum + (route['distance'] ?? 0.0));
-    final totalDuration = _routes.fold<double>(0.0, (sum, route) => sum + (route['duration'] ?? 0.0));
+    final activeRoutes = _routes
+        .where((route) => route['is_active'] == true)
+        .length;
+    final totalPrice = _routes.fold<double>(
+      0.0,
+      (sum, route) => sum + (route['price'] ?? 0.0),
+    );
+    final totalDistance = _routes.fold<double>(
+      0.0,
+      (sum, route) => sum + (route['distance'] ?? 0.0),
+    );
+    final totalDuration = _routes.fold<double>(
+      0.0,
+      (sum, route) => sum + (route['duration'] ?? 0.0),
+    );
 
     return {
       'totalRoutes': _routes.length,
@@ -478,7 +514,9 @@ class RouteManagementProvider extends ChangeNotifier {
     }
 
     try {
-      return await _routeManagementService.calculateRouteDistance(_selectedRoute!['id']);
+      return await _routeManagementService.calculateRouteDistance(
+        _selectedRoute!['id'],
+      );
     } catch (e) {
       log('Error calculating route distance: $e');
       return 0.0;
@@ -492,7 +530,9 @@ class RouteManagementProvider extends ChangeNotifier {
     }
 
     try {
-      return await _routeManagementService.generateRoutePreviewUrl(_selectedRoute!['id']);
+      return await _routeManagementService.generateRoutePreviewUrl(
+        _selectedRoute!['id'],
+      );
     } catch (e) {
       log('Error generating route preview: $e');
       return '';

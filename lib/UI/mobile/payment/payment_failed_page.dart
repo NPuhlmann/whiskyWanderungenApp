@@ -6,16 +6,13 @@ import '../../../config/routing/routes.dart';
 /// Page displayed after failed payment
 class PaymentFailedPage extends StatelessWidget {
   final String? errorMessage;
-  
-  const PaymentFailedPage({
-    super.key,
-    this.errorMessage,
-  });
+
+  const PaymentFailedPage({super.key, this.errorMessage});
 
   @override
   Widget build(BuildContext context) {
     final displayError = errorMessage ?? 'Unbekannter Fehler';
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Zahlung fehlgeschlagen'),
@@ -35,25 +32,18 @@ class PaymentFailedPage extends StatelessWidget {
                   color: Colors.red.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.error,
-                  color: Colors.red,
-                  size: 64,
-                ),
+                child: const Icon(Icons.error, color: Colors.red, size: 64),
               ),
-              
+
               const SizedBox(height: 24),
 
               // Error title
               const Text(
                 'Zahlung fehlgeschlagen',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 8),
 
               // Error message
@@ -79,10 +69,7 @@ class PaymentFailedPage extends StatelessWidget {
               // Help text
               const Text(
                 'Bitte überprüfen Sie Ihre Zahlungsdaten und versuchen Sie es erneut.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
 
@@ -100,9 +87,9 @@ class PaymentFailedPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   OutlinedButton.icon(
                     onPressed: () => context.go(Routes.home),
                     icon: const Icon(Icons.home),
@@ -140,10 +127,7 @@ class PaymentFailedPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       const Text(
                         'Kontaktieren Sie unseren Support, wenn das Problem weiterhin besteht.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
                   ),

@@ -12,20 +12,19 @@ import 'data/services/payment/multi_payment_service.dart';
 import 'data/services/offline/offline_service.dart';
 import 'data/services/cache/local_cache_service.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load env variables
   await dotenv.load();
-  
+
   // supabase setup
   await Supabase.initialize(
     url: _ensureHttps(dotenv.env['SUPABASE_URL']!),
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     debug: _isDebugMode(),
   );
-  
+
   // Initialize payment services
   try {
     await MultiPaymentService.instance.initialize();
@@ -35,10 +34,7 @@ void main() async {
     // Continue app startup even if payment initialization fails
   }
 
-  runApp(MultiProvider(
-    providers: providers,
-    child: const MyApp(),
-  ));
+  runApp(MultiProvider(providers: providers, child: const MyApp()));
 }
 
 /// Ensures HTTPS is used for Supabase URL
@@ -57,7 +53,7 @@ bool _isDebugMode() {
   if (isProduction) {
     return false;
   }
-  
+
   // Check environment variable for development
   final devMode = dotenv.env['DEV_MODE']?.toLowerCase();
   return devMode == 'true';
@@ -105,7 +101,9 @@ class _MyAppState extends State<MyApp> {
 
   void _handleIncomingLinks() {
     // Listen for incoming deep links when app is already running
-    _linkSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    _linkSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      data,
+    ) {
       final event = data.event;
       if (event == AuthChangeEvent.signedIn) {
         // User successfully signed in via email confirmation
@@ -119,15 +117,17 @@ class _MyAppState extends State<MyApp> {
       // Create shared instances that will be managed by the lifecycle manager
       final offlineService = OfflineService();
       final localCacheService = LocalCacheService();
-      
+
       _lifecycleManager = AppLifecycleManager(
         offlineService: offlineService,
         localCacheService: localCacheService,
       );
-      
+
       _lifecycleManager!.initialize();
-      
-      if (_isDebugMode()) debugPrint('✅ AppLifecycleManager initialized successfully');
+
+      if (_isDebugMode()) {
+        debugPrint('✅ AppLifecycleManager initialized successfully');
+      }
     } catch (e) {
       debugPrint('⚠️ AppLifecycleManager initialization failed: $e');
     }
@@ -145,10 +145,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('de', 'DE'),
-      ],
+      supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
@@ -161,5 +158,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-

@@ -34,14 +34,18 @@ abstract class PerformanceMetrics with _$PerformanceMetrics {
 
   /// Returns formatted average order value with Euro symbol
   String get formattedAverageOrderValue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€')
-        .format(averageOrderValue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(averageOrderValue);
   }
 
   /// Returns formatted customer lifetime value with Euro symbol
   String get formattedCustomerLifetimeValue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€')
-        .format(customerLifetimeValue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(customerLifetimeValue);
   }
 
   /// Returns formatted total views with thousand separators
@@ -88,8 +92,10 @@ abstract class PerformanceMetrics with _$PerformanceMetrics {
 
   /// Returns formatted potential revenue
   String get formattedPotentialRevenue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€')
-        .format(potentialRevenue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(potentialRevenue);
   }
 
   /// Creates an empty PerformanceMetrics instance

@@ -59,20 +59,13 @@ class TastingSetCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.amber[600]!,
-            Colors.amber[800]!,
-          ],
+          colors: [Colors.amber[600]!, Colors.amber[800]!],
         ),
       ),
       child: Stack(
         children: [
           // Background pattern
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _WhiskyPatternPainter(),
-            ),
-          ),
+          Positioned.fill(child: CustomPaint(painter: _WhiskyPatternPainter())),
           // Content
           Padding(
             padding: const EdgeInsets.all(16),
@@ -134,9 +127,7 @@ class TastingSetCard extends StatelessWidget {
             icon: const Icon(Icons.edit),
             iconSize: 20,
             color: Colors.white,
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.black26,
-            ),
+            style: IconButton.styleFrom(backgroundColor: Colors.black26),
             tooltip: AppLocalizations.of(context)!.edit,
           ),
         const SizedBox(width: 4),
@@ -146,9 +137,7 @@ class TastingSetCard extends StatelessWidget {
             icon: const Icon(Icons.delete),
             iconSize: 20,
             color: Colors.white,
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.black26,
-            ),
+            style: IconButton.styleFrom(backgroundColor: Colors.black26),
             tooltip: AppLocalizations.of(context)!.delete,
           ),
       ],
@@ -158,9 +147,9 @@ class TastingSetCard extends StatelessWidget {
   Widget _buildTitle(BuildContext context) {
     return Text(
       tastingSet.name,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
@@ -169,9 +158,9 @@ class TastingSetCard extends StatelessWidget {
   Widget _buildDescription(BuildContext context) {
     return Text(
       tastingSet.shortDescription,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Colors.grey[600],
-      ),
+      style: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
     );
@@ -236,19 +225,12 @@ class TastingSetCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 14,
-            ),
+            Icon(icon, color: color, size: 14),
             const SizedBox(width: 4),
             Expanded(
               child: Column(

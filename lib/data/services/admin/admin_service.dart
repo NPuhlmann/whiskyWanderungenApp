@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service für Admin-Funktionalitäten und Dashboard-Daten
 class AdminService {
   final SupabaseClient _client;
 
-  AdminService({SupabaseClient? client}) 
-      : _client = client ?? Supabase.instance.client;
+  AdminService({SupabaseClient? client})
+    : _client = client ?? Supabase.instance.client;
 
   /// Lädt Dashboard-KPIs für den aktuellen Benutzer
   Future<Map<String, dynamic>> getDashboardKPIs() async {
@@ -36,23 +37,21 @@ class AdminService {
           .filter('status', 'in', '(pending,confirmed,processing,shipped)');
 
       // Durchschnittliche Kundenbewertung
-      final ratingResult = await _client
-          .from('reviews')
-          .select('rating');
+      final ratingResult = await _client.from('reviews').select('rating');
 
       // Berechne KPIs
       final monthlyRoutes = monthlyRoutesResult.length;
       final monthlyRevenue = monthlyRevenueResult.fold<double>(
-        0.0, 
-        (sum, order) => sum + (order['total_amount'] as num)
+        0.0,
+        (sum, order) => sum + (order['total_amount'] as num),
       );
       final activeOrders = activeOrdersResult.length;
-      
+
       double averageRating = 0.0;
       if (ratingResult.isNotEmpty) {
         final totalRating = ratingResult.fold<double>(
-          0.0, 
-          (sum, review) => sum + (review['rating'] as num)
+          0.0,
+          (sum, review) => sum + (review['rating'] as num),
         );
         averageRating = totalRating / ratingResult.length;
       }
@@ -66,7 +65,7 @@ class AdminService {
         'dailyRevenue': await _getDailyRevenue(startOfDay),
       };
     } catch (e) {
-      print('Fehler beim Laden der Dashboard-KPIs: $e');
+      debugPrint('Fehler beim Laden der Dashboard-KPIs: $e');
       return {
         'monthlyRoutes': 0,
         'monthlyRevenue': 0.0,
@@ -88,11 +87,11 @@ class AdminService {
           .eq('status', 'delivered');
 
       return result.fold<double>(
-        0.0, 
-        (sum, order) => sum + (order['total_amount'] as num)
+        0.0,
+        (sum, order) => sum + (order['total_amount'] as num),
       );
     } catch (e) {
-      print('Fehler beim Laden des wöchentlichen Umsatzes: $e');
+      debugPrint('Fehler beim Laden des wöchentlichen Umsatzes: $e');
       return 0.0;
     }
   }
@@ -107,11 +106,11 @@ class AdminService {
           .eq('status', 'delivered');
 
       return result.fold<double>(
-        0.0, 
-        (sum, order) => sum + (order['total_amount'] as num)
+        0.0,
+        (sum, order) => sum + (order['total_amount'] as num),
       );
     } catch (e) {
-      print('Fehler beim Laden des täglichen Umsatzes: $e');
+      debugPrint('Fehler beim Laden des täglichen Umsatzes: $e');
       return 0.0;
     }
   }
@@ -133,18 +132,23 @@ class AdminService {
           .order('created_at', ascending: false)
           .limit(limit);
 
-      return result.map((order) => {
-        'id': order['id'],
-        'orderNumber': order['order_number'],
-        'routeName': order['hikes']['name'],
-        'amount': order['total_amount'],
-        'status': order['status'],
-        'customerName': order['profiles']['full_name'] ?? order['profiles']['email'],
-        'createdAt': order['created_at'],
-        'routeImage': order['hikes']['thumbnail_image_url'],
-      }).toList();
+      return result
+          .map(
+            (order) => {
+              'id': order['id'],
+              'orderNumber': order['order_number'],
+              'routeName': order['hikes']['name'],
+              'amount': order['total_amount'],
+              'status': order['status'],
+              'customerName':
+                  order['profiles']['full_name'] ?? order['profiles']['email'],
+              'createdAt': order['created_at'],
+              'routeImage': order['hikes']['thumbnail_image_url'],
+            },
+          )
+          .toList();
     } catch (e) {
-      print('Fehler beim Laden der aktuellen Bestellungen: $e');
+      debugPrint('Fehler beim Laden der aktuellen Bestellungen: $e');
       return [];
     }
   }
@@ -166,23 +170,26 @@ class AdminService {
       // Gruppiere nach Tagen
       final Map<String, double> dailyRevenue = {};
       for (final order in result) {
-        final date = DateTime.parse(order['created_at']).toIso8601String().split('T')[0];
-        dailyRevenue[date] = (dailyRevenue[date] ?? 0.0) + (order['total_amount'] as num);
+        final date = DateTime.parse(
+          order['created_at'],
+        ).toIso8601String().split('T')[0];
+        dailyRevenue[date] =
+            (dailyRevenue[date] ?? 0.0) + (order['total_amount'] as num);
       }
 
       // Fülle fehlende Tage mit 0
       final List<Map<String, dynamic>> trend = [];
       for (int i = 0; i < days; i++) {
-        final date = startDate.add(Duration(days: i)).toIso8601String().split('T')[0];
-        trend.add({
-          'date': date,
-          'revenue': dailyRevenue[date] ?? 0.0,
-        });
+        final date = startDate
+            .add(Duration(days: i))
+            .toIso8601String()
+            .split('T')[0];
+        trend.add({'date': date, 'revenue': dailyRevenue[date] ?? 0.0});
       }
 
       return trend;
     } catch (e) {
-      print('Fehler beim Laden der Umsatz-Entwicklung: $e');
+      debugPrint('Fehler beim Laden der Umsatz-Entwicklung: $e');
       return [];
     }
   }
@@ -200,15 +207,19 @@ class AdminService {
           .order('count', ascending: false)
           .limit(limit);
 
-      return result.map((route) => {
-        'id': route['hikes']['id'],
-        'name': route['hikes']['name'],
-        'image': route['hikes']['thumbnail_image_url'],
-        'price': route['hikes']['price'],
-        'sales': route['count'],
-      }).toList();
+      return result
+          .map(
+            (route) => {
+              'id': route['hikes']['id'],
+              'name': route['hikes']['name'],
+              'image': route['hikes']['thumbnail_image_url'],
+              'price': route['hikes']['price'],
+              'sales': route['count'],
+            },
+          )
+          .toList();
     } catch (e) {
-      print('Fehler beim Laden der beliebtesten Routen: $e');
+      debugPrint('Fehler beim Laden der beliebtesten Routen: $e');
       return [];
     }
   }

@@ -26,10 +26,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
 
   Future<void> _loadInitialData() async {
     final provider = context.read<OrderManagementProvider>();
-    await Future.wait([
-      provider.loadOrders(),
-      provider.loadOrderStatistics(),
-    ]);
+    await Future.wait([provider.loadOrders(), provider.loadOrderStatistics()]);
   }
 
   @override
@@ -47,16 +44,12 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
         title: const Text('Order Management'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-        actions: [
-          _buildRefreshButton(),
-        ],
+        actions: [_buildRefreshButton()],
       ),
       body: Consumer<OrderManagementProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.orders.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           return Column(
@@ -73,9 +66,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
               ),
               const Divider(),
               // Order Liste
-              Expanded(
-                child: OrderListWidget(),
-              ),
+              Expanded(child: OrderListWidget()),
             ],
           );
         },
@@ -89,16 +80,12 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
         title: const Text('Order Management'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-        actions: [
-          _buildRefreshButton(),
-        ],
+        actions: [_buildRefreshButton()],
       ),
       body: Consumer<OrderManagementProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.orders.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           return Row(
@@ -108,9 +95,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                 width: 300,
                 decoration: BoxDecoration(
                   border: Border(
-                    right: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                    ),
+                    right: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                 ),
                 child: Column(
@@ -130,9 +115,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                 ),
               ),
               // Order Liste
-              Expanded(
-                child: OrderListWidget(),
-              ),
+              Expanded(child: OrderListWidget()),
             ],
           );
         },
@@ -152,18 +135,15 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   border: Border(
-                    bottom: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                    ),
+                    bottom: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                 ),
                 child: Row(
                   children: [
                     Text(
                       'Order Management',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
                     _buildRefreshButton(),
@@ -173,9 +153,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
 
               if (provider.isLoading && provider.orders.isEmpty)
                 const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: Center(child: CircularProgressIndicator()),
                 )
               else
                 Expanded(

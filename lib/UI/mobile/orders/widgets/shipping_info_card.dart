@@ -6,10 +6,7 @@ import '../../../../domain/models/basic_order.dart' as basic;
 class ShippingInfoCard extends StatelessWidget {
   final dynamic order; // Can be either EnhancedOrder or BasicOrder
 
-  const ShippingInfoCard({
-    super.key,
-    required this.order,
-  });
+  const ShippingInfoCard({super.key, required this.order});
 
   /// Factory constructor for enhanced orders
   factory ShippingInfoCard.enhanced({required enhanced.EnhancedOrder order}) {
@@ -24,7 +21,10 @@ class ShippingInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (order is enhanced.EnhancedOrder) {
-      return _buildEnhancedShippingInfo(context, order as enhanced.EnhancedOrder);
+      return _buildEnhancedShippingInfo(
+        context,
+        order as enhanced.EnhancedOrder,
+      );
     } else if (order is basic.BasicOrder) {
       return _buildBasicShippingInfo(context, order as basic.BasicOrder);
     } else {
@@ -32,7 +32,10 @@ class ShippingInfoCard extends StatelessWidget {
     }
   }
 
-  Widget _buildEnhancedShippingInfo(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildEnhancedShippingInfo(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     if (order.deliveryType == basic.DeliveryType.pickup) {
       return const SizedBox.shrink();
     }
@@ -95,7 +98,10 @@ class ShippingInfoCard extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _buildShippingDetails(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildShippingDetails(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     return Column(
       children: [
         // Shipping service
@@ -137,30 +143,21 @@ class ShippingInfoCard extends StatelessWidget {
         ],
 
         // Shipping details (simplified for now)
-        _buildInfoRow(
-          context,
-          'Versandart',
-          'Standardversand',
-        ),
+        _buildInfoRow(context, 'Versandart', 'Standardversand'),
         const SizedBox(height: 8),
-        _buildInfoRow(
-          context,
-          'Versandzeit',
-          '3-5 Werktage',
-        ),
+        _buildInfoRow(context, 'Versandzeit', '3-5 Werktage'),
       ],
     );
   }
 
-  Widget _buildBasicShippingDetails(BuildContext context, basic.BasicOrder order) {
+  Widget _buildBasicShippingDetails(
+    BuildContext context,
+    basic.BasicOrder order,
+  ) {
     return Column(
       children: [
         // Shipping cost (fixed for basic orders)
-        _buildInfoRow(
-          context,
-          'Versandkosten',
-          '€5.00',
-        ),
+        _buildInfoRow(context, 'Versandkosten', '€5.00'),
         const SizedBox(height: 8),
 
         // Estimated delivery
@@ -174,17 +171,9 @@ class ShippingInfoCard extends StatelessWidget {
         ],
 
         // Standard shipping info
-        _buildInfoRow(
-          context,
-          'Versandart',
-          'Standardversand',
-        ),
+        _buildInfoRow(context, 'Versandart', 'Standardversand'),
         const SizedBox(height: 8),
-        _buildInfoRow(
-          context,
-          'Versandzeit',
-          '3-5 Werktage',
-        ),
+        _buildInfoRow(context, 'Versandzeit', '3-5 Werktage'),
       ],
     );
   }
@@ -206,9 +195,9 @@ class ShippingInfoCard extends StatelessWidget {
           flex: 3,
           child: Text(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
         ),
       ],

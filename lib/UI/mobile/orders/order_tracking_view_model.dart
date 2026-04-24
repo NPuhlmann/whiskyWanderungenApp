@@ -15,10 +15,12 @@ class OrderTrackingViewModel extends ChangeNotifier {
     required this.orderId,
     this.useEnhancedOrder = true,
     PaymentRepository? paymentRepository,
-  }) : _paymentRepository = paymentRepository ?? PaymentRepository(
-          supabaseClient: Supabase.instance.client,
-          stripeService: StripeService.instance,
-        );
+  }) : _paymentRepository =
+           paymentRepository ??
+           PaymentRepository(
+             supabaseClient: Supabase.instance.client,
+             stripeService: StripeService.instance,
+           );
 
   // State variables
   bool _isLoading = true;
@@ -91,14 +93,14 @@ class OrderTrackingViewModel extends ChangeNotifier {
   Future<void> cancelOrder() async {
     try {
       _setLoading(true);
-      
+
       if (useEnhancedOrder && _enhancedOrder != null) {
         // TODO: Implement enhanced order cancellation
         await _cancelEnhancedOrder(_enhancedOrder!);
       } else if (_order != null) {
         await _cancelBasicOrder(_order!);
       }
-      
+
       // Reload order data after cancellation
       await _loadOrder();
     } catch (e) {
@@ -131,12 +133,12 @@ class OrderTrackingViewModel extends ChangeNotifier {
   Future<void> updateOrderStatus(OrderStatus newStatus) async {
     try {
       _setLoading(true);
-      
+
       await _paymentRepository.updateOrderStatus(
         orderId: orderId,
         status: newStatus,
       );
-      
+
       // Reload order data
       await _loadOrder();
     } catch (e) {
@@ -150,9 +152,11 @@ class OrderTrackingViewModel extends ChangeNotifier {
   Future<void> updateEnhancedOrderStatus(EnhancedOrderStatus newStatus) async {
     try {
       _setLoading(true);
-      
+
       // TODO: Implement when enhanced order repository is available
-      throw UnimplementedError('Enhanced order status update not yet implemented');
+      throw UnimplementedError(
+        'Enhanced order status update not yet implemented',
+      );
     } catch (e) {
       _setError('Fehler beim Aktualisieren des Bestellstatus: $e');
     } finally {
@@ -165,7 +169,7 @@ class OrderTrackingViewModel extends ChangeNotifier {
     if (useEnhancedOrder && _enhancedOrder != null) {
       return _enhancedOrder!.statusHistory ?? [];
     }
-    
+
     // For basic orders, create a simple history from current status
     if (_order != null) {
       return [
@@ -182,7 +186,7 @@ class OrderTrackingViewModel extends ChangeNotifier {
         ),
       ];
     }
-    
+
     return [];
   }
 
@@ -222,7 +226,7 @@ class OrderTrackingViewModel extends ChangeNotifier {
       return _enhancedOrder!.canBeTracked ?? false;
     } else if (_order != null) {
       return _order!.trackingNumber?.isNotEmpty == true &&
-             [OrderStatus.shipped, OrderStatus.delivered].contains(_order!.status);
+          [OrderStatus.shipped, OrderStatus.delivered].contains(_order!.status);
     }
     return false;
   }
@@ -261,10 +265,5 @@ class OrderTrackingViewModel extends ChangeNotifier {
   void _clearError() {
     _error = null;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

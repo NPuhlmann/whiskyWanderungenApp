@@ -130,7 +130,8 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
                       touchedIndex = -1;
                       return;
                     }
-                    touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    touchedIndex =
+                        pieTouchResponse.touchedSection!.touchedSectionIndex;
                   });
                 },
               ),
@@ -142,10 +143,7 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
           ),
         ),
         const SizedBox(width: 16),
-        Expanded(
-          flex: 1,
-          child: _buildStatusSummary(context),
-        ),
+        Expanded(flex: 1, child: _buildStatusSummary(context)),
       ],
     );
   }
@@ -155,17 +153,14 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          'Zusammenfassung',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text('Zusammenfassung', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 16),
         ...CommissionStatus.values.map((status) {
           final count = widget.data.statusCounts[status] ?? 0;
           final amount = widget.data.statusAmounts[status] ?? 0.0;
-          
+
           if (count == 0) return const SizedBox.shrink();
-          
+
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: _buildStatusSummaryItem(context, status, count, amount),
@@ -182,7 +177,7 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
     double amount,
   ) {
     final percentage = (count / widget.data.totalCommissions * 100);
-    
+
     return Row(
       children: [
         Container(
@@ -200,9 +195,9 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
             children: [
               Text(
                 _getStatusDisplayName(status),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
               Text(
                 '$count (${percentage.toStringAsFixed(1)}%) • €${amount.toStringAsFixed(2)}',
@@ -265,17 +260,13 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           label,
@@ -297,7 +288,7 @@ class _CommissionStatusChartState extends State<CommissionStatusChart> {
 
       final percentage = count / widget.data.totalCommissions * 100;
       final isTouched = sectionIndex == touchedIndex;
-      
+
       sections.add(
         PieChartSectionData(
           color: _getStatusColor(status),

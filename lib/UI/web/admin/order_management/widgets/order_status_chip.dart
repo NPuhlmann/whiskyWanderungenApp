@@ -21,10 +21,7 @@ class OrderStatusChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: statusInfo.backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: statusInfo.borderColor,
-          width: 1,
-        ),
+        border: Border.all(color: statusInfo.borderColor, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -189,7 +186,9 @@ class OrderStatusChipGroup extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withOpacity(0.3),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

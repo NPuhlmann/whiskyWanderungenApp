@@ -12,22 +12,27 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(
-        icon: const Icon(Icons.location_on),
-        label: AppLocalizations.of(context)!.hikes,
-      ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.map_rounded),
-          label: AppLocalizations.of(context)!.myHikes,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.person_2_outlined),
-          label: AppLocalizations.of(context)!.profile,
-        )
-      ],
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.location_on),
+            label: AppLocalizations.of(context)!.hikes,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.map_rounded),
+            label: AppLocalizations.of(context)!.myHikes,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person_2_outlined),
+            label: AppLocalizations.of(context)!.profile,
+          ),
+        ],
         currentIndex: navigationShell.currentIndex,
-        onTap: (int index) => navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),),
+        onTap: (int index) => navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        ),
+      ),
     );
   }
 }

@@ -10,7 +10,7 @@ import '../../data/services/location/location_service.dart';
 import '../../data/services/navigation/navigation_service.dart';
 
 /// ViewModel für die Navigationsansicht
-/// 
+///
 /// Verwaltet:
 /// - Navigation State und Instructions
 /// - Audio-Anweisungen
@@ -26,19 +26,19 @@ class NavigationViewModel extends ChangeNotifier {
   bool _isPaused = false;
   List<Waypoint> _waypoints = [];
   NavigationInstruction? _currentInstruction;
-  
+
   // Progress State
   int _currentWaypointIndex = 0;
   int _completedWaypoints = 0;
   double _progress = 0.0;
-  
+
   // Audio State
   bool _audioEnabled = true;
   bool _isSpeaking = false;
-  
+
   // Error State
   String? _error;
-  
+
   // Subscriptions
   StreamSubscription<Position>? _positionSubscription;
 
@@ -53,12 +53,14 @@ class NavigationViewModel extends ChangeNotifier {
   bool get audioEnabled => _audioEnabled;
   bool get isSpeaking => _isSpeaking;
   String? get error => _error;
-  
+
   // Convenience getters
-  Waypoint? get currentWaypoint => 
-    _currentWaypointIndex < _waypoints.length ? _waypoints[_currentWaypointIndex] : null;
-  Waypoint? get nextWaypoint => 
-    _currentWaypointIndex + 1 < _waypoints.length ? _waypoints[_currentWaypointIndex + 1] : null;
+  Waypoint? get currentWaypoint => _currentWaypointIndex < _waypoints.length
+      ? _waypoints[_currentWaypointIndex]
+      : null;
+  Waypoint? get nextWaypoint => _currentWaypointIndex + 1 < _waypoints.length
+      ? _waypoints[_currentWaypointIndex + 1]
+      : null;
   int get totalWaypoints => _waypoints.length;
   int get remainingWaypoints => _waypoints.length - _completedWaypoints;
 
@@ -72,15 +74,18 @@ class NavigationViewModel extends ChangeNotifier {
 
     try {
       _error = null;
-      
+
       // Sortiere Waypoints nach orderIndex
-      _waypoints = List.from(waypoints)..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+      _waypoints = List.from(waypoints)
+        ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
       _currentWaypointIndex = 0;
       _completedWaypoints = 0;
       _progress = 0.0;
 
       // Starte Navigation Service
-      bool navigationStarted = await _navigationService.startNavigation(_waypoints);
+      bool navigationStarted = await _navigationService.startNavigation(
+        _waypoints,
+      );
       if (!navigationStarted) {
         _error = 'Navigation konnte nicht gestartet werden';
         notifyListeners();
@@ -92,7 +97,7 @@ class NavigationViewModel extends ChangeNotifier {
 
       _isNavigating = true;
       _isPaused = false;
-      
+
       // Sprich erste Anweisung
       await speakCurrentInstruction();
 
@@ -187,7 +192,7 @@ class NavigationViewModel extends ChangeNotifier {
   void _onNavigationUpdate() {
     // Update current instruction from navigation service
     _currentInstruction = _navigationService.currentInstruction;
-    
+
     // Update waypoint index and progress
     if (_navigationService.currentWaypointIndex != _currentWaypointIndex) {
       _currentWaypointIndex = _navigationService.currentWaypointIndex;
@@ -197,7 +202,7 @@ class NavigationViewModel extends ChangeNotifier {
     // Handle navigation status changes
     final status = _navigationService.status;
     switch (status) {
-      case NavigationStatus.waypoint_reached:
+      case NavigationStatus.waypointReached:
         _onWaypointReached();
         break;
       case NavigationStatus.completed:
@@ -222,11 +227,11 @@ class NavigationViewModel extends ChangeNotifier {
   void _onWaypointReached() {
     _completedWaypoints++;
     _updateProgress();
-    
+
     // Vibration feedback
     HapticFeedback.mediumImpact();
-    
-    log('Waypoint reached: ${_completedWaypoints}/${_waypoints.length}');
+
+    log('Waypoint reached: $_completedWaypoints/${_waypoints.length}');
   }
 
   /// Handler wenn Navigation abgeschlossen ist
@@ -235,10 +240,10 @@ class NavigationViewModel extends ChangeNotifier {
     _isPaused = false;
     _completedWaypoints = _waypoints.length;
     _progress = 1.0;
-    
+
     // Celebration feedback
     HapticFeedback.heavyImpact();
-    
+
     log('Navigation completed successfully');
   }
 
@@ -276,7 +281,7 @@ class NavigationViewModel extends ChangeNotifier {
   /// Gibt Navigation Statistics zurück
   Map<String, dynamic> getNavigationStatistics() {
     final stats = _navigationService.getNavigationStatistics();
-    
+
     return {
       ...stats,
       'audioEnabled': _audioEnabled,
@@ -310,7 +315,9 @@ class NavigationViewModel extends ChangeNotifier {
     if (currentWp == null) return null;
 
     final bearing = _locationService.calculateBearingToWaypoint(currentWp);
-    return bearing != null ? _locationService.bearingToDirectionText(bearing) : null;
+    return bearing != null
+        ? _locationService.bearingToDirectionText(bearing)
+        : null;
   }
 
   /// Prüft Navigation Permissions
@@ -344,12 +351,12 @@ class NavigationViewModel extends ChangeNotifier {
     // Cleanup subscriptions
     _positionSubscription?.cancel();
     _navigationService.removeListener(_onNavigationUpdate);
-    
+
     // Stop navigation if active
     if (_isNavigating) {
       _navigationService.stopNavigation();
     }
-    
+
     super.dispose();
   }
 }
@@ -362,7 +369,7 @@ extension NavigationInstructionFormatting on NavigationInstruction {
       case NavigationInstructionType.start:
         return 'Navigation gestartet';
       case NavigationInstructionType.continue_:
-        return 'Weiter ${directionText}';
+        return 'Weiter $directionText';
       case NavigationInstructionType.approach:
         return 'Nähert sich ${targetWaypoint.name}';
       case NavigationInstructionType.arrived:

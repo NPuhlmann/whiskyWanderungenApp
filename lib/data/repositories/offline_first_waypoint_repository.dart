@@ -53,19 +53,27 @@ class OfflineFirstWaypointRepository {
     try {
       if (_connectivityService.currentStatus.isConnected) {
         // Online: Sofort an Backend senden
-        await _backendApiService.addWaypoint(waypoint, hikeId, orderIndex: orderIndex);
+        await _backendApiService.addWaypoint(
+          waypoint,
+          hikeId,
+          orderIndex: orderIndex,
+        );
         log("✅ Waypoint online hinzugefügt: ${waypoint.id}");
-        
+
         // Cache aktualisieren
         await _refreshWaypointCache(hikeId);
-        
       } else {
         // Offline: Für später vormerken
         if (syncWhenOnline) {
-          await _queueWaypointForSync(waypoint, hikeId, 'add', orderIndex: orderIndex);
+          await _queueWaypointForSync(
+            waypoint,
+            hikeId,
+            'add',
+            orderIndex: orderIndex,
+          );
           log("📥 Waypoint für Sync vorgemerkt: ${waypoint.id}");
         }
-        
+
         // Lokalen Cache aktualisieren
         await _addWaypointToCache(waypoint, hikeId);
       }
@@ -85,17 +93,16 @@ class OfflineFirstWaypointRepository {
         // Online: Sofort an Backend senden
         await _backendApiService.updateWaypoint(waypoint);
         log("✅ Waypoint online aktualisiert: ${waypoint.id}");
-        
+
         // Cache aktualisieren
         await _updateWaypointInCache(waypoint);
-        
       } else {
         // Offline: Für später vormerken
         if (syncWhenOnline) {
           await _queueWaypointForSync(waypoint, null, 'update');
           log("📥 Waypoint-Update für Sync vorgemerkt: ${waypoint.id}");
         }
-        
+
         // Lokalen Cache aktualisieren
         await _updateWaypointInCache(waypoint);
       }
@@ -116,17 +123,21 @@ class OfflineFirstWaypointRepository {
         // Online: Sofort an Backend senden
         await _backendApiService.deleteWaypoint(waypointId, hikeId);
         log("✅ Waypoint online gelöscht: $waypointId");
-        
+
         // Cache aktualisieren
         await _refreshWaypointCache(hikeId);
-        
       } else {
         // Offline: Für später vormerken
         if (syncWhenOnline) {
-          await _queueWaypointForSync(null, hikeId, 'delete', waypointId: waypointId);
+          await _queueWaypointForSync(
+            null,
+            hikeId,
+            'delete',
+            waypointId: waypointId,
+          );
           log("📥 Waypoint-Löschung für Sync vorgemerkt: $waypointId");
         }
-        
+
         // Lokalen Cache aktualisieren
         await _removeWaypointFromCache(waypointId, hikeId);
       }
@@ -146,20 +157,32 @@ class OfflineFirstWaypointRepository {
     try {
       if (_connectivityService.currentStatus.isConnected) {
         // Online: Sofort an Backend senden
-        await _backendApiService.updateWaypointOrder(hikeId, waypointId, newOrderIndex);
-        log("✅ Waypoint-Reihenfolge online aktualisiert: $waypointId -> $newOrderIndex");
-        
+        await _backendApiService.updateWaypointOrder(
+          hikeId,
+          waypointId,
+          newOrderIndex,
+        );
+        log(
+          "✅ Waypoint-Reihenfolge online aktualisiert: $waypointId -> $newOrderIndex",
+        );
+
         // Cache aktualisieren
         await _refreshWaypointCache(hikeId);
-        
       } else {
         // Offline: Für später vormerken
         if (syncWhenOnline) {
-          await _queueWaypointForSync(null, hikeId, 'reorder', 
-                                     waypointId: waypointId, orderIndex: newOrderIndex);
-          log("📥 Waypoint-Reihenfolge für Sync vorgemerkt: $waypointId -> $newOrderIndex");
+          await _queueWaypointForSync(
+            null,
+            hikeId,
+            'reorder',
+            waypointId: waypointId,
+            orderIndex: newOrderIndex,
+          );
+          log(
+            "📥 Waypoint-Reihenfolge für Sync vorgemerkt: $waypointId -> $newOrderIndex",
+          );
         }
-        
+
         // Lokalen Cache aktualisieren
         await _updateWaypointOrderInCache(hikeId, waypointId, newOrderIndex);
       }
@@ -170,18 +193,23 @@ class OfflineFirstWaypointRepository {
   }
 
   /// Cache-First-Strategie
-  Future<List<Waypoint>> _getCacheFirstWaypoints(int hikeId, bool forceRefresh) async {
+  Future<List<Waypoint>> _getCacheFirstWaypoints(
+    int hikeId,
+    bool forceRefresh,
+  ) async {
     // 1. Cache prüfen falls nicht erzwungen neu geladen
     if (!forceRefresh) {
       final cachedWaypoints = await _offlineService.getCachedWaypoints(hikeId);
       if (cachedWaypoints != null && cachedWaypoints.isNotEmpty) {
-        log("✅ Waypoints aus Cache geladen für Hike $hikeId (${cachedWaypoints.length} Items)");
-        
+        log(
+          "✅ Waypoints aus Cache geladen für Hike $hikeId (${cachedWaypoints.length} Items)",
+        );
+
         // Background-Update falls online
         if (_connectivityService.currentStatus.isConnected) {
           _updateWaypointsInBackground(hikeId);
         }
-        
+
         return cachedWaypoints;
       }
     }
@@ -189,24 +217,31 @@ class OfflineFirstWaypointRepository {
     // 2. Online laden falls verfügbar
     if (_connectivityService.currentStatus.isConnected) {
       try {
-        final networkWaypoints = await _backendApiService.getWaypointsForHike(hikeId);
-        
+        final networkWaypoints = await _backendApiService.getWaypointsForHike(
+          hikeId,
+        );
+
         // Cache aktualisieren
         await _offlineService.cacheWaypoints(hikeId, networkWaypoints);
-        
-        log("✅ Waypoints aus Netzwerk geladen und gecacht für Hike $hikeId (${networkWaypoints.length} Items)");
+
+        log(
+          "✅ Waypoints aus Netzwerk geladen und gecacht für Hike $hikeId (${networkWaypoints.length} Items)",
+        );
         return networkWaypoints;
-        
       } catch (e) {
         log("⚠️ Netzwerk-Fehler beim Waypoints-Laden: $e");
-        
+
         // Fallback auf Cache auch bei Netzwerkfehler
-        final cachedWaypoints = await _offlineService.getCachedWaypoints(hikeId);
+        final cachedWaypoints = await _offlineService.getCachedWaypoints(
+          hikeId,
+        );
         if (cachedWaypoints != null) {
-          log("📦 Fallback auf gecachte Waypoints für Hike $hikeId (${cachedWaypoints.length} Items)");
+          log(
+            "📦 Fallback auf gecachte Waypoints für Hike $hikeId (${cachedWaypoints.length} Items)",
+          );
           return cachedWaypoints;
         }
-        
+
         rethrow;
       }
     }
@@ -216,30 +251,38 @@ class OfflineFirstWaypointRepository {
     if (cachedWaypoints != null) {
       return cachedWaypoints;
     }
-    
-    throw Exception('Keine Waypoints verfügbar für Hike $hikeId (offline und kein Cache)');
+
+    throw Exception(
+      'Keine Waypoints verfügbar für Hike $hikeId (offline und kein Cache)',
+    );
   }
 
   /// Network-First-Strategie
   Future<List<Waypoint>> _getNetworkFirstWaypoints(int hikeId) async {
     if (_connectivityService.currentStatus.isConnected) {
       try {
-        final networkWaypoints = await _backendApiService.getWaypointsForHike(hikeId);
+        final networkWaypoints = await _backendApiService.getWaypointsForHike(
+          hikeId,
+        );
         await _offlineService.cacheWaypoints(hikeId, networkWaypoints);
-        log("✅ Waypoints aus Netzwerk geladen (Network-First) für Hike $hikeId");
+        log(
+          "✅ Waypoints aus Netzwerk geladen (Network-First) für Hike $hikeId",
+        );
         return networkWaypoints;
       } catch (e) {
         log("⚠️ Network-First fehlgeschlagen, Fallback auf Cache: $e");
       }
     }
-    
+
     // Fallback auf Cache
     final cachedWaypoints = await _offlineService.getCachedWaypoints(hikeId);
     if (cachedWaypoints != null) {
       return cachedWaypoints;
     }
-    
-    throw Exception('Keine Waypoints verfügbar für Hike $hikeId (Network-First gescheitert)');
+
+    throw Exception(
+      'Keine Waypoints verfügbar für Hike $hikeId (Network-First gescheitert)',
+    );
   }
 
   /// Cache-Only-Strategie
@@ -256,8 +299,10 @@ class OfflineFirstWaypointRepository {
     if (!_connectivityService.currentStatus.isConnected) {
       throw Exception('Keine Netzwerkverbindung für Network-Only-Strategie');
     }
-    
-    final networkWaypoints = await _backendApiService.getWaypointsForHike(hikeId);
+
+    final networkWaypoints = await _backendApiService.getWaypointsForHike(
+      hikeId,
+    );
     await _offlineService.cacheWaypoints(hikeId, networkWaypoints);
     return networkWaypoints;
   }
@@ -266,28 +311,32 @@ class OfflineFirstWaypointRepository {
   Future<List<Waypoint>> _getStaleWhileRevalidateWaypoints(int hikeId) async {
     // 1. Sofort gecachte Daten zurückgeben
     final cachedWaypoints = await _offlineService.getCachedWaypoints(hikeId);
-    
+
     // 2. Background-Update starten
     if (_connectivityService.currentStatus.isConnected) {
       _updateWaypointsInBackground(hikeId);
     }
-    
+
     // 3. Cache oder Fallback
     if (cachedWaypoints != null) {
       return cachedWaypoints;
     }
-    
+
     return await _getCacheFirstWaypoints(hikeId, false);
   }
 
   /// Background-Update (Fire-and-Forget)
   void _updateWaypointsInBackground(int hikeId) async {
     try {
-      final networkWaypoints = await _backendApiService.getWaypointsForHike(hikeId);
+      final networkWaypoints = await _backendApiService.getWaypointsForHike(
+        hikeId,
+      );
       await _offlineService.cacheWaypoints(hikeId, networkWaypoints);
       log("🔄 Background-Update für Waypoints von Hike $hikeId abgeschlossen");
     } catch (e) {
-      log("⚠️ Background-Update für Waypoints von Hike $hikeId fehlgeschlagen: $e");
+      log(
+        "⚠️ Background-Update für Waypoints von Hike $hikeId fehlgeschlagen: $e",
+      );
     }
   }
 
@@ -303,7 +352,8 @@ class OfflineFirstWaypointRepository {
   }
 
   Future<void> _addWaypointToCache(Waypoint waypoint, int hikeId) async {
-    final cachedWaypoints = await _offlineService.getCachedWaypoints(hikeId) ?? [];
+    final cachedWaypoints =
+        await _offlineService.getCachedWaypoints(hikeId) ?? [];
     cachedWaypoints.add(waypoint);
     await _offlineService.cacheWaypoints(hikeId, cachedWaypoints);
     log("📦 Waypoint zu lokalem Cache hinzugefügt: ${waypoint.id}");
@@ -312,7 +362,6 @@ class OfflineFirstWaypointRepository {
   Future<void> _updateWaypointInCache(Waypoint waypoint) async {
     // Da wir nicht wissen zu welchem Hike der Waypoint gehört,
     // müssen wir alle Hike-Caches durchsuchen (vereinfachte Implementierung)
-    final cacheStats = await _offlineService.getCacheStats();
     log("🔍 Suche Waypoint ${waypoint.id} in Cache für Update");
   }
 
@@ -325,15 +374,25 @@ class OfflineFirstWaypointRepository {
     }
   }
 
-  Future<void> _updateWaypointOrderInCache(int hikeId, int waypointId, int newOrderIndex) async {
+  Future<void> _updateWaypointOrderInCache(
+    int hikeId,
+    int waypointId,
+    int newOrderIndex,
+  ) async {
     final cachedWaypoints = await _offlineService.getCachedWaypoints(hikeId);
     if (cachedWaypoints != null) {
-      final waypointIndex = cachedWaypoints.indexWhere((w) => w.id == waypointId);
+      final waypointIndex = cachedWaypoints.indexWhere(
+        (w) => w.id == waypointId,
+      );
       if (waypointIndex != -1) {
-        final updatedWaypoint = cachedWaypoints[waypointIndex].copyWith(orderIndex: newOrderIndex);
+        final updatedWaypoint = cachedWaypoints[waypointIndex].copyWith(
+          orderIndex: newOrderIndex,
+        );
         cachedWaypoints[waypointIndex] = updatedWaypoint;
         await _offlineService.cacheWaypoints(hikeId, cachedWaypoints);
-        log("📦 Waypoint-Reihenfolge in lokalem Cache aktualisiert: $waypointId -> $newOrderIndex");
+        log(
+          "📦 Waypoint-Reihenfolge in lokalem Cache aktualisiert: $waypointId -> $newOrderIndex",
+        );
       }
     }
   }
@@ -355,7 +414,7 @@ class OfflineFirstWaypointRepository {
         'orderIndex': orderIndex,
         'timestamp': DateTime.now().toIso8601String(),
       };
-      
+
       // Vereinfacht: In SharedPreferences als JSON speichern
       // In einer vollständigen Implementierung würde man eine lokale DB verwenden
       await _offlineService.cacheData(
@@ -364,9 +423,8 @@ class OfflineFirstWaypointRepository {
         data: syncItem,
         toJson: (item) => item,
       );
-      
+
       log("📥 Waypoint-Aktion für Sync vorgemerkt: $action");
-      
     } catch (e) {
       log("❌ Fehler beim Vormerken der Waypoint-Aktion: $e", error: e);
     }
@@ -400,7 +458,7 @@ class OfflineFirstWaypointRepository {
   Future<Map<String, dynamic>> getRepositoryStats() async {
     final cacheStats = await _offlineService.getCacheStats();
     final networkStats = _connectivityService.getNetworkStats();
-    
+
     return {
       'cache': cacheStats,
       'network': networkStats,
@@ -411,8 +469,6 @@ class OfflineFirstWaypointRepository {
   /// Sync-Status prüfen
   Future<List<Map<String, dynamic>>> getPendingSyncItems() async {
     // Vereinfachte Implementierung - in Realität würde man eine lokale DB verwenden
-    final cacheStats = await _offlineService.getCacheStats();
-    
     // Placeholder: Zeige dass es eine Sync-Queue gibt
     return [];
   }
@@ -423,7 +479,7 @@ class OfflineFirstWaypointRepository {
       log("⚠️ Sync übersprungen - keine Netzwerkverbindung");
       return;
     }
-    
+
     log("🔄 Waypoint-Sync wird verarbeitet...");
     // Hier würde die tatsächliche Sync-Logik implementiert
     log("✅ Waypoint-Sync abgeschlossen");

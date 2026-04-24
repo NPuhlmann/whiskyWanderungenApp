@@ -7,8 +7,12 @@ import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class HikeDetailsPage extends StatefulWidget {
-  const HikeDetailsPage(
-      {super.key, required this.hikeData, required this.viewModel, this.isFromMyHikes = false});
+  const HikeDetailsPage({
+    super.key,
+    required this.hikeData,
+    required this.viewModel,
+    this.isFromMyHikes = false,
+  });
 
   final Hike hikeData;
   final HikeDetailsPageViewModel viewModel;
@@ -36,7 +40,9 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
 
   // Prüfen, ob die Wanderung offline verfügbar ist
   Future<void> _checkOfflineAvailability() async {
-    final isAvailable = await widget.viewModel.isHikeAvailableOffline(widget.hikeData.id);
+    final isAvailable = await widget.viewModel.isHikeAvailableOffline(
+      widget.hikeData.id,
+    );
     if (mounted) {
       setState(() {
         _isOfflineAvailable = isAvailable;
@@ -50,21 +56,21 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.hikeData.id != widget.hikeData.id) {
       // Bilder nur neu laden, wenn sich die Hike-ID geändert hat
-      
+
       // Zuerst den PageController zurücksetzen
       if (_pageController.hasClients) {
         _pageController.jumpToPage(0);
       }
-      
+
       // Dann die Bilder leeren und neu laden
       setState(() {
         // Leere die Bilder im UI, um ein Flackern zu vermeiden
         widget.viewModel.clearImagesForUI();
       });
-      
+
       // Bilder für die neue Hike-ID laden
       widget.viewModel.getHikeImages(widget.hikeData.id);
-      
+
       // Offline-Status für die neue Hike-ID prüfen
       _checkOfflineAvailability();
     }
@@ -106,9 +112,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
     // - Beschreibung des Hikes
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.hikeData.name),
-      ),
+      appBar: AppBar(title: Text(widget.hikeData.name)),
       body: ListenableBuilder(
         listenable: widget.viewModel,
         builder: (context, _) {
@@ -136,15 +140,24 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                     child: CircularProgressIndicator(),
                                   ),
                                   errorWidget: (context, url, error) {
-                                    dev.log('Fehler beim Laden des Bildes: $error');
+                                    dev.log(
+                                      'Fehler beim Laden des Bildes: $error',
+                                    );
                                     return Center(
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.error, color: Colors.red, size: 48),
+                                          Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                            size: 48,
+                                          ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            AppLocalizations.of(context)!.imageLoadError,
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.imageLoadError,
                                             style: TextStyle(color: Colors.red),
                                             textAlign: TextAlign.center,
                                           ),
@@ -153,14 +166,18 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                     );
                                   },
                                   // Verbesserte Caching-Strategie
-                                  memCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                                  memCacheWidth: MediaQuery.of(
+                                    context,
+                                  ).size.width.toInt(),
                                   maxHeightDiskCache: 1000,
                                   maxWidthDiskCache: 1000,
                                 );
                               },
                               onPageChanged: (index) {
                                 // Nur wenn wir am Ende angekommen sind und es mehr als ein Bild gibt
-                                if (index == widget.viewModel.hikeImages.length - 1 && 
+                                if (index ==
+                                        widget.viewModel.hikeImages.length -
+                                            1 &&
                                     widget.viewModel.hikeImages.length > 1) {
                                   // Verzögert zum ersten Bild zurückspringen, um Animation zu vermeiden
                                   Future.delayed(Duration(seconds: 2), () {
@@ -180,8 +197,10 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                               top: 0,
                               bottom: 0,
                               child: IconButton(
-                                icon:
-                                    Icon(Icons.arrow_back_ios, color: Colors.white),
+                                icon: Icon(
+                                  Icons.arrow_back_ios,
+                                  color: Colors.white,
+                                ),
                                 onPressed: () {
                                   _pageController.previousPage(
                                     duration: Duration(milliseconds: 300),
@@ -195,16 +214,18 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                               top: 0,
                               bottom: 0,
                               child: IconButton(
-                                icon: Icon(Icons.arrow_forward_ios,
-                                    color: Colors.white,
-                                    size: 30,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 2.0,
-                                        color: Colors.black,
-                                        offset: Offset(0, 0),
-                                      )
-                                    ]),
+                                icon: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white,
+                                  size: 30,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 2.0,
+                                      color: Colors.black,
+                                      offset: Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
                                 onPressed: () {
                                   _pageController.nextPage(
                                     duration: Duration(milliseconds: 300),
@@ -224,9 +245,13 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.hikeData.name,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(
+                        widget.hikeData.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Center(
                         child: Row(
@@ -237,10 +262,14 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                   Icon(Icons.terrain), // Icon für Schwierigkeit
                                   SizedBox(width: 2),
                                   Text(
-                                      getDifficultyString(
-                                          context, widget.hikeData.difficulty),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                    getDifficultyString(
+                                      context,
+                                      widget.hikeData.difficulty,
+                                    ),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -249,9 +278,12 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                 children: [
                                   Icon(Icons.straighten), // Icon für Länge
                                   SizedBox(width: 2),
-                                  Text('${widget.hikeData.length}${AppLocalizations.of(context)!.kilometers}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                    '${widget.hikeData.length}${AppLocalizations.of(context)!.kilometers}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -261,20 +293,29 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                   Icon(Icons.keyboard_arrow_up_rounded),
                                   // Icon für Höhenmeter
                                   SizedBox(width: 2),
-                                  Text('${widget.hikeData.elevation}${AppLocalizations.of(context)!.meters}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                    '${widget.hikeData.elevation}${AppLocalizations.of(context)!.meters}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             Expanded(
-                                child: Row(children: [
-                              Icon(Icons.euro_rounded),
-                              SizedBox(width: 2),
-                              Text(widget.hikeData.price.toString(),
-                                  style:
-                                      const TextStyle(fontWeight: FontWeight.bold))
-                            ]))
+                              child: Row(
+                                children: [
+                                  Icon(Icons.euro_rounded),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    widget.hikeData.price.toString(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -308,14 +349,18 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                     }
                                   },
                                   child: Text(
-                                    widget.isFromMyHikes 
-                                      ? AppLocalizations.of(context)!.startHikeButtonText 
-                                      : AppLocalizations.of(context)!.buyButtonText,
+                                    widget.isFromMyHikes
+                                        ? AppLocalizations.of(
+                                            context,
+                                          )!.startHikeButtonText
+                                        : AppLocalizations.of(
+                                            context,
+                                          )!.buyButtonText,
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                 ),
                               ),
-                              if (widget.isFromMyHikes) 
+                              if (widget.isFromMyHikes)
                                 const SizedBox(width: 8),
                               if (widget.isFromMyHikes)
                                 PopupMenuButton<String>(
@@ -329,10 +374,14 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                       // Logik zum erneuten Kauf
                                       dev.log("Wanderung erneut kaufen");
                                       // TODO: Implementiere die Logik zum erneuten Kauf
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            AppLocalizations.of(context)!.rebuyingHikeMessage,
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.rebuyingHikeMessage,
                                           ),
                                         ),
                                       );
@@ -342,40 +391,53 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                       _removeOfflineHike();
                                     }
                                   },
-                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                    if (!_isOfflineAvailable)
-                                      PopupMenuItem<String>(
-                                        value: 'offline',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.download),
-                                            SizedBox(width: 8),
-                                            Text(AppLocalizations.of(context)!.saveMapOffline),
-                                          ],
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry<String>>[
+                                        if (!_isOfflineAvailable)
+                                          PopupMenuItem<String>(
+                                            value: 'offline',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.download),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.saveMapOffline,
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        else
+                                          PopupMenuItem<String>(
+                                            value: 'remove_offline',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.delete_outline),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.removeOfflineData,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        PopupMenuItem<String>(
+                                          value: 'rebuy',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.shopping_cart),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.rebuyHike,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      )
-                                    else
-                                      PopupMenuItem<String>(
-                                        value: 'remove_offline',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.delete_outline),
-                                            SizedBox(width: 8),
-                                            Text(AppLocalizations.of(context)!.removeOfflineData),
-                                          ],
-                                        ),
-                                      ),
-                                    PopupMenuItem<String>(
-                                      value: 'rebuy',
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.shopping_cart),
-                                          SizedBox(width: 8),
-                                          Text(AppLocalizations.of(context)!.rebuyHike),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                      ],
                                 ),
                             ],
                           ),
@@ -396,7 +458,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
   Future<void> _saveHikeOffline() async {
     // Zuerst alle vorherigen Snackbars schließen
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    
+
     // Zeige einen Ladeindikator an
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -412,7 +474,9 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
             ),
             SizedBox(width: 16),
             Expanded(
-              child: Text(AppLocalizations.of(context)!.savingMapOfflineMessage),
+              child: Text(
+                AppLocalizations.of(context)!.savingMapOfflineMessage,
+              ),
             ),
           ],
         ),
@@ -421,12 +485,14 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
     );
 
     // Speichere die Wanderung offline
-    final success = await widget.viewModel.saveHikeForOfflineUse(widget.hikeData);
+    final success = await widget.viewModel.saveHikeForOfflineUse(
+      widget.hikeData,
+    );
 
     if (mounted) {
       // Zuerst alle vorherigen Snackbars schließen
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      
+
       if (success) {
         // Aktualisiere den UI-Status
         setState(() {
@@ -458,7 +524,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
   Future<void> _removeOfflineHike() async {
     // Zuerst alle vorherigen Snackbars schließen
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    
+
     // Zeige einen Ladeindikator an
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -483,12 +549,14 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
     );
 
     // Entferne die Offline-Daten
-    final success = await widget.viewModel.removeOfflineHike(widget.hikeData.id);
+    final success = await widget.viewModel.removeOfflineHike(
+      widget.hikeData.id,
+    );
 
     if (mounted) {
       // Zuerst alle vorherigen Snackbars schließen
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      
+
       if (success) {
         // Aktualisiere den UI-Status
         setState(() {
@@ -507,7 +575,9 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
         // Zeige eine Fehlermeldung an
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorRemovingOfflineData),
+            content: Text(
+              AppLocalizations.of(context)!.errorRemovingOfflineData,
+            ),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),

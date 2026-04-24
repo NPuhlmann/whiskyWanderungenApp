@@ -4,9 +4,7 @@ import 'dart:developer';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../domain/models/hike.dart';
 import '../../../domain/models/waypoint.dart';
-import '../offline/offline_service.dart';
 import '../connectivity/connectivity_service.dart';
 import '../database/backend_api.dart';
 import '../../repositories/offline_first_hike_repository.dart';
@@ -15,20 +13,16 @@ import '../../repositories/offline_first_waypoint_repository.dart';
 /// Service für automatische Background-Synchronisation von Offline-Daten
 class DataSyncService {
   static DataSyncService? _instance;
-  static DataSyncService get instance => _instance ??= DataSyncService._internal();
+  static DataSyncService get instance =>
+      _instance ??= DataSyncService._internal();
   DataSyncService._internal();
 
-  final OfflineService _offlineService = OfflineService();
   final ConnectivityService _connectivityService = ConnectivityService.instance;
-  
+
   BackendApiService? _backendApiService;
-  OfflineFirstHikeRepository? _hikeRepository;
-  OfflineFirstWaypointRepository? _waypointRepository;
 
   // Sync-Konfiguration
   static const Duration _syncInterval = Duration(minutes: 15);
-  static const Duration _retryDelay = Duration(seconds: 30);
-  static const int _maxRetries = 3;
   static const String _syncQueueKey = 'sync_queue';
   static const String _lastSyncKey = 'last_sync_timestamp';
 
@@ -36,8 +30,8 @@ class DataSyncService {
   bool _isInitialized = false;
   bool _isSyncing = false;
   StreamSubscription<NetworkStatus>? _networkSubscription;
-  
-  final StreamController<SyncStatus> _syncStatusController = 
+
+  final StreamController<SyncStatus> _syncStatusController =
       StreamController<SyncStatus>.broadcast();
 
   /// Sync-Status Stream
@@ -53,13 +47,12 @@ class DataSyncService {
 
     try {
       _backendApiService = backendApiService;
-      _hikeRepository = hikeRepository;
-      _waypointRepository = waypointRepository;
 
       // Netzwerkstatus-Änderungen überwachen
       _networkSubscription = _connectivityService.networkStatusStream.listen(
         _onNetworkStatusChanged,
-        onError: (error) => log("❌ Netzwerk-Stream Fehler in DataSyncService: $error"),
+        onError: (error) =>
+            log("❌ Netzwerk-Stream Fehler in DataSyncService: $error"),
       );
 
       // Periodische Sync starten
@@ -72,7 +65,6 @@ class DataSyncService {
 
       _isInitialized = true;
       log("🔄 DataSyncService initialisiert");
-
     } catch (e) {
       log("❌ Fehler bei DataSyncService-Initialisierung: $e", error: e);
       rethrow;
@@ -108,9 +100,9 @@ class DataSyncService {
       final prefs = await SharedPreferences.getInstance();
       final queueJson = prefs.getString(_syncQueueKey) ?? '[]';
       final queue = List<Map<String, dynamic>>.from(jsonDecode(queueJson));
-      
+
       queue.add(item.toJson());
-      
+
       await prefs.setString(_syncQueueKey, jsonEncode(queue));
       log("📥 Item zur Sync-Queue hinzugefügt: ${item.type}:${item.action}");
 
@@ -118,7 +110,6 @@ class DataSyncService {
       if (_connectivityService.currentStatus.isConnected) {
         _scheduleSync(delay: const Duration(seconds: 1));
       }
-
     } catch (e) {
       log("❌ Fehler beim Hinzufügen zur Sync-Queue: $e", error: e);
     }
@@ -130,7 +121,7 @@ class DataSyncService {
       final prefs = await SharedPreferences.getInstance();
       final queueJson = prefs.getString(_syncQueueKey) ?? '[]';
       final queue = List<Map<String, dynamic>>.from(jsonDecode(queueJson));
-      
+
       return queue.map((json) => SyncItem.fromJson(json)).toList();
     } catch (e) {
       log("❌ Fehler beim Abrufen der Sync-Queue: $e", error: e);
@@ -155,10 +146,10 @@ class DataSyncService {
       final prefs = await SharedPreferences.getInstance();
       final lastSync = prefs.getInt(_lastSyncKey);
       final queueSize = (await getSyncQueue()).length;
-      
+
       return {
         'lastSyncTimestamp': lastSync,
-        'lastSyncTime': lastSync != null 
+        'lastSyncTime': lastSync != null
             ? DateTime.fromMillisecondsSinceEpoch(lastSync).toIso8601String()
             : null,
         'queueSize': queueSize,
@@ -191,7 +182,7 @@ class DataSyncService {
 
   void _onNetworkStatusChanged(NetworkStatus status) {
     log("📡 Netzwerkstatus geändert: $status");
-    
+
     if (status.isConnected && !_isSyncing) {
       log("🌐 Online - starte Sync");
       _scheduleSync(delay: const Duration(seconds: 2));
@@ -200,10 +191,10 @@ class DataSyncService {
 
   Future<SyncResult> _performSync() async {
     if (_isSyncing) return SyncResult.skipped;
-    
+
     _isSyncing = true;
     _syncStatusController.add(SyncStatus.syncing);
-    
+
     try {
       log("🔄 Starte Daten-Synchronisation");
 
@@ -248,7 +239,9 @@ class DataSyncService {
       await _updateSyncQueue(failedItems);
       await _updateLastSyncTimestamp();
 
-      log("📊 Sync abgeschlossen - Erfolg: $successCount, Fehler: $failureCount");
+      log(
+        "📊 Sync abgeschlossen - Erfolg: $successCount, Fehler: $failureCount",
+      );
 
       if (failureCount == 0) {
         _syncStatusController.add(SyncStatus.success);
@@ -260,7 +253,6 @@ class DataSyncService {
         _syncStatusController.add(SyncStatus.error);
         return SyncResult.error;
       }
-
     } catch (e) {
       log("❌ Kritischer Sync-Fehler: $e", error: e);
       _syncStatusController.add(SyncStatus.error);
@@ -295,7 +287,7 @@ class DataSyncService {
           if (item.data != null && item.hikeId != null) {
             final waypoint = Waypoint.fromJson(item.data!);
             await _backendApiService!.addWaypoint(
-              waypoint, 
+              waypoint,
               item.hikeId!,
               orderIndex: item.orderIndex,
             );
@@ -313,26 +305,30 @@ class DataSyncService {
 
         case 'delete':
           if (item.waypointId != null && item.hikeId != null) {
-            await _backendApiService!.deleteWaypoint(item.waypointId!, item.hikeId!);
+            await _backendApiService!.deleteWaypoint(
+              item.waypointId!,
+              item.hikeId!,
+            );
             return true;
           }
           break;
 
         case 'reorder':
-          if (item.waypointId != null && item.hikeId != null && item.orderIndex != null) {
+          if (item.waypointId != null &&
+              item.hikeId != null &&
+              item.orderIndex != null) {
             await _backendApiService!.updateWaypointOrder(
-              item.hikeId!, 
-              item.waypointId!, 
+              item.hikeId!,
+              item.waypointId!,
               item.orderIndex!,
             );
             return true;
           }
           break;
       }
-      
+
       log("⚠️ Unvollständige Waypoint-Sync-Daten: ${item.action}");
       return false;
-
     } catch (e) {
       log("❌ Waypoint-Sync-Fehler: $e", error: e);
       return false;
@@ -353,7 +349,9 @@ class DataSyncService {
   Future<void> _updateSyncQueue(List<SyncItem> remainingItems) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final queueJson = jsonEncode(remainingItems.map((item) => item.toJson()).toList());
+      final queueJson = jsonEncode(
+        remainingItems.map((item) => item.toJson()).toList(),
+      );
       await prefs.setString(_syncQueueKey, queueJson);
     } catch (e) {
       log("❌ Fehler beim Aktualisieren der Sync-Queue: $e", error: e);
@@ -438,22 +436,10 @@ class SyncItem {
 }
 
 /// Sync-Status-Enumeration
-enum SyncStatus {
-  idle,
-  syncing,
-  success,
-  partialSuccess,
-  error,
-}
+enum SyncStatus { idle, syncing, success, partialSuccess, error }
 
 /// Sync-Result-Enumeration
-enum SyncResult {
-  success,
-  partialSuccess,
-  error,
-  offline,
-  skipped,
-}
+enum SyncResult { success, partialSuccess, error, offline, skipped }
 
 /// Erweiterungen für bessere Lesbarkeit
 extension SyncStatusExtension on SyncStatus {

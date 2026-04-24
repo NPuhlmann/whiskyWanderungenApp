@@ -64,8 +64,12 @@ class DeliveryAddress {
       deliveryInstructions: json['delivery_instructions'] as String?,
       isBusinessAddress: json['is_business_address'] as bool? ?? false,
       isDefaultAddress: json['is_default_address'] as bool? ?? false,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
     );
   }
 
@@ -98,22 +102,22 @@ class DeliveryAddress {
   /// Get compact address for display
   String get compactAddress {
     final parts = <String>[];
-    
+
     parts.add(fullName);
     parts.add(addressLine1);
-    
+
     if (addressLine2 != null && addressLine2!.isNotEmpty) {
       parts.add(addressLine2!);
     }
-    
+
     parts.add('$postalCode $city');
-    
+
     if (state != null && state!.isNotEmpty) {
       parts.add(state!);
     }
-    
+
     parts.add(countryName);
-    
+
     return parts.where((part) => part.isNotEmpty).join(', ');
   }
 
@@ -165,7 +169,10 @@ class DeliveryAddress {
           break;
         case 'UK':
         case 'GB':
-          if (!RegExp(r'^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$', caseSensitive: false).hasMatch(postalCode)) {
+          if (!RegExp(
+            r'^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$',
+            caseSensitive: false,
+          ).hasMatch(postalCode)) {
             errors.add('UK postal codes must follow the correct format');
           }
           break;
@@ -200,13 +207,7 @@ class DeliveryAddress {
 }
 
 /// Address Type für verschiedene Adressarten
-enum AddressType {
-  residential,
-  business,
-  shipping,
-  billing,
-  pickup,
-}
+enum AddressType { residential, business, shipping, billing, pickup }
 
 /// Address Validation Result für Adressvalidierung
 class AddressValidationResult {
@@ -308,11 +309,11 @@ extension ShippingCostResultExtensions on ShippingCostResult {
     }
     return '${cost.toStringAsFixed(2)} € Versandkosten';
   }
-  
+
   /// Generiert einen vollständigen Beschreibungstext
   String get fullDescription {
     final parts = <String>[displayText];
-    
+
     if (estimatedDaysMin != null && estimatedDaysMax != null) {
       if (estimatedDaysMin == estimatedDaysMax) {
         parts.add('Lieferzeit: $estimatedDaysMin Werktage');
@@ -320,11 +321,11 @@ extension ShippingCostResultExtensions on ShippingCostResult {
         parts.add('Lieferzeit: $estimatedDaysMin-$estimatedDaysMax Werktage');
       }
     }
-    
+
     if (trackingAvailable) {
       parts.add('mit Sendungsverfolgung');
     }
-    
+
     return parts.join(' • ');
   }
 }

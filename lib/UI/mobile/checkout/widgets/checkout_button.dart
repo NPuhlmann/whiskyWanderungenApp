@@ -25,7 +25,9 @@ class CheckoutButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
-          disabledBackgroundColor: theme.colorScheme.outline.withValues(alpha: 0.12),
+          disabledBackgroundColor: theme.colorScheme.outline.withValues(
+            alpha: 0.12,
+          ),
           disabledForegroundColor: theme.colorScheme.outline,
           elevation: enabled ? 2 : 0,
           shape: RoundedRectangleBorder(
@@ -38,7 +40,7 @@ class CheckoutButton extends StatelessWidget {
             Icon(
               Icons.payment,
               size: 20,
-              color: enabled 
+              color: enabled
                   ? theme.colorScheme.onPrimary
                   : theme.colorScheme.outline,
             ),
@@ -47,7 +49,7 @@ class CheckoutButton extends StatelessWidget {
               text ?? 'Jetzt bezahlen',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: enabled 
+                color: enabled
                     ? theme.colorScheme.onPrimary
                     : theme.colorScheme.outline,
               ),

@@ -25,45 +25,45 @@ enum EnhancedPaymentStatus {
 class EnhancedPaymentResult {
   final bool isSuccess;
   final EnhancedPaymentStatus status;
-  
+
   // Order Information
   final EnhancedOrder? order;
-  
+
   // Payment Information
   final String? paymentIntentId;
   final String? clientSecret;
   final String? paymentMethodId;
   final PaymentProvider? paymentProvider;
-  
+
   // Multi-Vendor Context
   final String? companyId;
   final Company? company;
-  
+
   // Shipping Context
   final ShippingCostResult? shippingResult;
   final DeliveryAddress? deliveryAddress;
-  
+
   // Error Information
   final String? errorMessage;
   final String? errorCode;
   final PaymentErrorType? errorType;
-  
+
   // Financial Information
   final double? amount; // In Euros
   final int? amountInCents; // Stripe format
   final String? currency;
-  
+
   // Metadata und Additional Info
   final Map<String, dynamic> metadata;
-  
+
   // Timing Information
   final DateTime? createdAt;
   final DateTime? processedAt;
-  
+
   // Customer Information (for context)
   final String? customerEmail;
   final String? customerId;
-  
+
   // Next Actions (für requires_action status)
   final PaymentNextAction? nextAction;
 
@@ -103,12 +103,18 @@ class EnhancedPaymentResult {
       paymentIntentId: json['payment_intent_id'] as String?,
       clientSecret: json['client_secret'] as String?,
       paymentMethodId: json['payment_method_id'] as String?,
-      amount: json['amount'] != null ? (json['amount'] as num).toDouble() : null,
+      amount: json['amount'] != null
+          ? (json['amount'] as num).toDouble()
+          : null,
       amountInCents: json['amount_in_cents'] as int?,
       currency: json['currency'] as String?,
       metadata: json['metadata'] as Map<String, dynamic>? ?? {},
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      processedAt: json['processed_at'] != null ? DateTime.parse(json['processed_at'] as String) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      processedAt: json['processed_at'] != null
+          ? DateTime.parse(json['processed_at'] as String)
+          : null,
       customerEmail: json['customer_email'] as String?,
       customerId: json['customer_id'] as String?,
     );
@@ -212,7 +218,7 @@ extension EnhancedPaymentResultExtensions on EnhancedPaymentResult {
   /// Generiert einen Fehlertext für fehlgeschlagene Zahlungen
   String? get errorDisplayText {
     if (isSuccess || errorMessage == null) return null;
-    
+
     if (errorType != null) {
       switch (errorType!) {
         case PaymentErrorType.cardDeclined:
@@ -239,11 +245,10 @@ extension EnhancedPaymentResultExtensions on EnhancedPaymentResult {
           return 'Systemfehler. Bitte versuchen Sie es später erneut.';
         case PaymentErrorType.processingError:
         case PaymentErrorType.unknown:
-        default:
           return errorMessage;
       }
     }
-    
+
     return errorMessage;
   }
 

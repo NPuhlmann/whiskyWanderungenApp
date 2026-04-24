@@ -17,7 +17,8 @@ class CommissionTimelineChart extends StatefulWidget {
   });
 
   @override
-  State<CommissionTimelineChart> createState() => _CommissionTimelineChartState();
+  State<CommissionTimelineChart> createState() =>
+      _CommissionTimelineChartState();
 }
 
 class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
@@ -142,7 +143,7 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
 
   Widget _buildLineChart(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return LineChart(
       LineChartData(
         gridData: FlGridData(
@@ -165,14 +166,19 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
         ),
         titlesData: FlTitlesData(
           show: true,
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 30,
               interval: 1,
-              getTitlesWidget: (value, meta) => _buildBottomTitle(value.toInt(), context),
+              getTitlesWidget: (value, meta) =>
+                  _buildBottomTitle(value.toInt(), context),
             ),
           ),
           leftTitles: AxisTitles(
@@ -292,17 +298,13 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           label,
@@ -321,7 +323,7 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
 
     final dataPoint = widget.data.dataPoints[index];
     final isCompact = MediaQuery.of(context).size.width < 600;
-    
+
     // Show every nth label on mobile to avoid crowding
     if (isCompact && index % 2 != 0) {
       return const SizedBox.shrink();
@@ -353,11 +355,11 @@ class _CommissionTimelineChartState extends State<CommissionTimelineChart> {
 
   double _calculateMaxY() {
     if (widget.data.dataPoints.isEmpty) return 100;
-    
+
     final maxAmount = widget.data.dataPoints
         .map((point) => point.amount)
         .reduce((a, b) => a > b ? a : b);
-    
+
     // Add 20% padding at the top
     return maxAmount * 1.2;
   }

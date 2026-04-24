@@ -9,7 +9,8 @@ class WaypointManagementWidget extends StatefulWidget {
   const WaypointManagementWidget({super.key});
 
   @override
-  State<WaypointManagementWidget> createState() => _WaypointManagementWidgetState();
+  State<WaypointManagementWidget> createState() =>
+      _WaypointManagementWidgetState();
 }
 
 class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
@@ -36,7 +37,9 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
             _buildHeader(provider),
             const SizedBox(height: 16),
             Expanded(
-              child: _isMapView ? _buildMapView(provider) : _buildListView(provider),
+              child: _isMapView
+                  ? _buildMapView(provider)
+                  : _buildListView(provider),
             ),
           ],
         );
@@ -49,24 +52,20 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.route,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.route, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'Keine Route ausgewählt',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
             'Wählen Sie eine Route aus, um Wegpunkte zu verwalten',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[500],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -79,24 +78,20 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error,
-            size: 64,
-            color: Colors.red[400],
-          ),
+          Icon(Icons.error, size: 64, color: Colors.red[400]),
           const SizedBox(height: 16),
           Text(
             'Fehler beim Laden',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.red[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: Colors.red[600]),
           ),
           const SizedBox(height: 8),
           Text(
             provider.errorMessage!,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.red[500],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.red[500]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -121,15 +116,15 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
             children: [
               Text(
                 route['name'],
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               Text(
                 '${provider.waypoints.length} Wegpunkte',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
               ),
             ],
           ),
@@ -168,7 +163,8 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
 
     return ReorderableListView.builder(
       itemCount: provider.waypoints.length,
-      onReorder: (oldIndex, newIndex) => _reorderWaypoints(provider, oldIndex, newIndex),
+      onReorder: (oldIndex, newIndex) =>
+          _reorderWaypoints(provider, oldIndex, newIndex),
       itemBuilder: (context, index) {
         final waypointData = provider.waypoints[index];
         final waypoint = waypointData['waypoints'];
@@ -210,30 +206,25 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.add_location,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.add_location, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'Keine Wegpunkte',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
             'Fügen Sie Wegpunkte zu dieser Route hinzu',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[500],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => _showAddWaypointDialog(
-              context.read<RouteManagementProvider>(),
-            ),
+            onPressed: () =>
+                _showAddWaypointDialog(context.read<RouteManagementProvider>()),
             icon: const Icon(Icons.add_location),
             label: const Text('Ersten Wegpunkt hinzufügen'),
             style: ElevatedButton.styleFrom(
@@ -282,16 +273,15 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (waypoint['description'] != null && waypoint['description'].isNotEmpty)
+            if (waypoint['description'] != null &&
+                waypoint['description'].isNotEmpty)
               Text(waypoint['description']),
             Text(
               '${waypoint['latitude']}, ${waypoint['longitude']}',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
-            if (waypoint['whisky_info'] != null && waypoint['whisky_info'].isNotEmpty)
+            if (waypoint['whisky_info'] != null &&
+                waypoint['whisky_info'].isNotEmpty)
               Container(
                 margin: const EdgeInsets.only(top: 4),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -322,9 +312,7 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
               onPressed: () => _showDeleteWaypointDialog(provider, waypoint),
               icon: const Icon(Icons.delete),
               iconSize: 20,
-              style: IconButton.styleFrom(
-                foregroundColor: Colors.red[600],
-              ),
+              style: IconButton.styleFrom(foregroundColor: Colors.red[600]),
             ),
           ],
         ),
@@ -332,7 +320,11 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
     );
   }
 
-  void _reorderWaypoints(RouteManagementProvider provider, int oldIndex, int newIndex) {
+  void _reorderWaypoints(
+    RouteManagementProvider provider,
+    int oldIndex,
+    int newIndex,
+  ) {
     if (newIndex > oldIndex) {
       newIndex--;
     }
@@ -358,17 +350,31 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
     _showWaypointDialog(provider, null);
   }
 
-  void _showEditWaypointDialog(RouteManagementProvider provider, Map<String, dynamic> waypoint) {
+  void _showEditWaypointDialog(
+    RouteManagementProvider provider,
+    Map<String, dynamic> waypoint,
+  ) {
     _showWaypointDialog(provider, waypoint);
   }
 
-  void _showWaypointDialog(RouteManagementProvider provider, Map<String, dynamic>? waypoint) {
+  void _showWaypointDialog(
+    RouteManagementProvider provider,
+    Map<String, dynamic>? waypoint,
+  ) {
     final isEdit = waypoint != null;
     final nameController = TextEditingController(text: waypoint?['name'] ?? '');
-    final descriptionController = TextEditingController(text: waypoint?['description'] ?? '');
-    final latitudeController = TextEditingController(text: waypoint?['latitude']?.toString() ?? '');
-    final longitudeController = TextEditingController(text: waypoint?['longitude']?.toString() ?? '');
-    final whiskyInfoController = TextEditingController(text: waypoint?['whisky_info'] ?? '');
+    final descriptionController = TextEditingController(
+      text: waypoint?['description'] ?? '',
+    );
+    final latitudeController = TextEditingController(
+      text: waypoint?['latitude']?.toString() ?? '',
+    );
+    final longitudeController = TextEditingController(
+      text: waypoint?['longitude']?.toString() ?? '',
+    );
+    final whiskyInfoController = TextEditingController(
+      text: waypoint?['whisky_info'] ?? '',
+    );
 
     final formKey = GlobalKey<FormState>();
 
@@ -447,7 +453,9 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
                               signed: true,
                             ),
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^-?\d*\.?\d*'),
+                              ),
                             ],
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
@@ -475,7 +483,9 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
                               signed: true,
                             ),
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^-?\d*\.?\d*'),
+                              ),
                             ],
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
@@ -586,21 +596,23 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Fehler: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Fehler: $e'), backgroundColor: Colors.red),
         );
       }
     }
   }
 
-  void _showDeleteWaypointDialog(RouteManagementProvider provider, Map<String, dynamic> waypoint) {
+  void _showDeleteWaypointDialog(
+    RouteManagementProvider provider,
+    Map<String, dynamic> waypoint,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Wegpunkt löschen'),
-        content: Text('Möchten Sie den Wegpunkt "${waypoint['name']}" wirklich löschen?'),
+        content: Text(
+          'Möchten Sie den Wegpunkt "${waypoint['name']}" wirklich löschen?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -612,9 +624,7 @@ class _WaypointManagementWidgetState extends State<WaypointManagementWidget> {
               final routeId = provider.selectedRoute!['id'];
               provider.removeWaypoint(routeId, waypoint['id']);
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Löschen'),
           ),
         ],

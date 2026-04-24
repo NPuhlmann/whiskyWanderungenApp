@@ -6,10 +6,7 @@ import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 class TastingSetDetailsDialog extends StatelessWidget {
   final TastingSet tastingSet;
 
-  const TastingSetDetailsDialog({
-    super.key,
-    required this.tastingSet,
-  });
+  const TastingSetDetailsDialog({super.key, required this.tastingSet});
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +49,7 @@ class TastingSetDetailsDialog extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.amber[600]!,
-            Colors.amber[800]!,
-          ],
+          colors: [Colors.amber[600]!, Colors.amber[800]!],
         ),
       ),
       child: Row(
@@ -136,9 +130,9 @@ class TastingSetDetailsDialog extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context)!.basicInformation,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         _buildInfoRow(
@@ -185,13 +179,15 @@ class TastingSetDetailsDialog extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context)!.whiskySamples,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const Spacer(),
             Chip(
-              label: Text('${tastingSet.sampleCount} ${AppLocalizations.of(context)!.samples}'),
+              label: Text(
+                '${tastingSet.sampleCount} ${AppLocalizations.of(context)!.samples}',
+              ),
               backgroundColor: Colors.amber[100],
             ),
           ],
@@ -211,9 +207,9 @@ class TastingSetDetailsDialog extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.noSamplesYet,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -234,7 +230,11 @@ class TastingSetDetailsDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildSampleCard(BuildContext context, WhiskySample sample, int position) {
+  Widget _buildSampleCard(
+    BuildContext context,
+    WhiskySample sample,
+    int position,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -261,9 +261,8 @@ class TastingSetDetailsDialog extends StatelessWidget {
                     children: [
                       Text(
                         sample.displayName,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '${sample.region} • ${sample.formattedAge} • ${sample.formattedAbv}',
@@ -275,7 +274,10 @@ class TastingSetDetailsDialog extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue[100],
                     borderRadius: BorderRadius.circular(8),
@@ -316,9 +318,9 @@ class TastingSetDetailsDialog extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context)!.statistics,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Row(
@@ -360,17 +362,13 @@ class TastingSetDetailsDialog extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 32,
-            ),
+            Icon(icon, color: color, size: 32),
             const SizedBox(height: 8),
             Text(
               title,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
@@ -388,7 +386,11 @@ class TastingSetDetailsDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, {required String label, required String value}) {
+  Widget _buildInfoRow(
+    BuildContext context, {
+    required String label,
+    required String value,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -405,10 +407,7 @@ class TastingSetDetailsDialog extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),
@@ -420,10 +419,7 @@ class TastingSetDetailsDialog extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
+          top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
         ),
       ),
       child: Row(

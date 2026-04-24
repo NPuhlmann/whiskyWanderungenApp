@@ -17,17 +17,14 @@ class ReviewCategory {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : assert(
-          weight >= 0.0 && weight <= 1.0,
-          'Weight must be between 0.0 and 1.0',
-        ),
+         weight >= 0.0 && weight <= 1.0,
+         'Weight must be between 0.0 and 1.0',
+       ),
        assert(
-          name.isNotEmpty && name.length <= 100,
-          'Name must not be empty and must be 100 characters or less',
-        ),
-       assert(
-          description.isNotEmpty,
-          'Description must not be empty',
-        ),
+         name.isNotEmpty && name.length <= 100,
+         'Name must not be empty and must be 100 characters or less',
+       ),
+       assert(description.isNotEmpty, 'Description must not be empty'),
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 

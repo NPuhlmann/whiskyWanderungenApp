@@ -108,9 +108,9 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
                 const SizedBox(height: 4),
                 Text(
                   'Erstellen und bearbeiten Sie Ihre Wanderrouten',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -138,16 +138,11 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
 
         return Row(
           children: [
-            Expanded(
-              flex: 2,
-              child: _buildRoutesList(provider),
-            ),
-            if (!ResponsiveLayoutUtils.isMobile(context) && provider.selectedRoute != null) ...[
+            Expanded(flex: 2, child: _buildRoutesList(provider)),
+            if (!ResponsiveLayoutUtils.isMobile(context) &&
+                provider.selectedRoute != null) ...[
               const SizedBox(width: 24),
-              Expanded(
-                flex: 1,
-                child: _buildWaypointPanel(),
-              ),
+              Expanded(flex: 1, child: _buildWaypointPanel()),
             ],
           ],
         );
@@ -279,7 +274,10 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
                     DropdownMenuItem(value: 'price', child: Text('Preis')),
                     DropdownMenuItem(value: 'distance', child: Text('Distanz')),
                     DropdownMenuItem(value: 'duration', child: Text('Dauer')),
-                    DropdownMenuItem(value: 'created_at', child: Text('Erstellt')),
+                    DropdownMenuItem(
+                      value: 'created_at',
+                      child: Text('Erstellt'),
+                    ),
                   ],
                 ),
                 const SizedBox(width: 8),
@@ -344,11 +342,15 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
     }
 
     if (_selectedStatus != null) {
-      filteredRoutes = filteredRoutes.where((route) => route['is_active'] == _selectedStatus).toList();
+      filteredRoutes = filteredRoutes
+          .where((route) => route['is_active'] == _selectedStatus)
+          .toList();
     }
 
     if (_selectedDifficulty != null) {
-      filteredRoutes = filteredRoutes.where((route) => route['difficulty'] == _selectedDifficulty).toList();
+      filteredRoutes = filteredRoutes
+          .where((route) => route['difficulty'] == _selectedDifficulty)
+          .toList();
     }
 
     // Sortierung anwenden
@@ -429,24 +431,20 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.map_outlined,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.map_outlined, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'Keine Routen verfügbar',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
             'Erstellen Sie Ihre erste Wanderroute',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[500],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -475,9 +473,9 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
               children: [
                 Text(
                   'Wegpunkte verwalten',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   onPressed: () {
@@ -489,9 +487,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
               ],
             ),
             const SizedBox(height: 16),
-            const Expanded(
-              child: WaypointManagementWidget(),
-            ),
+            const Expanded(child: WaypointManagementWidget()),
           ],
         ),
       ),
@@ -522,10 +518,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
   }
 
   void _showCreateRouteDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const RouteFormDialog(),
-    );
+    showDialog(context: context, builder: (context) => const RouteFormDialog());
   }
 
   void _showEditRouteDialog(Map<String, dynamic> route) {
@@ -540,7 +533,9 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Route löschen'),
-        content: Text('Möchten Sie die Route "${route['name']}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.'),
+        content: Text(
+          'Möchten Sie die Route "${route['name']}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -551,9 +546,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
               Navigator.of(context).pop();
               context.read<RouteManagementProvider>().deleteRoute(route['id']);
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Löschen'),
           ),
         ],
@@ -563,9 +556,8 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
 
   void _toggleRouteStatus(Map<String, dynamic> route) {
     final newStatus = !(route['is_active'] ?? false);
-    context.read<RouteManagementProvider>().updateRoute(
-      route['id'],
-      {'is_active': newStatus},
-    );
+    context.read<RouteManagementProvider>().updateRoute(route['id'], {
+      'is_active': newStatus,
+    });
   }
 }

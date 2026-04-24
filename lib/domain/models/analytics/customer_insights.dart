@@ -35,8 +35,10 @@ abstract class CustomerInsights with _$CustomerInsights {
 
   /// Returns formatted average lifetime value with Euro symbol
   String get formattedLifetimeValue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€')
-        .format(averageLifetimeValue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(averageLifetimeValue);
   }
 
   /// Percentage of new customers

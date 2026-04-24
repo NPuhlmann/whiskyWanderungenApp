@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'UI/shared/responsive_layout.dart';
-import 'UI/web/admin/dashboard/admin_dashboard.dart';
 import 'UI/web/admin/admin_router.dart';
 import 'data/providers/admin_provider.dart';
 import 'data/services/auth/auth_service.dart';
-import 'config/l10n/app_localizations.dart';
 
 /// Einfache Web-Version der App für Tests
 void main() {
@@ -25,10 +23,7 @@ class WhiskyHikesWebApp extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: 'Whisky Hikes - Web Admin',
-        theme: ThemeData(
-          primarySwatch: Colors.amber,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(primarySwatch: Colors.amber, useMaterial3: true),
         routerConfig: GoRouter(
           initialLocation: AdminRouter.dashboardRoute,
           routes: [
@@ -118,21 +113,21 @@ class WebHomePage extends StatelessWidget {
                         leading: const Icon(Icons.dashboard),
                         title: const Text('Dashboard'),
                         onTap: () {
-                          print('Navigate to Dashboard');
+                          debugPrint('Navigate to Dashboard');
                         },
                       ),
                       ListTile(
                         leading: const Icon(Icons.map),
                         title: const Text('Wanderrouten'),
                         onTap: () {
-                          print('Navigate to Routes');
+                          debugPrint('Navigate to Routes');
                         },
                       ),
                       ListTile(
                         leading: const Icon(Icons.shopping_cart),
                         title: const Text('Bestellungen'),
                         onTap: () {
-                          print('Navigate to Orders');
+                          debugPrint('Navigate to Orders');
                         },
                       ),
                     ],
@@ -150,10 +145,7 @@ class WebHomePage extends StatelessWidget {
                 children: [
                   Text(
                     'Willkommen bei Whisky Hikes',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 16),
                   Text(
@@ -163,10 +155,7 @@ class WebHomePage extends StatelessWidget {
                   SizedBox(height: 32),
                   Text(
                     'Features:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 16),
                   Text('✅ Flutter Web aktiviert'),

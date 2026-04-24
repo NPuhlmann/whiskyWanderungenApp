@@ -23,10 +23,7 @@ class KpiCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,11 +43,7 @@ class KpiCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(
-                icon,
-                size: 16,
-                color: color,
-              ),
+              Icon(icon, size: 16, color: color),
             ],
           ),
           SizedBox(height: 8),
@@ -73,7 +66,8 @@ class KpiCard extends StatelessWidget {
 
   Widget _buildGrowthIndicator() {
     final isPositive = growthPercentage! >= 0;
-    final formattedPercentage = '${isPositive ? '+' : ''}${growthPercentage!.toStringAsFixed(1)}%';
+    final formattedPercentage =
+        '${isPositive ? '+' : ''}${growthPercentage!.toStringAsFixed(1)}%';
 
     return Row(
       children: [

@@ -22,8 +22,7 @@ class ReviewStatistics {
       return {for (var s = 1; s <= 5; s++) s: 0.0};
     }
     return {
-      for (var s = 1; s <= 5; s++)
-        s: (starCounts[s]! / reviewCount) * 100.0,
+      for (var s = 1; s <= 5; s++) s: (starCounts[s]! / reviewCount) * 100.0,
     };
   }
 
@@ -81,7 +80,8 @@ class ReviewStatistics {
       'review_count': reviewCount,
       'average_rating': averageRating,
       'star_counts': {
-        for (final entry in starCounts.entries) entry.key.toString(): entry.value,
+        for (final entry in starCounts.entries)
+          entry.key.toString(): entry.value,
       },
     };
   }
@@ -123,14 +123,14 @@ class ReviewStatistics {
 
   @override
   int get hashCode => Object.hash(
-        reviewCount,
-        averageRating,
-        starCounts[1],
-        starCounts[2],
-        starCounts[3],
-        starCounts[4],
-        starCounts[5],
-      );
+    reviewCount,
+    averageRating,
+    starCounts[1],
+    starCounts[2],
+    starCounts[3],
+    starCounts[4],
+    starCounts[5],
+  );
 
   @override
   String toString() {

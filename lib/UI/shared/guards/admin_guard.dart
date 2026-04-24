@@ -7,10 +7,7 @@ import '../../../data/services/auth/auth_service.dart';
 class AdminGuard extends StatelessWidget {
   final Widget child;
 
-  const AdminGuard({
-    super.key,
-    required this.child,
-  });
+  const AdminGuard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +20,7 @@ class AdminGuard extends StatelessWidget {
             context.go('/login');
           });
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -41,7 +36,7 @@ class AdminRouteGuard {
   /// Prüft, ob der Benutzer Zugriff auf die Route hat
   Future<bool> canAccess(BuildContext context, GoRouterState state) async {
     final authService = Provider.of<AuthService>(context, listen: false);
-    
+
     // Prüfe Authentifizierung
     return authService.isUserLoggedIn();
   }
@@ -49,7 +44,7 @@ class AdminRouteGuard {
   /// Redirect-Funktion für GoRouter
   String? redirect(BuildContext context, GoRouterState state) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    
+
     // Prüfe Authentifizierung
     if (!authService.isUserLoggedIn()) {
       return '/login';

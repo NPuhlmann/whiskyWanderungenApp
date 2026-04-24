@@ -6,8 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class HikeCard extends StatelessWidget {
   const HikeCard({
-    super.key, 
-    required this.id, 
+    super.key,
+    required this.id,
     required this.hike,
     required this.isInGeneralList,
     required this.onFavoriteToggle,
@@ -38,9 +38,9 @@ class HikeCard extends StatelessWidget {
         // Handle card tap
         final Map<String, dynamic> extraData = {
           'hike': hike,
-          'isFromMyHikes': !isInGeneralList
+          'isFromMyHikes': !isInGeneralList,
         };
-        
+
         // Wenn wir von der MyHikes-Seite kommen, verwenden wir die Unterroute
         if (!isInGeneralList) {
           GoRouter.of(context).go('/myHikes/hikeDetails', extra: extraData);
@@ -67,19 +67,24 @@ class HikeCard extends StatelessWidget {
                           height: 250,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          placeholder: (context, url) =>
+                              Center(child: CircularProgressIndicator()),
                           errorWidget: (context, url, error) {
                             // Error loading thumbnail
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.error, color: Colors.red, size: 48),
+                                  Icon(
+                                    Icons.error,
+                                    color: Colors.red,
+                                    size: 48,
+                                  ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    AppLocalizations.of(context)!.imageLoadError,
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.imageLoadError,
                                     style: TextStyle(color: Colors.red),
                                     textAlign: TextAlign.center,
                                   ),
@@ -88,11 +93,18 @@ class HikeCard extends StatelessWidget {
                             );
                           },
                           // Verbesserte Caching-Strategie
-                          memCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                          memCacheWidth: MediaQuery.of(
+                            context,
+                          ).size.width.toInt(),
                           maxHeightDiskCache: 500,
                           maxWidthDiskCache: 1000,
                         )
-                      : Image.asset('assets/logo.png', height: 250, width: double.infinity, fit: BoxFit.cover),
+                      : Image.asset(
+                          'assets/logo.png',
+                          height: 250,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 if (isInGeneralList)
                   Positioned(
@@ -100,9 +112,13 @@ class HikeCard extends StatelessWidget {
                     right: 8,
                     child: IconButton(
                       icon: Icon(
-                        hike.isFavorite ? Icons.favorite : Icons.favorite_border, 
-                        color: hike.isFavorite ? Theme.of(context).colorScheme.primary : Colors.white, 
-                        size: 30, 
+                        hike.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: hike.isFavorite
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.white,
+                        size: 30,
                         shadows: [
                           Shadow(
                             blurRadius: 2.0,
@@ -135,27 +151,41 @@ class HikeCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(Icons.straighten),
-                          Text(hike.length.toString(), style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 12)),
-                          Text(AppLocalizations.of(context)!.kilometers, style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text(
+                            hike.length.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            AppLocalizations.of(context)!.kilometers,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(width: 16),
                       Row(
                         children: [
                           Icon(Icons.terrain),
-                          Text(getDifficultyString(context, hike.difficulty),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text(
+                            getDifficultyString(context, hike.difficulty),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    hike.description, 
-                    maxLines: 3, 
+                    hike.description,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

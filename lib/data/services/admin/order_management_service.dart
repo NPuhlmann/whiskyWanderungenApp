@@ -6,14 +6,16 @@ class OrderManagementService {
   final SupabaseClient _client;
 
   OrderManagementService({SupabaseClient? client})
-      : _client = client ?? _getDefaultClient();
+    : _client = client ?? _getDefaultClient();
 
   static SupabaseClient _getDefaultClient() {
     try {
       return Supabase.instance.client;
     } catch (e) {
       // For testing purposes, return a mock-friendly null that won't be used
-      throw Exception('Supabase not initialized. Provide a client in constructor for testing.');
+      throw Exception(
+        'Supabase not initialized. Provide a client in constructor for testing.',
+      );
     }
   }
 
@@ -65,7 +67,9 @@ class OrderManagementService {
   }
 
   /// Erstellt eine neue Bestellung
-  Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
+  Future<Map<String, dynamic>> createOrder(
+    Map<String, dynamic> orderData,
+  ) async {
     try {
       log('Creating new order for user: ${orderData['user_id']}');
 
@@ -89,7 +93,10 @@ class OrderManagementService {
   }
 
   /// Aktualisiert eine bestehende Bestellung
-  Future<Map<String, dynamic>> updateOrder(int orderId, Map<String, dynamic> updateData) async {
+  Future<Map<String, dynamic>> updateOrder(
+    int orderId,
+    Map<String, dynamic> updateData,
+  ) async {
     try {
       log('Updating order $orderId');
 
@@ -118,10 +125,7 @@ class OrderManagementService {
     try {
       log('Deleting order $orderId');
 
-      await _client
-          .from('orders')
-          .delete()
-          .eq('id', orderId);
+      await _client.from('orders').delete().eq('id', orderId);
 
       log('Deleted order $orderId');
     } catch (e) {
@@ -131,7 +135,10 @@ class OrderManagementService {
   }
 
   /// Aktualisiert den Status einer Bestellung
-  Future<Map<String, dynamic>> updateOrderStatus(int orderId, String newStatus) async {
+  Future<Map<String, dynamic>> updateOrderStatus(
+    int orderId,
+    String newStatus,
+  ) async {
     try {
       log('Updating order $orderId status to: $newStatus');
 
@@ -193,9 +200,14 @@ class OrderManagementService {
   }
 
   /// Lädt Bestellungen in einem Datumsbereich
-  Future<List<Map<String, dynamic>>> getOrdersByDateRange(DateTime startDate, DateTime endDate) async {
+  Future<List<Map<String, dynamic>>> getOrdersByDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     try {
-      log('Loading orders between ${startDate.toIso8601String()} and ${endDate.toIso8601String()}');
+      log(
+        'Loading orders between ${startDate.toIso8601String()} and ${endDate.toIso8601String()}',
+      );
 
       final response = await _client
           .from('orders')
@@ -236,18 +248,23 @@ class OrderManagementService {
     try {
       log('Calculating order statistics...');
 
-      final orders = await _client
-          .from('orders')
-          .select('*');
+      final orders = await _client.from('orders').select('*');
 
       final totalOrders = orders.length;
-      final totalRevenue = orders.fold<double>(0.0, (sum, order) =>
-          sum + (order['total_amount'] as num? ?? 0.0).toDouble());
-      final averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+      final totalRevenue = orders.fold<double>(
+        0.0,
+        (sum, order) => sum + (order['total_amount'] as num? ?? 0.0).toDouble(),
+      );
+      final averageOrderValue = totalOrders > 0
+          ? totalRevenue / totalOrders
+          : 0.0;
 
-      final pendingOrders = orders.where((order) => order['status'] == 'pending').length;
-      final completedOrders = orders.where((order) =>
-          ['shipped', 'delivered'].contains(order['status'])).length;
+      final pendingOrders = orders
+          .where((order) => order['status'] == 'pending')
+          .length;
+      final completedOrders = orders
+          .where((order) => ['shipped', 'delivered'].contains(order['status']))
+          .length;
 
       final stats = {
         'totalOrders': totalOrders,
@@ -288,7 +305,8 @@ class OrderManagementService {
   bool validateOrderData(Map<String, dynamic> orderData) {
     try {
       // Prüfe erforderliche Felder
-      if (orderData['user_id'] == null || orderData['user_id'].toString().isEmpty) {
+      if (orderData['user_id'] == null ||
+          orderData['user_id'].toString().isEmpty) {
         log('Validation failed: user_id is required');
         return false;
       }
@@ -304,14 +322,16 @@ class OrderManagementService {
       }
 
       // Convert to double for validation
-      final amount = double.tryParse(orderData['total_amount'].toString()) ?? 0.0;
+      final amount =
+          double.tryParse(orderData['total_amount'].toString()) ?? 0.0;
       if (amount <= 0) {
         log('Validation failed: total_amount must be greater than 0');
         return false;
       }
 
       // Prüfe Status falls vorhanden
-      if (orderData.containsKey('status') && !validateOrderStatus(orderData['status'])) {
+      if (orderData.containsKey('status') &&
+          !validateOrderStatus(orderData['status'])) {
         log('Validation failed: invalid status');
         return false;
       }
@@ -327,7 +347,8 @@ class OrderManagementService {
   bool validateUpdateData(Map<String, dynamic> updateData) {
     try {
       // Prüfe Status falls vorhanden
-      if (updateData.containsKey('status') && !validateOrderStatus(updateData['status'])) {
+      if (updateData.containsKey('status') &&
+          !validateOrderStatus(updateData['status'])) {
         log('Validation failed: invalid status in update data');
         return false;
       }
@@ -339,9 +360,12 @@ class OrderManagementService {
           return false;
         }
 
-        final amount = double.tryParse(updateData['total_amount'].toString()) ?? 0.0;
+        final amount =
+            double.tryParse(updateData['total_amount'].toString()) ?? 0.0;
         if (amount <= 0) {
-          log('Validation failed: total_amount must be greater than 0 in update data');
+          log(
+            'Validation failed: total_amount must be greater than 0 in update data',
+          );
           return false;
         }
       }

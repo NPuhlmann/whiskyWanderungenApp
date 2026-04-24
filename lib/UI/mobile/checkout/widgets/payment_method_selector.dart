@@ -47,10 +47,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
               // Payment Method Header
               Row(
                 children: [
-                  Icon(
-                    Icons.credit_card,
-                    color: theme.colorScheme.primary,
-                  ),
+                  Icon(Icons.credit_card, color: theme.colorScheme.primary),
                   const SizedBox(width: 8),
                   Text(
                     'Kreditkarte',
@@ -114,7 +111,9 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                   if (formatted != value) {
                     _cardNumberController.value = TextEditingValue(
                       text: formatted,
-                      selection: TextSelection.collapsed(offset: formatted.length),
+                      selection: TextSelection.collapsed(
+                        offset: formatted.length,
+                      ),
                     );
                   }
                   _updatePaymentMethod();
@@ -143,24 +142,26 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                         if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(value)) {
                           return 'Format: MM/JJ';
                         }
-                        
+
                         // Check if date is in the future
                         final parts = value.split('/');
                         final month = int.tryParse(parts[0]);
                         final year = int.tryParse('20${parts[1]}');
-                        
-                        if (month == null || year == null || 
-                            month < 1 || month > 12) {
+
+                        if (month == null ||
+                            year == null ||
+                            month < 1 ||
+                            month > 12) {
                           return 'Ungültiges Datum';
                         }
-                        
+
                         final now = DateTime.now();
                         final expiryDate = DateTime(year, month + 1, 0);
-                        
+
                         if (expiryDate.isBefore(now)) {
                           return 'Karte ist abgelaufen';
                         }
-                        
+
                         return null;
                       },
                       onChanged: (value) {
@@ -169,7 +170,9 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                         if (formatted != value) {
                           _expiryController.value = TextEditingValue(
                             text: formatted,
-                            selection: TextSelection.collapsed(offset: formatted.length),
+                            selection: TextSelection.collapsed(
+                              offset: formatted.length,
+                            ),
                           );
                         }
                         _updatePaymentMethod();
@@ -177,7 +180,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // CVV
                   Expanded(
                     child: TextFormField(
@@ -214,7 +217,9 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -247,7 +252,8 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     if (_formKey.currentState?.validate() == true && _isFormComplete()) {
       // Generate a test payment method ID based on card number
       final cardNumber = _cardNumberController.text.replaceAll(' ', '');
-      final paymentMethodId = 'pm_test_${cardNumber.substring(cardNumber.length - 4)}';
+      final paymentMethodId =
+          'pm_test_${cardNumber.substring(cardNumber.length - 4)}';
       widget.onPaymentMethodChanged(paymentMethodId);
     } else {
       // Clear payment method if form is invalid
@@ -259,15 +265,15 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
 
   bool _isFormComplete() {
     return _cardHolderController.text.isNotEmpty &&
-           _cardNumberController.text.isNotEmpty &&
-           _expiryController.text.isNotEmpty &&
-           _cvvController.text.isNotEmpty;
+        _cardNumberController.text.isNotEmpty &&
+        _expiryController.text.isNotEmpty &&
+        _cvvController.text.isNotEmpty;
   }
 
   String _formatCardNumber(String value) {
     // Remove all non-digit characters
     final cleanValue = value.replaceAll(RegExp(r'\D'), '');
-    
+
     // Add spaces every 4 digits
     final buffer = StringBuffer();
     for (int i = 0; i < cleanValue.length; i++) {
@@ -276,14 +282,14 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
       }
       buffer.write(cleanValue[i]);
     }
-    
+
     return buffer.toString();
   }
 
   String _formatExpiryDate(String value) {
     // Remove all non-digit characters
     final cleanValue = value.replaceAll(RegExp(r'\D'), '');
-    
+
     if (cleanValue.length <= 2) {
       return cleanValue;
     } else {

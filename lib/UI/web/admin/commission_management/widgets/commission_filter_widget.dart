@@ -94,7 +94,10 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, CommissionProvider provider) {
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    CommissionProvider provider,
+  ) {
     return Column(
       children: [
         Row(
@@ -122,10 +125,7 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Status',
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
+        Text('Status', style: Theme.of(context).textTheme.labelMedium),
         const SizedBox(height: 4),
         DropdownButton<String>(
           key: const Key('status_filter_dropdown'),
@@ -152,10 +152,7 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Suchbegriff',
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
+        Text('Suchbegriff', style: Theme.of(context).textTheme.labelMedium),
         const SizedBox(height: 4),
         TextField(
           key: const Key('search_text_field'),
@@ -181,10 +178,7 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Zeitraum',
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
+        Text('Zeitraum', style: Theme.of(context).textTheme.labelMedium),
         const SizedBox(height: 4),
         DropdownButton<String>(
           key: const Key('period_filter_dropdown'),
@@ -214,10 +208,7 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Von',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              Text('Von', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 4),
               TextFormField(
                 readOnly: true,
@@ -240,10 +231,7 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Bis',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              Text('Bis', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 4),
               TextFormField(
                 readOnly: true,
@@ -312,7 +300,10 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
     provider.setDateRange(startDate, endDate);
   }
 
-  Future<void> _selectStartDate(BuildContext context, CommissionProvider provider) async {
+  Future<void> _selectStartDate(
+    BuildContext context,
+    CommissionProvider provider,
+  ) async {
     final date = await showDatePicker(
       context: context,
       initialDate: provider.startDate ?? DateTime.now(),
@@ -325,7 +316,10 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
     }
   }
 
-  Future<void> _selectEndDate(BuildContext context, CommissionProvider provider) async {
+  Future<void> _selectEndDate(
+    BuildContext context,
+    CommissionProvider provider,
+  ) async {
     final date = await showDatePicker(
       context: context,
       initialDate: provider.endDate ?? DateTime.now(),
@@ -350,8 +344,8 @@ class _CommissionFilterWidgetState extends State<CommissionFilterWidget> {
 
   bool _hasActiveFilters(CommissionProvider provider) {
     return provider.currentFilter != 'all' ||
-           provider.searchTerm.isNotEmpty ||
-           provider.startDate != null ||
-           provider.endDate != null;
+        provider.searchTerm.isNotEmpty ||
+        provider.startDate != null ||
+        provider.endDate != null;
   }
 }

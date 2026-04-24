@@ -10,17 +10,17 @@ import 'hike_map_view_model.dart';
 class HikeMapScreen extends StatelessWidget {
   final int hikeId;
 
-  const HikeMapScreen({
-    super.key,
-    required this.hikeId,
-  });
+  const HikeMapScreen({super.key, required this.hikeId});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => HikeMapViewModel(
         hikeId: hikeId,
-        waypointRepository: Provider.of<WaypointRepository>(context, listen: false),
+        waypointRepository: Provider.of<WaypointRepository>(
+          context,
+          listen: false,
+        ),
       ),
       child: const HikeMapView(),
     );
@@ -41,7 +41,7 @@ class _HikeMapViewState extends State<HikeMapView> {
   void initState() {
     super.initState();
     _mapController = MapController();
-    
+
     // Wegpunkte beim Start laden
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HikeMapViewModel>().loadWaypoints();
@@ -63,9 +63,7 @@ class _HikeMapViewState extends State<HikeMapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wanderkarte'),
-      ),
+      appBar: AppBar(title: const Text('Wanderkarte')),
       body: Consumer<HikeMapViewModel>(
         builder: (context, viewModel, child) {
           if (viewModel.isLoading) {
@@ -89,7 +87,7 @@ class _HikeMapViewState extends State<HikeMapView> {
           }
 
           final waypoints = viewModel.waypoints;
-          
+
           // Wenn keine Wegpunkte vorhanden sind
           if (waypoints.isEmpty) {
             return const Center(
@@ -100,14 +98,18 @@ class _HikeMapViewState extends State<HikeMapView> {
           // Berechne den Mittelpunkt aller Wegpunkte für die initiale Kartenansicht
           LatLng centerPoint;
           try {
-            final centerLat = waypoints.map((w) => w.latitude).reduce((a, b) => a + b) / waypoints.length;
-            final centerLng = waypoints.map((w) => w.longitude).reduce((a, b) => a + b) / waypoints.length;
+            final centerLat =
+                waypoints.map((w) => w.latitude).reduce((a, b) => a + b) /
+                waypoints.length;
+            final centerLng =
+                waypoints.map((w) => w.longitude).reduce((a, b) => a + b) /
+                waypoints.length;
             centerPoint = LatLng(centerLat, centerLng);
           } catch (e) {
             // Fallback für Deutschland, falls ein Fehler auftritt
             centerPoint = const LatLng(51.1657, 10.4515);
           }
-          
+
           return Stack(
             children: [
               FlutterMap(
@@ -133,20 +135,22 @@ class _HikeMapViewState extends State<HikeMapView> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.whisky_hikes.app',
                     subdomains: const ['a', 'b', 'c'],
                     maxZoom: 19,
                     tileProvider: NetworkTileProvider(),
                   ),
-                  MarkerLayer(
-                    markers: _buildMarkers(waypoints),
-                  ),
+                  MarkerLayer(markers: _buildMarkers(waypoints)),
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: waypoints
-                            .map((waypoint) => LatLng(waypoint.latitude, waypoint.longitude))
+                            .map(
+                              (waypoint) =>
+                                  LatLng(waypoint.latitude, waypoint.longitude),
+                            )
                             .toList(),
                         color: Colors.blue,
                         strokeWidth: 3.0,
@@ -276,10 +280,7 @@ class _HikeMapViewState extends State<HikeMapView> {
               if (waypoint.images.isNotEmpty) ...[
                 const Text(
                   'Bilder:',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8.0),
                 SizedBox(
@@ -314,11 +315,15 @@ class _HikeMapViewState extends State<HikeMapView> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<HikeMapViewModel>().toggleWaypointVisited(waypoint);
+                      context.read<HikeMapViewModel>().toggleWaypointVisited(
+                        waypoint,
+                      );
                       Navigator.pop(context);
                     },
                     child: Text(
-                      waypoint.isVisited ? 'Als unbesucht markieren' : 'Als besucht markieren',
+                      waypoint.isVisited
+                          ? 'Als unbesucht markieren'
+                          : 'Als besucht markieren',
                     ),
                   ),
                 ],
@@ -329,4 +334,4 @@ class _HikeMapViewState extends State<HikeMapView> {
       },
     );
   }
-} 
+}

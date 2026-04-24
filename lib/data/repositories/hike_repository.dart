@@ -12,7 +12,9 @@ class HikeRepository {
     return await _backendApiService.fetchHikes();
   }
 
-  Future<PaginationResult<Hike>> getHikesPaginated(PaginationParams params) async {
+  Future<PaginationResult<Hike>> getHikesPaginated(
+    PaginationParams params,
+  ) async {
     return await _backendApiService.fetchHikesPaginated(params);
   }
 

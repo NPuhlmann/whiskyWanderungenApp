@@ -10,7 +10,8 @@ class CommissionProvider extends ChangeNotifier {
   final CommissionService _commissionService;
 
   CommissionProvider({CommissionService? commissionService})
-      : _commissionService = commissionService ?? CommissionService(Supabase.instance.client);
+    : _commissionService =
+          commissionService ?? CommissionService(Supabase.instance.client);
 
   // State
   List<Commission> _commissions = [];
@@ -63,9 +64,11 @@ class CommissionProvider extends ChangeNotifier {
   /// Load commissions for a specific company
   Future<void> loadCommissionsForCompany(String companyId) async {
     setLoading(true);
-    
+
     try {
-      final commissions = await _commissionService.getCommissionsForCompany(companyId);
+      final commissions = await _commissionService.getCommissionsForCompany(
+        companyId,
+      );
       _commissions = commissions;
       _applyFilters();
     } catch (e) {
@@ -114,10 +117,16 @@ class CommissionProvider extends ChangeNotifier {
   }
 
   /// Update commission status
-  Future<void> updateCommissionStatus(int commissionId, CommissionStatus status) async {
+  Future<void> updateCommissionStatus(
+    int commissionId,
+    CommissionStatus status,
+  ) async {
     try {
-      final updatedCommission = await _commissionService.updateCommissionStatus(commissionId, status);
-      
+      final updatedCommission = await _commissionService.updateCommissionStatus(
+        commissionId,
+        status,
+      );
+
       // Update local commission list
       final index = _commissions.indexWhere((c) => c.id == commissionId);
       if (index >= 0) {
@@ -158,18 +167,24 @@ class CommissionProvider extends ChangeNotifier {
 
     // Apply search filter
     if (_searchTerm.isNotEmpty) {
-      filtered = filtered.where((c) => 
-        c.companyId.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-        c.orderId.toLowerCase().contains(_searchTerm.toLowerCase())
-      ).toList();
+      filtered = filtered
+          .where(
+            (c) =>
+                c.companyId.toLowerCase().contains(_searchTerm.toLowerCase()) ||
+                c.orderId.toLowerCase().contains(_searchTerm.toLowerCase()),
+          )
+          .toList();
     }
 
     // Apply date range filter
     if (_startDate != null && _endDate != null) {
-      filtered = filtered.where((c) => 
-        c.createdAt.isAfter(_startDate!) && 
-        c.createdAt.isBefore(_endDate!)
-      ).toList();
+      filtered = filtered
+          .where(
+            (c) =>
+                c.createdAt.isAfter(_startDate!) &&
+                c.createdAt.isBefore(_endDate!),
+          )
+          .toList();
     }
 
     _filteredCommissions = filtered;

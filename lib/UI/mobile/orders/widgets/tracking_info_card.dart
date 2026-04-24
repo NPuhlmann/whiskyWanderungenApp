@@ -7,10 +7,7 @@ import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 class TrackingInfoCard extends StatelessWidget {
   final dynamic order; // Can be either EnhancedOrder or BasicOrder
 
-  const TrackingInfoCard({
-    super.key,
-    required this.order,
-  });
+  const TrackingInfoCard({super.key, required this.order});
 
   /// Factory constructor for enhanced orders
   factory TrackingInfoCard.enhanced({required enhanced.EnhancedOrder order}) {
@@ -25,7 +22,10 @@ class TrackingInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (order is enhanced.EnhancedOrder) {
-      return _buildEnhancedTrackingInfo(context, order as enhanced.EnhancedOrder);
+      return _buildEnhancedTrackingInfo(
+        context,
+        order as enhanced.EnhancedOrder,
+      );
     } else if (order is basic.BasicOrder) {
       return _buildBasicTrackingInfo(context, order as basic.BasicOrder);
     } else {
@@ -33,7 +33,10 @@ class TrackingInfoCard extends StatelessWidget {
     }
   }
 
-  Widget _buildEnhancedTrackingInfo(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildEnhancedTrackingInfo(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     if (!(order.canBeTracked ?? false)) {
       return const SizedBox.shrink();
     }
@@ -97,26 +100,21 @@ class TrackingInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackingDetails(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildTrackingDetails(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     return Column(
       children: [
         // Tracking number
         if (order.trackingNumber?.isNotEmpty == true) ...[
-          _buildInfoRow(
-            context,
-            'Tracking-Nummer',
-            order.trackingNumber!,
-          ),
+          _buildInfoRow(context, 'Tracking-Nummer', order.trackingNumber!),
           const SizedBox(height: 8),
         ],
 
         // Tracking URL
         if (order.trackingUrl?.isNotEmpty == true) ...[
-          _buildInfoRow(
-            context,
-            'Tracking-Link',
-            order.trackingUrl!,
-          ),
+          _buildInfoRow(context, 'Tracking-Link', order.trackingUrl!),
           const SizedBox(height: 8),
           const SizedBox(height: 8),
           SizedBox(
@@ -163,15 +161,14 @@ class TrackingInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicTrackingDetails(BuildContext context, basic.BasicOrder order) {
+  Widget _buildBasicTrackingDetails(
+    BuildContext context,
+    basic.BasicOrder order,
+  ) {
     return Column(
       children: [
         // Tracking number
-        _buildInfoRow(
-          context,
-          'Tracking-Nummer',
-          order.trackingNumber!,
-        ),
+        _buildInfoRow(context, 'Tracking-Nummer', order.trackingNumber!),
         const SizedBox(height: 8),
 
         // Current status
@@ -193,17 +190,9 @@ class TrackingInfoCard extends StatelessWidget {
         ],
 
         // Standard tracking info
-        _buildInfoRow(
-          context,
-          'Versanddienstleister',
-          'Standardversand',
-        ),
+        _buildInfoRow(context, 'Versanddienstleister', 'Standardversand'),
         const SizedBox(height: 8),
-        _buildInfoRow(
-          context,
-          'Versandzeit',
-          '3-5 Werktage',
-        ),
+        _buildInfoRow(context, 'Versandzeit', '3-5 Werktage'),
       ],
     );
   }
@@ -225,9 +214,9 @@ class TrackingInfoCard extends StatelessWidget {
           flex: 3,
           child: Text(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
         ),
       ],
@@ -265,6 +254,6 @@ class TrackingInfoCard extends StatelessWidget {
   void _openTrackingUrl(String url) {
     // TODO: Implement URL opening logic
     // This would typically use url_launcher package
-    print('Opening tracking URL: $url');
+    debugPrint('Opening tracking URL: $url');
   }
 }

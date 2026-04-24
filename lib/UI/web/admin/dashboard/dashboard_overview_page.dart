@@ -67,10 +67,7 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
           SizedBox(height: 16),
           Text(
             'Loading dashboard data...',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -82,18 +79,11 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error,
-            size: 64,
-            color: Colors.red[400],
-          ),
+          Icon(Icons.error, size: 64, color: Colors.red[400]),
           SizedBox(height: 16),
           Text(
             errorMessage,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
@@ -150,7 +140,10 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
 
   Widget _buildRevenueSection(DashboardProvider provider) {
     if (!provider.hasRevenueData) {
-      return _buildEmptySection('Revenue Overview', 'No revenue data available');
+      return _buildEmptySection(
+        'Revenue Overview',
+        'No revenue data available',
+      );
     }
 
     return Card(
@@ -363,7 +356,9 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
                       return Icon(
-                        index < provider.ratingStars ? Icons.star : Icons.star_border,
+                        index < provider.ratingStars
+                            ? Icons.star
+                            : Icons.star_border,
                         color: Colors.amber[700],
                         size: 20,
                       );
@@ -372,10 +367,7 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
                   SizedBox(height: 8),
                   Text(
                     'Average Rating',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -406,9 +398,7 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
               ),
             ),
             SizedBox(height: 16),
-            Expanded(
-              child: RecentOrdersWidget(orders: provider.recentOrders),
-            ),
+            Expanded(child: RecentOrdersWidget(orders: provider.recentOrders)),
           ],
         ),
       ),
@@ -465,18 +455,11 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 48,
-                      color: Colors.grey[400],
-                    ),
+                    Icon(Icons.info_outline, size: 48, color: Colors.grey[400]),
                     SizedBox(height: 8),
                     Text(
                       message,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ],
                 ),

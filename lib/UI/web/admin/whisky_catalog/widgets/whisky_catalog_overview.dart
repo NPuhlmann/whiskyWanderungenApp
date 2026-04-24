@@ -22,7 +22,10 @@ class WhiskyCatalogOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileLayout(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildMobileLayout(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -31,9 +34,9 @@ class WhiskyCatalogOverview extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context)!.catalogOverview,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (provider.isLoading)
@@ -48,7 +51,10 @@ class WhiskyCatalogOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletLayout(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildTabletLayout(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -57,9 +63,9 @@ class WhiskyCatalogOverview extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context)!.catalogOverview,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (provider.isLoading)
@@ -74,7 +80,10 @@ class WhiskyCatalogOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, WhiskyManagementProvider provider) {
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    WhiskyManagementProvider provider,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -110,7 +119,11 @@ class WhiskyCatalogOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsGrid(BuildContext context, WhiskyManagementProvider provider, {required int crossAxisCount}) {
+  Widget _buildStatsGrid(
+    BuildContext context,
+    WhiskyManagementProvider provider, {
+    required int crossAxisCount,
+  }) {
     final statistics = provider.statistics;
 
     return GridView.count(
@@ -124,23 +137,32 @@ class WhiskyCatalogOverview extends StatelessWidget {
         _buildStatCard(
           context,
           title: AppLocalizations.of(context)!.totalSets,
-          value: statistics?['totalSets']?.toString() ?? provider.tastingSets.length.toString(),
+          value:
+              statistics?['totalSets']?.toString() ??
+              provider.tastingSets.length.toString(),
           icon: Icons.local_bar,
           color: Colors.blue,
         ),
         _buildStatCard(
           context,
           title: AppLocalizations.of(context)!.availableSets,
-          value: statistics?['availableSets']?.toString() ??
-                 provider.tastingSets.where((set) => set.isCurrentlyAvailable).length.toString(),
+          value:
+              statistics?['availableSets']?.toString() ??
+              provider.tastingSets
+                  .where((set) => set.isCurrentlyAvailable)
+                  .length
+                  .toString(),
           icon: Icons.check_circle,
           color: Colors.green,
         ),
         _buildStatCard(
           context,
           title: AppLocalizations.of(context)!.totalSamples,
-          value: statistics?['totalSamples']?.toString() ??
-                 provider.tastingSets.fold(0, (int sum, set) => sum + set.sampleCount).toString(),
+          value:
+              statistics?['totalSamples']?.toString() ??
+              provider.tastingSets
+                  .fold(0, (int sum, set) => sum + set.sampleCount)
+                  .toString(),
           icon: Icons.inventory,
           color: Colors.orange,
         ),
@@ -148,7 +170,9 @@ class WhiskyCatalogOverview extends StatelessWidget {
           _buildStatCard(
             context,
             title: AppLocalizations.of(context)!.avgSamplesPerSet,
-            value: statistics?['averageSamplesPerSet']?.toStringAsFixed(1) ?? '0.0',
+            value:
+                statistics?['averageSamplesPerSet']?.toStringAsFixed(1) ??
+                '0.0',
             icon: Icons.analytics,
             color: Colors.purple,
           ),
@@ -187,18 +211,14 @@ class WhiskyCatalogOverview extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  icon,
-                  color: color,
-                  size: 20,
-                ),
+                Icon(icon, color: color, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -225,18 +245,10 @@ class WhiskyCatalogOverview extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(
-              Icons.error_outline,
-              color: Colors.red[700],
-            ),
+            Icon(Icons.error_outline, color: Colors.red[700]),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                error,
-                style: TextStyle(
-                  color: Colors.red[700],
-                ),
-              ),
+              child: Text(error, style: TextStyle(color: Colors.red[700])),
             ),
             IconButton(
               icon: const Icon(Icons.refresh),

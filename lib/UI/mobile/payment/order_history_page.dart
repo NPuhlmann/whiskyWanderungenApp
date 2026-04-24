@@ -35,23 +35,23 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
       final backendApi = context.read<BackendApiService>();
       final currentUser = Supabase.instance.client.auth.currentUser;
-      
+
       if (currentUser == null) {
         throw Exception('Benutzer nicht angemeldet');
       }
-      
+
       final userId = currentUser.id;
-      
+
       final orders = await backendApi.fetchUserOrders(userId);
-      
+
       setState(() {
         _orders = orders;
         _isLoading = false;
       });
-
     } catch (e) {
       setState(() {
-        _errorMessage = 'Fehler beim Laden der Bestellhistorie: ${e.toString()}';
+        _errorMessage =
+            'Fehler beim Laden der Bestellhistorie: ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -74,9 +74,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
   Widget _buildContent() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage != null) {
@@ -86,11 +84,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: 48,
-                color: Colors.grey,
-              ),
+              const Icon(Icons.error_outline, size: 48, color: Colors.grey),
               const SizedBox(height: 16),
               Text(
                 _errorMessage!,
@@ -115,27 +109,17 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.shopping_bag_outlined,
-                size: 48,
-                color: Colors.grey,
-              ),
+              Icon(Icons.shopping_bag_outlined, size: 48, color: Colors.grey),
               SizedBox(height: 16),
               Text(
                 'Keine Bestellungen gefunden',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 8),
               Text(
                 'Ihre Bestellungen werden hier angezeigt, sobald Sie eine Wanderung gekauft haben.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -179,7 +163,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   _buildStatusChip(order.status),
                 ],
               ),
-              
+
               const SizedBox(height: 8),
 
               // Order details
@@ -208,17 +192,17 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               Row(
                 children: [
                   Icon(
-                    order.deliveryType == DeliveryType.standardShipping 
-                      ? Icons.local_shipping
-                      : Icons.store,
+                    order.deliveryType == DeliveryType.standardShipping
+                        ? Icons.local_shipping
+                        : Icons.store,
                     size: 16,
                     color: Colors.grey,
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    order.deliveryType == DeliveryType.standardShipping 
-                      ? 'Versand'
-                      : 'Abholung',
+                    order.deliveryType == DeliveryType.standardShipping
+                        ? 'Versand'
+                        : 'Abholung',
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const Spacer(),
@@ -230,7 +214,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               ),
 
               // Tracking info for shipped orders
-              if (order.status == OrderStatus.shipped && order.trackingNumber != null) ...[
+              if (order.status == OrderStatus.shipped &&
+                  order.trackingNumber != null) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(8),
@@ -250,14 +235,16 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                         'Sendungsnummer: ${order.trackingNumber}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
                         ),
                       ),
                     ],
                   ),
                 ),
               ],
-              
+
               // Add action buttons at the bottom
               const SizedBox(height: 12),
               Row(
@@ -279,7 +266,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       ),
     );
   }
-  
+
   void _navigateToOrderTracking(int orderId) {
     context.go('${Routes.orderTracking}/$orderId');
   }
@@ -291,37 +278,37 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
     switch (status) {
       case OrderStatus.pending:
-        backgroundColor = Colors.orange.withValues(alpha:0.2);
+        backgroundColor = Colors.orange.withValues(alpha: 0.2);
         textColor = Colors.orange.shade700;
         text = 'Ausstehend';
         break;
       case OrderStatus.confirmed:
-        backgroundColor = Colors.blue.withValues(alpha:0.2);
+        backgroundColor = Colors.blue.withValues(alpha: 0.2);
         textColor = Colors.blue.shade700;
         text = 'Bestätigt';
         break;
       case OrderStatus.processing:
-        backgroundColor = Colors.purple.withValues(alpha:0.2);
+        backgroundColor = Colors.purple.withValues(alpha: 0.2);
         textColor = Colors.purple.shade700;
         text = 'Verarbeitung';
         break;
       case OrderStatus.shipped:
-        backgroundColor = Colors.teal.withValues(alpha:0.2);
+        backgroundColor = Colors.teal.withValues(alpha: 0.2);
         textColor = Colors.teal.shade700;
         text = 'Versandt';
         break;
       case OrderStatus.delivered:
-        backgroundColor = Colors.green.withValues(alpha:0.2);
+        backgroundColor = Colors.green.withValues(alpha: 0.2);
         textColor = Colors.green.shade700;
         text = 'Zugestellt';
         break;
       case OrderStatus.cancelled:
-        backgroundColor = Colors.red.withValues(alpha:0.2);
+        backgroundColor = Colors.red.withValues(alpha: 0.2);
         textColor = Colors.red.shade700;
         text = 'Storniert';
         break;
       case OrderStatus.failed:
-        backgroundColor = Colors.red.withValues(alpha:0.2);
+        backgroundColor = Colors.red.withValues(alpha: 0.2);
         textColor = Colors.red.shade700;
         text = 'Fehlgeschlagen';
         break;

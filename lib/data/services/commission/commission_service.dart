@@ -27,9 +27,9 @@ class CommissionService {
 
       // Calculate commission amount
       final commissionAmount = baseAmount * commissionRate;
-      
+
       final now = DateTime.now();
-      
+
       final data = {
         'hike_id': hikeId,
         'company_id': companyId,
@@ -64,7 +64,9 @@ class CommissionService {
           .eq('company_id', companyId)
           .order('created_at', ascending: false);
 
-      return response.map<Commission>((data) => Commission.fromJson(data)).toList();
+      return response
+          .map<Commission>((data) => Commission.fromJson(data))
+          .toList();
     } catch (e) {
       log('Error getting commissions for company $companyId: $e');
       rethrow;
@@ -73,7 +75,7 @@ class CommissionService {
 
   /// Get commissions by status for a company
   Future<List<Commission>> getCommissionsByStatus(
-    String companyId, 
+    String companyId,
     CommissionStatus status,
   ) async {
     try {
@@ -84,7 +86,9 @@ class CommissionService {
           .eq('status', status.name)
           .order('created_at', ascending: false);
 
-      return response.map<Commission>((data) => Commission.fromJson(data)).toList();
+      return response
+          .map<Commission>((data) => Commission.fromJson(data))
+          .toList();
     } catch (e) {
       log('Error getting commissions by status for company $companyId: $e');
       rethrow;
@@ -119,7 +123,7 @@ class CommissionService {
   }) async {
     try {
       final now = DateTime.now();
-      
+
       final updateData = {
         'status': CommissionStatus.paid.name,
         'paid_at': now.toIso8601String(),
@@ -156,7 +160,7 @@ class CommissionService {
   }) async {
     try {
       final now = DateTime.now();
-      
+
       final updateData = {
         'status': status.name,
         'updated_at': now.toIso8601String(),
@@ -186,7 +190,10 @@ class CommissionService {
   }
 
   /// Cancel a commission
-  Future<Commission> cancelCommission(int commissionId, {String? reason}) async {
+  Future<Commission> cancelCommission(
+    int commissionId, {
+    String? reason,
+  }) async {
     try {
       return await updateCommissionStatus(
         commissionId,
@@ -216,7 +223,7 @@ class CommissionService {
 
       final totalCommissions = commissions.length;
       final totalAmount = commissions.fold<double>(
-        0.0, 
+        0.0,
         (sum, commission) => sum + commission.commissionAmount,
       );
 
@@ -224,7 +231,7 @@ class CommissionService {
           .where((c) => c.status == CommissionStatus.pending)
           .toList();
       final pendingAmount = pendingCommissions.fold<double>(
-        0.0, 
+        0.0,
         (sum, commission) => sum + commission.commissionAmount,
       );
 
@@ -232,14 +239,16 @@ class CommissionService {
           .where((c) => c.status == CommissionStatus.paid)
           .toList();
       final paidAmount = paidCommissions.fold<double>(
-        0.0, 
+        0.0,
         (sum, commission) => sum + commission.commissionAmount,
       );
 
-      final averageCommissionRate = commissions.fold<double>(
-        0.0, 
-        (sum, commission) => sum + commission.commissionRate,
-      ) / commissions.length;
+      final averageCommissionRate =
+          commissions.fold<double>(
+            0.0,
+            (sum, commission) => sum + commission.commissionRate,
+          ) /
+          commissions.length;
 
       return {
         'totalCommissions': totalCommissions,
@@ -271,7 +280,9 @@ class CommissionService {
           .lte('created_at', endDate.toIso8601String())
           .order('created_at', ascending: false);
 
-      return response.map<Commission>((data) => Commission.fromJson(data)).toList();
+      return response
+          .map<Commission>((data) => Commission.fromJson(data))
+          .toList();
     } catch (e) {
       log('Error getting commissions for date range: $e');
       rethrow;
@@ -281,7 +292,9 @@ class CommissionService {
   /// Get overdue commissions (older than 30 days and not paid)
   Future<List<Commission>> getOverdueCommissions(String companyId) async {
     try {
-      final overdueThreshold = DateTime.now().subtract(const Duration(days: 30));
+      final overdueThreshold = DateTime.now().subtract(
+        const Duration(days: 30),
+      );
 
       final response = await _client
           .from('commissions')
@@ -291,7 +304,9 @@ class CommissionService {
           .lte('created_at', overdueThreshold.toIso8601String())
           .order('created_at', ascending: true); // Oldest first
 
-      return response.map<Commission>((data) => Commission.fromJson(data)).toList();
+      return response
+          .map<Commission>((data) => Commission.fromJson(data))
+          .toList();
     } catch (e) {
       log('Error getting overdue commissions for company $companyId: $e');
       rethrow;
@@ -306,7 +321,7 @@ class CommissionService {
   }) async {
     try {
       final now = DateTime.now();
-      
+
       final updateData = {
         'status': CommissionStatus.paid.name,
         'paid_at': now.toIso8601String(),
@@ -327,7 +342,9 @@ class CommissionService {
           .inFilter('id', commissionIds)
           .select();
 
-      return response.map<Commission>((data) => Commission.fromJson(data)).toList();
+      return response
+          .map<Commission>((data) => Commission.fromJson(data))
+          .toList();
     } catch (e) {
       log('Error processing batch payment for commissions $commissionIds: $e');
       rethrow;
@@ -348,7 +365,7 @@ class CommissionService {
       }
 
       return response.fold<double>(
-        0.0, 
+        0.0,
         (sum, row) => sum + (row['commission_amount'] as num).toDouble(),
       );
     } catch (e) {
@@ -378,7 +395,9 @@ class CommissionService {
       }
 
       final response = await query;
-      final commissions = response.map<Commission>((data) => Commission.fromJson(data)).toList();
+      final commissions = response
+          .map<Commission>((data) => Commission.fromJson(data))
+          .toList();
 
       final Map<int, Map<String, dynamic>> summary = {};
 
@@ -397,19 +416,21 @@ class CommissionService {
         final hikeSummary = summary[commission.hikeId]!;
         hikeSummary['totalCommissions'] += 1;
         hikeSummary['totalAmount'] += commission.commissionAmount;
-        
+
         if (commission.isPaid) {
           hikeSummary['paidAmount'] += commission.commissionAmount;
         } else if (commission.isPending) {
           hikeSummary['pendingAmount'] += commission.commissionAmount;
         }
-        
+
         (hikeSummary['commissions'] as List<Commission>).add(commission);
       }
 
       return summary;
     } catch (e) {
-      log('Error getting commission summary by hike for company $companyId: $e');
+      log(
+        'Error getting commission summary by hike for company $companyId: $e',
+      );
       rethrow;
     }
   }

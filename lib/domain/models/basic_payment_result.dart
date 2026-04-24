@@ -1,13 +1,7 @@
 import 'basic_order.dart';
 
 /// Payment status enum for tracking payment state
-enum PaymentStatus {
-  succeeded,
-  failed,
-  pending,
-  cancelled,
-  requiresAction
-}
+enum PaymentStatus { succeeded, failed, pending, cancelled, requiresAction }
 
 /// Result of a payment operation (Basic version without Freezed)
 class BasicPaymentResult {
@@ -28,7 +22,7 @@ class BasicPaymentResult {
     this.paymentIntentId,
     this.metadata,
   });
-  
+
   /// Factory constructor for successful payment
   factory BasicPaymentResult.success({
     required BasicOrder order,
@@ -45,7 +39,7 @@ class BasicPaymentResult {
       metadata: metadata,
     );
   }
-  
+
   /// Factory constructor for failed payment
   factory BasicPaymentResult.failure({
     required String error,
@@ -61,7 +55,7 @@ class BasicPaymentResult {
       metadata: metadata,
     );
   }
-  
+
   /// Factory constructor for cancelled payment
   factory BasicPaymentResult.cancelled({
     String? message,
@@ -74,7 +68,7 @@ class BasicPaymentResult {
       paymentIntentId: paymentIntentId,
     );
   }
-  
+
   /// Factory constructor for pending payment (requires additional action)
   factory BasicPaymentResult.requiresAction({
     required String clientSecret,
@@ -108,7 +102,7 @@ class BasicPaymentResult {
   factory BasicPaymentResult.fromJson(Map<String, dynamic> json) {
     return BasicPaymentResult(
       isSuccess: json['isSuccess'] as bool,
-      order: json['order'] != null 
+      order: json['order'] != null
           ? BasicOrder.fromJson(json['order'] as Map<String, dynamic>)
           : null,
       clientSecret: json['clientSecret'] as String?,
@@ -135,13 +129,13 @@ class BasicPaymentResult {
 
   @override
   int get hashCode => Object.hash(
-        isSuccess,
-        order,
-        clientSecret,
-        errorMessage,
-        status,
-        paymentIntentId,
-      );
+    isSuccess,
+    order,
+    clientSecret,
+    errorMessage,
+    status,
+    paymentIntentId,
+  );
 
   @override
   String toString() {
@@ -153,39 +147,39 @@ class BasicPaymentResult {
 extension BasicPaymentResultExtensions on BasicPaymentResult {
   /// Check if payment requires additional user action (3D Secure, etc.)
   bool get requiresUserAction => status == PaymentStatus.requiresAction;
-  
+
   /// Check if payment was cancelled by user
   bool get wasCancelled => status == PaymentStatus.cancelled;
-  
+
   /// Check if payment is still processing
   bool get isPending => status == PaymentStatus.pending;
-  
+
   /// Get user-friendly error message in German
   String get friendlyErrorMessage {
     if (errorMessage == null) return 'Unknown error occurred';
-    
+
     final message = errorMessage!.toLowerCase();
-    
+
     if (message.contains('declined') || message.contains('insufficient')) {
       return 'Ihre Karte wurde abgelehnt. Bitte versuchen Sie eine andere Zahlungsmethode.';
     }
-    
+
     if (message.contains('expired')) {
       return 'Ihre Karte ist abgelaufen. Bitte verwenden Sie eine aktuelle Karte.';
     }
-    
+
     if (message.contains('network') || message.contains('connection')) {
       return 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
     }
-    
+
     if (message.contains('invalid') || message.contains('incorrect')) {
       return 'Ungültige Kartendaten. Bitte überprüfen Sie Ihre Eingaben.';
     }
-    
+
     if (message.contains('cancelled')) {
       return 'Zahlung wurde abgebrochen.';
     }
-    
+
     // Fallback für unbekannte Fehler
     return 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
   }

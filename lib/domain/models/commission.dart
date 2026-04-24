@@ -4,12 +4,7 @@ part 'commission.freezed.dart';
 part 'commission.g.dart';
 
 /// Enum representing the status of a commission
-enum CommissionStatus {
-  pending,
-  calculated,
-  paid,
-  cancelled,
-}
+enum CommissionStatus { pending, calculated, paid, cancelled }
 
 /// Represents a commission record for a hike order
 @freezed
@@ -30,7 +25,8 @@ abstract class Commission with _$Commission {
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _Commission;
 
-  factory Commission.fromJson(Map<String, dynamic> json) => _$CommissionFromJson(json);
+  factory Commission.fromJson(Map<String, dynamic> json) =>
+      _$CommissionFromJson(json);
 }
 
 /// Extension for business logic on Commission
@@ -39,7 +35,8 @@ extension CommissionExtensions on Commission {
   double get commissionRatePercentage => commissionRate * 100;
 
   /// Get formatted commission amount with currency symbol
-  String get formattedCommissionAmount => '€${commissionAmount.toStringAsFixed(2)}';
+  String get formattedCommissionAmount =>
+      '€${commissionAmount.toStringAsFixed(2)}';
 
   /// Get formatted base amount with currency symbol
   String get formattedBaseAmount => '€${baseAmount.toStringAsFixed(2)}';
@@ -94,8 +91,9 @@ extension CommissionExtensions on Commission {
   }
 
   /// Check if the commission can be marked as paid
-  bool get canBeMarkedAsPaid => 
-      (status == CommissionStatus.pending || status == CommissionStatus.calculated) && 
+  bool get canBeMarkedAsPaid =>
+      (status == CommissionStatus.pending ||
+          status == CommissionStatus.calculated) &&
       !isCancelled;
 
   /// Check if the commission can be cancelled
@@ -104,7 +102,7 @@ extension CommissionExtensions on Commission {
   /// Get the time since creation as a human-readable string
   String get timeSinceCreation {
     final difference = DateTime.now().difference(createdAt);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays} day${difference.inDays != 1 ? 's' : ''} ago';
     } else if (difference.inHours > 0) {

@@ -15,14 +15,13 @@ class CommissionStatisticsWithChartsWidget extends StatefulWidget {
   });
 
   @override
-  State<CommissionStatisticsWithChartsWidget> createState() => 
+  State<CommissionStatisticsWithChartsWidget> createState() =>
       _CommissionStatisticsWithChartsWidgetState();
 }
 
-class _CommissionStatisticsWithChartsWidgetState 
-    extends State<CommissionStatisticsWithChartsWidget> 
+class _CommissionStatisticsWithChartsWidgetState
+    extends State<CommissionStatisticsWithChartsWidget>
     with SingleTickerProviderStateMixin {
-  
   late TabController _tabController;
   bool _showCharts = false;
 
@@ -47,12 +46,12 @@ class _CommissionStatisticsWithChartsWidgetState
           children: [
             // KPI Statistics Section (immer sichtbar)
             const CommissionStatisticsWidget(),
-            
+
             const SizedBox(height: 16),
-            
+
             // Charts Toggle Section
             _buildChartsToggleSection(context, provider),
-            
+
             // Charts Section (wenn aktiviert)
             if (_showCharts) ...[
               const SizedBox(height: 16),
@@ -64,7 +63,10 @@ class _CommissionStatisticsWithChartsWidgetState
     );
   }
 
-  Widget _buildChartsToggleSection(BuildContext context, CommissionProvider provider) {
+  Widget _buildChartsToggleSection(
+    BuildContext context,
+    CommissionProvider provider,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -115,8 +117,12 @@ class _CommissionStatisticsWithChartsWidgetState
                       _showCharts = !_showCharts;
                     });
                   },
-                  icon: Icon(_showCharts ? Icons.visibility_off : Icons.analytics),
-                  label: Text(_showCharts ? 'Charts ausblenden' : 'Charts anzeigen'),
+                  icon: Icon(
+                    _showCharts ? Icons.visibility_off : Icons.analytics,
+                  ),
+                  label: Text(
+                    _showCharts ? 'Charts ausblenden' : 'Charts anzeigen',
+                  ),
                 ),
               ],
             ),
@@ -183,23 +189,15 @@ class _CommissionStatisticsWithChartsWidgetState
   }
 
   Widget _buildDesktopChartsLayout(BuildContext context) {
-    return CommissionChartsContainer(
-      companyId: widget.companyId,
-    );
+    return CommissionChartsContainer(companyId: widget.companyId);
   }
 
   Widget _buildChartsTabBar(BuildContext context) {
     return TabBar(
       controller: _tabController,
       tabs: const [
-        Tab(
-          icon: Icon(Icons.dashboard),
-          text: 'Übersicht',
-        ),
-        Tab(
-          icon: Icon(Icons.analytics),
-          text: 'Details',
-        ),
+        Tab(icon: Icon(Icons.dashboard), text: 'Übersicht'),
+        Tab(icon: Icon(Icons.analytics), text: 'Details'),
       ],
     );
   }
@@ -217,16 +215,14 @@ class _CommissionStatisticsWithChartsWidgetState
   }
 
   Widget _buildDetailedTab(BuildContext context) {
-    return CommissionChartsContainer(
-      companyId: widget.companyId,
-    );
+    return CommissionChartsContainer(companyId: widget.companyId);
   }
 
   Widget _buildQuickStatsGrid(BuildContext context) {
     return Consumer<CommissionProvider>(
       builder: (context, provider, child) {
         final stats = provider.statistics;
-        
+
         return GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -291,11 +287,7 @@ class _CommissionStatisticsWithChartsWidgetState
               color: color,
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 16,
-            ),
+            child: Icon(icon, color: Colors.white, size: 16),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -400,11 +392,7 @@ class _CommissionStatisticsWithChartsWidgetState
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: Theme.of(context).colorScheme.primary,
-            size: 20,
-          ),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -412,9 +400,9 @@ class _CommissionStatisticsWithChartsWidgetState
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
                 Text(
                   description,

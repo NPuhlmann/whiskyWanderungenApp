@@ -76,8 +76,9 @@ class SalesAnalyticsService {
         revenueByDate[dateKey] = (revenueByDate[dateKey] ?? 0.0) + amount;
       }
 
-      final averageOrderValue =
-          totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+      final averageOrderValue = totalOrders > 0
+          ? totalRevenue / totalOrders
+          : 0.0;
 
       return SalesStatistics(
         totalOrders: totalOrders,
@@ -149,7 +150,8 @@ class SalesAnalyticsService {
       if (reviewCount > 0) {
         final totalRating = reviews.fold<double>(
           0.0,
-          (sum, review) => sum + ((review['rating'] as num?)?.toDouble() ?? 0.0),
+          (sum, review) =>
+              sum + ((review['rating'] as num?)?.toDouble() ?? 0.0),
         );
         averageRating = totalRating / reviewCount;
       }
@@ -160,8 +162,7 @@ class SalesAnalyticsService {
       int totalViews = totalSales * 4;
 
       // Calculate conversion rate
-      final conversionRate =
-          totalViews > 0 ? totalSales / totalViews : 0.0;
+      final conversionRate = totalViews > 0 ? totalSales / totalViews : 0.0;
 
       return RoutePerformance(
         routeId: routeId,
