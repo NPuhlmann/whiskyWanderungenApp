@@ -106,6 +106,14 @@ class MockCommissionService extends _i1.Mock implements _i3.CommissionService {
           as _i4.Future<_i2.Commission?>);
 
   @override
+  _i4.Future<_i2.Commission?> getCommissionByOrderId(String? orderId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCommissionByOrderId, [orderId]),
+            returnValue: _i4.Future<_i2.Commission?>.value(),
+          )
+          as _i4.Future<_i2.Commission?>);
+
+  @override
   _i4.Future<_i2.Commission> markCommissionAsPaid(
     int? commissionId, {
     String? billingPeriodId,

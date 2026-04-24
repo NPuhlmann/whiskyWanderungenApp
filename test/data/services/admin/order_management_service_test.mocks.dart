@@ -426,6 +426,17 @@ class MockSupabaseQueryBuilder extends _i1.Mock
           as _i2.PostgrestFilterBuilder<int>);
 
   @override
+  _i2.PostgrestQueryBuilder<dynamic> retry({required bool? enabled}) =>
+      (super.noSuchMethod(
+            Invocation.method(#retry, [], {#enabled: enabled}),
+            returnValue: _FakePostgrestQueryBuilder_10<dynamic>(
+              this,
+              Invocation.method(#retry, [], {#enabled: enabled}),
+            ),
+          )
+          as _i2.PostgrestQueryBuilder<dynamic>);
+
+  @override
   _i2.PostgrestQueryBuilder<dynamic> setHeader(String? key, String? value) =>
       (super.noSuchMethod(
             Invocation.method(#setHeader, [key, value]),
@@ -897,6 +908,50 @@ class MockPostgrestFilterBuilder<T> extends _i1.Mock
           as _i2.PostgrestFilterBuilder<T>);
 
   @override
+  _i2.PostgrestFilterBuilder<T> matchRegex(String? column, String? pattern) =>
+      (super.noSuchMethod(
+            Invocation.method(#matchRegex, [column, pattern]),
+            returnValue: _FakePostgrestFilterBuilder_7<T>(
+              this,
+              Invocation.method(#matchRegex, [column, pattern]),
+            ),
+          )
+          as _i2.PostgrestFilterBuilder<T>);
+
+  @override
+  _i2.PostgrestFilterBuilder<T> imatchRegex(String? column, String? pattern) =>
+      (super.noSuchMethod(
+            Invocation.method(#imatchRegex, [column, pattern]),
+            returnValue: _FakePostgrestFilterBuilder_7<T>(
+              this,
+              Invocation.method(#imatchRegex, [column, pattern]),
+            ),
+          )
+          as _i2.PostgrestFilterBuilder<T>);
+
+  @override
+  _i2.PostgrestFilterBuilder<T> isDistinct(String? column, Object? value) =>
+      (super.noSuchMethod(
+            Invocation.method(#isDistinct, [column, value]),
+            returnValue: _FakePostgrestFilterBuilder_7<T>(
+              this,
+              Invocation.method(#isDistinct, [column, value]),
+            ),
+          )
+          as _i2.PostgrestFilterBuilder<T>);
+
+  @override
+  _i2.PostgrestFilterBuilder<T> retry({required bool? enabled}) =>
+      (super.noSuchMethod(
+            Invocation.method(#retry, [], {#enabled: enabled}),
+            returnValue: _FakePostgrestFilterBuilder_7<T>(
+              this,
+              Invocation.method(#retry, [], {#enabled: enabled}),
+            ),
+          )
+          as _i2.PostgrestFilterBuilder<T>);
+
+  @override
   _i2.PostgrestFilterBuilder<T> setHeader(String? key, String? value) =>
       (super.noSuchMethod(
             Invocation.method(#setHeader, [key, value]),
@@ -1082,6 +1137,17 @@ class MockPostgrestFilterBuilder<T> extends _i1.Mock
           >);
 
   @override
+  _i2.PostgrestTransformBuilder<T> maxAffected(int? value) =>
+      (super.noSuchMethod(
+            Invocation.method(#maxAffected, [value]),
+            returnValue: _FakePostgrestTransformBuilder_14<T>(
+              this,
+              Invocation.method(#maxAffected, [value]),
+            ),
+          )
+          as _i2.PostgrestTransformBuilder<T>);
+
+  @override
   _i2.PostgrestBuilder<String, String, String> explain({
     bool? analyze = false,
     bool? verbose = false,
@@ -1260,6 +1326,17 @@ class MockPostgrestTransformBuilder<T> extends _i1.Mock
             returnValue: _FakePostgrestTransformBuilder_14<T>(
               this,
               Invocation.method(#copyWithUrl, [url]),
+            ),
+          )
+          as _i2.PostgrestTransformBuilder<T>);
+
+  @override
+  _i2.PostgrestTransformBuilder<T> retry({required bool? enabled}) =>
+      (super.noSuchMethod(
+            Invocation.method(#retry, [], {#enabled: enabled}),
+            returnValue: _FakePostgrestTransformBuilder_14<T>(
+              this,
+              Invocation.method(#retry, [], {#enabled: enabled}),
             ),
           )
           as _i2.PostgrestTransformBuilder<T>);
@@ -1448,6 +1525,17 @@ class MockPostgrestTransformBuilder<T> extends _i1.Mock
             Map<String, dynamic>,
             Map<String, dynamic>
           >);
+
+  @override
+  _i2.PostgrestTransformBuilder<T> maxAffected(int? value) =>
+      (super.noSuchMethod(
+            Invocation.method(#maxAffected, [value]),
+            returnValue: _FakePostgrestTransformBuilder_14<T>(
+              this,
+              Invocation.method(#maxAffected, [value]),
+            ),
+          )
+          as _i2.PostgrestTransformBuilder<T>);
 
   @override
   _i2.PostgrestBuilder<String, String, String> explain({
