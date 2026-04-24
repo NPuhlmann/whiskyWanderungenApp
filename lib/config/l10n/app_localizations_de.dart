@@ -553,4 +553,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get years => 'Jahre';
+
+  @override
+  String get price => 'Preis';
+
+  @override
+  String get mainRegion => 'Hauptregion';
+
+  @override
+  String get totalVolume => 'Gesamtvolumen';
+
+  @override
+  String get createdAt => 'Erstellt';
+
+  @override
+  String get lastUpdated => 'Zuletzt aktualisiert';
+
+  @override
+  String get whiskySamples => 'Whisky-Proben';
+
+  @override
+  String get noSamplesYet => 'Noch keine Proben';
+
+  @override
+  String get statistics => 'Statistiken';
+
+  @override
+  String get averageAbv => 'Durchschnittlicher ABV';
 }

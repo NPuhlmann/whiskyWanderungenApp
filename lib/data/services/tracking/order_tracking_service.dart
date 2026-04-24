@@ -24,26 +24,28 @@ class OrderTrackingService {
   Future<EnhancedOrder> assignTrackingNumber({
     required int orderId,
     required String trackingNumber,
-    required String shippingService,
+    required String shippingCarrier,
+    String? shippingService,
     DateTime? estimatedDelivery,
   }) async {
     try {
       dev.log('📦 Assigning tracking number $trackingNumber to order $orderId');
 
       // Validate tracking number format
-      _validateTrackingNumber(trackingNumber, shippingService);
+      _validateTrackingNumber(trackingNumber, shippingCarrier);
 
       // Update order with tracking information and mark as shipped
       final updatedOrder = await _backendApi.updateEnhancedOrderStatus(
         orderId: orderId,
         newStatus: 'shipped',
         trackingNumber: trackingNumber,
-        shippingService: shippingService,
+        shippingCarrier: shippingCarrier,
         estimatedDelivery: estimatedDelivery,
         metadata: {
           'tracking_assigned_at': DateTime.now().toIso8601String(),
           'tracking_assigned_by': 'system',
-          'shipping_service': shippingService,
+          'shipping_carrier': shippingCarrier,
+          if (shippingService != null) 'shipping_service': shippingService,
         },
       );
 
@@ -53,7 +55,7 @@ class OrderTrackingService {
         orderId: orderId,
         orderNumber: updatedOrder.orderNumber,
         trackingNumber: trackingNumber,
-        shippingService: shippingService,
+        shippingCarrier: shippingCarrier,
         estimatedDelivery: estimatedDelivery,
       );
 
@@ -408,10 +410,12 @@ class OrderTrackingServiceFactory {
     SupabaseNotificationService? notificationService,
     SupabaseClient? supabaseClient,
   }) {
+    final client = supabaseClient ?? Supabase.instance.client;
     return OrderTrackingService(
       backendApi: backendApi ?? BackendApiService(),
-      notificationService: notificationService ?? SupabaseNotificationService(),
-      supabaseClient: supabaseClient,
+      notificationService:
+          notificationService ?? SupabaseNotificationService(client),
+      supabaseClient: client,
     );
   }
 }

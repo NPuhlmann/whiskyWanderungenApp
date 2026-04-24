@@ -546,4 +546,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get years => 'years';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get mainRegion => 'Main Region';
+
+  @override
+  String get totalVolume => 'Total Volume';
+
+  @override
+  String get createdAt => 'Created';
+
+  @override
+  String get lastUpdated => 'Last Updated';
+
+  @override
+  String get whiskySamples => 'Whisky Samples';
+
+  @override
+  String get noSamplesYet => 'No samples yet';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get averageAbv => 'Average ABV';
 }

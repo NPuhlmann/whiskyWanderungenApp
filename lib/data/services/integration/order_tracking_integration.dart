@@ -348,11 +348,12 @@ class OrderTrackingIntegration {
       dev.log('📦 Validating tracking assignment...');
 
       final trackingNumber = 'TN${DateTime.now().millisecondsSinceEpoch}';
-      const shippingService = 'DHL_EXPRESS';
+      const shippingCarrier = 'DHL_EXPRESS';
 
       final updatedOrder = await _trackingService.assignTrackingNumber(
         orderId: orderId,
         trackingNumber: trackingNumber,
+        shippingCarrier: shippingCarrier,
         shippingService: 'Express Worldwide',
         estimatedDelivery: DateTime.now().add(const Duration(days: 2)),
       );
@@ -360,7 +361,8 @@ class OrderTrackingIntegration {
       final validations = <String, bool>{
         'tracking_number_assigned':
             updatedOrder.trackingNumber == trackingNumber,
-        'shipping_carrier_set': updatedOrder.shippingService == shippingService,
+        'shipping_carrier_set':
+            updatedOrder.shippingService == 'Express Worldwide',
         'tracking_url_generated': updatedOrder.trackingUrl?.isNotEmpty == true,
         'estimated_delivery_set': updatedOrder.estimatedDelivery != null,
         'status_is_shipped': updatedOrder.status == EnhancedOrderStatus.shipped,
