@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/providers/route_management_provider.dart';
-import '../../../../config/l10n/app_localizations.dart';
 
 /// Dialog für das Erstellen oder Bearbeiten einer Route
 class RouteFormDialog extends StatefulWidget {

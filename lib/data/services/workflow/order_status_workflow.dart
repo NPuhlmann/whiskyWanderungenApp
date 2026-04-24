@@ -1,5 +1,7 @@
 import 'dart:developer' as dev;
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../domain/models/enhanced_order.dart';
 import '../database/backend_api.dart';
 import '../notifications/supabase_notification_service.dart';
@@ -213,9 +215,7 @@ class OrderStatusWorkflow {
     }
 
     // Reserve inventory (if applicable)
-    if (order.hikeId != null) {
-      await _reserveHikeCapacity(order.hikeId!);
-    }
+    await _reserveHikeCapacity(order.hikeId);
 
     // Schedule processing
     await _scheduleOrderProcessing(order.id);
@@ -228,13 +228,9 @@ class OrderStatusWorkflow {
   ) async {
     dev.log('⚙️ Processing order ${order.orderNumber}');
 
-    // Verify inventory availability
-    // Prepare items for shipping
-    // Generate shipping labels (if needed)
-    // Estimate processing time
-    final estimatedShippingDate = DateTime.now().add(const Duration(days: 1));
-
-    // This would integrate with warehouse/fulfillment systems
+    // Verify inventory availability, prepare items for shipping, generate
+    // shipping labels, etc. Placeholder until the warehouse/fulfillment
+    // integration lands.
     await Future.delayed(const Duration(seconds: 1)); // Simulate processing
   }
 
@@ -260,9 +256,9 @@ class OrderStatusWorkflow {
       orderId: order.id,
       trackingNumber: trackingNumber,
       shippingCarrier: shippingCarrier,
-      shippingService: data?['shipping_service'] as String?,
-      estimatedDelivery: data?['estimated_delivery'] != null
-          ? DateTime.parse(data!['estimated_delivery'])
+      shippingService: data!['shipping_service'] as String?,
+      estimatedDelivery: data['estimated_delivery'] != null
+          ? DateTime.parse(data['estimated_delivery'])
           : null,
     );
   }
@@ -318,9 +314,7 @@ class OrderStatusWorkflow {
         data?['cancellation_reason'] as String? ?? 'Customer request';
 
     // Release reserved inventory
-    if (order.hikeId != null) {
-      await _releaseHikeCapacity(order.hikeId!);
-    }
+    await _releaseHikeCapacity(order.hikeId);
 
     // Process refund if payment was completed
     if (order.status == EnhancedOrderStatus.confirmed ||
@@ -330,7 +324,7 @@ class OrderStatusWorkflow {
 
     // Cancel any active shipping
     if (order.trackingNumber != null) {
-      await _cancelShipping(order.trackingNumber!, order.shippingCarrier);
+      await _cancelShipping(order.trackingNumber!, order.shippingService);
     }
   }
 

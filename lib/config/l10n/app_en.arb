@@ -186,5 +186,14 @@
   "errorUploadingImageGeneral": "Error uploading image",
   "errorRemovingImage": "Error removing image",
   "noImageSelected": "No image selected",
-  "years": "years"
+  "years": "years",
+  "price": "Price",
+  "mainRegion": "Main Region",
+  "totalVolume": "Total Volume",
+  "createdAt": "Created",
+  "lastUpdated": "Last Updated",
+  "whiskySamples": "Whisky Samples",
+  "noSamplesYet": "No samples yet",
+  "statistics": "Statistics",
+  "averageAbv": "Average ABV"
 } 

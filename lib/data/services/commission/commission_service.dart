@@ -115,6 +115,23 @@ class CommissionService {
     }
   }
 
+  /// Get the commission record for a given order (one-per-order).
+  Future<Commission?> getCommissionByOrderId(String orderId) async {
+    try {
+      final response = await _client
+          .from('commissions')
+          .select()
+          .eq('order_id', orderId)
+          .maybeSingle();
+
+      if (response == null) return null;
+      return Commission.fromJson(response);
+    } catch (e) {
+      log('Error getting commission for order $orderId: $e');
+      rethrow;
+    }
+  }
+
   /// Mark a commission as paid
   Future<Commission> markCommissionAsPaid(
     int commissionId, {

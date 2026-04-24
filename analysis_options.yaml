@@ -16,14 +16,9 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/*.mocks.dart"
     - "lib/config/l10n/app_localizations*.dart"
-    # Drifted code under an open burn-down ticket. Test suite and the
-    # web-admin surface have APIs that diverged from production models; CI
-    # will re-enable analysis once those signatures are reconciled.
+    # Test suite remains excluded under the WHI-11 burn-down ticket — mocks
+    # and fixtures drifted against current production models (~500 errors).
     - "test/**"
-    - "lib/UI/web/**"
-    - "lib/data/services/tracking/**"
-    - "lib/data/services/workflow/**"
-    - "lib/data/services/integration/**"
   errors:
     # .env is created locally from .env.example (flutter_dotenv). assets/icons/
     # is a placeholder; reintroduce files before re-tightening this to warning.
