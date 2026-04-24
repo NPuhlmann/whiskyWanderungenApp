@@ -306,11 +306,7 @@ void main() {
           'repeatPurchaseRate': 0.5,
           'averageLifetimeValue': 300.0,
           'customersByLocation': {'Munich': 80},
-          'orderFrequencyDistribution': {
-            '1': 50,
-            '2': 40,
-            '3': 30,
-          },
+          'orderFrequencyDistribution': {'1': 50, '2': 40, '3': 30},
         };
 
         final insights = CustomerInsights.fromJson(json);

@@ -76,8 +76,9 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2'),
         ];
 
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => ordersData);
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenAnswer((_) async => ordersData);
 
         // Act
         await provider.loadOrders();
@@ -92,8 +93,9 @@ void main() {
 
       test('should handle load orders error', () async {
         // Arrange
-        when(mockService.getAllOrdersForAdmin())
-            .thenThrow(Exception('Network error'));
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenThrow(Exception('Network error'));
 
         // Act
         await provider.loadOrders();
@@ -119,12 +121,13 @@ void main() {
           hikeId: 1,
         );
 
-        when(mockService.validateOrderData(orderData))
-            .thenReturn(true);
-        when(mockService.createOrder(orderData))
-            .thenAnswer((_) async => createdOrder);
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => [createdOrder]);
+        when(mockService.validateOrderData(orderData)).thenReturn(true);
+        when(
+          mockService.createOrder(orderData),
+        ).thenAnswer((_) async => createdOrder);
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenAnswer((_) async => [createdOrder]);
 
         // Act
         await provider.createOrder(orderData);
@@ -147,10 +150,10 @@ void main() {
           'status': 'pending',
         };
 
-        when(mockService.validateOrderData(orderData))
-            .thenReturn(true);
-        when(mockService.createOrder(orderData))
-            .thenThrow(Exception('Failed to create order'));
+        when(mockService.validateOrderData(orderData)).thenReturn(true);
+        when(
+          mockService.createOrder(orderData),
+        ).thenThrow(Exception('Failed to create order'));
 
         // Act
         await provider.createOrder(orderData);
@@ -171,12 +174,13 @@ void main() {
           status: 'processing',
         );
 
-        when(mockService.validateUpdateData(updateData))
-            .thenReturn(true);
-        when(mockService.updateOrder(orderId, updateData))
-            .thenAnswer((_) async => updatedOrder);
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => [updatedOrder]);
+        when(mockService.validateUpdateData(updateData)).thenReturn(true);
+        when(
+          mockService.updateOrder(orderId, updateData),
+        ).thenAnswer((_) async => updatedOrder);
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenAnswer((_) async => [updatedOrder]);
 
         // Act
         await provider.updateOrder(orderId, updateData);
@@ -199,8 +203,7 @@ void main() {
         // Setup initial state
         provider.orders.add(initialOrder);
 
-        when(mockService.deleteOrder(orderId))
-            .thenAnswer((_) async => {});
+        when(mockService.deleteOrder(orderId)).thenAnswer((_) async => {});
 
         // Act
         await provider.deleteOrder(orderId);
@@ -219,8 +222,7 @@ void main() {
           userId: 'user123',
         );
 
-        when(mockService.getOrderById(123))
-            .thenAnswer((_) async => orderData);
+        when(mockService.getOrderById(123)).thenAnswer((_) async => orderData);
 
         // Act
         await provider.selectOrder(orderData);
@@ -257,12 +259,13 @@ void main() {
           status: newStatus,
         );
 
-        when(mockService.validateOrderStatus(newStatus))
-            .thenReturn(true);
-        when(mockService.updateOrderStatus(orderId, newStatus))
-            .thenAnswer((_) async => updatedOrder);
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => [updatedOrder]);
+        when(mockService.validateOrderStatus(newStatus)).thenReturn(true);
+        when(
+          mockService.updateOrderStatus(orderId, newStatus),
+        ).thenAnswer((_) async => updatedOrder);
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenAnswer((_) async => [updatedOrder]);
 
         // Act
         await provider.updateOrderStatus(orderId, newStatus);
@@ -279,8 +282,7 @@ void main() {
         const orderId = 123;
         const invalidStatus = 'invalid_status';
 
-        when(mockService.validateOrderStatus(invalidStatus))
-            .thenReturn(false);
+        when(mockService.validateOrderStatus(invalidStatus)).thenReturn(false);
 
         // Act
         await provider.updateOrderStatus(orderId, invalidStatus);
@@ -292,7 +294,14 @@ void main() {
 
       test('should get valid order statuses', () {
         // Arrange
-        final validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+        final validStatuses = [
+          'pending',
+          'confirmed',
+          'processing',
+          'shipped',
+          'delivered',
+          'cancelled',
+        ];
         when(mockService.getValidStatuses()).thenReturn(validStatuses);
 
         // Act
@@ -308,13 +317,26 @@ void main() {
       test('should filter orders by status', () async {
         // Arrange
         final orders = [
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', status: 'pending'),
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', status: 'shipped'),
-          TestHelpers.createTestBasicOrderJson(id: 3, userId: 'user3', status: 'pending'),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            status: 'pending',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            status: 'shipped',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 3,
+            userId: 'user3',
+            status: 'pending',
+          ),
         ];
 
-        when(mockService.getOrdersByStatus('pending'))
-            .thenAnswer((_) async => [orders[0], orders[2]]);
+        when(
+          mockService.getOrdersByStatus('pending'),
+        ).thenAnswer((_) async => [orders[0], orders[2]]);
 
         // Act
         await provider.filterOrdersByStatus('pending');
@@ -334,8 +356,9 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 123, userId: 'user1'),
         ];
 
-        when(mockService.searchOrders(searchTerm))
-            .thenAnswer((_) async => orders);
+        when(
+          mockService.searchOrders(searchTerm),
+        ).thenAnswer((_) async => orders);
 
         // Act
         await provider.searchOrders(searchTerm);
@@ -354,8 +377,9 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1'),
         ];
 
-        when(mockService.getOrdersByDateRange(startDate, endDate))
-            .thenAnswer((_) async => orders);
+        when(
+          mockService.getOrdersByDateRange(startDate, endDate),
+        ).thenAnswer((_) async => orders);
 
         // Act
         await provider.filterOrdersByDateRange(startDate, endDate);
@@ -372,8 +396,9 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2'),
         ];
 
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => allOrders);
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenAnswer((_) async => allOrders);
 
         // Set some filters first
         provider.currentFilter = 'pending';
@@ -401,8 +426,7 @@ void main() {
           'completedOrders': 7,
         };
 
-        when(mockService.getOrderStatistics())
-            .thenAnswer((_) async => stats);
+        when(mockService.getOrderStatistics()).thenAnswer((_) async => stats);
 
         // Act
         await provider.loadOrderStatistics();
@@ -422,8 +446,9 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2'),
         ];
 
-        when(mockService.getRecentOrders(limit: limit))
-            .thenAnswer((_) async => recentOrders);
+        when(
+          mockService.getRecentOrders(limit: limit),
+        ).thenAnswer((_) async => recentOrders);
 
         // Act
         await provider.loadRecentOrders(limit: limit);
@@ -438,14 +463,29 @@ void main() {
       test('should sort orders by different criteria', () {
         // Arrange
         final orders = [
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', totalAmount: 30.0),
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', totalAmount: 50.0),
-          TestHelpers.createTestBasicOrderJson(id: 3, userId: 'user3', totalAmount: 20.0),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            totalAmount: 30.0,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            totalAmount: 50.0,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 3,
+            userId: 'user3',
+            totalAmount: 20.0,
+          ),
         ];
         provider.orders.addAll(orders);
 
         // Act
-        final sortedByAmount = provider.sortOrders('total_amount', ascending: false);
+        final sortedByAmount = provider.sortOrders(
+          'total_amount',
+          ascending: false,
+        );
 
         // Assert
         expect(sortedByAmount[0]['total_amount'], equals(50.0));
@@ -457,15 +497,28 @@ void main() {
         // Arrange
         final now = DateTime.now();
         final orders = [
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', totalAmount: 30.0),
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', totalAmount: 50.0),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            totalAmount: 30.0,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            totalAmount: 50.0,
+          ),
         ];
-        orders[0]['created_at'] = now.subtract(Duration(hours: 1)).toIso8601String();
+        orders[0]['created_at'] = now
+            .subtract(Duration(hours: 1))
+            .toIso8601String();
         orders[1]['created_at'] = now.toIso8601String();
         provider.orders.addAll(orders);
 
         // Act
-        final sortedByDate = provider.sortOrders('created_at', ascending: false);
+        final sortedByDate = provider.sortOrders(
+          'created_at',
+          ascending: false,
+        );
 
         // Assert
         expect(sortedByDate[0]['id'], equals(1)); // Most recent first
@@ -477,8 +530,7 @@ void main() {
       test('should clear error when starting new operation', () async {
         // Arrange
         provider.setError('Previous error');
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => []);
+        when(mockService.getAllOrdersForAdmin()).thenAnswer((_) async => []);
 
         // Act
         await provider.loadOrders();
@@ -490,15 +542,14 @@ void main() {
       test('should retry failed operations', () async {
         // Arrange
         int callCount = 0;
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async {
-              callCount++;
-              if (callCount == 1) {
-                throw Exception('Network error');
-              } else {
-                return [];
-              }
-            });
+        when(mockService.getAllOrdersForAdmin()).thenAnswer((_) async {
+          callCount++;
+          if (callCount == 1) {
+            throw Exception('Network error');
+          } else {
+            return [];
+          }
+        });
 
         // Act - First call fails
         await provider.loadOrders();
@@ -518,9 +569,24 @@ void main() {
       test('should calculate order statistics locally', () {
         // Arrange
         final orders = [
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', status: 'pending', totalAmount: 50.0),
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', status: 'shipped', totalAmount: 30.0),
-          TestHelpers.createTestBasicOrderJson(id: 3, userId: 'user3', status: 'delivered', totalAmount: 20.0),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            status: 'pending',
+            totalAmount: 50.0,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            status: 'shipped',
+            totalAmount: 30.0,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 3,
+            userId: 'user3',
+            status: 'delivered',
+            totalAmount: 20.0,
+          ),
         ];
         provider.orders.addAll(orders);
 
@@ -549,8 +615,9 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1'),
         ];
 
-        when(mockService.getAllOrdersForAdmin())
-            .thenAnswer((_) async => orders);
+        when(
+          mockService.getAllOrdersForAdmin(),
+        ).thenAnswer((_) async => orders);
 
         // Act
         await provider.refreshData();
@@ -565,7 +632,10 @@ void main() {
         provider.orders.addAll([
           TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1'),
         ]);
-        provider.selectedOrder = TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1');
+        provider.selectedOrder = TestHelpers.createTestBasicOrderJson(
+          id: 1,
+          userId: 'user1',
+        );
         provider.setError('Test error');
 
         // Act
@@ -584,10 +654,14 @@ void main() {
       test('should check if order can be modified', () {
         // Arrange
         final pendingOrder = TestHelpers.createTestBasicOrderJson(
-          id: 1, userId: 'user1', status: 'pending'
+          id: 1,
+          userId: 'user1',
+          status: 'pending',
         );
         final shippedOrder = TestHelpers.createTestBasicOrderJson(
-          id: 2, userId: 'user2', status: 'shipped'
+          id: 2,
+          userId: 'user2',
+          status: 'shipped',
         );
 
         when(mockService.isPendingStatus('pending')).thenReturn(true);
@@ -601,7 +675,9 @@ void main() {
       test('should format order amount', () {
         // Arrange
         final order = TestHelpers.createTestBasicOrderJson(
-          id: 1, userId: 'user1', totalAmount: 49.99
+          id: 1,
+          userId: 'user1',
+          totalAmount: 49.99,
         );
 
         // Act

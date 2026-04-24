@@ -4,7 +4,6 @@ import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
 
 void main() {
   group('Basic Payment Models Tests (TDD - Green Phase)', () {
-    
     group('BasicOrder Model', () {
       test('should create BasicOrder with all required fields', () {
         // Arrange & Act
@@ -68,16 +67,20 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        final deliveredOrder = pendingOrder.copyWith(status: OrderStatus.delivered);
-        final cancelledOrder = pendingOrder.copyWith(status: OrderStatus.cancelled);
+        final deliveredOrder = pendingOrder.copyWith(
+          status: OrderStatus.delivered,
+        );
+        final cancelledOrder = pendingOrder.copyWith(
+          status: OrderStatus.cancelled,
+        );
 
         // Assert
         expect(pendingOrder.canBeCancelled, isTrue);
         expect(pendingOrder.isFinalStatus, isFalse);
-        
+
         expect(deliveredOrder.canBeCancelled, isFalse);
         expect(deliveredOrder.isFinalStatus, isTrue);
-        
+
         expect(cancelledOrder.isFinalStatus, isTrue);
         expect(pendingOrder.formattedOrderNumber, equals('#WH2025-001'));
       });
@@ -97,7 +100,7 @@ void main() {
             'street': 'Teststraße 123',
             'city': 'Hamburg',
             'postalCode': '20095',
-            'country': 'DE'
+            'country': 'DE',
           },
         );
 
@@ -110,7 +113,10 @@ void main() {
         expect(deserializedOrder.orderNumber, equals(order.orderNumber));
         expect(deserializedOrder.deliveryType, equals(order.deliveryType));
         expect(deserializedOrder.status, equals(order.status));
-        expect(deserializedOrder.deliveryAddress?['street'], equals('Teststraße 123'));
+        expect(
+          deserializedOrder.deliveryAddress?['street'],
+          equals('Teststraße 123'),
+        );
         expect(deserializedOrder, equals(order));
       });
 
@@ -137,7 +143,10 @@ void main() {
         expect(updatedOrder.status, equals(OrderStatus.confirmed));
         expect(updatedOrder.totalAmount, equals(30.99));
         expect(updatedOrder.id, equals(originalOrder.id)); // Unchanged
-        expect(updatedOrder.orderNumber, equals(originalOrder.orderNumber)); // Unchanged
+        expect(
+          updatedOrder.orderNumber,
+          equals(originalOrder.orderNumber),
+        ); // Unchanged
       });
     });
 
@@ -196,7 +205,10 @@ void main() {
         expect(result.isSuccess, isFalse);
         expect(result.status, equals(PaymentStatus.cancelled));
         expect(result.wasCancelled, isTrue);
-        expect(result.friendlyErrorMessage, equals('Zahlung wurde abgebrochen.'));
+        expect(
+          result.friendlyErrorMessage,
+          equals('Zahlung wurde abgebrochen.'),
+        );
       });
 
       test('should create requiresAction BasicPaymentResult', () {
@@ -215,15 +227,32 @@ void main() {
 
       test('should provide friendly error messages in German', () {
         // Test various error scenarios
-        final declinedResult = BasicPaymentResult.failure(error: 'Card was declined');
-        final networkResult = BasicPaymentResult.failure(error: 'Network connection failed');
-        final expiredResult = BasicPaymentResult.failure(error: 'Your card has expired');
-        final invalidResult = BasicPaymentResult.failure(error: 'Invalid card number');
+        final declinedResult = BasicPaymentResult.failure(
+          error: 'Card was declined',
+        );
+        final networkResult = BasicPaymentResult.failure(
+          error: 'Network connection failed',
+        );
+        final expiredResult = BasicPaymentResult.failure(
+          error: 'Your card has expired',
+        );
+        final invalidResult = BasicPaymentResult.failure(
+          error: 'Invalid card number',
+        );
 
-        expect(declinedResult.friendlyErrorMessage, contains('Karte wurde abgelehnt'));
+        expect(
+          declinedResult.friendlyErrorMessage,
+          contains('Karte wurde abgelehnt'),
+        );
         expect(networkResult.friendlyErrorMessage, contains('Netzwerkfehler'));
-        expect(expiredResult.friendlyErrorMessage, contains('Karte ist abgelaufen'));
-        expect(invalidResult.friendlyErrorMessage, contains('Ungültige Kartendaten'));
+        expect(
+          expiredResult.friendlyErrorMessage,
+          contains('Karte ist abgelaufen'),
+        );
+        expect(
+          invalidResult.friendlyErrorMessage,
+          contains('Ungültige Kartendaten'),
+        );
       });
 
       test('should serialize to/from JSON correctly', () {

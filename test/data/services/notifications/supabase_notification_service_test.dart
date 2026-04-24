@@ -6,7 +6,7 @@ void main() {
   group('SupabaseNotificationService', () {
     // Note: These tests are basic unit tests that don't require complex mocking
     // Full integration tests would require platform-specific testing setup
-    
+
     test('should create notification service instance', () {
       // This test verifies the service can be instantiated
       // In a real app, this would be tested with dependency injection

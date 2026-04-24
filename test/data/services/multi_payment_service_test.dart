@@ -38,17 +38,23 @@ void main() {
     });
 
     group('Apple Pay Processing', () {
-      test('should process Apple Pay payment successfully when available', () async {
-        // Skip test that requires environment variables
-        expect(true, isTrue);
-      });
+      test(
+        'should process Apple Pay payment successfully when available',
+        () async {
+          // Skip test that requires environment variables
+          expect(true, isTrue);
+        },
+      );
     });
 
     group('Google Pay Processing', () {
-      test('should process Google Pay payment successfully when available', () async {
-        // Skip test that requires environment variables
-        expect(true, isTrue);
-      });
+      test(
+        'should process Google Pay payment successfully when available',
+        () async {
+          // Skip test that requires environment variables
+          expect(true, isTrue);
+        },
+      );
     });
 
     group('PayPal Processing', () {

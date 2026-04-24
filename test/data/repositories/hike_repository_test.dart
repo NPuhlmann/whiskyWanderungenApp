@@ -16,52 +16,55 @@ void main() {
     });
 
     group('getAllAvailableHikes', () {
-      test('should return list of hikes when backend service succeeds', () async {
-        // Arrange
-        final expectedHikes = [
-          const Hike(
-            id: 1,
-            name: 'Mountain Trail',
-            length: 5.5,
-            price: 19.99,
-            difficulty: Difficulty.mid,
-          ),
-          const Hike(
-            id: 2,
-            name: 'Forest Path',
-            length: 3.2,
-            price: 14.99,
-            difficulty: Difficulty.easy,
-          ),
-          const Hike(
-            id: 3,
-            name: 'Peak Challenge',
-            length: 8.7,
-            price: 29.99,
-            difficulty: Difficulty.hard,
-          ),
-        ];
+      test(
+        'should return list of hikes when backend service succeeds',
+        () async {
+          // Arrange
+          final expectedHikes = [
+            const Hike(
+              id: 1,
+              name: 'Mountain Trail',
+              length: 5.5,
+              price: 19.99,
+              difficulty: Difficulty.mid,
+            ),
+            const Hike(
+              id: 2,
+              name: 'Forest Path',
+              length: 3.2,
+              price: 14.99,
+              difficulty: Difficulty.easy,
+            ),
+            const Hike(
+              id: 3,
+              name: 'Peak Challenge',
+              length: 8.7,
+              price: 29.99,
+              difficulty: Difficulty.hard,
+            ),
+          ];
 
-        when(mockBackendApiService.fetchHikes())
-            .thenAnswer((_) async => expectedHikes);
+          when(
+            mockBackendApiService.fetchHikes(),
+          ).thenAnswer((_) async => expectedHikes);
 
-        // Act
-        final result = await hikeRepository.getAllAvailableHikes();
+          // Act
+          final result = await hikeRepository.getAllAvailableHikes();
 
-        // Assert
-        expect(result, equals(expectedHikes));
-        expect(result.length, 3);
-        expect(result[0].name, 'Mountain Trail');
-        expect(result[1].difficulty, Difficulty.easy);
-        expect(result[2].price, 29.99);
+          // Assert
+          expect(result, equals(expectedHikes));
+          expect(result.length, 3);
+          expect(result[0].name, 'Mountain Trail');
+          expect(result[1].difficulty, Difficulty.easy);
+          expect(result[2].price, 29.99);
 
-        verify(mockBackendApiService.fetchHikes()).called(1);
-      });
+          verify(mockBackendApiService.fetchHikes()).called(1);
+        },
+      );
 
       test('should return empty list when no hikes available', () async {
         // Arrange
-        when(mockBackendApiService.fetchHikes())
-            .thenAnswer((_) async => []);
+        when(mockBackendApiService.fetchHikes()).thenAnswer((_) async => []);
 
         // Act
         final result = await hikeRepository.getAllAvailableHikes();
@@ -73,8 +76,9 @@ void main() {
 
       test('should throw exception when backend service fails', () async {
         // Arrange
-        when(mockBackendApiService.fetchHikes())
-            .thenThrow(Exception('Network error'));
+        when(
+          mockBackendApiService.fetchHikes(),
+        ).thenThrow(Exception('Network error'));
 
         // Act & Assert
         expect(
@@ -87,8 +91,9 @@ void main() {
 
       test('should handle null response gracefully', () async {
         // Arrange
-        when(mockBackendApiService.fetchHikes())
-            .thenAnswer((_) async => <Hike>[]);
+        when(
+          mockBackendApiService.fetchHikes(),
+        ).thenAnswer((_) async => <Hike>[]);
 
         // Act
         final result = await hikeRepository.getAllAvailableHikes();
@@ -122,8 +127,9 @@ void main() {
           ),
         ];
 
-        when(mockBackendApiService.fetchUserHikes(testUserId))
-            .thenAnswer((_) async => expectedUserHikes);
+        when(
+          mockBackendApiService.fetchUserHikes(testUserId),
+        ).thenAnswer((_) async => expectedUserHikes);
 
         // Act
         final result = await hikeRepository.getUserHikes(testUserId);
@@ -139,8 +145,9 @@ void main() {
 
       test('should return empty list when user has no hikes', () async {
         // Arrange
-        when(mockBackendApiService.fetchUserHikes(testUserId))
-            .thenAnswer((_) async => []);
+        when(
+          mockBackendApiService.fetchUserHikes(testUserId),
+        ).thenAnswer((_) async => []);
 
         // Act
         final result = await hikeRepository.getUserHikes(testUserId);
@@ -152,8 +159,9 @@ void main() {
 
       test('should throw exception when backend service fails', () async {
         // Arrange
-        when(mockBackendApiService.fetchUserHikes(testUserId))
-            .thenThrow(Exception('Database error'));
+        when(
+          mockBackendApiService.fetchUserHikes(testUserId),
+        ).thenThrow(Exception('Database error'));
 
         // Act & Assert
         expect(
@@ -168,19 +176,19 @@ void main() {
         // Arrange
         const userId1 = 'user1';
         const userId2 = 'user2';
-        
-        final user1Hikes = [
-          const Hike(id: 1, name: 'Hike 1'),
-        ];
+
+        final user1Hikes = [const Hike(id: 1, name: 'Hike 1')];
         final user2Hikes = [
           const Hike(id: 2, name: 'Hike 2'),
           const Hike(id: 3, name: 'Hike 3'),
         ];
 
-        when(mockBackendApiService.fetchUserHikes(userId1))
-            .thenAnswer((_) async => user1Hikes);
-        when(mockBackendApiService.fetchUserHikes(userId2))
-            .thenAnswer((_) async => user2Hikes);
+        when(
+          mockBackendApiService.fetchUserHikes(userId1),
+        ).thenAnswer((_) async => user1Hikes);
+        when(
+          mockBackendApiService.fetchUserHikes(userId2),
+        ).thenAnswer((_) async => user2Hikes);
 
         // Act
         final result1 = await hikeRepository.getUserHikes(userId1);
@@ -199,8 +207,9 @@ void main() {
       test('should handle empty user ID', () async {
         // Arrange
         const emptyUserId = '';
-        when(mockBackendApiService.fetchUserHikes(emptyUserId))
-            .thenAnswer((_) async => []);
+        when(
+          mockBackendApiService.fetchUserHikes(emptyUserId),
+        ).thenAnswer((_) async => []);
 
         // Act
         final result = await hikeRepository.getUserHikes(emptyUserId);
@@ -213,12 +222,11 @@ void main() {
       test('should handle special characters in user ID', () async {
         // Arrange
         const specialUserId = 'user@123-test_id';
-        final expectedHikes = [
-          const Hike(id: 99, name: 'Special User Hike'),
-        ];
+        final expectedHikes = [const Hike(id: 99, name: 'Special User Hike')];
 
-        when(mockBackendApiService.fetchUserHikes(specialUserId))
-            .thenAnswer((_) async => expectedHikes);
+        when(
+          mockBackendApiService.fetchUserHikes(specialUserId),
+        ).thenAnswer((_) async => expectedHikes);
 
         // Act
         final result = await hikeRepository.getUserHikes(specialUserId);
@@ -230,34 +238,37 @@ void main() {
     });
 
     group('Error Handling', () {
-      test('should propagate specific exceptions from backend service', () async {
-        // Arrange
-        const errorMessage = 'Specific database connection error';
-        when(mockBackendApiService.fetchHikes())
-            .thenThrow(Exception(errorMessage));
+      test(
+        'should propagate specific exceptions from backend service',
+        () async {
+          // Arrange
+          const errorMessage = 'Specific database connection error';
+          when(
+            mockBackendApiService.fetchHikes(),
+          ).thenThrow(Exception(errorMessage));
 
-        // Act & Assert
-        try {
-          await hikeRepository.getAllAvailableHikes();
-          fail('Expected exception was not thrown');
-        } catch (e) {
-          expect(e.toString(), contains(errorMessage));
-        }
+          // Act & Assert
+          try {
+            await hikeRepository.getAllAvailableHikes();
+            fail('Expected exception was not thrown');
+          } catch (e) {
+            expect(e.toString(), contains(errorMessage));
+          }
 
-        verify(mockBackendApiService.fetchHikes()).called(1);
-      });
+          verify(mockBackendApiService.fetchHikes()).called(1);
+        },
+      );
 
       test('should handle timeout exceptions', () async {
         // Arrange
-        when(mockBackendApiService.fetchHikes())
-            .thenThrow(Exception('Timeout'));
+        when(
+          mockBackendApiService.fetchHikes(),
+        ).thenThrow(Exception('Timeout'));
 
         // Act & Assert
         expect(
           () => hikeRepository.getAllAvailableHikes(),
-          throwsA(
-            predicate((e) => e.toString().contains('Timeout')),
-          ),
+          throwsA(predicate((e) => e.toString().contains('Timeout'))),
         );
 
         verify(mockBackendApiService.fetchHikes()).called(1);
@@ -270,16 +281,18 @@ void main() {
         final hikes1 = [const Hike(id: 1, name: 'First Call')];
         final hikes2 = [const Hike(id: 2, name: 'Second Call')];
 
-        when(mockBackendApiService.fetchHikes())
-            .thenAnswer((_) async => hikes1);
+        when(
+          mockBackendApiService.fetchHikes(),
+        ).thenAnswer((_) async => hikes1);
 
         // Act
         final result1 = await hikeRepository.getAllAvailableHikes();
 
         // Re-setup mock for second call
-        when(mockBackendApiService.fetchHikes())
-            .thenAnswer((_) async => hikes2);
-            
+        when(
+          mockBackendApiService.fetchHikes(),
+        ).thenAnswer((_) async => hikes2);
+
         final result2 = await hikeRepository.getAllAvailableHikes();
 
         // Assert
@@ -290,12 +303,11 @@ void main() {
 
       test('should handle concurrent calls correctly', () async {
         // Arrange
-        final expectedHikes = [
-          const Hike(id: 1, name: 'Concurrent Hike'),
-        ];
+        final expectedHikes = [const Hike(id: 1, name: 'Concurrent Hike')];
 
-        when(mockBackendApiService.fetchHikes())
-            .thenAnswer((_) async => expectedHikes);
+        when(
+          mockBackendApiService.fetchHikes(),
+        ).thenAnswer((_) async => expectedHikes);
 
         // Act
         final futures = List.generate(

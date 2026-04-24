@@ -70,8 +70,9 @@ void main() {
         // Arrange
         final testCommissions = TestHelpers.createSampleCommissions();
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
 
         // Act
         await provider.loadCommissionsForCompany(companyId);
@@ -86,8 +87,9 @@ void main() {
       test('should handle commission loading error', () async {
         // Arrange
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenThrow(Exception('Service error'));
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenThrow(Exception('Service error'));
 
         // Act
         await provider.loadCommissionsForCompany(companyId);
@@ -103,19 +105,20 @@ void main() {
         // Arrange
         const companyId = 'company-123';
         final completer = Completer<List<Commission>>();
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) => completer.future);
-        
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) => completer.future);
+
         // Act
         final future = provider.loadCommissionsForCompany(companyId);
-        
+
         // Assert loading state
         expect(provider.isLoading, isTrue);
-        
+
         // Complete the future
         completer.complete(TestHelpers.createSampleCommissions());
         await future;
-        
+
         expect(provider.isLoading, isFalse);
       });
     });
@@ -125,8 +128,9 @@ void main() {
         // Arrange
         final testCommissions = TestHelpers.createSampleCommissions();
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
         await provider.loadCommissionsForCompany(companyId);
 
         // Act
@@ -134,16 +138,23 @@ void main() {
 
         // Assert
         expect(provider.currentFilter, equals('pending'));
-        expect(provider.filteredCommissions.length, 
-            equals(testCommissions.where((c) => c.status == CommissionStatus.pending).length));
+        expect(
+          provider.filteredCommissions.length,
+          equals(
+            testCommissions
+                .where((c) => c.status == CommissionStatus.pending)
+                .length,
+          ),
+        );
       });
 
       test('should show all commissions when filter is "all"', () async {
         // Arrange
         final testCommissions = TestHelpers.createSampleCommissions();
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
         await provider.loadCommissionsForCompany(companyId);
 
         // Act
@@ -158,8 +169,9 @@ void main() {
         // Arrange
         final testCommissions = TestHelpers.createSampleCommissions();
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
         await provider.loadCommissionsForCompany(companyId);
 
         // Act
@@ -167,16 +179,23 @@ void main() {
 
         // Assert
         expect(provider.searchTerm, equals('company-123'));
-        expect(provider.filteredCommissions.length, 
-            equals(testCommissions.where((c) => c.companyId.contains('company-123')).length));
+        expect(
+          provider.filteredCommissions.length,
+          equals(
+            testCommissions
+                .where((c) => c.companyId.contains('company-123'))
+                .length,
+          ),
+        );
       });
 
       test('should combine status filter and search', () async {
         // Arrange
         final testCommissions = TestHelpers.createSampleCommissions();
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
         await provider.loadCommissionsForCompany(companyId);
 
         // Act
@@ -185,9 +204,14 @@ void main() {
 
         // Assert
         final filtered = provider.filteredCommissions;
-        expect(filtered.every((c) => 
-            c.status == CommissionStatus.pending && 
-            c.companyId.contains('company-123')), isTrue);
+        expect(
+          filtered.every(
+            (c) =>
+                c.status == CommissionStatus.pending &&
+                c.companyId.contains('company-123'),
+          ),
+          isTrue,
+        );
       });
     });
 
@@ -203,8 +227,9 @@ void main() {
           'pendingAmount': 200.0,
           'paidAmount': 300.0,
         };
-        when(mockService.getCommissionStatistics(companyId))
-            .thenAnswer((_) async => testStats);
+        when(
+          mockService.getCommissionStatistics(companyId),
+        ).thenAnswer((_) async => testStats);
 
         // Act
         await provider.loadStatistics(companyId);
@@ -217,8 +242,9 @@ void main() {
       test('should handle statistics loading error', () async {
         // Arrange
         const companyId = 'company-123';
-        when(mockService.getCommissionStatistics(companyId))
-            .thenThrow(Exception('Stats error'));
+        when(
+          mockService.getCommissionStatistics(companyId),
+        ).thenThrow(Exception('Stats error'));
 
         // Act
         await provider.loadStatistics(companyId);
@@ -233,37 +259,65 @@ void main() {
       test('should update commission status successfully', () async {
         // Arrange
         final commission = TestHelpers.createTestCommission();
-        final updatedCommission = commission.copyWith(status: CommissionStatus.paid);
-        when(mockService.updateCommissionStatus(commission.id, CommissionStatus.paid))
-            .thenAnswer((_) async => updatedCommission);
-        when(mockService.getCommissionsForCompany(any))
-            .thenAnswer((_) async => [updatedCommission]);
+        final updatedCommission = commission.copyWith(
+          status: CommissionStatus.paid,
+        );
+        when(
+          mockService.updateCommissionStatus(
+            commission.id,
+            CommissionStatus.paid,
+          ),
+        ).thenAnswer((_) async => updatedCommission);
+        when(
+          mockService.getCommissionsForCompany(any),
+        ).thenAnswer((_) async => [updatedCommission]);
 
         provider.commissions = [commission];
 
         // Act
-        await provider.updateCommissionStatus(commission.id, CommissionStatus.paid);
+        await provider.updateCommissionStatus(
+          commission.id,
+          CommissionStatus.paid,
+        );
 
         // Assert
-        expect(provider.commissions.first.status, equals(CommissionStatus.paid));
-        verify(mockService.updateCommissionStatus(commission.id, CommissionStatus.paid)).called(1);
+        expect(
+          provider.commissions.first.status,
+          equals(CommissionStatus.paid),
+        );
+        verify(
+          mockService.updateCommissionStatus(
+            commission.id,
+            CommissionStatus.paid,
+          ),
+        ).called(1);
       });
 
       test('should handle commission status update error', () async {
         // Arrange
         final commission = TestHelpers.createTestCommission();
-        when(mockService.updateCommissionStatus(commission.id, CommissionStatus.paid))
-            .thenThrow(Exception('Update error'));
+        when(
+          mockService.updateCommissionStatus(
+            commission.id,
+            CommissionStatus.paid,
+          ),
+        ).thenThrow(Exception('Update error'));
 
         provider.commissions = [commission];
 
         // Act
-        await provider.updateCommissionStatus(commission.id, CommissionStatus.paid);
+        await provider.updateCommissionStatus(
+          commission.id,
+          CommissionStatus.paid,
+        );
 
         // Assert
         expect(provider.errorMessage, isNotNull);
         expect(provider.errorMessage, contains('Update error'));
-        expect(provider.commissions.first.status, equals(commission.status)); // Status unchanged
+        expect(
+          provider.commissions.first.status,
+          equals(commission.status),
+        ); // Status unchanged
       });
     });
 
@@ -285,8 +339,9 @@ void main() {
         // Arrange
         final testCommissions = TestHelpers.createSampleCommissions();
         const companyId = 'company-123';
-        when(mockService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
         await provider.loadCommissionsForCompany(companyId);
 
         final startDate = DateTime(2025, 1, 15);
@@ -297,8 +352,13 @@ void main() {
 
         // Assert
         final filtered = provider.filteredCommissions;
-        expect(filtered.every((c) => 
-            c.createdAt.isAfter(startDate) && c.createdAt.isBefore(endDate)), isTrue);
+        expect(
+          filtered.every(
+            (c) =>
+                c.createdAt.isAfter(startDate) && c.createdAt.isBefore(endDate),
+          ),
+          isTrue,
+        );
       });
     });
 
@@ -307,8 +367,9 @@ void main() {
         // Arrange
         const companyId = 'company-123';
         final overdueCommissions = [TestHelpers.createOverdueCommission()];
-        when(mockService.getOverdueCommissions(companyId))
-            .thenAnswer((_) async => overdueCommissions);
+        when(
+          mockService.getOverdueCommissions(companyId),
+        ).thenAnswer((_) async => overdueCommissions);
 
         // Act
         await provider.loadOverdueCommissions(companyId);
@@ -318,6 +379,5 @@ void main() {
         verify(mockService.getOverdueCommissions(companyId)).called(1);
       });
     });
-
   });
 }

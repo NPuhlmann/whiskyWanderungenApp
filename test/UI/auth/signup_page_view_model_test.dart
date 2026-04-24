@@ -27,56 +27,79 @@ void main() {
     });
 
     group('signUpWithEmailPassword', () {
-      test('should call userRepository signUpWithEmailPassword without data', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'TestPassword123!';
-        final expectedResponse = AuthResponse(user: null, session: null);
-        
-        when(mockUserRepository.signUpWithEmailPassword(email, password, null))
-            .thenAnswer((_) async => expectedResponse);
+      test(
+        'should call userRepository signUpWithEmailPassword without data',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'TestPassword123!';
+          final expectedResponse = AuthResponse(user: null, session: null);
 
-        // Act
-        final result = await signUpViewModel.signUpWithEmailPassword(email, password);
+          when(
+            mockUserRepository.signUpWithEmailPassword(email, password, null),
+          ).thenAnswer((_) async => expectedResponse);
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        verify(mockUserRepository.signUpWithEmailPassword(email, password, null)).called(1);
-      });
+          // Act
+          final result = await signUpViewModel.signUpWithEmailPassword(
+            email,
+            password,
+          );
 
-      test('should call userRepository signUpWithEmailPassword with data', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'TestPassword123!';
-        final data = {'firstName': 'John', 'lastName': 'Doe'};
-        final expectedResponse = AuthResponse(user: null, session: null);
-        
-        when(mockUserRepository.signUpWithEmailPassword(email, password, data))
-            .thenAnswer((_) async => expectedResponse);
+          // Assert
+          expect(result, equals(expectedResponse));
+          verify(
+            mockUserRepository.signUpWithEmailPassword(email, password, null),
+          ).called(1);
+        },
+      );
 
-        // Act
-        final result = await signUpViewModel.signUpWithEmailPassword(email, password, data);
+      test(
+        'should call userRepository signUpWithEmailPassword with data',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'TestPassword123!';
+          final data = {'firstName': 'John', 'lastName': 'Doe'};
+          final expectedResponse = AuthResponse(user: null, session: null);
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        verify(mockUserRepository.signUpWithEmailPassword(email, password, data)).called(1);
-      });
+          when(
+            mockUserRepository.signUpWithEmailPassword(email, password, data),
+          ).thenAnswer((_) async => expectedResponse);
+
+          // Act
+          final result = await signUpViewModel.signUpWithEmailPassword(
+            email,
+            password,
+            data,
+          );
+
+          // Assert
+          expect(result, equals(expectedResponse));
+          verify(
+            mockUserRepository.signUpWithEmailPassword(email, password, data),
+          ).called(1);
+        },
+      );
 
       test('should propagate exceptions from userRepository', () async {
         // Arrange
         const email = 'test@example.com';
         const password = 'TestPassword123!';
         final exception = Exception('Sign up failed');
-        
-        when(mockUserRepository.signUpWithEmailPassword(email, password, null))
-            .thenThrow(exception);
+
+        when(
+          mockUserRepository.signUpWithEmailPassword(email, password, null),
+        ).thenThrow(exception);
 
         // Act & Assert
         expect(
-          () async => await signUpViewModel.signUpWithEmailPassword(email, password),
+          () async =>
+              await signUpViewModel.signUpWithEmailPassword(email, password),
           throwsA(equals(exception)),
         );
-        verify(mockUserRepository.signUpWithEmailPassword(email, password, null)).called(1);
+        verify(
+          mockUserRepository.signUpWithEmailPassword(email, password, null),
+        ).called(1);
       });
 
       test('should handle empty email and password', () async {
@@ -84,16 +107,22 @@ void main() {
         const email = '';
         const password = '';
         final expectedResponse = AuthResponse(user: null, session: null);
-        
-        when(mockUserRepository.signUpWithEmailPassword(email, password, null))
-            .thenAnswer((_) async => expectedResponse);
+
+        when(
+          mockUserRepository.signUpWithEmailPassword(email, password, null),
+        ).thenAnswer((_) async => expectedResponse);
 
         // Act
-        final result = await signUpViewModel.signUpWithEmailPassword(email, password);
+        final result = await signUpViewModel.signUpWithEmailPassword(
+          email,
+          password,
+        );
 
         // Assert
         expect(result, equals(expectedResponse));
-        verify(mockUserRepository.signUpWithEmailPassword(email, password, null)).called(1);
+        verify(
+          mockUserRepository.signUpWithEmailPassword(email, password, null),
+        ).called(1);
       });
 
       test('should handle complex user data', () async {
@@ -104,19 +133,26 @@ void main() {
           'firstName': 'John',
           'lastName': 'Doe',
           'dateOfBirth': '1990-05-15',
-          'preferences': {'newsletter': true}
+          'preferences': {'newsletter': true},
         };
         final expectedResponse = AuthResponse(user: null, session: null);
-        
-        when(mockUserRepository.signUpWithEmailPassword(email, password, userData))
-            .thenAnswer((_) async => expectedResponse);
+
+        when(
+          mockUserRepository.signUpWithEmailPassword(email, password, userData),
+        ).thenAnswer((_) async => expectedResponse);
 
         // Act
-        final result = await signUpViewModel.signUpWithEmailPassword(email, password, userData);
+        final result = await signUpViewModel.signUpWithEmailPassword(
+          email,
+          password,
+          userData,
+        );
 
         // Assert
         expect(result, equals(expectedResponse));
-        verify(mockUserRepository.signUpWithEmailPassword(email, password, userData)).called(1);
+        verify(
+          mockUserRepository.signUpWithEmailPassword(email, password, userData),
+        ).called(1);
       });
 
       test('should handle null values in AuthResponse', () async {
@@ -124,17 +160,23 @@ void main() {
         const email = 'test@example.com';
         const password = 'TestPassword123!';
         final expectedResponse = AuthResponse(user: null, session: null);
-        
-        when(mockUserRepository.signUpWithEmailPassword(email, password, null))
-            .thenAnswer((_) async => expectedResponse);
+
+        when(
+          mockUserRepository.signUpWithEmailPassword(email, password, null),
+        ).thenAnswer((_) async => expectedResponse);
 
         // Act
-        final result = await signUpViewModel.signUpWithEmailPassword(email, password);
+        final result = await signUpViewModel.signUpWithEmailPassword(
+          email,
+          password,
+        );
 
         // Assert
         expect(result.user, isNull);
         expect(result.session, isNull);
-        verify(mockUserRepository.signUpWithEmailPassword(email, password, null)).called(1);
+        verify(
+          mockUserRepository.signUpWithEmailPassword(email, password, null),
+        ).called(1);
       });
     });
   });

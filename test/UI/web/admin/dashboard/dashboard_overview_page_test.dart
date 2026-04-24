@@ -47,19 +47,19 @@ void main() {
           'customer_name': 'John Doe',
           'total_amount': 89.99,
           'status': 'pending',
-          'hike_name': 'Highland Adventure'
+          'hike_name': 'Highland Adventure',
         },
         {
           'id': 2,
           'customer_name': 'Jane Smith',
           'total_amount': 79.99,
           'status': 'processing',
-          'hike_name': 'Speyside Journey'
-        }
+          'hike_name': 'Speyside Journey',
+        },
       ]);
       when(mockProvider.popularRoutes).thenReturn([
         {'hike_id': 1, 'hike_name': 'Highland Adventure', 'count': 15},
-        {'hike_id': 2, 'hike_name': 'Speyside Journey', 'count': 12}
+        {'hike_id': 2, 'hike_name': 'Speyside Journey', 'count': 12},
       ]);
       when(mockProvider.refreshData()).thenAnswer((_) async {});
     });
@@ -86,7 +86,9 @@ void main() {
         expect(find.byIcon(Icons.refresh), findsOneWidget);
       });
 
-      testWidgets('should call refreshData when refresh button is tapped', (WidgetTester tester) async {
+      testWidgets('should call refreshData when refresh button is tapped', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         await tester.tap(find.byIcon(Icons.refresh));
@@ -97,7 +99,9 @@ void main() {
     });
 
     group('Loading State', () {
-      testWidgets('should display loading indicator when loading', (WidgetTester tester) async {
+      testWidgets('should display loading indicator when loading', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.isLoading).thenReturn(true);
 
         await tester.pumpWidget(createTestWidget());
@@ -106,7 +110,9 @@ void main() {
         expect(find.text('Loading dashboard data...'), findsOneWidget);
       });
 
-      testWidgets('should not display content when loading', (WidgetTester tester) async {
+      testWidgets('should not display content when loading', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.isLoading).thenReturn(true);
 
         await tester.pumpWidget(createTestWidget());
@@ -117,8 +123,12 @@ void main() {
     });
 
     group('Error State', () {
-      testWidgets('should display error message when error exists', (WidgetTester tester) async {
-        when(mockProvider.errorMessage).thenReturn('Database connection failed');
+      testWidgets('should display error message when error exists', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockProvider.errorMessage,
+        ).thenReturn('Database connection failed');
 
         await tester.pumpWidget(createTestWidget());
 
@@ -126,7 +136,9 @@ void main() {
         expect(find.byIcon(Icons.error), findsOneWidget);
       });
 
-      testWidgets('should display retry button when error exists', (WidgetTester tester) async {
+      testWidgets('should display retry button when error exists', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.errorMessage).thenReturn('Network error');
 
         await tester.pumpWidget(createTestWidget());
@@ -134,7 +146,9 @@ void main() {
         expect(find.text('Retry'), findsOneWidget);
       });
 
-      testWidgets('should call refreshData when retry button is tapped', (WidgetTester tester) async {
+      testWidgets('should call refreshData when retry button is tapped', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.errorMessage).thenReturn('Network error');
 
         await tester.pumpWidget(createTestWidget());
@@ -147,41 +161,53 @@ void main() {
     });
 
     group('Revenue Overview Section', () {
-      testWidgets('should display revenue overview title', (WidgetTester tester) async {
+      testWidgets('should display revenue overview title', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Revenue Overview'), findsOneWidget);
       });
 
-      testWidgets('should display daily revenue card', (WidgetTester tester) async {
+      testWidgets('should display daily revenue card', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Today'), findsOneWidget);
         expect(find.text('150,00 €'), findsOneWidget);
       });
 
-      testWidgets('should display weekly revenue card', (WidgetTester tester) async {
+      testWidgets('should display weekly revenue card', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('This Week'), findsOneWidget);
         expect(find.text('800,00 €'), findsOneWidget);
       });
 
-      testWidgets('should display monthly revenue card', (WidgetTester tester) async {
+      testWidgets('should display monthly revenue card', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('This Month'), findsOneWidget);
         expect(find.text('3.500,00 €'), findsOneWidget);
       });
 
-      testWidgets('should display growth indicators', (WidgetTester tester) async {
+      testWidgets('should display growth indicators', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('+25.0%'), findsOneWidget);
         expect(find.text('+10.0%'), findsOneWidget);
       });
 
-      testWidgets('should display negative growth correctly', (WidgetTester tester) async {
+      testWidgets('should display negative growth correctly', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.dailyGrowthPercentage).thenReturn(-15.0);
         when(mockProvider.weeklyGrowthPercentage).thenReturn(-5.0);
 
@@ -193,13 +219,17 @@ void main() {
     });
 
     group('Order Management Section', () {
-      testWidgets('should display order management title', (WidgetTester tester) async {
+      testWidgets('should display order management title', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Order Management'), findsOneWidget);
       });
 
-      testWidgets('should display total active orders', (WidgetTester tester) async {
+      testWidgets('should display total active orders', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Total Active'), findsOneWidget);
@@ -213,7 +243,9 @@ void main() {
         expect(find.text('5'), findsOneWidget);
       });
 
-      testWidgets('should display processing orders', (WidgetTester tester) async {
+      testWidgets('should display processing orders', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Processing'), findsOneWidget);
@@ -229,25 +261,33 @@ void main() {
     });
 
     group('Route Sales Section', () {
-      testWidgets('should display route sales title', (WidgetTester tester) async {
+      testWidgets('should display route sales title', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Route Sales'), findsOneWidget);
       });
 
-      testWidgets('should display sold routes today', (WidgetTester tester) async {
+      testWidgets('should display sold routes today', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('2'), findsAtLeastNWidgets(1)); // Today's sales
       });
 
-      testWidgets('should display sold routes this week', (WidgetTester tester) async {
+      testWidgets('should display sold routes this week', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('12'), findsAtLeastNWidgets(1)); // This week's sales
       });
 
-      testWidgets('should display sold routes this month', (WidgetTester tester) async {
+      testWidgets('should display sold routes this month', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('45'), findsAtLeastNWidgets(1)); // This month's sales
@@ -255,7 +295,9 @@ void main() {
     });
 
     group('Customer Rating Section', () {
-      testWidgets('should display customer rating', (WidgetTester tester) async {
+      testWidgets('should display customer rating', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Customer Rating'), findsOneWidget);
@@ -270,13 +312,17 @@ void main() {
     });
 
     group('Recent Orders Section', () {
-      testWidgets('should display recent orders title', (WidgetTester tester) async {
+      testWidgets('should display recent orders title', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Recent Orders'), findsOneWidget);
       });
 
-      testWidgets('should display recent order items', (WidgetTester tester) async {
+      testWidgets('should display recent order items', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('John Doe'), findsOneWidget);
@@ -294,20 +340,26 @@ void main() {
     });
 
     group('Popular Routes Section', () {
-      testWidgets('should display popular routes title', (WidgetTester tester) async {
+      testWidgets('should display popular routes title', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Popular Routes'), findsOneWidget);
       });
 
-      testWidgets('should display popular route items', (WidgetTester tester) async {
+      testWidgets('should display popular route items', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('Highland Adventure'), findsAtLeastNWidgets(1));
         expect(find.text('Speyside Journey'), findsAtLeastNWidgets(1));
       });
 
-      testWidgets('should display route sales counts', (WidgetTester tester) async {
+      testWidgets('should display route sales counts', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(createTestWidget());
 
         expect(find.text('15 sales'), findsOneWidget);
@@ -316,7 +368,9 @@ void main() {
     });
 
     group('Empty State Handling', () {
-      testWidgets('should display empty state when no revenue data', (WidgetTester tester) async {
+      testWidgets('should display empty state when no revenue data', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.hasRevenueData).thenReturn(false);
         when(mockProvider.dailyRevenue).thenReturn(0.0);
         when(mockProvider.weeklyRevenue).thenReturn(0.0);
@@ -327,7 +381,9 @@ void main() {
         expect(find.text('No revenue data available'), findsOneWidget);
       });
 
-      testWidgets('should display empty state when no orders', (WidgetTester tester) async {
+      testWidgets('should display empty state when no orders', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.hasRecentOrders).thenReturn(false);
         when(mockProvider.recentOrders).thenReturn([]);
 
@@ -336,7 +392,9 @@ void main() {
         expect(find.text('No recent orders'), findsOneWidget);
       });
 
-      testWidgets('should display empty state when no popular routes', (WidgetTester tester) async {
+      testWidgets('should display empty state when no popular routes', (
+        WidgetTester tester,
+      ) async {
         when(mockProvider.hasPopularRoutes).thenReturn(false);
         when(mockProvider.popularRoutes).thenReturn([]);
 
@@ -347,7 +405,9 @@ void main() {
     });
 
     group('Responsive Design', () {
-      testWidgets('should adapt layout for desktop', (WidgetTester tester) async {
+      testWidgets('should adapt layout for desktop', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = Size(1200, 800);
         tester.view.devicePixelRatio = 1.0;
 
@@ -357,7 +417,9 @@ void main() {
         expect(find.byType(GridView), findsOneWidget);
       });
 
-      testWidgets('should adapt layout for mobile', (WidgetTester tester) async {
+      testWidgets('should adapt layout for mobile', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = Size(400, 800);
         tester.view.devicePixelRatio = 1.0;
 

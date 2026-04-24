@@ -101,8 +101,14 @@ void main() {
         expect(company.countryCode, equals('GB'));
         expect(company.countryName, equals('United Kingdom'));
         expect(company.city, equals('Campbeltown'));
-        expect(company.createdAt, equals(DateTime.parse('2023-04-01T00:00:00.000')));
-        expect(company.updatedAt, equals(DateTime.parse('2023-04-15T00:00:00.000')));
+        expect(
+          company.createdAt,
+          equals(DateTime.parse('2023-04-01T00:00:00.000')),
+        );
+        expect(
+          company.updatedAt,
+          equals(DateTime.parse('2023-04-15T00:00:00.000')),
+        );
       });
     });
 

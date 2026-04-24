@@ -4,7 +4,6 @@ import 'package:whisky_hikes/domain/models/basic_order.dart';
 
 void main() {
   group('SimpleOrder Model Tests (TDD - Green Phase)', () {
-    
     test('should create SimpleOrder with all required fields', () {
       // Arrange & Act
       final order = SimpleOrder(
@@ -67,7 +66,9 @@ void main() {
         createdAt: DateTime.now(),
       );
 
-      final deliveredOrder = pendingOrder.copyWith(status: OrderStatus.delivered);
+      final deliveredOrder = pendingOrder.copyWith(
+        status: OrderStatus.delivered,
+      );
 
       // Assert
       expect(pendingOrder.canBeCancelled, isTrue);

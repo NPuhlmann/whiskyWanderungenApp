@@ -37,7 +37,7 @@ void main() {
 
     test('allRoutes enthält alle definierten Routen', () {
       final allRoutes = AdminRoutes.allRoutes;
-      
+
       expect(allRoutes, contains(AdminRoutes.dashboard));
       expect(allRoutes, contains(AdminRoutes.routes));
       expect(allRoutes, contains(AdminRoutes.orders));
@@ -79,27 +79,39 @@ void main() {
 
     test('Route-Struktur ist konsistent', () {
       final allRoutes = AdminRoutes.allRoutes;
-      
+
       // Alle Routen sollten mit /admin/ beginnen
       for (final route in allRoutes) {
-        expect(route.startsWith('/admin/'), isTrue, reason: 'Route $route sollte mit /admin/ beginnen');
+        expect(
+          route.startsWith('/admin/'),
+          isTrue,
+          reason: 'Route $route sollte mit /admin/ beginnen',
+        );
       }
-      
+
       // Keine doppelten Routen
       final uniqueRoutes = allRoutes.toSet();
-      expect(uniqueRoutes.length, equals(allRoutes.length), reason: 'Keine doppelten Routen erlaubt');
+      expect(
+        uniqueRoutes.length,
+        equals(allRoutes.length),
+        reason: 'Keine doppelten Routen erlaubt',
+      );
     });
 
     test('Route-Hierarchie ist logisch', () {
       // Dashboard sollte die erste Route sein
       expect(AdminRoutes.allRoutes.first, equals(AdminRoutes.dashboard));
-      
+
       // Settings sollte die letzte Route sein
       expect(AdminRoutes.allRoutes.last, equals(AdminRoutes.settings));
-      
+
       // Alle Routen sollten mit /admin/ beginnen
       for (final route in AdminRoutes.allRoutes) {
-        expect(route.startsWith('/admin/'), isTrue, reason: 'Route $route sollte mit /admin/ beginnen');
+        expect(
+          route.startsWith('/admin/'),
+          isTrue,
+          reason: 'Route $route sollte mit /admin/ beginnen',
+        );
       }
     });
   });

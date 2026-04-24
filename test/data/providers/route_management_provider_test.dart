@@ -82,8 +82,9 @@ void main() {
           },
         ];
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => mockRoutes);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => mockRoutes);
 
         // Act
         await provider.loadRoutes();
@@ -100,8 +101,9 @@ void main() {
       test('should handle load routes error', () async {
         // Arrange
         const errorMessage = 'Failed to load routes';
-        when(mockService.getAllRoutesForAdmin())
-            .thenThrow(Exception(errorMessage));
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenThrow(Exception(errorMessage));
 
         // Act
         await provider.loadRoutes();
@@ -131,12 +133,13 @@ void main() {
           'is_active': true,
         };
 
-        when(mockService.validateRouteData(routeData))
-            .thenReturn(true);
-        when(mockService.createRoute(routeData))
-            .thenAnswer((_) async => createdRoute);
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => [createdRoute]);
+        when(mockService.validateRouteData(routeData)).thenReturn(true);
+        when(
+          mockService.createRoute(routeData),
+        ).thenAnswer((_) async => createdRoute);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => [createdRoute]);
 
         // Act
         await provider.createRoute(routeData);
@@ -158,10 +161,10 @@ void main() {
         };
         const errorMessage = 'Failed to create route';
 
-        when(mockService.validateRouteData(routeData))
-            .thenReturn(true);
-        when(mockService.createRoute(routeData))
-            .thenThrow(Exception(errorMessage));
+        when(mockService.validateRouteData(routeData)).thenReturn(true);
+        when(
+          mockService.createRoute(routeData),
+        ).thenThrow(Exception(errorMessage));
 
         // Act
         await provider.createRoute(routeData);
@@ -176,10 +179,7 @@ void main() {
       test('should update route successfully', () async {
         // Arrange
         const routeId = 123;
-        final updateData = {
-          'name': 'Updated Route',
-          'price': 109.99,
-        };
+        final updateData = {'name': 'Updated Route', 'price': 109.99};
 
         final updatedRoute = {
           'id': 123,
@@ -190,10 +190,12 @@ void main() {
           'is_active': true,
         };
 
-        when(mockService.updateRoute(routeId, updateData))
-            .thenAnswer((_) async => updatedRoute);
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => [updatedRoute]);
+        when(
+          mockService.updateRoute(routeId, updateData),
+        ).thenAnswer((_) async => updatedRoute);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => [updatedRoute]);
 
         // Act
         await provider.updateRoute(routeId, updateData);
@@ -210,15 +212,10 @@ void main() {
         const routeId = 123;
 
         // Set up initial state with a route
-        provider.routes.add({
-          'id': 123,
-          'name': 'Route to Delete',
-        });
+        provider.routes.add({'id': 123, 'name': 'Route to Delete'});
 
-        when(mockService.deleteRoute(routeId))
-            .thenAnswer((_) async => {});
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => []);
+        when(mockService.deleteRoute(routeId)).thenAnswer((_) async => {});
+        when(mockService.getAllRoutesForAdmin()).thenAnswer((_) async => []);
 
         // Act
         await provider.deleteRoute(routeId);
@@ -248,7 +245,7 @@ void main() {
               'name': 'Waypoint 1',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
           {
             'waypoint_id': 457,
@@ -258,12 +255,13 @@ void main() {
               'name': 'Waypoint 2',
               'latitude': 52.5300,
               'longitude': 13.4150,
-            }
+            },
           },
         ];
 
-        when(mockService.getRouteWaypoints(123))
-            .thenAnswer((_) async => mockWaypoints);
+        when(
+          mockService.getRouteWaypoints(123),
+        ).thenAnswer((_) async => mockWaypoints);
 
         // Act
         await provider.selectRoute(route);
@@ -271,8 +269,14 @@ void main() {
         // Assert
         expect(provider.selectedRoute, equals(route));
         expect(provider.waypoints.length, equals(2));
-        expect(provider.waypoints[0]['waypoints']['name'], equals('Waypoint 1'));
-        expect(provider.waypoints[1]['waypoints']['name'], equals('Waypoint 2'));
+        expect(
+          provider.waypoints[0]['waypoints']['name'],
+          equals('Waypoint 1'),
+        );
+        expect(
+          provider.waypoints[1]['waypoints']['name'],
+          equals('Waypoint 2'),
+        );
         verify(mockService.getRouteWaypoints(123)).called(1);
       });
     });
@@ -297,23 +301,25 @@ void main() {
           'longitude': 13.4050,
         };
 
-        when(mockService.validateWaypointData(waypointData))
-            .thenReturn(true);
-        when(mockService.addWaypointToRoute(routeId, waypointData))
-            .thenAnswer((_) async => createdWaypoint);
-        when(mockService.getRouteWaypoints(routeId))
-            .thenAnswer((_) async => [
-              {
-                'waypoint_id': 456,
-                'order_index': 1,
-                'waypoints': createdWaypoint,
-              }
-            ]);
+        when(mockService.validateWaypointData(waypointData)).thenReturn(true);
+        when(
+          mockService.addWaypointToRoute(routeId, waypointData),
+        ).thenAnswer((_) async => createdWaypoint);
+        when(mockService.getRouteWaypoints(routeId)).thenAnswer(
+          (_) async => [
+            {
+              'waypoint_id': 456,
+              'order_index': 1,
+              'waypoints': createdWaypoint,
+            },
+          ],
+        );
 
         // Set selected route through selectRoute method
         final testRoute = {'id': routeId, 'name': 'Test Route'};
-        when(mockService.getRouteWaypoints(routeId))
-            .thenAnswer((_) async => []);
+        when(
+          mockService.getRouteWaypoints(routeId),
+        ).thenAnswer((_) async => []);
         await provider.selectRoute(testRoute);
 
         // Act
@@ -335,26 +341,29 @@ void main() {
           {'waypointId': 456, 'orderIndex': 2},
         ];
 
-        when(mockService.updateWaypointOrder(routeId, newOrder))
-            .thenAnswer((_) async => {});
-        when(mockService.getRouteWaypoints(routeId))
-            .thenAnswer((_) async => [
-              {
-                'waypoint_id': 457,
-                'order_index': 1,
-                'waypoints': {'id': 457, 'name': 'Waypoint 2'},
-              },
-              {
-                'waypoint_id': 456,
-                'order_index': 2,
-                'waypoints': {'id': 456, 'name': 'Waypoint 1'},
-              },
-            ]);
+        when(
+          mockService.updateWaypointOrder(routeId, newOrder),
+        ).thenAnswer((_) async => {});
+        when(mockService.getRouteWaypoints(routeId)).thenAnswer(
+          (_) async => [
+            {
+              'waypoint_id': 457,
+              'order_index': 1,
+              'waypoints': {'id': 457, 'name': 'Waypoint 2'},
+            },
+            {
+              'waypoint_id': 456,
+              'order_index': 2,
+              'waypoints': {'id': 456, 'name': 'Waypoint 1'},
+            },
+          ],
+        );
 
         // Set selected route through selectRoute method
         final testRoute = {'id': routeId, 'name': 'Test Route'};
-        when(mockService.getRouteWaypoints(routeId))
-            .thenAnswer((_) async => []);
+        when(
+          mockService.getRouteWaypoints(routeId),
+        ).thenAnswer((_) async => []);
         await provider.selectRoute(testRoute);
 
         // Act
@@ -364,7 +373,10 @@ void main() {
         expect(provider.isLoading, isFalse);
         expect(provider.errorMessage, isNull);
         expect(provider.waypoints.length, equals(2));
-        expect(provider.waypoints[0]['waypoints']['id'], equals(457)); // Reordered
+        expect(
+          provider.waypoints[0]['waypoints']['id'],
+          equals(457),
+        ); // Reordered
         expect(provider.waypoints[1]['waypoints']['id'], equals(456));
         verify(mockService.updateWaypointOrder(routeId, newOrder)).called(1);
         verify(mockService.getRouteWaypoints(routeId)).called(1);
@@ -375,25 +387,27 @@ void main() {
         const routeId = 123;
         const waypointId = 456;
 
-        when(mockService.removeWaypointFromRoute(routeId, waypointId))
-            .thenAnswer((_) async => {});
+        when(
+          mockService.removeWaypointFromRoute(routeId, waypointId),
+        ).thenAnswer((_) async => {});
 
         int callCount = 0;
-        when(mockService.getRouteWaypoints(routeId))
-            .thenAnswer((_) async {
-              callCount++;
-              if (callCount == 1) {
-                // First call: return the initial waypoint
-                return [{
-                  'waypoint_id': waypointId,
-                  'order_index': 1,
-                  'waypoints': {'id': waypointId, 'name': 'Waypoint to Remove'},
-                }];
-              } else {
-                // Second call after removal: return empty list
-                return [];
-              }
-            });
+        when(mockService.getRouteWaypoints(routeId)).thenAnswer((_) async {
+          callCount++;
+          if (callCount == 1) {
+            // First call: return the initial waypoint
+            return [
+              {
+                'waypoint_id': waypointId,
+                'order_index': 1,
+                'waypoints': {'id': waypointId, 'name': 'Waypoint to Remove'},
+              },
+            ];
+          } else {
+            // Second call after removal: return empty list
+            return [];
+          }
+        });
 
         // Set selected route through selectRoute method
         final testRoute = {'id': routeId, 'name': 'Test Route'};
@@ -406,7 +420,9 @@ void main() {
         expect(provider.isLoading, isFalse);
         expect(provider.errorMessage, isNull);
         expect(provider.waypoints, isEmpty);
-        verify(mockService.removeWaypointFromRoute(routeId, waypointId)).called(1);
+        verify(
+          mockService.removeWaypointFromRoute(routeId, waypointId),
+        ).called(1);
         verify(mockService.getRouteWaypoints(routeId)).called(1);
       });
     });
@@ -417,19 +433,27 @@ void main() {
         const routeId = 123;
         const fileName = 'route_image.jpg';
         final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
-        const imageUrl = 'https://storage.supabase.co/route_images/route_123_image.jpg';
+        const imageUrl =
+            'https://storage.supabase.co/route_images/route_123_image.jpg';
 
-        when(mockService.uploadRouteImage(routeId, imageBytes, fileName))
-            .thenAnswer((_) async => imageUrl);
+        when(
+          mockService.uploadRouteImage(routeId, imageBytes, fileName),
+        ).thenAnswer((_) async => imageUrl);
 
         // Act
-        final result = await provider.uploadRouteImage(routeId, imageBytes, fileName);
+        final result = await provider.uploadRouteImage(
+          routeId,
+          imageBytes,
+          fileName,
+        );
 
         // Assert
         expect(result, equals(imageUrl));
         expect(provider.isUploading, isFalse);
         expect(provider.errorMessage, isNull);
-        verify(mockService.uploadRouteImage(routeId, imageBytes, fileName)).called(1);
+        verify(
+          mockService.uploadRouteImage(routeId, imageBytes, fileName),
+        ).called(1);
       });
 
       test('should handle image upload error', () async {
@@ -439,17 +463,24 @@ void main() {
         final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
         const errorMessage = 'Upload failed';
 
-        when(mockService.uploadRouteImage(routeId, imageBytes, fileName))
-            .thenThrow(Exception(errorMessage));
+        when(
+          mockService.uploadRouteImage(routeId, imageBytes, fileName),
+        ).thenThrow(Exception(errorMessage));
 
         // Act
-        final result = await provider.uploadRouteImage(routeId, imageBytes, fileName);
+        final result = await provider.uploadRouteImage(
+          routeId,
+          imageBytes,
+          fileName,
+        );
 
         // Assert
         expect(result, isNull);
         expect(provider.isUploading, isFalse);
         expect(provider.errorMessage, contains(errorMessage));
-        verify(mockService.uploadRouteImage(routeId, imageBytes, fileName)).called(1);
+        verify(
+          mockService.uploadRouteImage(routeId, imageBytes, fileName),
+        ).called(1);
       });
 
       test('should delete route image successfully', () async {
@@ -457,8 +488,9 @@ void main() {
         const routeId = 123;
         const fileName = 'route_image.jpg';
 
-        when(mockService.deleteRouteImage(routeId, fileName))
-            .thenAnswer((_) async => {});
+        when(
+          mockService.deleteRouteImage(routeId, fileName),
+        ).thenAnswer((_) async => {});
 
         // Act
         await provider.deleteRouteImage(routeId, fileName);
@@ -472,8 +504,7 @@ void main() {
     group('Loading States', () {
       test('should set loading state during route operations', () async {
         // Arrange
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async {
+        when(mockService.getAllRoutesForAdmin()).thenAnswer((_) async {
           // Simulate delay
           await Future.delayed(Duration(milliseconds: 100));
           return [];
@@ -497,8 +528,9 @@ void main() {
         const fileName = 'route_image.jpg';
         final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
 
-        when(mockService.uploadRouteImage(routeId, imageBytes, fileName))
-            .thenAnswer((_) async {
+        when(
+          mockService.uploadRouteImage(routeId, imageBytes, fileName),
+        ).thenAnswer((_) async {
           // Simulate delay
           await Future.delayed(Duration(milliseconds: 100));
           return 'image_url';
@@ -521,8 +553,7 @@ void main() {
       test('should clear error when starting new operation', () async {
         // Arrange
         provider.setError('Previous error');
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => []);
+        when(mockService.getAllRoutesForAdmin()).thenAnswer((_) async => []);
 
         // Act
         await provider.loadRoutes();
@@ -534,15 +565,14 @@ void main() {
       test('should retry failed operations', () async {
         // Arrange
         int callCount = 0;
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async {
-              callCount++;
-              if (callCount == 1) {
-                throw Exception('Network error');
-              } else {
-                return [];
-              }
-            });
+        when(mockService.getAllRoutesForAdmin()).thenAnswer((_) async {
+          callCount++;
+          if (callCount == 1) {
+            throw Exception('Network error');
+          } else {
+            return [];
+          }
+        });
 
         // Act - First call fails
         await provider.loadRoutes();

@@ -35,10 +35,7 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('de', 'DE'),
-        ],
+        supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
         home: ChangeNotifierProvider<RouteManagementProvider>.value(
           value: mockProvider,
           child: child,
@@ -47,7 +44,9 @@ void main() {
     }
 
     group('Initial State', () {
-      testWidgets('should display empty state when no routes available', (tester) async {
+      testWidgets('should display empty state when no routes available', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.routes).thenReturn([]);
         when(mockProvider.isLoading).thenReturn(false);
@@ -59,10 +58,15 @@ void main() {
         // Assert
         expect(find.text('Keine Routen verfügbar'), findsOneWidget);
         expect(find.byIcon(Icons.map_outlined), findsOneWidget);
-        expect(find.text('Erstellen Sie Ihre erste Wanderroute'), findsOneWidget);
+        expect(
+          find.text('Erstellen Sie Ihre erste Wanderroute'),
+          findsOneWidget,
+        );
       });
 
-      testWidgets('should display loading indicator when loading', (tester) async {
+      testWidgets('should display loading indicator when loading', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.isLoading).thenReturn(true);
 
@@ -74,7 +78,9 @@ void main() {
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
       });
 
-      testWidgets('should display error message when error occurs', (tester) async {
+      testWidgets('should display error message when error occurs', (
+        tester,
+      ) async {
         // Arrange
         const errorMessage = 'Failed to load routes';
         when(mockProvider.errorMessage).thenReturn(errorMessage);
@@ -103,7 +109,9 @@ void main() {
     });
 
     group('Route List Display', () {
-      testWidgets('should display routes list when routes available', (tester) async {
+      testWidgets('should display routes list when routes available', (
+        tester,
+      ) async {
         // Arrange
         final mockRoutes = [
           {
@@ -143,7 +151,9 @@ void main() {
         expect(find.text('12,3 km'), findsOneWidget);
       });
 
-      testWidgets('should show active/inactive status correctly', (tester) async {
+      testWidgets('should show active/inactive status correctly', (
+        tester,
+      ) async {
         // Arrange
         final mockRoutes = [
           {
@@ -235,7 +245,9 @@ void main() {
         expect(find.byIcon(Icons.visibility), findsOneWidget);
       });
 
-      testWidgets('should call selectRoute when route is tapped', (tester) async {
+      testWidgets('should call selectRoute when route is tapped', (
+        tester,
+      ) async {
         // Arrange
         final mockRoute = {
           'id': 123,
@@ -283,7 +295,10 @@ void main() {
         // Assert
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Route löschen'), findsOneWidget);
-        expect(find.text('Möchten Sie diese Route wirklich löschen?'), findsOneWidget);
+        expect(
+          find.text('Möchten Sie diese Route wirklich löschen?'),
+          findsOneWidget,
+        );
         expect(find.text('Abbrechen'), findsOneWidget);
         expect(find.text('Löschen'), findsOneWidget);
       });
@@ -328,7 +343,9 @@ void main() {
         expect(find.byIcon(Icons.add), findsOneWidget);
       });
 
-      testWidgets('should open create route dialog when button is tapped', (tester) async {
+      testWidgets('should open create route dialog when button is tapped', (
+        tester,
+      ) async {
         // Act
         await tester.pumpWidget(createTestWidget(const RouteManagementPage()));
         await tester.pumpAndSettle();
@@ -418,7 +435,9 @@ void main() {
         when(mockProvider.routes).thenReturn(mockRoutes);
 
         // Act
-        await tester.binding.setSurfaceSize(const Size(1200, 800)); // Desktop size
+        await tester.binding.setSurfaceSize(
+          const Size(1200, 800),
+        ); // Desktop size
         await tester.pumpWidget(createTestWidget(const RouteManagementPage()));
         await tester.pumpAndSettle();
 
@@ -441,7 +460,9 @@ void main() {
         when(mockProvider.routes).thenReturn(mockRoutes);
 
         // Act
-        await tester.binding.setSurfaceSize(const Size(400, 800)); // Mobile size
+        await tester.binding.setSurfaceSize(
+          const Size(400, 800),
+        ); // Mobile size
         await tester.pumpWidget(createTestWidget(const RouteManagementPage()));
         await tester.pumpAndSettle();
 
@@ -465,7 +486,9 @@ void main() {
         expect(find.byIcon(Icons.refresh), findsOneWidget);
       });
 
-      testWidgets('should call loadRoutes when retry button is tapped', (tester) async {
+      testWidgets('should call loadRoutes when retry button is tapped', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.errorMessage).thenReturn('Network error');
         when(mockProvider.routes).thenReturn([]);
@@ -479,10 +502,14 @@ void main() {
         await tester.pumpAndSettle();
 
         // Assert
-        verify(mockProvider.loadRoutes()).called(2); // Once on init, once on retry
+        verify(
+          mockProvider.loadRoutes(),
+        ).called(2); // Once on init, once on retry
       });
 
-      testWidgets('should clear error when clearError is called', (tester) async {
+      testWidgets('should clear error when clearError is called', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.errorMessage).thenReturn('Network error');
         when(mockProvider.routes).thenReturn([]);
@@ -502,16 +529,21 @@ void main() {
     });
 
     group('Performance', () {
-      testWidgets('should handle large number of routes efficiently', (tester) async {
+      testWidgets('should handle large number of routes efficiently', (
+        tester,
+      ) async {
         // Arrange
-        final mockRoutes = List.generate(100, (index) => {
-          'id': index,
-          'name': 'Route $index',
-          'price': 79.99 + index,
-          'distance': 8.5 + index,
-          'duration': 3 + (index % 5),
-          'is_active': index % 2 == 0,
-        });
+        final mockRoutes = List.generate(
+          100,
+          (index) => {
+            'id': index,
+            'name': 'Route $index',
+            'price': 79.99 + index,
+            'distance': 8.5 + index,
+            'duration': 3 + (index % 5),
+            'is_active': index % 2 == 0,
+          },
+        );
 
         when(mockProvider.routes).thenReturn(mockRoutes);
 
@@ -522,7 +554,10 @@ void main() {
         stopwatch.stop();
 
         // Assert
-        expect(stopwatch.elapsedMilliseconds, lessThan(1000)); // Should render within 1 second
+        expect(
+          stopwatch.elapsedMilliseconds,
+          lessThan(1000),
+        ); // Should render within 1 second
         expect(find.text('Route 0'), findsOneWidget);
       });
     });

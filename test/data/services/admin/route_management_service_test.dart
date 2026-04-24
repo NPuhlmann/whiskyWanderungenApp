@@ -65,13 +65,15 @@ void main() {
             'is_active': true,
             'created_at': '2024-01-01T10:00:00Z',
             'updated_at': '2024-01-01T10:00:00Z',
-          }
+          },
         ];
 
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.insert(routeData)).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single()).thenAnswer((_) async => mockResponse[0]);
+        when(
+          mockTransformBuilder.single(),
+        ).thenAnswer((_) async => mockResponse[0]);
 
         // Act
         final result = await service.createRoute(routeData);
@@ -100,13 +102,17 @@ void main() {
             'is_active': true,
             'created_at': '2024-01-01T10:00:00Z',
             'updated_at': '2024-01-01T10:00:00Z',
-          }
+          },
         ];
 
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('id', routeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single()).thenAnswer((_) async => mockResponse[0]);
+        when(
+          mockFilterBuilder.eq('id', routeId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.single(),
+        ).thenAnswer((_) async => mockResponse[0]);
 
         // Act
         final result = await service.getRouteById(routeId);
@@ -141,14 +147,18 @@ void main() {
             'is_active': true,
             'created_at': '2024-01-01T10:00:00Z',
             'updated_at': '2024-01-02T10:00:00Z',
-          }
+          },
         ];
 
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.update(updateData)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('id', routeId)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('id', routeId),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single()).thenAnswer((_) async => mockResponse[0]);
+        when(
+          mockTransformBuilder.single(),
+        ).thenAnswer((_) async => mockResponse[0]);
 
         // Act
         final result = await service.updateRoute(routeId, updateData);
@@ -204,8 +214,9 @@ void main() {
 
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.order('created_at', ascending: false))
-            .thenAnswer((_) async => mockResponse);
+        when(
+          mockFilterBuilder.order('created_at', ascending: false),
+        ).thenAnswer((_) async => mockResponse);
 
         // Act
         final result = await service.getAllRoutesForAdmin();
@@ -215,7 +226,9 @@ void main() {
         expect(result.length, equals(2));
         expect(result[0]['name'], equals('Route 1'));
         expect(result[1]['name'], equals('Route 2'));
-        verify(mockFilterBuilder.order('created_at', ascending: false)).called(1);
+        verify(
+          mockFilterBuilder.order('created_at', ascending: false),
+        ).called(1);
       });
     });
 
@@ -242,22 +255,28 @@ void main() {
             'order_index': 1,
             'whisky_info': 'Glenfiddich 12 Year Old',
             'created_at': '2024-01-01T10:00:00Z',
-          }
+          },
         ];
 
         // Mock waypoint insertion
         when(mockClient.from('waypoints')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.insert(waypointData)).thenReturn(mockFilterBuilder);
+        when(
+          mockQueryBuilder.insert(waypointData),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single()).thenAnswer((_) async => mockResponse[0]);
+        when(
+          mockTransformBuilder.single(),
+        ).thenAnswer((_) async => mockResponse[0]);
 
         // Mock hike-waypoint relationship
         when(mockClient.from('hikes_waypoints')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.insert({
-          'hike_id': routeId,
-          'waypoint_id': 456,
-          'order_index': 1,
-        })).thenReturn(mockFilterBuilder);
+        when(
+          mockQueryBuilder.insert({
+            'hike_id': routeId,
+            'waypoint_id': 456,
+            'order_index': 1,
+          }),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
 
         // Act
@@ -284,11 +303,15 @@ void main() {
 
         // Mock each update call
         for (final order in newOrder) {
-          when(mockQueryBuilder.update({'order_index': order['orderIndex']}))
-              .thenReturn(mockFilterBuilder);
-          when(mockFilterBuilder.eq('hike_id', routeId)).thenReturn(mockFilterBuilder);
-          when(mockFilterBuilder.eq('waypoint_id', order['waypointId']))
-              .thenAnswer((_) async => null);
+          when(
+            mockQueryBuilder.update({'order_index': order['orderIndex']}),
+          ).thenReturn(mockFilterBuilder);
+          when(
+            mockFilterBuilder.eq('hike_id', routeId),
+          ).thenReturn(mockFilterBuilder);
+          when(
+            mockFilterBuilder.eq('waypoint_id', order['waypointId']),
+          ).thenAnswer((_) async => null);
         }
 
         // Act
@@ -297,8 +320,9 @@ void main() {
         // Assert
         verify(mockClient.from('hikes_waypoints')).called(newOrder.length);
         for (final order in newOrder) {
-          verify(mockQueryBuilder.update({'order_index': order['orderIndex']}))
-              .called(1);
+          verify(
+            mockQueryBuilder.update({'order_index': order['orderIndex']}),
+          ).called(1);
         }
       });
 
@@ -309,9 +333,12 @@ void main() {
 
         when(mockClient.from('hikes_waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', routeId)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('waypoint_id', waypointId))
-            .thenAnswer((_) async => null);
+        when(
+          mockFilterBuilder.eq('hike_id', routeId),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.eq('waypoint_id', waypointId),
+        ).thenAnswer((_) async => null);
 
         // Act
         await service.removeWaypointFromRoute(routeId, waypointId);
@@ -337,7 +364,7 @@ void main() {
               'latitude': 52.5200,
               'longitude': 13.4050,
               'whisky_info': 'Glenfiddich 12',
-            }
+            },
           },
           {
             'waypoint_id': 457,
@@ -349,15 +376,20 @@ void main() {
               'latitude': 52.5300,
               'longitude': 13.4150,
               'whisky_info': 'Macallan 15',
-            }
+            },
           },
         ];
 
         when(mockClient.from('hikes_waypoints')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.select('waypoint_id, order_index, waypoints(*)'))
-            .thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', routeId)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.order('order_index')).thenAnswer((_) async => mockResponse);
+        when(
+          mockQueryBuilder.select('waypoint_id, order_index, waypoints(*)'),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.eq('hike_id', routeId),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.order('order_index'),
+        ).thenAnswer((_) async => mockResponse);
 
         // Act
         final result = await service.getRouteWaypoints(routeId);
@@ -376,30 +408,50 @@ void main() {
         // Arrange
         const routeId = 123;
         const fileName = 'route_123_image.jpg';
-        final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]); // Mock image data
-        const publicUrl = 'https://storage.supabase.co/route_images/route_123_image.jpg';
+        final imageBytes = Uint8List.fromList([
+          1,
+          2,
+          3,
+          4,
+          5,
+        ]); // Mock image data
+        const publicUrl =
+            'https://storage.supabase.co/route_images/route_123_image.jpg';
 
         when(mockClient.storage).thenReturn(mockStorageClient);
-        when(mockStorageClient.from('route_images')).thenReturn(mockStorageFileApi);
-        when(mockStorageFileApi.uploadBinary(
-          'route_$routeId/$fileName',
-          imageBytes,
-          fileOptions: anyNamed('fileOptions'),
-        )).thenAnswer((_) async => 'path/to/uploaded/file');
-        when(mockStorageFileApi.getPublicUrl('route_$routeId/$fileName'))
-            .thenReturn(publicUrl);
+        when(
+          mockStorageClient.from('route_images'),
+        ).thenReturn(mockStorageFileApi);
+        when(
+          mockStorageFileApi.uploadBinary(
+            'route_$routeId/$fileName',
+            imageBytes,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).thenAnswer((_) async => 'path/to/uploaded/file');
+        when(
+          mockStorageFileApi.getPublicUrl('route_$routeId/$fileName'),
+        ).thenReturn(publicUrl);
 
         // Act
-        final result = await service.uploadRouteImage(routeId, imageBytes, fileName);
+        final result = await service.uploadRouteImage(
+          routeId,
+          imageBytes,
+          fileName,
+        );
 
         // Assert
         expect(result, equals(publicUrl));
-        verify(mockStorageFileApi.uploadBinary(
-          'route_$routeId/$fileName',
-          imageBytes,
-          fileOptions: anyNamed('fileOptions'),
-        )).called(1);
-        verify(mockStorageFileApi.getPublicUrl('route_$routeId/$fileName')).called(1);
+        verify(
+          mockStorageFileApi.uploadBinary(
+            'route_$routeId/$fileName',
+            imageBytes,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).called(1);
+        verify(
+          mockStorageFileApi.getPublicUrl('route_$routeId/$fileName'),
+        ).called(1);
       });
 
       test('should delete route image successfully', () async {
@@ -408,15 +460,20 @@ void main() {
         const fileName = 'route_123_image.jpg';
 
         when(mockClient.storage).thenReturn(mockStorageClient);
-        when(mockStorageClient.from('route_images')).thenReturn(mockStorageFileApi);
-        when(mockStorageFileApi.remove(['route_$routeId/$fileName']))
-            .thenAnswer((_) async => []);
+        when(
+          mockStorageClient.from('route_images'),
+        ).thenReturn(mockStorageFileApi);
+        when(
+          mockStorageFileApi.remove(['route_$routeId/$fileName']),
+        ).thenAnswer((_) async => []);
 
         // Act
         await service.deleteRouteImage(routeId, fileName);
 
         // Assert
-        verify(mockStorageFileApi.remove(['route_$routeId/$fileName'])).called(1);
+        verify(
+          mockStorageFileApi.remove(['route_$routeId/$fileName']),
+        ).called(1);
       });
     });
 
@@ -431,8 +488,9 @@ void main() {
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.insert(routeData)).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single())
-            .thenThrow(Exception('Database connection failed'));
+        when(
+          mockTransformBuilder.single(),
+        ).thenThrow(Exception('Database connection failed'));
 
         // Act & Assert
         expect(
@@ -447,9 +505,12 @@ void main() {
 
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('id', routeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single())
-            .thenThrow(Exception('Route not found'));
+        when(
+          mockFilterBuilder.eq('id', routeId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.single(),
+        ).thenThrow(Exception('Route not found'));
 
         // Act & Assert
         expect(
@@ -465,16 +526,21 @@ void main() {
         final imageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
 
         when(mockClient.storage).thenReturn(mockStorageClient);
-        when(mockStorageClient.from('route_images')).thenReturn(mockStorageFileApi);
-        when(mockStorageFileApi.uploadBinary(
-          any,
-          any,
-          fileOptions: anyNamed('fileOptions'),
-        )).thenThrow(Exception('Storage upload failed'));
+        when(
+          mockStorageClient.from('route_images'),
+        ).thenReturn(mockStorageFileApi);
+        when(
+          mockStorageFileApi.uploadBinary(
+            any,
+            any,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).thenThrow(Exception('Storage upload failed'));
 
         // Act & Assert
         expect(
-          () async => await service.uploadRouteImage(routeId, imageBytes, fileName),
+          () async =>
+              await service.uploadRouteImage(routeId, imageBytes, fileName),
           throwsException,
         );
       });

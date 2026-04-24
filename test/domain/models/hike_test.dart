@@ -6,7 +6,7 @@ void main() {
     group('Constructor and Default Values', () {
       test('should create hike with required id', () {
         const hike = Hike(id: 1);
-        
+
         expect(hike.id, 1);
         expect(hike.name, '');
         expect(hike.length, 1.0);
@@ -32,7 +32,7 @@ void main() {
           thumbnailImageUrl: 'https://example.com/image.jpg',
           isFavorite: true,
         );
-        
+
         expect(hike.id, 2);
         expect(hike.name, 'Test Hike');
         expect(hike.length, 5.5);
@@ -47,16 +47,11 @@ void main() {
     });
 
     group('copyWith Tests', () {
-      const baseHike = Hike(
-        id: 1,
-        name: 'Base Hike',
-        length: 3.0,
-        price: 15.0,
-      );
+      const baseHike = Hike(id: 1, name: 'Base Hike', length: 3.0, price: 15.0);
 
       test('should copy with new name', () {
         final updatedHike = baseHike.copyWith(name: 'Updated Hike');
-        
+
         expect(updatedHike.id, 1);
         expect(updatedHike.name, 'Updated Hike');
         expect(updatedHike.length, 3.0);
@@ -65,7 +60,7 @@ void main() {
 
       test('should copy with new favorite status', () {
         final favoriteHike = baseHike.copyWith(isFavorite: true);
-        
+
         expect(favoriteHike.isFavorite, true);
         expect(favoriteHike.id, baseHike.id);
         expect(favoriteHike.name, baseHike.name);
@@ -73,7 +68,7 @@ void main() {
 
       test('should copy with new difficulty', () {
         final hardHike = baseHike.copyWith(difficulty: Difficulty.veryHard);
-        
+
         expect(hardHike.difficulty, Difficulty.veryHard);
         expect(hardHike.id, baseHike.id);
       });
@@ -85,7 +80,7 @@ void main() {
           isFavorite: true,
           difficulty: Difficulty.easy,
         );
-        
+
         expect(updatedHike.name, 'Multi Update');
         expect(updatedHike.price, 25.0);
         expect(updatedHike.isFavorite, true);
@@ -205,18 +200,8 @@ void main() {
 
     group('Equality Tests', () {
       test('should be equal when all fields match', () {
-        const hike1 = Hike(
-          id: 1,
-          name: 'Same Hike',
-          length: 5.0,
-          price: 20.0,
-        );
-        const hike2 = Hike(
-          id: 1,
-          name: 'Same Hike',
-          length: 5.0,
-          price: 20.0,
-        );
+        const hike1 = Hike(id: 1, name: 'Same Hike', length: 5.0, price: 20.0);
+        const hike2 = Hike(id: 1, name: 'Same Hike', length: 5.0, price: 20.0);
 
         expect(hike1, equals(hike2));
         expect(hike1.hashCode, equals(hike2.hashCode));

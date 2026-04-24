@@ -175,11 +175,7 @@ void main() {
           reviewCount: 10,
           conversionRate: 0.3,
           totalViews: 200,
-          salesByMonth: {
-            '2025-03': 20,
-            '2025-01': 10,
-            '2025-02': 30,
-          },
+          salesByMonth: {'2025-03': 20, '2025-01': 10, '2025-02': 30},
         );
 
         final timeline = performance.monthlySalesTimeline;
@@ -201,11 +197,7 @@ void main() {
           reviewCount: 10,
           conversionRate: 0.3,
           totalViews: 200,
-          salesByMonth: {
-            '2025-01': 10,
-            '2025-02': 30,
-            '2025-03': 20,
-          },
+          salesByMonth: {'2025-01': 10, '2025-02': 30, '2025-03': 20},
         );
 
         expect(performance.bestMonth, '2025-02');

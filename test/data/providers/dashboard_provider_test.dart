@@ -69,16 +69,17 @@ void main() {
               'customer_name': 'John Doe',
               'total_amount': 89.99,
               'status': 'pending',
-              'hike_name': 'Highland Adventure'
-            }
+              'hike_name': 'Highland Adventure',
+            },
           ],
           'popularRoutes': [
-            {'hike_id': 1, 'hike_name': 'Highland Adventure', 'count': 15}
-          ]
+            {'hike_id': 1, 'hike_name': 'Highland Adventure', 'count': 15},
+          ],
         };
 
-        when(mockService.getDashboardMetrics())
-            .thenAnswer((_) async => mockMetrics);
+        when(
+          mockService.getDashboardMetrics(),
+        ).thenAnswer((_) async => mockMetrics);
 
         await provider.loadDashboardData();
 
@@ -91,8 +92,9 @@ void main() {
       });
 
       test('should handle loading error gracefully', () async {
-        when(mockService.getDashboardMetrics())
-            .thenThrow(Exception('Database connection failed'));
+        when(
+          mockService.getDashboardMetrics(),
+        ).thenThrow(Exception('Database connection failed'));
 
         await provider.loadDashboardData();
 
@@ -102,8 +104,7 @@ void main() {
       });
 
       test('should set loading state during async operation', () async {
-        when(mockService.getDashboardMetrics())
-            .thenAnswer((_) async {
+        when(mockService.getDashboardMetrics()).thenAnswer((_) async {
           await Future.delayed(Duration(milliseconds: 100));
           return <String, dynamic>{};
         });
@@ -242,8 +243,9 @@ void main() {
         provider.setError('Previous error');
 
         final mockMetrics = {'dailyRevenue': 100.0};
-        when(mockService.getDashboardMetrics())
-            .thenAnswer((_) async => mockMetrics);
+        when(
+          mockService.getDashboardMetrics(),
+        ).thenAnswer((_) async => mockMetrics);
 
         await provider.refreshData();
 
@@ -253,8 +255,9 @@ void main() {
       });
 
       test('should handle refresh error', () async {
-        when(mockService.getDashboardMetrics())
-            .thenThrow(Exception('Network error'));
+        when(
+          mockService.getDashboardMetrics(),
+        ).thenThrow(Exception('Network error'));
 
         await provider.refreshData();
 
@@ -265,10 +268,7 @@ void main() {
 
     group('Growth Calculations', () {
       test('should calculate daily vs weekly growth correctly', () {
-        provider.metrics = {
-          'dailyRevenue': 150.0,
-          'weeklyRevenue': 700.0,
-        };
+        provider.metrics = {'dailyRevenue': 150.0, 'weeklyRevenue': 700.0};
 
         // Daily average from weekly: 700/7 = 100
         // Growth: (150 - 100) / 100 = 0.5 = 50%
@@ -276,19 +276,13 @@ void main() {
       });
 
       test('should handle zero weekly revenue in growth calculation', () {
-        provider.metrics = {
-          'dailyRevenue': 150.0,
-          'weeklyRevenue': 0.0,
-        };
+        provider.metrics = {'dailyRevenue': 150.0, 'weeklyRevenue': 0.0};
 
         expect(provider.dailyGrowthPercentage, equals(0.0));
       });
 
       test('should calculate weekly vs monthly growth correctly', () {
-        provider.metrics = {
-          'weeklyRevenue': 800.0,
-          'monthlyRevenue': 3200.0,
-        };
+        provider.metrics = {'weeklyRevenue': 800.0, 'monthlyRevenue': 3200.0};
 
         // Weekly average from monthly: 3200/4 = 800
         // Growth: (800 - 800) / 800 = 0%
@@ -314,7 +308,9 @@ void main() {
       });
 
       test('should detect if has recent orders', () {
-        provider.recentOrders = [{'id': 1}];
+        provider.recentOrders = [
+          {'id': 1},
+        ];
         expect(provider.hasRecentOrders, isTrue);
 
         provider.recentOrders = [];
@@ -322,7 +318,9 @@ void main() {
       });
 
       test('should detect if has popular routes', () {
-        provider.popularRoutes = [{'hike_id': 1}];
+        provider.popularRoutes = [
+          {'hike_id': 1},
+        ];
         expect(provider.hasPopularRoutes, isTrue);
 
         provider.popularRoutes = [];
@@ -341,7 +339,10 @@ void main() {
 
         final pendingOrders = provider.getOrdersByStatus('pending');
         expect(pendingOrders.length, equals(2));
-        expect(pendingOrders.every((order) => order['status'] == 'pending'), isTrue);
+        expect(
+          pendingOrders.every((order) => order['status'] == 'pending'),
+          isTrue,
+        );
       });
 
       test('should return empty list for non-existent status', () {

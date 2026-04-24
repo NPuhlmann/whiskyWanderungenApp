@@ -4,77 +4,99 @@ import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 
 void main() {
   group('ResponsiveLayout Tests', () {
-    testWidgets('ResponsiveLayout zeigt mobile Layout bei kleiner Bildschirmbreite', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(400, 800)); // Mobile Größe
-      
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResponsiveLayout(
-            mobile: const Text('Mobile Layout'),
-            desktop: const Text('Desktop Layout'),
+    testWidgets(
+      'ResponsiveLayout zeigt mobile Layout bei kleiner Bildschirmbreite',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(
+          const Size(400, 800),
+        ); // Mobile Größe
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResponsiveLayout(
+              mobile: const Text('Mobile Layout'),
+              desktop: const Text('Desktop Layout'),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Mobile Layout'), findsOneWidget);
-      expect(find.text('Desktop Layout'), findsNothing);
-    });
+        expect(find.text('Mobile Layout'), findsOneWidget);
+        expect(find.text('Desktop Layout'), findsNothing);
+      },
+    );
 
-    testWidgets('ResponsiveLayout zeigt desktop Layout bei großer Bildschirmbreite', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1400, 800)); // Desktop Größe
-      
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResponsiveLayout(
-            mobile: const Text('Mobile Layout'),
-            desktop: const Text('Desktop Layout'),
+    testWidgets(
+      'ResponsiveLayout zeigt desktop Layout bei großer Bildschirmbreite',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(
+          const Size(1400, 800),
+        ); // Desktop Größe
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResponsiveLayout(
+              mobile: const Text('Mobile Layout'),
+              desktop: const Text('Desktop Layout'),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Desktop Layout'), findsOneWidget);
-      expect(find.text('Mobile Layout'), findsNothing);
-    });
+        expect(find.text('Desktop Layout'), findsOneWidget);
+        expect(find.text('Mobile Layout'), findsNothing);
+      },
+    );
 
-    testWidgets('ResponsiveLayout zeigt mobile Layout bei Tablet-Größe ohne tablet Widget', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1000, 800)); // Tablet Größe
-      
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResponsiveLayout(
-            mobile: const Text('Mobile Layout'),
-            desktop: const Text('Desktop Layout'),
+    testWidgets(
+      'ResponsiveLayout zeigt mobile Layout bei Tablet-Größe ohne tablet Widget',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(
+          const Size(1000, 800),
+        ); // Tablet Größe
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResponsiveLayout(
+              mobile: const Text('Mobile Layout'),
+              desktop: const Text('Desktop Layout'),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Mobile Layout'), findsOneWidget);
-      expect(find.text('Desktop Layout'), findsNothing);
-    });
+        expect(find.text('Mobile Layout'), findsOneWidget);
+        expect(find.text('Desktop Layout'), findsNothing);
+      },
+    );
 
-    testWidgets('ResponsiveLayout zeigt tablet Layout bei Tablet-Größe mit tablet Widget', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1000, 800)); // Tablet Größe
-      
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResponsiveLayout(
-            mobile: const Text('Mobile Layout'),
-            tablet: const Text('Tablet Layout'),
-            desktop: const Text('Desktop Layout'),
+    testWidgets(
+      'ResponsiveLayout zeigt tablet Layout bei Tablet-Größe mit tablet Widget',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(
+          const Size(1000, 800),
+        ); // Tablet Größe
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResponsiveLayout(
+              mobile: const Text('Mobile Layout'),
+              tablet: const Text('Tablet Layout'),
+              desktop: const Text('Desktop Layout'),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Tablet Layout'), findsOneWidget);
-      expect(find.text('Mobile Layout'), findsNothing);
-      expect(find.text('Desktop Layout'), findsNothing);
-    });
+        expect(find.text('Tablet Layout'), findsOneWidget);
+        expect(find.text('Mobile Layout'), findsNothing);
+        expect(find.text('Desktop Layout'), findsNothing);
+      },
+    );
   });
 
   group('ResponsiveLayoutUtils Tests', () {
-    testWidgets('isMobile erkennt mobile Bildschirmgröße korrekt', (WidgetTester tester) async {
+    testWidgets('isMobile erkennt mobile Bildschirmgröße korrekt', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -89,9 +111,11 @@ void main() {
       expect(find.text('Mobile: true'), findsOneWidget);
     });
 
-    testWidgets('isDesktop erkennt desktop Bildschirmgröße korrekt', (WidgetTester tester) async {
+    testWidgets('isDesktop erkennt desktop Bildschirmgröße korrekt', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1400, 800));
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -106,9 +130,11 @@ void main() {
       expect(find.text('Desktop: true'), findsOneWidget);
     });
 
-    testWidgets('isTablet erkennt tablet Bildschirmgröße korrekt', (WidgetTester tester) async {
+    testWidgets('isTablet erkennt tablet Bildschirmgröße korrekt', (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1000, 800));
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -125,28 +151,37 @@ void main() {
   });
 
   group('ResponsiveBuilder Tests', () {
-    testWidgets('ResponsiveBuilder funktioniert mit verschiedenen Bildschirmgrößen', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(400, 800)); // Mobile Größe
-      
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ResponsiveBuilder(
-            builder: (context, isMobile, isTablet, isDesktop) {
-              if (isMobile) return const Text('Mobile Builder');
-              if (isTablet) return const Text('Tablet Builder');
-              if (isDesktop) return const Text('Desktop Builder');
-              return const Text('Unknown');
-            },
+    testWidgets(
+      'ResponsiveBuilder funktioniert mit verschiedenen Bildschirmgrößen',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(
+          const Size(400, 800),
+        ); // Mobile Größe
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ResponsiveBuilder(
+              builder: (context, isMobile, isTablet, isDesktop) {
+                if (isMobile) return const Text('Mobile Builder');
+                if (isTablet) return const Text('Tablet Builder');
+                if (isDesktop) return const Text('Desktop Builder');
+                return const Text('Unknown');
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Mobile Builder'), findsOneWidget);
-    });
+        expect(find.text('Mobile Builder'), findsOneWidget);
+      },
+    );
 
-    testWidgets('ResponsiveBuilder funktioniert bei Desktop-Größe', (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(1400, 800)); // Desktop Größe
-      
+    testWidgets('ResponsiveBuilder funktioniert bei Desktop-Größe', (
+      WidgetTester tester,
+    ) async {
+      await tester.binding.setSurfaceSize(
+        const Size(1400, 800),
+      ); // Desktop Größe
+
       await tester.pumpWidget(
         MaterialApp(
           home: ResponsiveBuilder(

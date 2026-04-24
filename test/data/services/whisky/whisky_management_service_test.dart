@@ -40,10 +40,12 @@ void main() {
         when(mockQueryBuilder.select(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.order('name')).thenReturn(mockFilterBuilder);
 
-        when(mockFilterBuilder.then()).thenAnswer((_) async => [
-          testTastingSets[0].toJson(),
-          testTastingSets[1].toJson(),
-        ]);
+        when(mockFilterBuilder.then()).thenAnswer(
+          (_) async => [
+            testTastingSets[0].toJson(),
+            testTastingSets[1].toJson(),
+          ],
+        );
 
         // Act
         final result = await service.getAllTastingSets();
@@ -54,7 +56,9 @@ void main() {
         expect(result[1].name, equals('Islay Selection'));
 
         verify(mockClient.from('tasting_sets')).called(1);
-        verify(mockQueryBuilder.select('*, samples:whisky_samples(*)')).called(1);
+        verify(
+          mockQueryBuilder.select('*, samples:whisky_samples(*)'),
+        ).called(1);
       });
 
       test('should get tasting sets by hike ID successfully', () async {
@@ -62,13 +66,15 @@ void main() {
         final testTastingSet = TestHelpers.createTestTastingSet(
           id: 1,
           hikeId: 100,
-          name: 'Mountain Trail Set'
+          name: 'Mountain Trail Set',
         );
 
         when(mockClient.from('tasting_sets')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.eq('hike_id', 100)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.single()).thenAnswer((_) async => testTastingSet.toJson());
+        when(
+          mockFilterBuilder.single(),
+        ).thenAnswer((_) async => testTastingSet.toJson());
 
         // Act
         final result = await service.getTastingSetByHikeId(100);
@@ -88,7 +94,12 @@ void main() {
         when(mockQueryBuilder.select(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.eq('hike_id', 999)).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.single()).thenThrow(
-          PostgrestException(message: 'No rows returned', details: null, hint: null, code: null)
+          PostgrestException(
+            message: 'No rows returned',
+            details: null,
+            hint: null,
+            code: null,
+          ),
         );
 
         // Act
@@ -136,7 +147,9 @@ void main() {
         when(mockQueryBuilder.update(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.eq('id', 1)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.single()).thenAnswer((_) async => updatedTastingSet.toJson());
+        when(
+          mockFilterBuilder.single(),
+        ).thenAnswer((_) async => updatedTastingSet.toJson());
 
         // Act
         final result = await service.updateTastingSet(updatedTastingSet);
@@ -177,12 +190,15 @@ void main() {
 
         when(mockClient.from('whisky_samples')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.eq('tasting_set_id', 1)).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.order('order_index')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.then()).thenAnswer((_) async => [
-          testSamples[0].toJson(),
-          testSamples[1].toJson(),
-        ]);
+        when(
+          mockQueryBuilder.eq('tasting_set_id', 1),
+        ).thenReturn(mockQueryBuilder);
+        when(
+          mockQueryBuilder.order('order_index'),
+        ).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.then()).thenAnswer(
+          (_) async => [testSamples[0].toJson(), testSamples[1].toJson()],
+        );
 
         // Act
         final result = await service.getWhiskySamplesByTastingSetId(1);
@@ -234,7 +250,9 @@ void main() {
         when(mockQueryBuilder.update(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.eq('id', 1)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.single()).thenAnswer((_) async => updatedSample.toJson());
+        when(
+          mockFilterBuilder.single(),
+        ).thenAnswer((_) async => updatedSample.toJson());
 
         // Act
         final result = await service.updateWhiskySample(updatedSample);
@@ -291,17 +309,33 @@ void main() {
         const sampleId = 123;
         const fileName = 'whisky_123.jpg';
 
-        when(mockStorage.uploadBinary(any, any, fileOptions: anyNamed('fileOptions')))
-            .thenAnswer((_) async => fileName);
-        when(mockStorage.getPublicUrl(fileName))
-            .thenReturn('https://storage.example.com/whisky_123.jpg');
+        when(
+          mockStorage.uploadBinary(
+            any,
+            any,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).thenAnswer((_) async => fileName);
+        when(
+          mockStorage.getPublicUrl(fileName),
+        ).thenReturn('https://storage.example.com/whisky_123.jpg');
 
         // Act
-        final result = await service.uploadWhiskyImage(sampleId, imageBytes, 'jpg');
+        final result = await service.uploadWhiskyImage(
+          sampleId,
+          imageBytes,
+          'jpg',
+        );
 
         // Assert
         expect(result, equals('https://storage.example.com/whisky_123.jpg'));
-        verify(mockStorage.uploadBinary(any, imageBytes, fileOptions: anyNamed('fileOptions'))).called(1);
+        verify(
+          mockStorage.uploadBinary(
+            any,
+            imageBytes,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).called(1);
         verify(mockStorage.getPublicUrl(fileName)).called(1);
       });
 
@@ -310,8 +344,13 @@ void main() {
         final imageBytes = List.generate(100, (index) => index % 256);
         const sampleId = 123;
 
-        when(mockStorage.uploadBinary(any, any, fileOptions: anyNamed('fileOptions')))
-            .thenThrow(StorageException('Upload failed', statusCode: '500'));
+        when(
+          mockStorage.uploadBinary(
+            any,
+            any,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).thenThrow(StorageException('Upload failed', statusCode: '500'));
 
         // Act & Assert
         expect(
@@ -324,8 +363,7 @@ void main() {
         // Arrange
         const fileName = 'whisky_123.jpg';
 
-        when(mockStorage.remove([fileName]))
-            .thenAnswer((_) async => []);
+        when(mockStorage.remove([fileName])).thenAnswer((_) async => []);
 
         // Act
         await service.deleteWhiskyImage(fileName);
@@ -344,10 +382,12 @@ void main() {
 
         when(mockClient.from('tasting_sets')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.ilike('name', '%highland%')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.then()).thenAnswer((_) async => [
-          searchResults[0].toJson(),
-        ]);
+        when(
+          mockQueryBuilder.ilike('name', '%highland%'),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.then(),
+        ).thenAnswer((_) async => [searchResults[0].toJson()]);
 
         // Act
         final result = await service.searchTastingSets('highland');
@@ -368,11 +408,15 @@ void main() {
 
         when(mockClient.from('whisky_samples')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.eq('region', 'Speyside')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.then()).thenAnswer((_) async => [
-          filteredSamples[0].toJson(),
-          filteredSamples[1].toJson(),
-        ]);
+        when(
+          mockQueryBuilder.eq('region', 'Speyside'),
+        ).thenReturn(mockFilterBuilder);
+        when(mockFilterBuilder.then()).thenAnswer(
+          (_) async => [
+            filteredSamples[0].toJson(),
+            filteredSamples[1].toJson(),
+          ],
+        );
 
         // Act
         final result = await service.getWhiskySamplesByRegion('Speyside');
@@ -392,7 +436,12 @@ void main() {
         when(mockQueryBuilder.select(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.order('name')).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.then()).thenThrow(
-          PostgrestException(message: 'Connection failed', details: null, hint: null, code: null)
+          PostgrestException(
+            message: 'Connection failed',
+            details: null,
+            hint: null,
+            code: null,
+          ),
         );
 
         // Act & Assert
@@ -407,15 +456,14 @@ void main() {
         when(mockClient.from('tasting_sets')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.order('name')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.then()).thenAnswer((_) async => [
-          {'invalid': 'data'}, // Invalid TastingSet data
-        ]);
+        when(mockFilterBuilder.then()).thenAnswer(
+          (_) async => [
+            {'invalid': 'data'}, // Invalid TastingSet data
+          ],
+        );
 
         // Act & Assert
-        expect(
-          () => service.getAllTastingSets(),
-          throwsA(isA<TypeError>()),
-        );
+        expect(() => service.getAllTastingSets(), throwsA(isA<TypeError>()));
       });
     });
   });

@@ -20,38 +20,22 @@ void main() {
 
     test('should validate rating range (1.0 to 5.0)', () {
       expect(
-        () => ReviewRating(
-          reviewId: 1,
-          categoryId: 1,
-          rating: 0.9,
-        ),
+        () => ReviewRating(reviewId: 1, categoryId: 1, rating: 0.9),
         throwsA(isA<AssertionError>()),
       );
 
       expect(
-        () => ReviewRating(
-          reviewId: 1,
-          categoryId: 1,
-          rating: 5.1,
-        ),
+        () => ReviewRating(reviewId: 1, categoryId: 1, rating: 5.1),
         throwsA(isA<AssertionError>()),
       );
 
       expect(
-        () => ReviewRating(
-          reviewId: 1,
-          categoryId: 1,
-          rating: 1.0,
-        ),
+        () => ReviewRating(reviewId: 1, categoryId: 1, rating: 1.0),
         returnsNormally,
       );
 
       expect(
-        () => ReviewRating(
-          reviewId: 1,
-          categoryId: 1,
-          rating: 5.0,
-        ),
+        () => ReviewRating(reviewId: 1, categoryId: 1, rating: 5.0),
         returnsNormally,
       );
     });
@@ -98,11 +82,7 @@ void main() {
     });
 
     test('should handle copyWith operations', () {
-      final original = ReviewRating(
-        reviewId: 10,
-        categoryId: 1,
-        rating: 4.0,
-      );
+      final original = ReviewRating(reviewId: 10, categoryId: 1, rating: 4.0);
 
       final updated = original.copyWith(rating: 4.5, notes: 'Sehr gut');
 

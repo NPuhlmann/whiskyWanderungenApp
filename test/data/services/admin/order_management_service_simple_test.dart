@@ -74,12 +74,24 @@ void main() {
         // Act & Assert
         expect(service.validateOrderData(validOrderData), isTrue);
         expect(service.validateOrderData(invalidOrderDataEmpty), isFalse);
-        expect(service.validateOrderData(invalidOrderDataMissingUserId), isFalse);
+        expect(
+          service.validateOrderData(invalidOrderDataMissingUserId),
+          isFalse,
+        );
         expect(service.validateOrderData(invalidOrderDataEmptyUserId), isFalse);
-        expect(service.validateOrderData(invalidOrderDataMissingHikeId), isFalse);
+        expect(
+          service.validateOrderData(invalidOrderDataMissingHikeId),
+          isFalse,
+        );
         expect(service.validateOrderData(invalidOrderDataZeroAmount), isFalse);
-        expect(service.validateOrderData(invalidOrderDataNegativeAmount), isFalse);
-        expect(service.validateOrderData(invalidOrderDataInvalidStatus), isFalse);
+        expect(
+          service.validateOrderData(invalidOrderDataNegativeAmount),
+          isFalse,
+        );
+        expect(
+          service.validateOrderData(invalidOrderDataInvalidStatus),
+          isFalse,
+        );
       });
 
       test('validateUpdateData should validate update fields', () {
@@ -89,33 +101,29 @@ void main() {
           'tracking_number': 'TRACK123',
         };
 
-        final validUpdateDataMinimal = {
-          'status': 'shipped',
-        };
+        final validUpdateDataMinimal = {'status': 'shipped'};
 
-        final validUpdateDataAmount = {
-          'total_amount': 59.99,
-        };
+        final validUpdateDataAmount = {'total_amount': 59.99};
 
-        final invalidUpdateDataStatus = {
-          'status': 'invalid_status',
-        };
+        final invalidUpdateDataStatus = {'status': 'invalid_status'};
 
-        final invalidUpdateDataZeroAmount = {
-          'total_amount': 0,
-        };
+        final invalidUpdateDataZeroAmount = {'total_amount': 0};
 
-        final invalidUpdateDataNegativeAmount = {
-          'total_amount': -5.0,
-        };
+        final invalidUpdateDataNegativeAmount = {'total_amount': -5.0};
 
         // Act & Assert
         expect(service.validateUpdateData(validUpdateData), isTrue);
         expect(service.validateUpdateData(validUpdateDataMinimal), isTrue);
         expect(service.validateUpdateData(validUpdateDataAmount), isTrue);
         expect(service.validateUpdateData(invalidUpdateDataStatus), isFalse);
-        expect(service.validateUpdateData(invalidUpdateDataZeroAmount), isFalse);
-        expect(service.validateUpdateData(invalidUpdateDataNegativeAmount), isFalse);
+        expect(
+          service.validateUpdateData(invalidUpdateDataZeroAmount),
+          isFalse,
+        );
+        expect(
+          service.validateUpdateData(invalidUpdateDataNegativeAmount),
+          isFalse,
+        );
       });
 
       test('validateOrderStatus should validate all valid statuses', () {
@@ -130,7 +138,10 @@ void main() {
         // Invalid statuses
         expect(service.validateOrderStatus('invalid'), isFalse);
         expect(service.validateOrderStatus(''), isFalse);
-        expect(service.validateOrderStatus('PENDING'), isFalse); // Case sensitive
+        expect(
+          service.validateOrderStatus('PENDING'),
+          isFalse,
+        ); // Case sensitive
         expect(service.validateOrderStatus('active'), isFalse);
         expect(service.validateOrderStatus('complete'), isFalse);
       });
@@ -188,7 +199,10 @@ void main() {
     group('Service Initialization', () {
       test('should initialize without errors', () {
         // Act & Assert
-        expect(() => OrderManagementService(client: mockClient), returnsNormally);
+        expect(
+          () => OrderManagementService(client: mockClient),
+          returnsNormally,
+        );
       });
 
       test('should accept custom client', () {
@@ -196,7 +210,10 @@ void main() {
         final customClient = MockSupabaseClient();
 
         // Act & Assert
-        expect(() => OrderManagementService(client: customClient), returnsNormally);
+        expect(
+          () => OrderManagementService(client: customClient),
+          returnsNormally,
+        );
       });
     });
 
@@ -225,17 +242,44 @@ void main() {
       test('should validate various TestHelper order configurations', () {
         // Arrange & Act & Assert
         final orders = [
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', status: 'pending'),
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', status: 'confirmed'),
-          TestHelpers.createTestBasicOrderJson(id: 3, userId: 'user3', status: 'processing'),
-          TestHelpers.createTestBasicOrderJson(id: 4, userId: 'user4', status: 'shipped'),
-          TestHelpers.createTestBasicOrderJson(id: 5, userId: 'user5', status: 'delivered'),
-          TestHelpers.createTestBasicOrderJson(id: 6, userId: 'user6', status: 'cancelled'),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            status: 'pending',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            status: 'confirmed',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 3,
+            userId: 'user3',
+            status: 'processing',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 4,
+            userId: 'user4',
+            status: 'shipped',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 5,
+            userId: 'user5',
+            status: 'delivered',
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 6,
+            userId: 'user6',
+            status: 'cancelled',
+          ),
         ];
 
         for (final order in orders) {
-          expect(service.validateOrderStatus(order['status']), isTrue,
-              reason: 'Status ${order['status']} should be valid');
+          expect(
+            service.validateOrderStatus(order['status']),
+            isTrue,
+            reason: 'Status ${order['status']} should be valid',
+          );
         }
       });
     });
@@ -329,7 +373,10 @@ void main() {
         // Single field updates
         expect(service.validateUpdateData({'status': 'shipped'}), isTrue);
         expect(service.validateUpdateData({'total_amount': 59.99}), isTrue);
-        expect(service.validateUpdateData({'tracking_number': 'TRACK123'}), isTrue);
+        expect(
+          service.validateUpdateData({'tracking_number': 'TRACK123'}),
+          isTrue,
+        );
 
         // Multiple field updates
         final multiUpdate = {

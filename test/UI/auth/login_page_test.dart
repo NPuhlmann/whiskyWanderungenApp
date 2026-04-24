@@ -18,20 +18,18 @@ void main() {
 
     setUp(() {
       mockViewModel = MockLoginPageViewModel();
-      
+
       // Setup default mock behavior
     });
 
     Widget createTestWidget(Widget child) {
       final router = GoRouter(
         routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, state) => child,
-          ),
+          GoRoute(path: '/', builder: (context, state) => child),
           GoRoute(
             path: '/signUp',
-            builder: (context, state) => const Scaffold(body: Text('Sign Up Page')),
+            builder: (context, state) =>
+                const Scaffold(body: Text('Sign Up Page')),
           ),
         ],
       );
@@ -44,16 +42,17 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('en', ''),
-          Locale('de', ''),
-        ],
+        supportedLocales: const [Locale('en', ''), Locale('de', '')],
       );
     }
 
-    testWidgets('should display login form elements', (WidgetTester tester) async {
+    testWidgets('should display login form elements', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
 
       // Assert
       expect(find.text('Login'), findsOneWidget);
@@ -62,27 +61,44 @@ void main() {
       expect(find.byType(TextButton), findsOneWidget);
     });
 
-    testWidgets('should call loginWithEmailAndPassword when login button is pressed', (WidgetTester tester) async {
-      // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
-      
-      await tester.enterText(find.byType(TextField).first, 'test@example.com');
-      await tester.enterText(find.byType(TextField).last, 'password123');
-      
-      await tester.tap(find.byType(ElevatedButton));
-      await tester.pump();
+    testWidgets(
+      'should call loginWithEmailAndPassword when login button is pressed',
+      (WidgetTester tester) async {
+        // Act
+        await tester.pumpWidget(
+          createTestWidget(LoginPage(viewModel: mockViewModel)),
+        );
 
-      // Assert
-      verify(mockViewModel.loginWithEmailAndPassword('test@example.com', 'password123')).called(1);
-    });
+        await tester.enterText(
+          find.byType(TextField).first,
+          'test@example.com',
+        );
+        await tester.enterText(find.byType(TextField).last, 'password123');
 
-    testWidgets('should show snackbar when login fails', (WidgetTester tester) async {
+        await tester.tap(find.byType(ElevatedButton));
+        await tester.pump();
+
+        // Assert
+        verify(
+          mockViewModel.loginWithEmailAndPassword(
+            'test@example.com',
+            'password123',
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets('should show snackbar when login fails', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
-      
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
+
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.enterText(find.byType(TextField).last, 'wrongpassword');
-      
+
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
@@ -91,71 +107,104 @@ void main() {
       expect(find.text('Exception: Login failed'), findsOneWidget);
     });
 
-    testWidgets('should navigate to sign up page when sign up button is pressed', (WidgetTester tester) async {
-      // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
-      
-      await tester.tap(find.byType(TextButton));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'should navigate to sign up page when sign up button is pressed',
+      (WidgetTester tester) async {
+        // Act
+        await tester.pumpWidget(
+          createTestWidget(LoginPage(viewModel: mockViewModel)),
+        );
 
-      // Assert
-      expect(find.text('Sign Up Page'), findsOneWidget);
-    });
+        await tester.tap(find.byType(TextButton));
+        await tester.pumpAndSettle();
 
-    testWidgets('should have correct button styling', (WidgetTester tester) async {
+        // Assert
+        expect(find.text('Sign Up Page'), findsOneWidget);
+      },
+    );
+
+    testWidgets('should have correct button styling', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
 
       // Assert
       final elevatedButton = find.byType(ElevatedButton);
       expect(elevatedButton, findsOneWidget);
-      
+
       final textButton = find.byType(TextButton);
       expect(textButton, findsOneWidget);
     });
 
-    testWidgets('should have proper spacing between elements', (WidgetTester tester) async {
+    testWidgets('should have proper spacing between elements', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
 
       // Assert
       final sizedBoxes = find.byType(SizedBox);
       expect(sizedBoxes, findsNWidgets(6)); // Updated to match actual count
     });
 
-    testWidgets('should use ListView with proper padding', (WidgetTester tester) async {
+    testWidgets('should use ListView with proper padding', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
 
       // Assert
       final listView = find.byType(ListView);
       expect(listView, findsOneWidget);
-      
+
       final ListView listViewWidget = tester.widget(listView);
-      expect(listViewWidget.padding, equals(const EdgeInsets.symmetric(horizontal: 16, vertical: 100)));
+      expect(
+        listViewWidget.padding,
+        equals(const EdgeInsets.symmetric(horizontal: 16, vertical: 100)),
+      );
     });
 
-    testWidgets('should handle async login operation correctly', (WidgetTester tester) async {
+    testWidgets('should handle async login operation correctly', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
-      
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
+
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.enterText(find.byType(TextField).last, 'password123');
-      
+
       await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
-      
+
       // Assert - Should complete without errors
-      verify(mockViewModel.loginWithEmailAndPassword('test@example.com', 'password123')).called(1);
+      verify(
+        mockViewModel.loginWithEmailAndPassword(
+          'test@example.com',
+          'password123',
+        ),
+      ).called(1);
     });
 
-    testWidgets('should handle mounted check for error snackbar', (WidgetTester tester) async {
+    testWidgets('should handle mounted check for error snackbar', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
-      
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
+
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.enterText(find.byType(TextField).last, 'password123');
-      
+
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
@@ -164,13 +213,17 @@ void main() {
       expect(find.text('Exception: Network error'), findsOneWidget);
     });
 
-    testWidgets('should clear text controllers when disposed', (WidgetTester tester) async {
+    testWidgets('should clear text controllers when disposed', (
+      WidgetTester tester,
+    ) async {
       // Act
-      await tester.pumpWidget(createTestWidget(LoginPage(viewModel: mockViewModel)));
-      
+      await tester.pumpWidget(
+        createTestWidget(LoginPage(viewModel: mockViewModel)),
+      );
+
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.enterText(find.byType(TextField).last, 'password123');
-      
+
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 

@@ -25,8 +25,11 @@ void main() {
         int returningCustomers = 0;
 
         for (var customer in customers) {
-          final firstOrderDate = DateTime.parse(customer['first_order_date'] as String);
-          final isNewInPeriod = firstOrderDate.isAfter(periodStart.subtract(Duration(days: 1))) &&
+          final firstOrderDate = DateTime.parse(
+            customer['first_order_date'] as String,
+          );
+          final isNewInPeriod =
+              firstOrderDate.isAfter(periodStart.subtract(Duration(days: 1))) &&
               firstOrderDate.isBefore(periodEnd.add(Duration(days: 1)));
 
           if (isNewInPeriod) {
@@ -76,7 +79,9 @@ void main() {
           totalSpent += (customer['total_spent'] as num).toDouble();
         }
 
-        final avgLTV = customers.isNotEmpty ? totalSpent / customers.length : 0.0;
+        final avgLTV = customers.isNotEmpty
+            ? totalSpent / customers.length
+            : 0.0;
         expect(avgLTV, 175.0); // (100 + 250 + 150 + 200) / 4
       });
     });
@@ -96,7 +101,8 @@ void main() {
         for (var customer in customers) {
           final location = customer['location'] as String?;
           if (location != null && location.isNotEmpty) {
-            customersByLocation[location] = (customersByLocation[location] ?? 0) + 1;
+            customersByLocation[location] =
+                (customersByLocation[location] ?? 0) + 1;
           }
         }
 
@@ -117,7 +123,8 @@ void main() {
         for (var customer in customers) {
           final location = customer['location'] as String?;
           if (location != null && location.isNotEmpty) {
-            customersByLocation[location] = (customersByLocation[location] ?? 0) + 1;
+            customersByLocation[location] =
+                (customersByLocation[location] ?? 0) + 1;
           }
         }
 
@@ -142,7 +149,8 @@ void main() {
         Map<int, int> frequencyDistribution = {};
         for (var customer in customers) {
           final orders = customer['total_orders'] as int;
-          frequencyDistribution[orders] = (frequencyDistribution[orders] ?? 0) + 1;
+          frequencyDistribution[orders] =
+              (frequencyDistribution[orders] ?? 0) + 1;
         }
 
         expect(frequencyDistribution[1], 3); // 3 customers with 1 order
@@ -157,7 +165,8 @@ void main() {
         Map<int, int> frequencyDistribution = {};
         for (var customer in customers) {
           final orders = customer['total_orders'] as int;
-          frequencyDistribution[orders] = (frequencyDistribution[orders] ?? 0) + 1;
+          frequencyDistribution[orders] =
+              (frequencyDistribution[orders] ?? 0) + 1;
         }
 
         expect(frequencyDistribution, isEmpty);
@@ -178,12 +187,7 @@ void main() {
             'Hamburg': 20,
             'Cologne': 10,
           },
-          orderFrequencyDistribution: {
-            1: 50,
-            2: 30,
-            3: 15,
-            4: 5,
-          },
+          orderFrequencyDistribution: {1: 50, 2: 30, 3: 15, 4: 5},
         );
 
         expect(insights.totalCustomers, 100);

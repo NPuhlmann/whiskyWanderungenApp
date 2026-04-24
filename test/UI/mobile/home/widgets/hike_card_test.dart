@@ -28,7 +28,9 @@ void main() {
       toggledHike = null;
     });
 
-    testWidgets('should display hike card with correct information', (tester) async {
+    testWidgets('should display hike card with correct information', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         TestHelpers.createTestWidget(
           HikeCard(
@@ -52,37 +54,42 @@ void main() {
       expect(find.byType(InkWell), findsOneWidget);
     });
 
-    testWidgets('should handle favorite toggle when favorite button is pressed', (tester) async {
-      await tester.pumpWidget(
-        TestHelpers.createTestWidget(
-          HikeCard(
-            id: 1,
-            hike: testHike,
-            isInGeneralList: true,
-            onFavoriteToggle: (hike) {
-              favoriteToggleCalled = true;
-              toggledHike = hike;
-            },
+    testWidgets(
+      'should handle favorite toggle when favorite button is pressed',
+      (tester) async {
+        await tester.pumpWidget(
+          TestHelpers.createTestWidget(
+            HikeCard(
+              id: 1,
+              hike: testHike,
+              isInGeneralList: true,
+              onFavoriteToggle: (hike) {
+                favoriteToggleCalled = true;
+                toggledHike = hike;
+              },
+            ),
+            mockRouter: mockRouter,
           ),
-          mockRouter: mockRouter,
-        ),
-      );
+        );
 
-      // Find and tap the favorite button
-      final favoriteButton = find.byIcon(Icons.favorite_border);
-      expect(favoriteButton, findsOneWidget);
-      
-      await tester.tap(favoriteButton);
-      await tester.pumpAndSettle();
+        // Find and tap the favorite button
+        final favoriteButton = find.byIcon(Icons.favorite_border);
+        expect(favoriteButton, findsOneWidget);
 
-      // Verify favorite toggle was called
-      expect(favoriteToggleCalled, true);
-      expect(toggledHike, equals(testHike));
-    });
+        await tester.tap(favoriteButton);
+        await tester.pumpAndSettle();
 
-    testWidgets('should display filled favorite icon when hike is favorite', (tester) async {
+        // Verify favorite toggle was called
+        expect(favoriteToggleCalled, true);
+        expect(toggledHike, equals(testHike));
+      },
+    );
+
+    testWidgets('should display filled favorite icon when hike is favorite', (
+      tester,
+    ) async {
       final favoriteHike = testHike.copyWith(isFavorite: true);
-      
+
       await tester.pumpWidget(
         TestHelpers.createTestWidget(
           HikeCard(
@@ -100,51 +107,69 @@ void main() {
       expect(find.byIcon(Icons.favorite_border), findsNothing);
     });
 
-    testWidgets('should navigate to correct route when tapped from general list', (tester) async {
-      await tester.pumpWidget(
-        TestHelpers.createTestWidget(
-          HikeCard(
-            id: 1,
-            hike: testHike,
-            isInGeneralList: true,
-            onFavoriteToggle: (hike) {},
+    testWidgets(
+      'should navigate to correct route when tapped from general list',
+      (tester) async {
+        await tester.pumpWidget(
+          TestHelpers.createTestWidget(
+            HikeCard(
+              id: 1,
+              hike: testHike,
+              isInGeneralList: true,
+              onFavoriteToggle: (hike) {},
+            ),
+            mockRouter: mockRouter,
           ),
-          mockRouter: mockRouter,
-        ),
-      );
+        );
 
-      // Tap the card
-      await tester.tap(find.byType(InkWell));
-      await tester.pumpAndSettle();
+        // Tap the card
+        await tester.tap(find.byType(InkWell));
+        await tester.pumpAndSettle();
 
-      // Verify navigation was called
-      verify(mockRouter.go('/hikeDetails', extra: argThat(contains('hike'), named: 'extra'))).called(1);
-    });
-
-    testWidgets('should navigate to correct route when tapped from my hikes list', (tester) async {
-      await tester.pumpWidget(
-        TestHelpers.createTestWidget(
-          HikeCard(
-            id: 1,
-            hike: testHike,
-            isInGeneralList: false, // From MyHikes
-            onFavoriteToggle: (hike) {},
+        // Verify navigation was called
+        verify(
+          mockRouter.go(
+            '/hikeDetails',
+            extra: argThat(contains('hike'), named: 'extra'),
           ),
-          mockRouter: mockRouter,
-        ),
-      );
+        ).called(1);
+      },
+    );
 
-      // Tap the card
-      await tester.tap(find.byType(InkWell));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'should navigate to correct route when tapped from my hikes list',
+      (tester) async {
+        await tester.pumpWidget(
+          TestHelpers.createTestWidget(
+            HikeCard(
+              id: 1,
+              hike: testHike,
+              isInGeneralList: false, // From MyHikes
+              onFavoriteToggle: (hike) {},
+            ),
+            mockRouter: mockRouter,
+          ),
+        );
 
-      // Verify navigation to MyHikes subroute
-      verify(mockRouter.go('/myHikes/hikeDetails', extra: argThat(contains('hike'), named: 'extra'))).called(1);
-    });
+        // Tap the card
+        await tester.tap(find.byType(InkWell));
+        await tester.pumpAndSettle();
 
-    testWidgets('should display different difficulty levels correctly', (tester) async {
+        // Verify navigation to MyHikes subroute
+        verify(
+          mockRouter.go(
+            '/myHikes/hikeDetails',
+            extra: argThat(contains('hike'), named: 'extra'),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets('should display different difficulty levels correctly', (
+      tester,
+    ) async {
       final difficultHike = testHike.copyWith(difficulty: Difficulty.veryHard);
-      
+
       await tester.pumpWidget(
         TestHelpers.createTestWidget(
           HikeCard(
@@ -163,7 +188,7 @@ void main() {
 
     testWidgets('should handle missing thumbnail gracefully', (tester) async {
       final hikeWithoutThumbnail = testHike.copyWith(thumbnailImageUrl: null);
-      
+
       await tester.pumpWidget(
         TestHelpers.createTestWidget(
           HikeCard(
@@ -182,9 +207,10 @@ void main() {
 
     testWidgets('should handle long hike names appropriately', (tester) async {
       final longNameHike = testHike.copyWith(
-        name: 'This is a very long hike name that might cause overflow issues in the UI'
+        name:
+            'This is a very long hike name that might cause overflow issues in the UI',
       );
-      
+
       await tester.pumpWidget(
         TestHelpers.createTestWidget(
           HikeCard(

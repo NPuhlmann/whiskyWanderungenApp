@@ -20,11 +20,13 @@ void main() {
 
     setUp(() async {
       mockClient = MockSupabaseClient();
-      
+
       // Initialize StripeService with test key
       stripeService = StripeService.instance;
-      await stripeService.initialize('pk_test_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef');
-      
+      await stripeService.initialize(
+        'pk_test_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      );
+
       // Initialize services
       backendApiService = BackendApiService(client: mockClient);
       paymentRepository = PaymentRepository(
@@ -34,108 +36,115 @@ void main() {
     });
 
     group('Successful Payment Flow', () {
-      test('should complete full payment flow from order creation to confirmation', () async {
-        // Phase 1: Order Creation
-        final testOrder = BasicOrder(
-          id: 0, // Will be assigned by database
-          orderNumber: '', // Will be generated
-          hikeId: 42,
-          userId: 'integration-test-user',
-          totalAmount: 35.99,
-          deliveryType: DeliveryType.standardShipping,
-          status: OrderStatus.pending,
-          createdAt: DateTime.now(),
-        );
+      test(
+        'should complete full payment flow from order creation to confirmation',
+        () async {
+          // Phase 1: Order Creation
+          final testOrder = BasicOrder(
+            id: 0, // Will be assigned by database
+            orderNumber: '', // Will be generated
+            hikeId: 42,
+            userId: 'integration-test-user',
+            totalAmount: 35.99,
+            deliveryType: DeliveryType.standardShipping,
+            status: OrderStatus.pending,
+            createdAt: DateTime.now(),
+          );
 
-        // Mock database responses for order creation
-        final mockOrderResponse = {
-          'id': 123,
-          'order_number': 'WH2025-INT123',
-          'hike_id': 42,
-          'user_id': 'integration-test-user',
-          'total_amount': 35.99,
-          'delivery_type': 'shipping',
-          'status': 'pending',
-          'created_at': DateTime.now().toIso8601String(),
-        };
+          // Mock database responses for order creation
+          final mockOrderResponse = {
+            'id': 123,
+            'order_number': 'WH2025-INT123',
+            'hike_id': 42,
+            'user_id': 'integration-test-user',
+            'total_amount': 35.99,
+            'delivery_type': 'shipping',
+            'status': 'pending',
+            'created_at': DateTime.now().toIso8601String(),
+          };
 
-        // Setup mocks for order creation workflow
-        when(mockClient.from('orders')).thenReturn(_MockQueryBuilder(
-          insertResponse: mockOrderResponse,
-          selectResponse: mockOrderResponse,
-        ));
-        when(mockClient.from('order_items')).thenReturn(_MockQueryBuilder());
-        when(mockClient.from('payments')).thenReturn(_MockQueryBuilder());
+          // Setup mocks for order creation workflow
+          when(mockClient.from('orders')).thenReturn(
+            _MockQueryBuilder(
+              insertResponse: mockOrderResponse,
+              selectResponse: mockOrderResponse,
+            ),
+          );
+          when(mockClient.from('order_items')).thenReturn(_MockQueryBuilder());
+          when(mockClient.from('payments')).thenReturn(_MockQueryBuilder());
 
-        // Act - Phase 1: Create Order
-        final createdOrder = await paymentRepository.createOrder(
-          hikeId: testOrder.hikeId,
-          userId: testOrder.userId,
-          amount: testOrder.totalAmount,
-          deliveryType: testOrder.deliveryType,
-        );
+          // Act - Phase 1: Create Order
+          final createdOrder = await paymentRepository.createOrder(
+            hikeId: testOrder.hikeId,
+            userId: testOrder.userId,
+            amount: testOrder.totalAmount,
+            deliveryType: testOrder.deliveryType,
+          );
 
-        // Assert - Phase 1: Order Created
-        expect(createdOrder.id, equals(123));
-        expect(createdOrder.orderNumber, equals('WH2025-INT123'));
-        expect(createdOrder.status, equals(OrderStatus.pending));
-        expect(createdOrder.totalAmount, equals(35.99));
+          // Assert - Phase 1: Order Created
+          expect(createdOrder.id, equals(123));
+          expect(createdOrder.orderNumber, equals('WH2025-INT123'));
+          expect(createdOrder.status, equals(OrderStatus.pending));
+          expect(createdOrder.totalAmount, equals(35.99));
 
-        // Phase 2: Payment Intent Creation
-        final paymentIntentResult = await stripeService.createPaymentIntent(
-          amount: createdOrder.totalAmount,
-          currency: 'eur',
-          metadata: {
-            'order_id': createdOrder.id.toString(),
-            'hike_id': createdOrder.hikeId.toString(),
-          },
-        );
+          // Phase 2: Payment Intent Creation
+          final paymentIntentResult = await stripeService.createPaymentIntent(
+            amount: createdOrder.totalAmount,
+            currency: 'eur',
+            metadata: {
+              'order_id': createdOrder.id.toString(),
+              'hike_id': createdOrder.hikeId.toString(),
+            },
+          );
 
-        // Assert - Phase 2: Payment Intent Created
-        expect(paymentIntentResult.amount, equals(3599)); // In cents
-        expect(paymentIntentResult.currency, equals('eur'));
-        expect(paymentIntentResult.status, equals('requires_payment_method'));
-        expect(paymentIntentResult.clientSecret, isNotEmpty);
+          // Assert - Phase 2: Payment Intent Created
+          expect(paymentIntentResult.amount, equals(3599)); // In cents
+          expect(paymentIntentResult.currency, equals('eur'));
+          expect(paymentIntentResult.status, equals('requires_payment_method'));
+          expect(paymentIntentResult.clientSecret, isNotEmpty);
 
-        // Phase 3: Payment Confirmation
-        final paymentResult = await stripeService.confirmPayment(
-          clientSecret: paymentIntentResult.clientSecret,
-          paymentMethodId: 'pm_test_card_visa', // Test card
-        );
+          // Phase 3: Payment Confirmation
+          final paymentResult = await stripeService.confirmPayment(
+            clientSecret: paymentIntentResult.clientSecret,
+            paymentMethodId: 'pm_test_card_visa', // Test card
+          );
 
-        // Assert - Phase 3: Payment Confirmed
-        expect(paymentResult.isSuccess, isTrue);
-        expect(paymentResult.status, equals(PaymentStatus.succeeded));
-        expect(paymentResult.paymentIntentId, isNotEmpty);
+          // Assert - Phase 3: Payment Confirmed
+          expect(paymentResult.isSuccess, isTrue);
+          expect(paymentResult.status, equals(PaymentStatus.succeeded));
+          expect(paymentResult.paymentIntentId, isNotEmpty);
 
-        // Phase 4: Complete Order Processing
-        final mockUpdatedOrder = Map<String, dynamic>.from(mockOrderResponse);
-        mockUpdatedOrder['status'] = 'confirmed';
-        mockUpdatedOrder['payment_intent_id'] = paymentResult.paymentIntentId;
-        mockUpdatedOrder['updated_at'] = DateTime.now().toIso8601String();
+          // Phase 4: Complete Order Processing
+          final mockUpdatedOrder = Map<String, dynamic>.from(mockOrderResponse);
+          mockUpdatedOrder['status'] = 'confirmed';
+          mockUpdatedOrder['payment_intent_id'] = paymentResult.paymentIntentId;
+          mockUpdatedOrder['updated_at'] = DateTime.now().toIso8601String();
 
-        when(mockClient.from('orders')).thenReturn(_MockQueryBuilder(
-          updateResponse: mockUpdatedOrder,
-          selectResponse: mockUpdatedOrder,
-        ));
+          when(mockClient.from('orders')).thenReturn(
+            _MockQueryBuilder(
+              updateResponse: mockUpdatedOrder,
+              selectResponse: mockUpdatedOrder,
+            ),
+          );
 
-        final fullFlowResult = await paymentRepository.processPayment(
-          order: createdOrder,
-          paymentMethodId: 'pm_test_card_visa',
-          metadata: {'integration_test': 'true'},
-        );
+          final fullFlowResult = await paymentRepository.processPayment(
+            order: createdOrder,
+            paymentMethodId: 'pm_test_card_visa',
+            metadata: {'integration_test': 'true'},
+          );
 
-        // Assert - Phase 4: Full Flow Complete
-        expect(fullFlowResult.isSuccess, isTrue);
-        expect(fullFlowResult.status, equals(PaymentStatus.succeeded));
+          // Assert - Phase 4: Full Flow Complete
+          expect(fullFlowResult.isSuccess, isTrue);
+          expect(fullFlowResult.status, equals(PaymentStatus.succeeded));
 
-        // Verify all integrations worked together
-        print('✅ Integration Test: Full payment flow completed successfully');
-        print('   Order: ${createdOrder.orderNumber}');
-        print('   Amount: €${createdOrder.totalAmount}');
-        print('   Payment Intent: ${paymentResult.paymentIntentId}');
-        print('   Status: ${fullFlowResult.status}');
-      });
+          // Verify all integrations worked together
+          print('✅ Integration Test: Full payment flow completed successfully');
+          print('   Order: ${createdOrder.orderNumber}');
+          print('   Amount: €${createdOrder.totalAmount}');
+          print('   Payment Intent: ${paymentResult.paymentIntentId}');
+          print('   Status: ${fullFlowResult.status}');
+        },
+      );
 
       test('should handle shipping orders with delivery address', () async {
         // Test shipping-specific workflow
@@ -195,9 +204,7 @@ void main() {
         // Test payment flow with pickup
         final paymentIntent = await stripeService.createPaymentIntent(
           amount: pickupOrder.totalAmount,
-          metadata: {
-            'delivery_type': 'pickup',
-          },
+          metadata: {'delivery_type': 'pickup'},
         );
 
         expect(paymentIntent.amount, equals(2599)); // 25.99 * 100
@@ -286,9 +293,11 @@ void main() {
         );
 
         // Setup mocks to simulate errors
-        when(mockClient.from('payments')).thenReturn(_MockQueryBuilder(
-          throwError: Exception('Database connection failed'),
-        ));
+        when(mockClient.from('payments')).thenReturn(
+          _MockQueryBuilder(
+            throwError: Exception('Database connection failed'),
+          ),
+        );
 
         final errorResult = await paymentRepository.processPayment(
           order: order,
@@ -427,7 +436,7 @@ void main() {
       test('should recover from temporary network failures', () async {
         // Simulate network recovery scenario
         // This would test retry logic in a real implementation
-        
+
         final order = BasicOrder(
           id: 333,
           orderNumber: 'WH2025-RECOVERY333',
@@ -440,9 +449,9 @@ void main() {
         );
 
         // First attempt fails
-        when(mockClient.from('orders')).thenReturn(_MockQueryBuilder(
-          throwError: Exception('Network timeout'),
-        ));
+        when(mockClient.from('orders')).thenReturn(
+          _MockQueryBuilder(throwError: Exception('Network timeout')),
+        );
 
         try {
           await paymentRepository.processPayment(
@@ -454,13 +463,15 @@ void main() {
         }
 
         // Second attempt succeeds (would be handled by retry logic)
-        when(mockClient.from('orders')).thenReturn(_MockQueryBuilder(
-          updateResponse: {
-            'id': 333,
-            'status': 'confirmed',
-            'payment_intent_id': 'pi_recovery_test',
-          },
-        ));
+        when(mockClient.from('orders')).thenReturn(
+          _MockQueryBuilder(
+            updateResponse: {
+              'id': 333,
+              'status': 'confirmed',
+              'payment_intent_id': 'pi_recovery_test',
+            },
+          ),
+        );
 
         // Verify system can handle the failure gracefully
         expect(true, isTrue); // Placeholder for actual retry test
@@ -471,7 +482,7 @@ void main() {
       test('should maintain data consistency during errors', () async {
         // Test that partial failures don't leave system in inconsistent state
         // In a real system, this would test transaction rollback logic
-        
+
         final order = BasicOrder(
           id: 444,
           orderNumber: 'WH2025-CONSISTENCY444',
@@ -484,14 +495,16 @@ void main() {
         );
 
         // Test that failed payment doesn't corrupt order state
-        when(mockClient.from('payments')).thenReturn(_MockQueryBuilder(
-          throwError: PostgrestException(
-            message: 'Payment insert failed', 
-            details: null, 
-            hint: null, 
-            code: null,
+        when(mockClient.from('payments')).thenReturn(
+          _MockQueryBuilder(
+            throwError: PostgrestException(
+              message: 'Payment insert failed',
+              details: null,
+              hint: null,
+              code: null,
+            ),
           ),
-        ));
+        );
 
         final result = await paymentRepository.processPayment(
           order: order,
@@ -517,7 +530,7 @@ class _MockQueryBuilder extends Mock {
 
   _MockQueryBuilder({
     this.insertResponse,
-    this.updateResponse, 
+    this.updateResponse,
     this.selectResponse,
     this.throwError,
   });
@@ -529,7 +542,7 @@ class _MockQueryBuilder extends Mock {
     }
 
     final methodName = invocation.memberName.toString();
-    
+
     if (methodName.contains('insert')) {
       return _MockQueryBuilder(selectResponse: insertResponse ?? {});
     } else if (methodName.contains('update')) {
@@ -541,7 +554,7 @@ class _MockQueryBuilder extends Mock {
     } else if (methodName.contains('eq') || methodName.contains('order')) {
       return this;
     }
-    
+
     return Future.value(selectResponse ?? {});
   }
 }

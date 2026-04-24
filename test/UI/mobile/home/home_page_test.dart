@@ -37,7 +37,9 @@ void main() {
       expect(find.byType(HomePage), findsOneWidget);
     });
 
-    testWidgets('should call loadHikes and getUserFirstName on initState', (tester) async {
+    testWidgets('should call loadHikes and getUserFirstName on initState', (
+      tester,
+    ) async {
       // Setup mock
       when(mockViewModel.firstName).thenReturn('');
       when(mockViewModel.showFavorites).thenReturn(false);
@@ -52,7 +54,9 @@ void main() {
       verify(mockViewModel.getUserFirstName()).called(1);
     });
 
-    testWidgets('should display greeting when user has first name', (tester) async {
+    testWidgets('should display greeting when user has first name', (
+      tester,
+    ) async {
       when(mockViewModel.firstName).thenReturn('John');
       when(mockViewModel.showFavorites).thenReturn(false);
       when(mockViewModel.hikes).thenReturn([]);
@@ -66,7 +70,9 @@ void main() {
       expect(find.textContaining('John'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('should display default greeting when user has no first name', (tester) async {
+    testWidgets('should display default greeting when user has no first name', (
+      tester,
+    ) async {
       when(mockViewModel.firstName).thenReturn('');
       when(mockViewModel.showFavorites).thenReturn(false);
       when(mockViewModel.hikes).thenReturn([]);
@@ -94,7 +100,9 @@ void main() {
       expect(find.byIcon(Icons.favorite_border), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('should show filled heart when favorites are active', (tester) async {
+    testWidgets('should show filled heart when favorites are active', (
+      tester,
+    ) async {
       when(mockViewModel.firstName).thenReturn('');
       when(mockViewModel.showFavorites).thenReturn(true);
       when(mockViewModel.hikes).thenReturn([]);
@@ -108,22 +116,25 @@ void main() {
       expect(find.byIcon(Icons.favorite), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('should call toggleShowFavorites when favorite button is tapped', (tester) async {
-      when(mockViewModel.firstName).thenReturn('');
-      when(mockViewModel.showFavorites).thenReturn(false);
-      when(mockViewModel.hikes).thenReturn([]);
-      when(mockViewModel.isLoading).thenReturn(false);
+    testWidgets(
+      'should call toggleShowFavorites when favorite button is tapped',
+      (tester) async {
+        when(mockViewModel.firstName).thenReturn('');
+        when(mockViewModel.showFavorites).thenReturn(false);
+        when(mockViewModel.hikes).thenReturn([]);
+        when(mockViewModel.isLoading).thenReturn(false);
 
-      await tester.pumpWidget(
-        TestHelpers.createTestWidget(HomePage(viewModel: mockViewModel)),
-      );
+        await tester.pumpWidget(
+          TestHelpers.createTestWidget(HomePage(viewModel: mockViewModel)),
+        );
 
-      // Tap the favorites toggle button
-      await tester.tap(find.byIcon(Icons.favorite_border));
-      await tester.pumpAndSettle();
+        // Tap the favorites toggle button
+        await tester.tap(find.byIcon(Icons.favorite_border));
+        await tester.pumpAndSettle();
 
-      verify(mockViewModel.toggleShowFavorites()).called(1);
-    });
+        verify(mockViewModel.toggleShowFavorites()).called(1);
+      },
+    );
 
     testWidgets('should display hikes when available', (tester) async {
       when(mockViewModel.firstName).thenReturn('');
@@ -139,7 +150,9 @@ void main() {
       expect(find.byType(HikeCard), findsAtLeastNWidgets(2));
     });
 
-    testWidgets('should display empty state when no hikes available', (tester) async {
+    testWidgets('should display empty state when no hikes available', (
+      tester,
+    ) async {
       when(mockViewModel.firstName).thenReturn('');
       when(mockViewModel.showFavorites).thenReturn(false);
       when(mockViewModel.hikes).thenReturn([]);
@@ -153,7 +166,9 @@ void main() {
       expect(find.textContaining('No hikes'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('should display loading indicator when loading', (tester) async {
+    testWidgets('should display loading indicator when loading', (
+      tester,
+    ) async {
       when(mockViewModel.firstName).thenReturn('');
       when(mockViewModel.showFavorites).thenReturn(false);
       when(mockViewModel.hikes).thenReturn([]);
@@ -185,7 +200,9 @@ void main() {
       // This is tested more thoroughly in the HikeCard tests
     });
 
-    testWidgets('should rebuild when viewModel notifies listeners', (tester) async {
+    testWidgets('should rebuild when viewModel notifies listeners', (
+      tester,
+    ) async {
       when(mockViewModel.firstName).thenReturn('Initial');
       when(mockViewModel.showFavorites).thenReturn(false);
       when(mockViewModel.hikes).thenReturn([]);
@@ -200,7 +217,7 @@ void main() {
 
       // Change mock return value and simulate notifyListeners
       when(mockViewModel.firstName).thenReturn('Updated');
-      
+
       // Trigger a rebuild by pumping the widget
       await tester.pump();
 

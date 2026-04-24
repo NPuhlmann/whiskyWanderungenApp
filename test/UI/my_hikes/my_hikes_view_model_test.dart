@@ -31,43 +31,47 @@ void main() {
     group('loadUserHikes', () {
       const testUserId = 'user123';
 
-      test('should load user hikes successfully and notify listeners', () async {
-        // Arrange
-        final expectedHikes = [
-          const Hike(
-            id: 1,
-            name: 'Mountain Trail',
-            length: 5.5,
-            price: 19.99,
-            difficulty: Difficulty.mid,
-          ),
-          const Hike(
-            id: 2,
-            name: 'Forest Path',
-            length: 3.2,
-            price: 14.99,
-            difficulty: Difficulty.easy,
-          ),
-        ];
+      test(
+        'should load user hikes successfully and notify listeners',
+        () async {
+          // Arrange
+          final expectedHikes = [
+            const Hike(
+              id: 1,
+              name: 'Mountain Trail',
+              length: 5.5,
+              price: 19.99,
+              difficulty: Difficulty.mid,
+            ),
+            const Hike(
+              id: 2,
+              name: 'Forest Path',
+              length: 3.2,
+              price: 14.99,
+              difficulty: Difficulty.easy,
+            ),
+          ];
 
-        when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => expectedHikes);
+          when(mockUserRepository.getUserId()).thenReturn(testUserId);
+          when(
+            mockHikeRepository.getUserHikes(testUserId),
+          ).thenAnswer((_) async => expectedHikes);
 
-        bool listenerCalled = false;
-        myHikesViewModel.addListener(() => listenerCalled = true);
+          bool listenerCalled = false;
+          myHikesViewModel.addListener(() => listenerCalled = true);
 
-        // Act
-        await myHikesViewModel.loadUserHikes();
+          // Act
+          await myHikesViewModel.loadUserHikes();
 
-        // Assert
-        expect(myHikesViewModel.userHikes, equals(expectedHikes));
-        expect(myHikesViewModel.isLoading, false);
-        expect(myHikesViewModel.errorMessage, isNull);
-        expect(listenerCalled, true);
-        verify(mockUserRepository.getUserId()).called(1);
-        verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
-      });
+          // Assert
+          expect(myHikesViewModel.userHikes, equals(expectedHikes));
+          expect(myHikesViewModel.isLoading, false);
+          expect(myHikesViewModel.errorMessage, isNull);
+          expect(listenerCalled, true);
+          verify(mockUserRepository.getUserId()).called(1);
+          verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
+        },
+      );
 
       test('should handle null user ID', () async {
         // Arrange
@@ -91,8 +95,9 @@ void main() {
       test('should handle empty user hikes list', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => []);
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenAnswer((_) async => []);
 
         bool listenerCalled = false;
         myHikesViewModel.addListener(() => listenerCalled = true);
@@ -111,8 +116,9 @@ void main() {
       test('should handle error loading user hikes', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenThrow(Exception('Network error'));
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenThrow(Exception('Network error'));
 
         bool listenerCalled = false;
         myHikesViewModel.addListener(() => listenerCalled = true);
@@ -131,8 +137,7 @@ void main() {
       test('should not load multiple times simultaneously', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async {
+        when(mockHikeRepository.getUserHikes(testUserId)).thenAnswer((_) async {
           // Simulate slow network
           await Future.delayed(const Duration(milliseconds: 100));
           return [const Hike(id: 1, name: 'Test Hike')];
@@ -141,7 +146,7 @@ void main() {
         // Act - Call loadUserHikes multiple times quickly
         final future1 = myHikesViewModel.loadUserHikes();
         final future2 = myHikesViewModel.loadUserHikes(); // Should return early
-        
+
         await Future.wait([future1, future2]);
 
         // Assert - Should only call the repository once
@@ -151,8 +156,7 @@ void main() {
       test('should set loading state correctly during load', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async {
+        when(mockHikeRepository.getUserHikes(testUserId)).thenAnswer((_) async {
           // Verify loading is true during async call
           expect(myHikesViewModel.isLoading, true);
           await Future.delayed(const Duration(milliseconds: 10));
@@ -172,15 +176,17 @@ void main() {
       test('should clear error message on successful load', () async {
         // Arrange - First cause an error
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenThrow(Exception('Network error'));
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenThrow(Exception('Network error'));
 
         await myHikesViewModel.loadUserHikes();
         expect(myHikesViewModel.errorMessage, 'errorLoadingHikes');
 
         // Now return successful data
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => [const Hike(id: 1, name: 'Test Hike')]);
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenAnswer((_) async => [const Hike(id: 1, name: 'Test Hike')]);
 
         // Act
         await myHikesViewModel.loadUserHikes();
@@ -196,8 +202,9 @@ void main() {
         // Arrange
         const testUserId = 'user123';
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => []);
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenAnswer((_) async => []);
 
         // Act
         await myHikesViewModel.refresh();
@@ -217,15 +224,17 @@ void main() {
         ];
 
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => initialHikes);
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenAnswer((_) async => initialHikes);
 
         await myHikesViewModel.loadUserHikes();
         expect(myHikesViewModel.userHikes.length, 1);
 
         // Update mock to return new data
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => updatedHikes);
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenAnswer((_) async => updatedHikes);
 
         // Act
         await myHikesViewModel.refresh();
@@ -241,8 +250,9 @@ void main() {
         // Arrange
         const testUserId = 'user123';
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenAnswer((_) async => []);
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenAnswer((_) async => []);
 
         int notificationCount = 0;
         myHikesViewModel.addListener(() => notificationCount++);
@@ -258,8 +268,9 @@ void main() {
         // Arrange
         const testUserId = 'user123';
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId))
-            .thenThrow(Exception('Error'));
+        when(
+          mockHikeRepository.getUserHikes(testUserId),
+        ).thenThrow(Exception('Error'));
 
         int notificationCount = 0;
         myHikesViewModel.addListener(() => notificationCount++);

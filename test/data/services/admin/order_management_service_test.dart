@@ -41,12 +41,13 @@ void main() {
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockTransformBuilder);
-        when(mockQueryBuilder.order('created_at', ascending: false))
-            .thenReturn(mockQueryBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false))
-            .thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then())
-            .thenAnswer((_) async => orderData);
+        when(
+          mockQueryBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockQueryBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(mockTransformBuilder.then()).thenAnswer((_) async => orderData);
 
         // Act
         final result = await service.getAllOrdersForAdmin();
@@ -61,7 +62,7 @@ void main() {
         const orderId = 123;
         final orderData = TestHelpers.createTestBasicOrderJson(
           id: orderId,
-          userId: 'user123'
+          userId: 'user123',
         );
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
@@ -161,8 +162,9 @@ void main() {
         );
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.update({'status': newStatus}))
-            .thenReturn(mockFilterBuilder);
+        when(
+          mockQueryBuilder.update({'status': newStatus}),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.eq('id', orderId)).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.single()).thenAnswer((_) async => updatedOrder);
@@ -180,15 +182,26 @@ void main() {
         // Arrange
         const status = 'pending';
         final orderData = [
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', status: status),
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', status: status),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            status: status,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            status: status,
+          ),
         ];
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('status', status)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.order('created_at', ascending: false))
-            .thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.eq('status', status),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.then()).thenAnswer((_) async => orderData);
 
         // Act
@@ -221,9 +234,12 @@ void main() {
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.ilike('id', '%$searchTerm%')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.order('created_at', ascending: false))
-            .thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.ilike('id', '%$searchTerm%'),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.then()).thenAnswer((_) async => orderData);
 
         // Act
@@ -244,12 +260,15 @@ void main() {
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.gte('created_at', startDate.toIso8601String()))
-            .thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.lte('created_at', endDate.toIso8601String()))
-            .thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.order('created_at', ascending: false))
-            .thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.gte('created_at', startDate.toIso8601String()),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.lte('created_at', endDate.toIso8601String()),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.then()).thenAnswer((_) async => orderData);
 
         // Act
@@ -257,8 +276,12 @@ void main() {
 
         // Assert
         expect(result, equals(orderData));
-        verify(mockFilterBuilder.gte('created_at', startDate.toIso8601String())).called(1);
-        verify(mockFilterBuilder.lte('created_at', endDate.toIso8601String())).called(1);
+        verify(
+          mockFilterBuilder.gte('created_at', startDate.toIso8601String()),
+        ).called(1);
+        verify(
+          mockFilterBuilder.lte('created_at', endDate.toIso8601String()),
+        ).called(1);
       });
 
       test('getOrdersByUser should filter orders by user ID', () async {
@@ -271,9 +294,12 @@ void main() {
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('user_id', userId)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.order('created_at', ascending: false))
-            .thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.eq('user_id', userId),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockFilterBuilder);
         when(mockFilterBuilder.then()).thenAnswer((_) async => orderData);
 
         // Act
@@ -289,9 +315,24 @@ void main() {
       test('getOrderStatistics should return order stats', () async {
         // Arrange
         final orders = [
-          TestHelpers.createTestBasicOrderJson(id: 1, userId: 'user1', status: 'pending', totalAmount: 49.99),
-          TestHelpers.createTestBasicOrderJson(id: 2, userId: 'user2', status: 'shipped', totalAmount: 59.99),
-          TestHelpers.createTestBasicOrderJson(id: 3, userId: 'user3', status: 'delivered', totalAmount: 39.99),
+          TestHelpers.createTestBasicOrderJson(
+            id: 1,
+            userId: 'user1',
+            status: 'pending',
+            totalAmount: 49.99,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 2,
+            userId: 'user2',
+            status: 'shipped',
+            totalAmount: 59.99,
+          ),
+          TestHelpers.createTestBasicOrderJson(
+            id: 3,
+            userId: 'user3',
+            status: 'delivered',
+            totalAmount: 39.99,
+          ),
         ];
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
@@ -319,9 +360,12 @@ void main() {
 
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false))
-            .thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.limit(limit)).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.limit(limit),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then()).thenAnswer((_) async => orderData);
 
         // Act
@@ -343,10 +387,7 @@ void main() {
           'status': 'pending',
         };
 
-        final invalidOrderData = {
-          'user_id': '',
-          'hike_id': null,
-        };
+        final invalidOrderData = {'user_id': '', 'hike_id': null};
 
         // Act & Assert
         expect(service.validateOrderData(validOrderData), isTrue);
@@ -360,9 +401,7 @@ void main() {
           'tracking_number': 'TRACK123',
         };
 
-        final invalidUpdateData = {
-          'status': 'invalid_status',
-        };
+        final invalidUpdateData = {'status': 'invalid_status'};
 
         // Act & Assert
         expect(service.validateUpdateData(validUpdateData), isTrue);

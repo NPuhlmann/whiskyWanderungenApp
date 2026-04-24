@@ -30,41 +30,49 @@ void main() {
     }
 
     group('Loading States', () {
-      testWidgets('should show loading indicator when loading and no commissions', (tester) async {
-        // Arrange
-        when(mockProvider.isLoading).thenReturn(true);
-        when(mockProvider.commissions).thenReturn([]);
-        when(mockProvider.filteredCommissions).thenReturn([]);
-        when(mockProvider.errorMessage).thenReturn(null);
+      testWidgets(
+        'should show loading indicator when loading and no commissions',
+        (tester) async {
+          // Arrange
+          when(mockProvider.isLoading).thenReturn(true);
+          when(mockProvider.commissions).thenReturn([]);
+          when(mockProvider.filteredCommissions).thenReturn([]);
+          when(mockProvider.errorMessage).thenReturn(null);
 
-        // Act
-        await tester.pumpWidget(createTestWidget());
+          // Act
+          await tester.pumpWidget(createTestWidget());
 
-        // Assert
-        expect(find.byType(CircularProgressIndicator), findsOneWidget);
-        expect(find.text('Keine Provisionen gefunden'), findsNothing);
-      });
+          // Assert
+          expect(find.byType(CircularProgressIndicator), findsOneWidget);
+          expect(find.text('Keine Provisionen gefunden'), findsNothing);
+        },
+      );
 
-      testWidgets('should show commissions when loading but commissions exist', (tester) async {
-        // Arrange
-        final commissions = TestHelpers.createSampleCommissions();
-        when(mockProvider.isLoading).thenReturn(true);
-        when(mockProvider.commissions).thenReturn(commissions);
-        when(mockProvider.filteredCommissions).thenReturn(commissions);
-        when(mockProvider.errorMessage).thenReturn(null);
+      testWidgets(
+        'should show commissions when loading but commissions exist',
+        (tester) async {
+          // Arrange
+          final commissions = TestHelpers.createSampleCommissions();
+          when(mockProvider.isLoading).thenReturn(true);
+          when(mockProvider.commissions).thenReturn(commissions);
+          when(mockProvider.filteredCommissions).thenReturn(commissions);
+          when(mockProvider.errorMessage).thenReturn(null);
 
-        // Act
-        await tester.pumpWidget(createTestWidget());
+          // Act
+          await tester.pumpWidget(createTestWidget());
 
-        // Assert
-        expect(find.byType(CircularProgressIndicator), findsNothing);
-        expect(find.text('Keine Provisionen gefunden'), findsNothing);
-        // Should show commission cards/list
-      });
+          // Assert
+          expect(find.byType(CircularProgressIndicator), findsNothing);
+          expect(find.text('Keine Provisionen gefunden'), findsNothing);
+          // Should show commission cards/list
+        },
+      );
     });
 
     group('Error States', () {
-      testWidgets('should show error message when error occurs', (tester) async {
+      testWidgets('should show error message when error occurs', (
+        tester,
+      ) async {
         // Arrange
         const errorMessage = 'Failed to load commissions';
         when(mockProvider.isLoading).thenReturn(false);
@@ -98,7 +106,9 @@ void main() {
     });
 
     group('Empty States', () {
-      testWidgets('should show empty message when no commissions', (tester) async {
+      testWidgets('should show empty message when no commissions', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.commissions).thenReturn([]);
@@ -113,20 +123,26 @@ void main() {
         expect(find.byIcon(Icons.receipt_long), findsOneWidget);
       });
 
-      testWidgets('should show filtered empty message when no filtered results', (tester) async {
-        // Arrange
-        final allCommissions = TestHelpers.createSampleCommissions();
-        when(mockProvider.isLoading).thenReturn(false);
-        when(mockProvider.commissions).thenReturn(allCommissions);
-        when(mockProvider.filteredCommissions).thenReturn([]);
-        when(mockProvider.errorMessage).thenReturn(null);
+      testWidgets(
+        'should show filtered empty message when no filtered results',
+        (tester) async {
+          // Arrange
+          final allCommissions = TestHelpers.createSampleCommissions();
+          when(mockProvider.isLoading).thenReturn(false);
+          when(mockProvider.commissions).thenReturn(allCommissions);
+          when(mockProvider.filteredCommissions).thenReturn([]);
+          when(mockProvider.errorMessage).thenReturn(null);
 
-        // Act
-        await tester.pumpWidget(createTestWidget());
+          // Act
+          await tester.pumpWidget(createTestWidget());
 
-        // Assert
-        expect(find.text('Keine Provisionen entsprechen den Filterkriterien'), findsOneWidget);
-      });
+          // Assert
+          expect(
+            find.text('Keine Provisionen entsprechen den Filterkriterien'),
+            findsOneWidget,
+          );
+        },
+      );
     });
 
     group('Commission Display', () {
@@ -144,10 +160,13 @@ void main() {
 
         // Assert
         expect(find.byType(Card), findsWidgets);
-        
+
         // Check if first commission data is displayed
         final firstCommission = commissions.first;
-        expect(find.text(firstCommission.formattedCommissionAmount), findsOneWidget);
+        expect(
+          find.text(firstCommission.formattedCommissionAmount),
+          findsOneWidget,
+        );
       });
 
       testWidgets('should display commission table on desktop', (tester) async {
@@ -167,7 +186,7 @@ void main() {
 
         // Assert
         expect(find.byType(DataTable), findsOneWidget);
-        
+
         // Check table headers
         expect(find.text('Provision'), findsOneWidget);
         expect(find.text('Grundbetrag'), findsOneWidget);
@@ -231,12 +250,12 @@ void main() {
 
         // Act
         await tester.pumpWidget(createTestWidget());
-        
+
         final retryButton = find.text('Wiederholen');
         expect(retryButton, findsOneWidget);
-        
+
         await tester.tap(retryButton);
-        
+
         // Assert
         verify(mockProvider.loadCommissionsForCompany(any)).called(1);
       });

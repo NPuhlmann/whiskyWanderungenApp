@@ -11,11 +11,12 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Payment Flow Integration Tests (TDD)', () {
-    
     group('Complete Payment Journey', () {
-      testWidgets('should complete full payment flow with pickup delivery', (tester) async {
+      testWidgets('should complete full payment flow with pickup delivery', (
+        tester,
+      ) async {
         // Red Phase: End-to-End Payment Flow Test
-        // 
+        //
         // Test Journey:
         // 1. User navigates to hike details
         // 2. User clicks "Jetzt kaufen"
@@ -59,12 +60,16 @@ void main() {
         // expect(find.text('Zahlung erfolgreich!'), findsOneWidget);
         // expect(find.text('Bestellnummer: WH2025-'), findsWidgets);
 
-        fail('Complete payment flow not implemented yet - this should fail (Red phase)');
+        fail(
+          'Complete payment flow not implemented yet - this should fail (Red phase)',
+        );
       });
 
-      testWidgets('should handle payment with shipping delivery and address', (tester) async {
+      testWidgets('should handle payment with shipping delivery and address', (
+        tester,
+      ) async {
         // Red Phase: Shipping delivery integration test
-        
+
         // Arrange
         // await tester.pumpWidget(MyApp());
         // await tester.pumpAndSettle();
@@ -104,14 +109,18 @@ void main() {
         // expect(find.text('wird an folgende Adresse versendet:'), findsOneWidget);
         // expect(find.text('Teststraße 123'), findsOneWidget);
 
-        fail('Shipping payment flow not implemented yet - this should fail (Red phase)');
+        fail(
+          'Shipping payment flow not implemented yet - this should fail (Red phase)',
+        );
       });
     });
 
     group('Payment Error Scenarios', () {
-      testWidgets('should handle declined payment card gracefully', (tester) async {
+      testWidgets('should handle declined payment card gracefully', (
+        tester,
+      ) async {
         // Red Phase: Payment decline handling test
-        
+
         // Test with declined test card: 4000 0000 0000 0002
         // await tester.pumpWidget(MyApp());
         // await tester.pumpAndSettle();
@@ -135,21 +144,29 @@ void main() {
         // expect(find.text('Ihre Karte wurde abgelehnt'), findsOneWidget);
         // expect(find.text('Erneut versuchen'), findsOneWidget);
 
-        fail('Payment decline handling not implemented yet - this should fail (Red phase)');
+        fail(
+          'Payment decline handling not implemented yet - this should fail (Red phase)',
+        );
       });
 
-      testWidgets('should handle network errors during payment', (tester) async {
+      testWidgets('should handle network errors during payment', (
+        tester,
+      ) async {
         // Red Phase: Network error handling test
-        
+
         // This test would simulate network issues during payment
         // Mock network failure scenarios and test error recovery
-        
-        fail('Network error handling not implemented yet - this should fail (Red phase)');
+
+        fail(
+          'Network error handling not implemented yet - this should fail (Red phase)',
+        );
       });
 
-      testWidgets('should handle invalid card details validation', (tester) async {
+      testWidgets('should handle invalid card details validation', (
+        tester,
+      ) async {
         // Red Phase: Card validation test
-        
+
         // Test with invalid card details
         // await tester.pumpWidget(MyApp());
         // await tester.pumpAndSettle();
@@ -173,30 +190,39 @@ void main() {
         // expect(find.text('Karte ist abgelaufen'), findsOneWidget);
         // expect(find.text('Ungültiger CVV-Code'), findsOneWidget);
 
-        fail('Card validation not implemented yet - this should fail (Red phase)');
+        fail(
+          'Card validation not implemented yet - this should fail (Red phase)',
+        );
       });
     });
 
     group('Database Integration', () {
-      testWidgets('should create order record in database after successful payment', (tester) async {
-        // Red Phase: Database integration test
-        
-        // Complete successful payment flow
-        // await completeSuccessfulPayment(tester);
+      testWidgets(
+        'should create order record in database after successful payment',
+        (tester) async {
+          // Red Phase: Database integration test
 
-        // Verify order was created in database
-        // final orders = await BackendApiService().getUserOrders(testUserId);
-        // expect(orders.length, equals(1));
-        // expect(orders.first.hikeId, equals(1));
-        // expect(orders.first.totalAmount, equals(25.99));
-        // expect(orders.first.status, equals(OrderStatus.confirmed));
+          // Complete successful payment flow
+          // await completeSuccessfulPayment(tester);
 
-        fail('Database order creation not implemented yet - this should fail (Red phase)');
-      });
+          // Verify order was created in database
+          // final orders = await BackendApiService().getUserOrders(testUserId);
+          // expect(orders.length, equals(1));
+          // expect(orders.first.hikeId, equals(1));
+          // expect(orders.first.totalAmount, equals(25.99));
+          // expect(orders.first.status, equals(OrderStatus.confirmed));
 
-      testWidgets('should update purchased_hikes table after payment', (tester) async {
+          fail(
+            'Database order creation not implemented yet - this should fail (Red phase)',
+          );
+        },
+      );
+
+      testWidgets('should update purchased_hikes table after payment', (
+        tester,
+      ) async {
         // Red Phase: Purchased hikes tracking test
-        
+
         // Complete successful payment
         // await completeSuccessfulPayment(tester);
 
@@ -204,17 +230,21 @@ void main() {
         // final userHikes = await BackendApiService().fetchUserHikes(testUserId);
         // expect(userHikes.any((hike) => hike.id == 1), isTrue);
 
-        fail('Purchased hikes tracking not implemented yet - this should fail (Red phase)');
+        fail(
+          'Purchased hikes tracking not implemented yet - this should fail (Red phase)',
+        );
       });
     });
 
     group('Navigation Flow', () {
-      testWidgets('should navigate through complete user journey', (tester) async {
+      testWidgets('should navigate through complete user journey', (
+        tester,
+      ) async {
         // Red Phase: Navigation integration test
-        
+
         // Test complete navigation flow:
         // Home -> Hike Details -> Checkout -> Payment -> Success -> My Hikes
-        
+
         // Start at home
         // await tester.pumpWidget(MyApp());
         // await tester.pumpAndSettle();
@@ -240,18 +270,24 @@ void main() {
         // expect(find.text('Meine Wanderungen'), findsOneWidget);
         // expect(find.text('Black Forest Whisky Trail'), findsOneWidget);
 
-        fail('Navigation flow not implemented yet - this should fail (Red phase)');
+        fail(
+          'Navigation flow not implemented yet - this should fail (Red phase)',
+        );
       });
     });
 
     group('State Management', () {
-      testWidgets('should maintain state during payment process', (tester) async {
+      testWidgets('should maintain state during payment process', (
+        tester,
+      ) async {
         // Red Phase: State persistence test
-        
+
         // Test that checkout state is maintained during payment process
         // Test that user doesn't lose progress if app is minimized/restored
-        
-        fail('State management not implemented yet - this should fail (Red phase)');
+
+        fail(
+          'State management not implemented yet - this should fail (Red phase)',
+        );
       });
     });
   });

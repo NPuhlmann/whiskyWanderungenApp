@@ -130,7 +130,10 @@ void main() {
       test('should filter routes by status', () {
         final activeRoutes = provider.filterRoutesByStatus(true);
         expect(activeRoutes.length, equals(2));
-        expect(activeRoutes.every((route) => route['is_active'] == true), isTrue);
+        expect(
+          activeRoutes.every((route) => route['is_active'] == true),
+          isTrue,
+        );
 
         final inactiveRoutes = provider.filterRoutesByStatus(false);
         expect(inactiveRoutes.length, equals(1));
@@ -267,7 +270,10 @@ void main() {
         expect(stats['inactiveRoutes'], equals(1));
         expect(stats['averagePrice'], equals(90.0)); // (80 + 90 + 100) / 3
         expect(stats['averageDistance'], equals(15.0)); // (10 + 15 + 20) / 3
-        expect(stats['averageDuration'], equals(300.0)); // (200 + 300 + 400) / 3
+        expect(
+          stats['averageDuration'],
+          equals(300.0),
+        ); // (200 + 300 + 400) / 3
       });
 
       test('should handle empty routes for statistics', () {

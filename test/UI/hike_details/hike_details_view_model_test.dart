@@ -20,10 +20,10 @@ void main() {
     setUp(() {
       mockHikeImagesRepository = MockHikeImagesRepository();
       mockWaypointRepository = MockWaypointRepository();
-      
+
       // Clear SharedPreferences before each test
       SharedPreferences.setMockInitialValues({});
-      
+
       viewModel = HikeDetailsPageViewModel(
         hikeImagesRepository: mockHikeImagesRepository,
         waypointRepository: mockWaypointRepository,
@@ -57,8 +57,9 @@ void main() {
 
       test('should load hike images from repository', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenAnswer((_) async => testImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).thenAnswer((_) async => testImages);
 
         // Act
         await viewModel.getHikeImages(testHikeId);
@@ -70,12 +71,13 @@ void main() {
 
       test('should cache images and use cache on subsequent calls', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenAnswer((_) async => testImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).thenAnswer((_) async => testImages);
 
         // Act - First call
         await viewModel.getHikeImages(testHikeId);
-        
+
         // Act - Second call
         await viewModel.getHikeImages(testHikeId);
 
@@ -87,8 +89,9 @@ void main() {
 
       test('should handle empty image list', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenAnswer((_) async => []);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).thenAnswer((_) async => []);
 
         // Act
         await viewModel.getHikeImages(testHikeId);
@@ -99,8 +102,9 @@ void main() {
 
       test('should handle repository errors', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenThrow(Exception('Network error'));
+        when(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).thenThrow(Exception('Network error'));
 
         // Act & Assert
         expect(
@@ -109,22 +113,26 @@ void main() {
         );
       });
 
-      test('should create copies of image lists to avoid reference issues', () async {
-        // Arrange
-        final originalImages = ['image1.jpg', 'image2.jpg'];
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenAnswer((_) async => originalImages);
+      test(
+        'should create copies of image lists to avoid reference issues',
+        () async {
+          // Arrange
+          final originalImages = ['image1.jpg', 'image2.jpg'];
+          when(
+            mockHikeImagesRepository.getHikeImages(testHikeId),
+          ).thenAnswer((_) async => originalImages);
 
-        // Act
-        await viewModel.getHikeImages(testHikeId);
-        
-        // Modify original list
-        originalImages.add('image3.jpg');
+          // Act
+          await viewModel.getHikeImages(testHikeId);
 
-        // Assert - viewModel images should not be affected
-        expect(viewModel.hikeImages.length, 2);
-        expect(viewModel.hikeImages, isNot(same(originalImages)));
-      });
+          // Modify original list
+          originalImages.add('image3.jpg');
+
+          // Assert - viewModel images should not be affected
+          expect(viewModel.hikeImages.length, 2);
+          expect(viewModel.hikeImages, isNot(same(originalImages)));
+        },
+      );
 
       test('should set hikeImages property correctly', () {
         // Arrange
@@ -139,8 +147,9 @@ void main() {
 
       test('should clear images for UI', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenAnswer((_) async => testImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).thenAnswer((_) async => testImages);
         await viewModel.getHikeImages(testHikeId);
         expect(viewModel.hikeImages, isNotEmpty);
 
@@ -149,7 +158,7 @@ void main() {
 
         // Assert
         expect(viewModel.hikeImages, isEmpty);
-        
+
         // Cache should still be intact
         await viewModel.getHikeImages(testHikeId);
         expect(viewModel.hikeImages, equals(testImages));
@@ -158,8 +167,9 @@ void main() {
 
       test('should clear cache', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHikeId))
-            .thenAnswer((_) async => testImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).thenAnswer((_) async => testImages);
         await viewModel.getHikeImages(testHikeId);
 
         // Act
@@ -179,10 +189,12 @@ void main() {
         final images1 = ['hike1_img1.jpg', 'hike1_img2.jpg'];
         final images2 = ['hike2_img1.jpg'];
 
-        when(mockHikeImagesRepository.getHikeImages(hikeId1))
-            .thenAnswer((_) async => images1);
-        when(mockHikeImagesRepository.getHikeImages(hikeId2))
-            .thenAnswer((_) async => images2);
+        when(
+          mockHikeImagesRepository.getHikeImages(hikeId1),
+        ).thenAnswer((_) async => images1);
+        when(
+          mockHikeImagesRepository.getHikeImages(hikeId2),
+        ).thenAnswer((_) async => images2);
 
         // Act
         await viewModel.getHikeImages(hikeId1);
@@ -199,7 +211,7 @@ void main() {
         expect(result1, equals(images1));
         expect(result2, equals(images2));
         expect(cachedResult1, equals(images1));
-        
+
         // Each hike ID should be called only once due to caching
         verify(mockHikeImagesRepository.getHikeImages(hikeId1)).called(1);
         verify(mockHikeImagesRepository.getHikeImages(hikeId2)).called(1);
@@ -239,10 +251,12 @@ void main() {
 
       test('should save hike for offline use successfully', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHike.id))
-            .thenAnswer((_) async => testImages);
-        when(mockWaypointRepository.getWaypointsForHike(testHike.id))
-            .thenAnswer((_) async => testWaypoints);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHike.id),
+        ).thenAnswer((_) async => testImages);
+        when(
+          mockWaypointRepository.getWaypointsForHike(testHike.id),
+        ).thenAnswer((_) async => testWaypoints);
 
         // Act
         final result = await viewModel.saveHikeForOfflineUse(testHike);
@@ -252,7 +266,7 @@ void main() {
 
         // Verify data was saved to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        
+
         // Check hike data
         final savedHikeJson = prefs.getString('offline_hike_${testHike.id}');
         expect(savedHikeJson, isNotNull);
@@ -260,11 +274,15 @@ void main() {
         expect(savedHike.name, testHike.name);
 
         // Check images
-        final savedImages = prefs.getStringList('offline_hike_images_${testHike.id}');
+        final savedImages = prefs.getStringList(
+          'offline_hike_images_${testHike.id}',
+        );
         expect(savedImages, equals(testImages));
 
         // Check waypoints
-        final savedWaypointsJson = prefs.getStringList('offline_hike_waypoints_${testHike.id}');
+        final savedWaypointsJson = prefs.getStringList(
+          'offline_hike_waypoints_${testHike.id}',
+        );
         expect(savedWaypointsJson?.length, testWaypoints.length);
 
         // Check offline hikes list
@@ -274,29 +292,33 @@ void main() {
 
       test('should use cached images when available', () async {
         // Arrange - Pre-cache images
-        when(mockHikeImagesRepository.getHikeImages(testHike.id))
-            .thenAnswer((_) async => testImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHike.id),
+        ).thenAnswer((_) async => testImages);
         await viewModel.getHikeImages(testHike.id);
 
-        when(mockWaypointRepository.getWaypointsForHike(testHike.id))
-            .thenAnswer((_) async => testWaypoints);
+        when(
+          mockWaypointRepository.getWaypointsForHike(testHike.id),
+        ).thenAnswer((_) async => testWaypoints);
 
         // Act
         final result = await viewModel.saveHikeForOfflineUse(testHike);
 
         // Assert
         expect(result, true);
-        
+
         // Repository should be called only once (during pre-caching)
         verify(mockHikeImagesRepository.getHikeImages(testHike.id)).called(1);
       });
 
       test('should handle waypoint loading errors gracefully', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHike.id))
-            .thenAnswer((_) async => testImages);
-        when(mockWaypointRepository.getWaypointsForHike(testHike.id))
-            .thenThrow(Exception('Waypoint loading failed'));
+        when(
+          mockHikeImagesRepository.getHikeImages(testHike.id),
+        ).thenAnswer((_) async => testImages);
+        when(
+          mockWaypointRepository.getWaypointsForHike(testHike.id),
+        ).thenThrow(Exception('Waypoint loading failed'));
 
         // Act
         final result = await viewModel.saveHikeForOfflineUse(testHike);
@@ -306,7 +328,9 @@ void main() {
 
         // Check that empty waypoints list was saved
         final prefs = await SharedPreferences.getInstance();
-        final savedWaypoints = prefs.getStringList('offline_hike_waypoints_${testHike.id}');
+        final savedWaypoints = prefs.getStringList(
+          'offline_hike_waypoints_${testHike.id}',
+        );
         expect(savedWaypoints, isEmpty);
       });
 
@@ -317,18 +341,23 @@ void main() {
           waypointRepository: null,
         );
 
-        when(mockHikeImagesRepository.getHikeImages(testHike.id))
-            .thenAnswer((_) async => testImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHike.id),
+        ).thenAnswer((_) async => testImages);
 
         // Act
-        final result = await viewModelWithNullWaypoints.saveHikeForOfflineUse(testHike);
+        final result = await viewModelWithNullWaypoints.saveHikeForOfflineUse(
+          testHike,
+        );
 
         // Assert
         expect(result, true);
 
         // Check that empty waypoints list was saved
         final prefs = await SharedPreferences.getInstance();
-        final savedWaypoints = prefs.getStringList('offline_hike_waypoints_${testHike.id}');
+        final savedWaypoints = prefs.getStringList(
+          'offline_hike_waypoints_${testHike.id}',
+        );
         expect(savedWaypoints, isEmpty);
       });
 
@@ -345,10 +374,12 @@ void main() {
 
       test('should not duplicate hike in offline list', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(testHike.id))
-            .thenAnswer((_) async => testImages);
-        when(mockWaypointRepository.getWaypointsForHike(testHike.id))
-            .thenAnswer((_) async => testWaypoints);
+        when(
+          mockHikeImagesRepository.getHikeImages(testHike.id),
+        ).thenAnswer((_) async => testImages);
+        when(
+          mockWaypointRepository.getWaypointsForHike(testHike.id),
+        ).thenAnswer((_) async => testWaypoints);
 
         // Pre-populate offline hikes list
         final prefs = await SharedPreferences.getInstance();
@@ -361,7 +392,10 @@ void main() {
         expect(result, true);
 
         final offlineHikes = prefs.getStringList('offline_hikes');
-        expect(offlineHikes?.where((id) => id == testHike.id.toString()).length, 1);
+        expect(
+          offlineHikes?.where((id) => id == testHike.id.toString()).length,
+          1,
+        );
       });
     });
 
@@ -415,7 +449,7 @@ void main() {
         // Arrange
         const hikeId = 1;
         final prefs = await SharedPreferences.getInstance();
-        
+
         // Pre-populate data
         await prefs.setString('offline_hike_$hikeId', '{"id": $hikeId}');
         await prefs.setStringList('offline_hike_images_$hikeId', ['img1.jpg']);
@@ -432,7 +466,7 @@ void main() {
         expect(prefs.getString('offline_hike_$hikeId'), isNull);
         expect(prefs.getStringList('offline_hike_images_$hikeId'), isNull);
         expect(prefs.getStringList('offline_hike_waypoints_$hikeId'), isNull);
-        
+
         // Verify hike was removed from offline list
         final offlineHikes = prefs.getStringList('offline_hikes');
         expect(offlineHikes, equals(['2', '3']));
@@ -481,16 +515,25 @@ void main() {
         final hike = Hike(id: 1, name: 'Integration Test Hike');
         final images = ['img1.jpg', 'img2.jpg'];
         final waypoints = [
-          const Waypoint(id: 1, hikeId: 1, name: 'WP1', description: 'First', latitude: 47.0, longitude: 8.0),
+          const Waypoint(
+            id: 1,
+            hikeId: 1,
+            name: 'WP1',
+            description: 'First',
+            latitude: 47.0,
+            longitude: 8.0,
+          ),
         ];
 
-        when(mockHikeImagesRepository.getHikeImages(hike.id))
-            .thenAnswer((_) async => images);
-        when(mockWaypointRepository.getWaypointsForHike(hike.id))
-            .thenAnswer((_) async => waypoints);
+        when(
+          mockHikeImagesRepository.getHikeImages(hike.id),
+        ).thenAnswer((_) async => images);
+        when(
+          mockWaypointRepository.getWaypointsForHike(hike.id),
+        ).thenAnswer((_) async => waypoints);
 
         // Act & Assert - Full workflow
-        
+
         // 1. Initially not available offline
         expect(await viewModel.isHikeAvailableOffline(hike.id), false);
 
@@ -512,10 +555,12 @@ void main() {
         final hike1 = Hike(id: 1, name: 'Hike 1');
         final hike2 = Hike(id: 2, name: 'Hike 2');
 
-        when(mockHikeImagesRepository.getHikeImages(any))
-            .thenAnswer((_) async => ['img.jpg']);
-        when(mockWaypointRepository.getWaypointsForHike(any))
-            .thenAnswer((_) async => []);
+        when(
+          mockHikeImagesRepository.getHikeImages(any),
+        ).thenAnswer((_) async => ['img.jpg']);
+        when(
+          mockWaypointRepository.getWaypointsForHike(any),
+        ).thenAnswer((_) async => []);
 
         // Act
         await viewModel.saveHikeForOfflineUse(hike1);
@@ -561,8 +606,9 @@ void main() {
           notificationCount++;
         });
 
-        when(mockHikeImagesRepository.getHikeImages(1))
-            .thenAnswer((_) async => ['test.jpg']);
+        when(
+          mockHikeImagesRepository.getHikeImages(1),
+        ).thenAnswer((_) async => ['test.jpg']);
 
         // Act
         await viewModel.getHikeImages(1);
@@ -578,9 +624,13 @@ void main() {
     group('Edge Cases', () {
       test('should handle very large image lists', () async {
         // Arrange
-        final largeImageList = List.generate(1000, (index) => 'image$index.jpg');
-        when(mockHikeImagesRepository.getHikeImages(1))
-            .thenAnswer((_) async => largeImageList);
+        final largeImageList = List.generate(
+          1000,
+          (index) => 'image$index.jpg',
+        );
+        when(
+          mockHikeImagesRepository.getHikeImages(1),
+        ).thenAnswer((_) async => largeImageList);
 
         // Act
         await viewModel.getHikeImages(1);
@@ -597,8 +647,9 @@ void main() {
           'https://example.com/images/image%20with%20encoding.webp',
         ];
 
-        when(mockHikeImagesRepository.getHikeImages(1))
-            .thenAnswer((_) async => specialImages);
+        when(
+          mockHikeImagesRepository.getHikeImages(1),
+        ).thenAnswer((_) async => specialImages);
 
         // Act
         await viewModel.getHikeImages(1);
@@ -607,30 +658,36 @@ void main() {
         expect(viewModel.hikeImages, equals(specialImages));
       });
 
-      test('should handle hikes with very long names and descriptions', () async {
-        // Arrange
-        final longNameHike = Hike(
-          id: 1,
-          name: 'A' * 1000, // Very long name
-          description: 'B' * 2000, // Very long description
-        );
+      test(
+        'should handle hikes with very long names and descriptions',
+        () async {
+          // Arrange
+          final longNameHike = Hike(
+            id: 1,
+            name: 'A' * 1000, // Very long name
+            description: 'B' * 2000, // Very long description
+          );
 
-        when(mockHikeImagesRepository.getHikeImages(1))
-            .thenAnswer((_) async => []);
-        when(mockWaypointRepository.getWaypointsForHike(1))
-            .thenAnswer((_) async => []);
+          when(
+            mockHikeImagesRepository.getHikeImages(1),
+          ).thenAnswer((_) async => []);
+          when(
+            mockWaypointRepository.getWaypointsForHike(1),
+          ).thenAnswer((_) async => []);
 
-        // Act
-        final result = await viewModel.saveHikeForOfflineUse(longNameHike);
+          // Act
+          final result = await viewModel.saveHikeForOfflineUse(longNameHike);
 
-        // Assert
-        expect(result, true);
-      });
+          // Assert
+          expect(result, true);
+        },
+      );
 
       test('should handle concurrent operations', () async {
         // Arrange
-        when(mockHikeImagesRepository.getHikeImages(any))
-            .thenAnswer((_) async => ['img.jpg']);
+        when(
+          mockHikeImagesRepository.getHikeImages(any),
+        ).thenAnswer((_) async => ['img.jpg']);
 
         // Act - Start multiple concurrent operations
         final futures = [
@@ -650,8 +707,9 @@ void main() {
         const extremeIds = [0, -1, 999999999];
 
         for (final id in extremeIds) {
-          when(mockHikeImagesRepository.getHikeImages(id))
-              .thenAnswer((_) async => ['img.jpg']);
+          when(
+            mockHikeImagesRepository.getHikeImages(id),
+          ).thenAnswer((_) async => ['img.jpg']);
 
           // Act & Assert
           await viewModel.getHikeImages(id);
