@@ -19,18 +19,14 @@ class HikeMapViewModel extends ChangeNotifier {
   List<Waypoint> _waypoints = [];
   bool _isLoading = false;
   String? _error;
-  
+
   // GPS-related state
   Position? _currentPosition;
   bool _isGpsEnabled = false;
   bool _isNavigationActive = false;
   StreamSubscription<Position>? _positionSubscription;
-  StreamSubscription<NavigationStatus>? _navigationSubscription;
 
-  HikeMapViewModel({
-    required this.hikeId,
-    required this.waypointRepository,
-  }) {
+  HikeMapViewModel({required this.hikeId, required this.waypointRepository}) {
     _initializeGpsServices();
   }
 
@@ -44,11 +40,11 @@ class HikeMapViewModel extends ChangeNotifier {
   bool get isGpsEnabled => _isGpsEnabled;
   bool get isNavigationActive => _isNavigationActive;
   NavigationService get navigationService => _navigationService;
-  
+
   // Convenience getters
-  LatLng? get currentLatLng => _currentPosition != null 
-    ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-    : null;
+  LatLng? get currentLatLng => _currentPosition != null
+      ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
+      : null;
 
   /// Initialisiert GPS Services
   Future<void> _initializeGpsServices() async {
@@ -95,13 +91,15 @@ class HikeMapViewModel extends ChangeNotifier {
     }
 
     try {
-      bool navigationStarted = await _navigationService.startNavigation(_waypoints);
+      bool navigationStarted = await _navigationService.startNavigation(
+        _waypoints,
+      );
       if (navigationStarted) {
         _isNavigationActive = true;
-        
+
         // Höre auf Navigation Status Updates
         _navigationService.addListener(_onNavigationUpdate);
-        
+
         notifyListeners();
         return true;
       } else {
@@ -158,7 +156,8 @@ class HikeMapViewModel extends ChangeNotifier {
         await _startGpsTracking();
         _isGpsEnabled = true;
       } else {
-        _error = 'GPS konnte nicht aktiviert werden. Bitte überprüfen Sie die Berechtigung.';
+        _error =
+            'GPS konnte nicht aktiviert werden. Bitte überprüfen Sie die Berechtigung.';
       }
     }
     notifyListeners();
@@ -174,7 +173,7 @@ class HikeMapViewModel extends ChangeNotifier {
   /// Berechnet Distanz zu einem Waypoint
   String? getDistanceToWaypoint(Waypoint waypoint) {
     if (_currentPosition == null) return null;
-    
+
     final distance = _locationService.calculateDistanceToWaypoint(waypoint);
     return distance != null ? _locationService.formatDistance(distance) : null;
   }
@@ -182,15 +181,17 @@ class HikeMapViewModel extends ChangeNotifier {
   /// Berechnet Richtung zu einem Waypoint
   String? getBearingToWaypoint(Waypoint waypoint) {
     if (_currentPosition == null) return null;
-    
+
     final bearing = _locationService.calculateBearingToWaypoint(waypoint);
-    return bearing != null ? _locationService.bearingToDirectionText(bearing) : null;
+    return bearing != null
+        ? _locationService.bearingToDirectionText(bearing)
+        : null;
   }
 
   /// Prüft ob ein Waypoint in der Nähe ist (für UI Hervorhebung)
   bool isWaypointNearby(Waypoint waypoint, {double thresholdMeters = 50.0}) {
     if (_currentPosition == null) return false;
-    
+
     final distance = _locationService.calculateDistanceToWaypoint(waypoint);
     return distance != null && distance <= thresholdMeters;
   }
@@ -207,14 +208,14 @@ class HikeMapViewModel extends ChangeNotifier {
 
     try {
       _waypoints = await waypointRepository.getWaypointsForHike(hikeId);
-      
+
       // Überprüfen, ob die Wegpunkte unterschiedliche Koordinaten haben
       if (_waypoints.isEmpty || _hasOverlappingCoordinates()) {
         // Wenn keine Wegpunkte vorhanden sind oder alle an der gleichen Position,
         // generiere Testdaten mit unterschiedlichen Koordinaten
         _generateTestWaypoints();
       }
-      
+
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -240,7 +241,7 @@ class HikeMapViewModel extends ChangeNotifier {
     try {
       // Da es keinen is_visited Marker in der Tabelle gibt, speichern wir den Status nur lokal
       // In einer vollständigen Implementierung würden wir eine separate Tabelle für besuchte Wegpunkte erstellen
-      
+
       // Aktualisiere den Wegpunkt in der lokalen Liste
       final index = _waypoints.indexWhere((w) => w.id == waypoint.id);
       if (index != -1) {
@@ -260,9 +261,13 @@ class HikeMapViewModel extends ChangeNotifier {
     }
 
     try {
-      final centerLat = _waypoints.map((w) => w.latitude).reduce((a, b) => a + b) / _waypoints.length;
-      final centerLng = _waypoints.map((w) => w.longitude).reduce((a, b) => a + b) / _waypoints.length;
-      
+      final centerLat =
+          _waypoints.map((w) => w.latitude).reduce((a, b) => a + b) /
+          _waypoints.length;
+      final centerLng =
+          _waypoints.map((w) => w.longitude).reduce((a, b) => a + b) /
+          _waypoints.length;
+
       return LatLng(centerLat, centerLng);
     } catch (e) {
       // Fallback, falls ein Fehler bei der Berechnung auftritt
@@ -273,55 +278,57 @@ class HikeMapViewModel extends ChangeNotifier {
   // Überprüft, ob die Wegpunkte unterschiedliche Koordinaten haben
   bool _hasOverlappingCoordinates() {
     if (_waypoints.length <= 1) return false;
-    
+
     // Berechne die Standardabweichung der Koordinaten
     double sumLat = 0;
     double sumLng = 0;
-    
+
     for (var waypoint in _waypoints) {
       sumLat += waypoint.latitude;
       sumLng += waypoint.longitude;
     }
-    
+
     double avgLat = sumLat / _waypoints.length;
     double avgLng = sumLng / _waypoints.length;
-    
+
     double varianceLat = 0;
     double varianceLng = 0;
-    
+
     for (var waypoint in _waypoints) {
-      varianceLat += (waypoint.latitude - avgLat) * (waypoint.latitude - avgLat);
-      varianceLng += (waypoint.longitude - avgLng) * (waypoint.longitude - avgLng);
+      varianceLat +=
+          (waypoint.latitude - avgLat) * (waypoint.latitude - avgLat);
+      varianceLng +=
+          (waypoint.longitude - avgLng) * (waypoint.longitude - avgLng);
     }
-    
+
     double stdDevLat = (varianceLat / _waypoints.length);
     double stdDevLng = (varianceLng / _waypoints.length);
-    
+
     // Wenn die Standardabweichung sehr klein ist, sind die Punkte wahrscheinlich zu nah beieinander
     return stdDevLat < 0.001 && stdDevLng < 0.001;
   }
-  
+
   // Generiert Testdaten mit unterschiedlichen Koordinaten
   void _generateTestWaypoints() {
     // Speichere die ursprünglichen Wegpunkte
     List<Waypoint> originalWaypoints = List.from(_waypoints);
-    
+
     // Lösche die aktuellen Wegpunkte
     _waypoints.clear();
-    
+
     // Startpunkt für die Testdaten (Deutschland)
     double baseLat = 51.1657;
     double baseLng = 10.4515;
-    
+
     // Generiere 5 Testpunkte mit unterschiedlichen Koordinaten
     for (int i = 0; i < 5; i++) {
       // Berechne Offset für die Koordinaten
       double latOffset = (i - 2) * 0.01;
       double lngOffset = (i - 2) * 0.02;
-      
+
       // Erstelle einen neuen Wegpunkt
       Waypoint waypoint;
-      
+
       if (i < originalWaypoints.length) {
         // Verwende die Daten des ursprünglichen Wegpunkts, aber mit neuen Koordinaten
         waypoint = Waypoint(
@@ -349,7 +356,7 @@ class HikeMapViewModel extends ChangeNotifier {
           isVisited: i % 2 == 0, // Abwechselnd besucht/nicht besucht
         );
       }
-      
+
       _waypoints.add(waypoint);
     }
   }
@@ -359,13 +366,13 @@ class HikeMapViewModel extends ChangeNotifier {
     // Cleanup GPS resources
     _positionSubscription?.cancel();
     _navigationService.removeListener(_onNavigationUpdate);
-    
+
     // Stop services
     _locationService.stopTracking();
     if (_isNavigationActive) {
       _navigationService.stopNavigation();
     }
-    
+
     super.dispose();
   }
-} 
+}

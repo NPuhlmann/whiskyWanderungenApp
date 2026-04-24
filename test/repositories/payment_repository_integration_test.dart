@@ -2,7 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/domain/models/delivery_address.dart';
-import 'package:whisky_hikes/domain/models/payment_intent.dart' show PaymentMethodType;
+import 'package:whisky_hikes/domain/models/payment_intent.dart'
+    show PaymentMethodType;
 
 void main() {
   group('PaymentRepository Integration Tests', () {
@@ -65,7 +66,10 @@ void main() {
         // Test valid status transitions
         const validTransitions = {
           OrderStatus.pending: [OrderStatus.confirmed, OrderStatus.cancelled],
-          OrderStatus.confirmed: [OrderStatus.processing, OrderStatus.cancelled],
+          OrderStatus.confirmed: [
+            OrderStatus.processing,
+            OrderStatus.cancelled,
+          ],
           OrderStatus.processing: [OrderStatus.shipped, OrderStatus.cancelled],
           OrderStatus.shipped: [OrderStatus.delivered],
           OrderStatus.delivered: [], // Final state
@@ -77,14 +81,14 @@ void main() {
         for (final entry in validTransitions.entries) {
           final currentStatus = entry.key;
           final validNextStates = entry.value;
-          
+
           // Test that validNextStates is a list
           expect(validNextStates, isA<List>());
           expect(validNextStates.length, greaterThanOrEqualTo(0));
-          
+
           // Test that final states have no next states
-          if (currentStatus == OrderStatus.delivered || 
-              currentStatus == OrderStatus.cancelled || 
+          if (currentStatus == OrderStatus.delivered ||
+              currentStatus == OrderStatus.cancelled ||
               currentStatus == OrderStatus.failed) {
             expect(validNextStates, isEmpty);
           }
@@ -98,7 +102,7 @@ void main() {
 
         // Pickup orders should be able to go directly to delivered
         expect(pickupOrder == DeliveryType.pickup, isTrue);
-        
+
         // Shipping orders need to go through shipped status
         expect(shippingOrder == DeliveryType.standardShipping, isTrue);
       });
@@ -133,7 +137,7 @@ void main() {
       test('should generate unique order numbers', () {
         // Test order number format
         final orderNumber = 'ORD-${DateTime.now().millisecondsSinceEpoch}';
-        
+
         expect(orderNumber, startsWith('ORD-'));
         expect(orderNumber.length, greaterThan(4));
         expect(orderNumber, isA<String>());
@@ -161,7 +165,7 @@ void main() {
           'street': 'Teststraße 123',
           'city': 'Hamburg',
           'postalCode': '20095',
-          'country': 'DE'
+          'country': 'DE',
         };
 
         expect(validAddress['street'], isNotEmpty);
@@ -176,11 +180,11 @@ void main() {
           'street': 'Teststraße 123',
           'city': 'Hamburg',
           'postalCode': '20095',
-          'country': 'DE'
+          'country': 'DE',
         };
 
         final requiredFields = ['street', 'city', 'postalCode', 'country'];
-        
+
         for (final field in requiredFields) {
           expect(address.containsKey(field), isTrue);
           expect(address[field], isNotEmpty);
@@ -212,7 +216,7 @@ void main() {
       test('should calculate different delivery costs', () {
         // Test different delivery types
         const baseAmount = 25.99;
-        
+
         const standardShippingCost = 5.0;
         const expressShippingCost = 10.0;
         const pickupCost = 0.0;

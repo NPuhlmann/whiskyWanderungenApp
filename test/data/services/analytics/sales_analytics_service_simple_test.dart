@@ -44,9 +44,21 @@ void main() {
       test('should group orders by date correctly', () {
         // Simulate order data with different dates
         final orders = [
-          {'hike_id': 100, 'total_amount': 50.0, 'created_at': '2025-01-10T10:00:00Z'},
-          {'hike_id': 100, 'total_amount': 75.0, 'created_at': '2025-01-10T14:30:00Z'},
-          {'hike_id': 101, 'total_amount': 100.0, 'created_at': '2025-01-11T09:15:00Z'},
+          {
+            'hike_id': 100,
+            'total_amount': 50.0,
+            'created_at': '2025-01-10T10:00:00Z',
+          },
+          {
+            'hike_id': 100,
+            'total_amount': 75.0,
+            'created_at': '2025-01-10T14:30:00Z',
+          },
+          {
+            'hike_id': 101,
+            'total_amount': 100.0,
+            'created_at': '2025-01-11T09:15:00Z',
+          },
         ];
 
         // Aggregate by date logic
@@ -98,7 +110,9 @@ void main() {
           totalRevenue += (order['total_amount'] as num).toDouble();
         }
 
-        final averageOrderValue = orders.isNotEmpty ? totalRevenue / orders.length : 0.0;
+        final averageOrderValue = orders.isNotEmpty
+            ? totalRevenue / orders.length
+            : 0.0;
         expect(averageOrderValue, 75.0);
       });
 
@@ -113,7 +127,9 @@ void main() {
           totalRevenue += amount;
         }
 
-        final averageOrderValue = orders.isNotEmpty ? totalRevenue / orders.length : 0.0;
+        final averageOrderValue = orders.isNotEmpty
+            ? totalRevenue / orders.length
+            : 0.0;
 
         expect(totalRevenue, 0.0);
         expect(averageOrderValue, 0.0);
@@ -134,7 +150,9 @@ void main() {
           totalRating += (review['rating'] as num).toDouble();
         }
 
-        final averageRating = reviews.isNotEmpty ? totalRating / reviews.length : 0.0;
+        final averageRating = reviews.isNotEmpty
+            ? totalRating / reviews.length
+            : 0.0;
         expect(averageRating, closeTo(4.5, 0.01));
       });
 
@@ -146,7 +164,9 @@ void main() {
           totalRating += (review['rating'] as num).toDouble();
         }
 
-        final averageRating = reviews.isNotEmpty ? totalRating / reviews.length : 0.0;
+        final averageRating = reviews.isNotEmpty
+            ? totalRating / reviews.length
+            : 0.0;
         expect(averageRating, 0.0);
       });
 
@@ -223,7 +243,10 @@ void main() {
 
         expect(performance.routeId, 100);
         expect(performance.totalSales, 50);
-        expect(performance.hasGoodPerformance, isTrue); // >4.0 rating AND >50% conversion
+        expect(
+          performance.hasGoodPerformance,
+          isTrue,
+        ); // >4.0 rating AND >50% conversion
         expect(performance.bestMonth, '2025-01');
       });
     });

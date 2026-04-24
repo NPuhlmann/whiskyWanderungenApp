@@ -1,5 +1,7 @@
 import 'dart:developer' as dev;
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../domain/models/enhanced_order.dart';
 import '../database/backend_api.dart';
 import '../notifications/supabase_notification_service.dart';
@@ -16,9 +18,9 @@ class OrderStatusWorkflow {
     required BackendApiService backendApi,
     required SupabaseNotificationService notificationService,
     required OrderTrackingService trackingService,
-  })  : _backendApi = backendApi,
-        _notificationService = notificationService,
-        _trackingService = trackingService;
+  }) : _backendApi = backendApi,
+       _notificationService = notificationService,
+       _trackingService = trackingService;
 
   /// Validate if status transition is allowed
   bool canTransitionTo(EnhancedOrderStatus from, EnhancedOrderStatus to) {
@@ -79,7 +81,9 @@ class OrderStatusWorkflow {
     String? userId, // User performing the transition
   }) async {
     try {
-      dev.log('🔄 Processing status transition for order $orderId to ${toStatus.name}');
+      dev.log(
+        '🔄 Processing status transition for order $orderId to ${toStatus.name}',
+      );
 
       // Get current order
       final currentOrder = await _backendApi.getEnhancedOrderById(orderId);
@@ -92,7 +96,7 @@ class OrderStatusWorkflow {
       // Validate transition
       if (!canTransitionTo(fromStatus, toStatus)) {
         throw Exception(
-          'Invalid status transition: ${fromStatus.name} -> ${toStatus.name}'
+          'Invalid status transition: ${fromStatus.name} -> ${toStatus.name}',
         );
       }
 
@@ -121,9 +125,10 @@ class OrderStatusWorkflow {
       // Execute post-transition business logic
       await _executePostTransitionLogic(updatedOrder, fromStatus, toStatus);
 
-      dev.log('✅ Order $orderId status transitioned: ${fromStatus.name} -> ${toStatus.name}');
+      dev.log(
+        '✅ Order $orderId status transitioned: ${fromStatus.name} -> ${toStatus.name}',
+      );
       return updatedOrder;
-
     } catch (e) {
       dev.log('❌ Error transitioning order status: $e', error: e);
       throw Exception('Failed to transition order status: $e');
@@ -210,9 +215,7 @@ class OrderStatusWorkflow {
     }
 
     // Reserve inventory (if applicable)
-    if (order.hikeId != null) {
-      await _reserveHikeCapacity(order.hikeId!);
-    }
+    await _reserveHikeCapacity(order.hikeId);
 
     // Schedule processing
     await _scheduleOrderProcessing(order.id);
@@ -225,13 +228,9 @@ class OrderStatusWorkflow {
   ) async {
     dev.log('⚙️ Processing order ${order.orderNumber}');
 
-    // Verify inventory availability
-    // Prepare items for shipping
-    // Generate shipping labels (if needed)
-    // Estimate processing time
-    final estimatedShippingDate = DateTime.now().add(const Duration(days: 1));
-
-    // This would integrate with warehouse/fulfillment systems
+    // Verify inventory availability, prepare items for shipping, generate
+    // shipping labels, etc. Placeholder until the warehouse/fulfillment
+    // integration lands.
     await Future.delayed(const Duration(seconds: 1)); // Simulate processing
   }
 
@@ -247,7 +246,9 @@ class OrderStatusWorkflow {
     final shippingCarrier = data?['shipping_carrier'] as String?;
 
     if (trackingNumber == null || shippingCarrier == null) {
-      throw Exception('Tracking number and shipping carrier required for shipment');
+      throw Exception(
+        'Tracking number and shipping carrier required for shipment',
+      );
     }
 
     // Use tracking service to handle shipment
@@ -255,9 +256,9 @@ class OrderStatusWorkflow {
       orderId: order.id,
       trackingNumber: trackingNumber,
       shippingCarrier: shippingCarrier,
-      shippingService: data?['shipping_service'] as String?,
-      estimatedDelivery: data?['estimated_delivery'] != null
-          ? DateTime.parse(data!['estimated_delivery'])
+      shippingService: data!['shipping_service'] as String?,
+      estimatedDelivery: data['estimated_delivery'] != null
+          ? DateTime.parse(data['estimated_delivery'])
           : null,
     );
   }
@@ -309,22 +310,21 @@ class OrderStatusWorkflow {
   ) async {
     dev.log('❌ Processing order cancellation for ${order.orderNumber}');
 
-    final cancellationReason = data?['cancellation_reason'] as String? ?? 'Customer request';
+    final cancellationReason =
+        data?['cancellation_reason'] as String? ?? 'Customer request';
 
     // Release reserved inventory
-    if (order.hikeId != null) {
-      await _releaseHikeCapacity(order.hikeId!);
-    }
+    await _releaseHikeCapacity(order.hikeId);
 
     // Process refund if payment was completed
-    if (order.status == EnhancedOrderStatus.confirmed || 
+    if (order.status == EnhancedOrderStatus.confirmed ||
         order.status == EnhancedOrderStatus.processing) {
       await _processRefund(order, cancellationReason);
     }
 
     // Cancel any active shipping
     if (order.trackingNumber != null) {
-      await _cancelShipping(order.trackingNumber!, order.shippingCarrier);
+      await _cancelShipping(order.trackingNumber!, order.shippingService);
     }
   }
 
@@ -363,12 +363,18 @@ class OrderStatusWorkflow {
   }
 
   /// Get default transition reason
-  String _getDefaultTransitionReason(EnhancedOrderStatus from, EnhancedOrderStatus to) {
+  String _getDefaultTransitionReason(
+    EnhancedOrderStatus from,
+    EnhancedOrderStatus to,
+  ) {
     return 'Status changed from ${from.name} to ${to.name}';
   }
 
   /// Schedule follow-up actions based on status
-  Future<void> _scheduleFollowUpActions(EnhancedOrder order, EnhancedOrderStatus status) async {
+  Future<void> _scheduleFollowUpActions(
+    EnhancedOrder order,
+    EnhancedOrderStatus status,
+  ) async {
     switch (status) {
       case EnhancedOrderStatus.shipped:
         // Schedule delivery reminder
@@ -380,7 +386,10 @@ class OrderStatusWorkflow {
         break;
       case EnhancedOrderStatus.processing:
         // Schedule processing timeout check
-        await _scheduleProcessingTimeoutCheck(order.id, const Duration(days: 3));
+        await _scheduleProcessingTimeoutCheck(
+          order.id,
+          const Duration(days: 3),
+        );
         break;
       default:
         // No follow-up actions needed
@@ -407,7 +416,11 @@ class OrderStatusWorkflow {
     dev.log('⏰ Scheduling processing for order $orderId');
   }
 
-  Future<void> _processRefund(EnhancedOrder order, String reason, [double? amount]) async {
+  Future<void> _processRefund(
+    EnhancedOrder order,
+    String reason, [
+    double? amount,
+  ]) async {
     // Implement refund processing with payment gateway
     dev.log('💰 Processing refund for ${order.orderNumber}: $reason');
   }
@@ -434,7 +447,11 @@ class OrderStatusWorkflow {
 
   bool _canAttemptRecovery(String failureReason) {
     // Determine if automatic recovery is possible
-    return !['payment_declined', 'fraud_detected', 'address_invalid'].contains(failureReason);
+    return ![
+      'payment_declined',
+      'fraud_detected',
+      'address_invalid',
+    ].contains(failureReason);
   }
 
   Future<void> _scheduleRecoveryAttempt(int orderId, String reason) async {
@@ -452,7 +469,10 @@ class OrderStatusWorkflow {
     dev.log('⭐ Scheduling review request for order $orderId');
   }
 
-  Future<void> _scheduleProcessingTimeoutCheck(int orderId, Duration delay) async {
+  Future<void> _scheduleProcessingTimeoutCheck(
+    int orderId,
+    Duration delay,
+  ) async {
     // Schedule check for processing timeout
     dev.log('⏱️ Scheduling timeout check for order $orderId');
   }
@@ -468,8 +488,12 @@ class OrderStatusWorkflowFactory {
     final api = backendApi ?? BackendApiService();
     return OrderStatusWorkflow(
       backendApi: api,
-      notificationService: notificationService ?? SupabaseNotificationService(Supabase.instance.client),
-      trackingService: trackingService ?? OrderTrackingServiceFactory.create(backendApi: api),
+      notificationService:
+          notificationService ??
+          SupabaseNotificationService(Supabase.instance.client),
+      trackingService:
+          trackingService ??
+          OrderTrackingServiceFactory.create(backendApi: api),
     );
   }
 }

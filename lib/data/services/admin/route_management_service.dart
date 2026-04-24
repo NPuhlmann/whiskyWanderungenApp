@@ -8,12 +8,14 @@ class RouteManagementService {
   final SupabaseClient _client;
 
   RouteManagementService({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   // CRUD Operations für Routen
 
   /// Erstellt eine neue Wanderroute
-  Future<Map<String, dynamic>> createRoute(Map<String, dynamic> routeData) async {
+  Future<Map<String, dynamic>> createRoute(
+    Map<String, dynamic> routeData,
+  ) async {
     try {
       log('Creating new route: ${routeData['name']}');
 
@@ -91,10 +93,7 @@ class RouteManagementService {
     try {
       log('Deleting route with ID: $routeId');
 
-      await _client
-          .from('hikes')
-          .delete()
-          .eq('id', routeId);
+      await _client.from('hikes').delete().eq('id', routeId);
 
       log('Route deleted successfully');
     } catch (e) {
@@ -161,14 +160,11 @@ class RouteManagementService {
       log('Waypoint created with ID: $waypointId');
 
       // 2. Verknüpfe den Wegpunkt mit der Route
-      await _client
-          .from('hikes_waypoints')
-          .insert({
-            'hike_id': routeId,
-            'waypoint_id': waypointId,
-            'order_index': waypointData['order_index'] ?? 1,
-          })
-          .select();
+      await _client.from('hikes_waypoints').insert({
+        'hike_id': routeId,
+        'waypoint_id': waypointId,
+        'order_index': waypointData['order_index'] ?? 1,
+      }).select();
 
       log('Waypoint linked to route successfully');
       return waypointResponse;
@@ -300,15 +296,10 @@ class RouteManagementService {
           .uploadBinary(
             path,
             imageBytes,
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
-      final publicUrl = _client.storage
-          .from('route_images')
-          .getPublicUrl(path);
+      final publicUrl = _client.storage.from('route_images').getPublicUrl(path);
 
       log('Image uploaded successfully: $publicUrl');
       return publicUrl;
@@ -325,9 +316,7 @@ class RouteManagementService {
 
       final path = 'route_$routeId/$fileName';
 
-      await _client.storage
-          .from('route_images')
-          .remove([path]);
+      await _client.storage.from('route_images').remove([path]);
 
       log('Image deleted successfully');
     } catch (e) {
@@ -352,10 +341,7 @@ class RouteManagementService {
           .uploadBinary(
             path,
             imageBytes,
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
       final publicUrl = _client.storage
@@ -374,7 +360,13 @@ class RouteManagementService {
 
   /// Validiert Route-Daten vor dem Speichern
   bool validateRouteData(Map<String, dynamic> routeData) {
-    final requiredFields = ['name', 'difficulty', 'distance', 'duration', 'price'];
+    final requiredFields = [
+      'name',
+      'difficulty',
+      'distance',
+      'duration',
+      'price',
+    ];
 
     for (final field in requiredFields) {
       if (!routeData.containsKey(field) || routeData[field] == null) {
@@ -484,9 +476,12 @@ class RouteManagementService {
     final dLat = _degreesToRadians(lat2 - lat1);
     final dLon = _degreesToRadians(lon2 - lon1);
 
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_degreesToRadians(lat1)) * math.cos(_degreesToRadians(lat2)) *
-        math.sin(dLon / 2) * math.sin(dLon / 2);
+    final a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_degreesToRadians(lat1)) *
+            math.cos(_degreesToRadians(lat2)) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
 
     final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
 
@@ -508,10 +503,16 @@ class RouteManagementService {
       }
 
       // Erstelle eine einfache Karten-URL (z.B. für OpenStreetMap oder Google Maps)
-      final centerLat = waypoints.map((w) => w['waypoints']['latitude'] as double)
-          .reduce((a, b) => a + b) / waypoints.length;
-      final centerLng = waypoints.map((w) => w['waypoints']['longitude'] as double)
-          .reduce((a, b) => a + b) / waypoints.length;
+      final centerLat =
+          waypoints
+              .map((w) => w['waypoints']['latitude'] as double)
+              .reduce((a, b) => a + b) /
+          waypoints.length;
+      final centerLng =
+          waypoints
+              .map((w) => w['waypoints']['longitude'] as double)
+              .reduce((a, b) => a + b) /
+          waypoints.length;
 
       // Beispiel für OpenStreetMap-basierte URL
       return 'https://www.openstreetmap.org/?mlat=$centerLat&mlon=$centerLng&zoom=12';

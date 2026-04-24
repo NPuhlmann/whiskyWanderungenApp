@@ -7,10 +7,7 @@ import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 class OrderStatusTimeline extends StatelessWidget {
   final dynamic order; // Can be either EnhancedOrder or BasicOrder
 
-  const OrderStatusTimeline({
-    super.key,
-    required this.order,
-  });
+  const OrderStatusTimeline({super.key, required this.order});
 
   /// Factory constructor for enhanced orders
   factory OrderStatusTimeline.enhanced({required EnhancedOrder order}) {
@@ -62,7 +59,11 @@ class OrderStatusTimeline extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            _buildTimelineSteps(context, _getEnhancedStatusSteps(currentStatus), statusHistory ?? []),
+            _buildTimelineSteps(
+              context,
+              _getEnhancedStatusSteps(currentStatus),
+              statusHistory ?? [],
+            ),
           ],
         ),
       ),
@@ -92,7 +93,11 @@ class OrderStatusTimeline extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            _buildTimelineSteps(context, _getBasicStatusSteps(currentStatus), []),
+            _buildTimelineSteps(
+              context,
+              _getBasicStatusSteps(currentStatus),
+              [],
+            ),
           ],
         ),
       ),
@@ -136,12 +141,12 @@ class OrderStatusTimeline extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onPrimary,
                         )
                       : isCurrent
-                          ? Icon(
-                              Icons.schedule,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            )
-                          : null,
+                      ? Icon(
+                          Icons.schedule,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        )
+                      : null,
                 ),
                 if (!isLast)
                   Container(
@@ -162,12 +167,14 @@ class OrderStatusTimeline extends StatelessWidget {
                   Text(
                     step.title,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isCurrent
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       color: isCompleted
                           ? Theme.of(context).colorScheme.primary
                           : isCurrent
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   if (step.description != null) ...[
@@ -213,7 +220,9 @@ class OrderStatusTimeline extends StatelessWidget {
     }
   }
 
-  List<TimelineStep> _getEnhancedStatusSteps(EnhancedOrderStatus currentStatus) {
+  List<TimelineStep> _getEnhancedStatusSteps(
+    EnhancedOrderStatus currentStatus,
+  ) {
     final steps = <TimelineStep>[];
     final allStatuses = EnhancedOrderStatus.values;
 
@@ -221,14 +230,16 @@ class OrderStatusTimeline extends StatelessWidget {
       final isCompleted = _isStatusCompleted(status, currentStatus);
       final isCurrent = status == currentStatus;
 
-      steps.add(TimelineStep(
-        status: status,
-        title: _getEnhancedStatusTitle(status),
-        description: _getEnhancedStatusDescription(status),
-        isCompleted: isCompleted,
-        isCurrent: isCurrent,
-        timestamp: _getStatusTimestamp(status),
-      ));
+      steps.add(
+        TimelineStep(
+          status: status,
+          title: _getEnhancedStatusTitle(status),
+          description: _getEnhancedStatusDescription(status),
+          isCompleted: isCompleted,
+          isCurrent: isCurrent,
+          timestamp: _getStatusTimestamp(status),
+        ),
+      );
     }
 
     return steps;
@@ -242,20 +253,25 @@ class OrderStatusTimeline extends StatelessWidget {
       final isCompleted = _isBasicStatusCompleted(status, currentStatus);
       final isCurrent = status == currentStatus;
 
-      steps.add(TimelineStep(
-        status: status,
-        title: _getBasicStatusTitle(status),
-        description: _getBasicStatusDescription(status),
-        isCompleted: isCompleted,
-        isCurrent: isCurrent,
-        timestamp: _getBasicStatusTimestamp(status),
-      ));
+      steps.add(
+        TimelineStep(
+          status: status,
+          title: _getBasicStatusTitle(status),
+          description: _getBasicStatusDescription(status),
+          isCompleted: isCompleted,
+          isCurrent: isCurrent,
+          timestamp: _getBasicStatusTimestamp(status),
+        ),
+      );
     }
 
     return steps;
   }
 
-  bool _isStatusCompleted(EnhancedOrderStatus status, EnhancedOrderStatus currentStatus) {
+  bool _isStatusCompleted(
+    EnhancedOrderStatus status,
+    EnhancedOrderStatus currentStatus,
+  ) {
     final statusOrder = [
       EnhancedOrderStatus.pending,
       EnhancedOrderStatus.paymentPending,

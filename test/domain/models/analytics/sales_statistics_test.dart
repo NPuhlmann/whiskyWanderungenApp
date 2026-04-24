@@ -149,13 +149,7 @@ void main() {
           totalOrders: 100,
           totalRevenue: 10000.0,
           averageOrderValue: 100.0,
-          ordersByRoute: {
-            '1': 30,
-            '2': 25,
-            '3': 20,
-            '4': 15,
-            '5': 10,
-          },
+          ordersByRoute: {'1': 30, '2': 25, '3': 20, '4': 15, '5': 10},
         );
 
         final topRoutes = stats.getTopRoutesByOrders(2);
@@ -206,11 +200,7 @@ void main() {
           totalOrders: 30,
           totalRevenue: 3000.0,
           averageOrderValue: 100.0,
-          ordersByDate: {
-            '2025-01-03': 10,
-            '2025-01-01': 5,
-            '2025-01-02': 15,
-          },
+          ordersByDate: {'2025-01-03': 10, '2025-01-01': 5, '2025-01-02': 15},
         );
 
         final timeline = stats.ordersTimeline;

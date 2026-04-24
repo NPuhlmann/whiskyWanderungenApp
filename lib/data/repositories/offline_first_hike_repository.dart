@@ -99,12 +99,12 @@ class OfflineFirstHikeRepository {
       final cachedHikes = await _offlineService.getCachedHikeList();
       if (cachedHikes != null && cachedHikes.isNotEmpty) {
         log("✅ Hikes aus Cache geladen (${cachedHikes.length} Items)");
-        
+
         // Background-Update falls online
         if (_connectivityService.currentStatus.isConnected) {
           _updateHikesInBackground();
         }
-        
+
         return cachedHikes;
       }
     }
@@ -113,23 +113,24 @@ class OfflineFirstHikeRepository {
     if (_connectivityService.currentStatus.isConnected) {
       try {
         final networkHikes = await _backendApiService.fetchHikes();
-        
+
         // Cache aktualisieren
         await _offlineService.cacheHikeList(networkHikes);
-        
-        log("✅ Hikes aus Netzwerk geladen und gecacht (${networkHikes.length} Items)");
+
+        log(
+          "✅ Hikes aus Netzwerk geladen und gecacht (${networkHikes.length} Items)",
+        );
         return networkHikes;
-        
       } catch (e) {
         log("⚠️ Netzwerk-Fehler beim Hikes-Laden: $e");
-        
+
         // Fallback auf Cache auch bei Netzwerkfehler
         final cachedHikes = await _offlineService.getCachedHikeList();
         if (cachedHikes != null) {
           log("📦 Fallback auf gecachte Hikes (${cachedHikes.length} Items)");
           return cachedHikes;
         }
-        
+
         rethrow;
       }
     }
@@ -139,24 +140,29 @@ class OfflineFirstHikeRepository {
     if (cachedHikes != null) {
       return cachedHikes;
     }
-    
+
     throw Exception('Keine Hikes verfügbar (offline und kein Cache)');
   }
 
-  Future<List<Hike>> _getCacheFirstUserHikes(String userId, bool forceRefresh) async {
+  Future<List<Hike>> _getCacheFirstUserHikes(
+    String userId,
+    bool forceRefresh,
+  ) async {
     final listKey = 'user_$userId';
-    
+
     // 1. Cache prüfen
     if (!forceRefresh) {
-      final cachedHikes = await _offlineService.getCachedHikeList(listKey: listKey);
+      final cachedHikes = await _offlineService.getCachedHikeList(
+        listKey: listKey,
+      );
       if (cachedHikes != null && cachedHikes.isNotEmpty) {
         log("✅ Benutzer-Hikes aus Cache geladen (${cachedHikes.length} Items)");
-        
+
         // Background-Update falls online
         if (_connectivityService.currentStatus.isConnected) {
           _updateUserHikesInBackground(userId);
         }
-        
+
         return cachedHikes;
       }
     }
@@ -165,33 +171,40 @@ class OfflineFirstHikeRepository {
     if (_connectivityService.currentStatus.isConnected) {
       try {
         final networkHikes = await _backendApiService.fetchUserHikes(userId);
-        
+
         // Cache aktualisieren
         await _offlineService.cacheHikeList(networkHikes, listKey: listKey);
-        
-        log("✅ Benutzer-Hikes aus Netzwerk geladen und gecacht (${networkHikes.length} Items)");
+
+        log(
+          "✅ Benutzer-Hikes aus Netzwerk geladen und gecacht (${networkHikes.length} Items)",
+        );
         return networkHikes;
-        
       } catch (e) {
         log("⚠️ Netzwerk-Fehler beim Benutzer-Hikes-Laden: $e");
-        
+
         // Fallback auf Cache
-        final cachedHikes = await _offlineService.getCachedHikeList(listKey: listKey);
+        final cachedHikes = await _offlineService.getCachedHikeList(
+          listKey: listKey,
+        );
         if (cachedHikes != null) {
-          log("📦 Fallback auf gecachte Benutzer-Hikes (${cachedHikes.length} Items)");
+          log(
+            "📦 Fallback auf gecachte Benutzer-Hikes (${cachedHikes.length} Items)",
+          );
           return cachedHikes;
         }
-        
+
         rethrow;
       }
     }
 
     // 3. Offline Fallback
-    final cachedHikes = await _offlineService.getCachedHikeList(listKey: listKey);
+    final cachedHikes = await _offlineService.getCachedHikeList(
+      listKey: listKey,
+    );
     if (cachedHikes != null) {
       return cachedHikes;
     }
-    
+
     throw Exception('Keine Benutzer-Hikes verfügbar (offline und kein Cache)');
   }
 
@@ -201,12 +214,12 @@ class OfflineFirstHikeRepository {
       final cachedHike = await _offlineService.getCachedHike(hikeId);
       if (cachedHike != null) {
         log("✅ Hike $hikeId aus Cache geladen");
-        
+
         // Background-Update falls online
         if (_connectivityService.currentStatus.isConnected) {
           _updateHikeInBackground(hikeId);
         }
-        
+
         return cachedHike;
       }
     }
@@ -219,23 +232,22 @@ class OfflineFirstHikeRepository {
           (h) => h.id == hikeId,
           orElse: () => throw Exception('Hike $hikeId nicht gefunden'),
         );
-        
+
         // Cache aktualisieren
         await _offlineService.cacheHike(hike);
-        
+
         log("✅ Hike $hikeId aus Netzwerk geladen und gecacht");
         return hike;
-        
       } catch (e) {
         log("⚠️ Netzwerk-Fehler beim Hike-Laden: $e");
-        
+
         // Fallback auf Cache
         final cachedHike = await _offlineService.getCachedHike(hikeId);
         if (cachedHike != null) {
           log("📦 Fallback auf gecachten Hike $hikeId");
           return cachedHike;
         }
-        
+
         rethrow;
       }
     }
@@ -245,7 +257,7 @@ class OfflineFirstHikeRepository {
     if (cachedHike != null) {
       return cachedHike;
     }
-    
+
     return null;
   }
 
@@ -261,13 +273,13 @@ class OfflineFirstHikeRepository {
         log("⚠️ Network-First fehlgeschlagen, Fallback auf Cache: $e");
       }
     }
-    
+
     // Fallback auf Cache
     final cachedHikes = await _offlineService.getCachedHikeList();
     if (cachedHikes != null) {
       return cachedHikes;
     }
-    
+
     throw Exception('Keine Hikes verfügbar (Network-First gescheitert)');
   }
 
@@ -275,21 +287,28 @@ class OfflineFirstHikeRepository {
     if (_connectivityService.currentStatus.isConnected) {
       try {
         final networkHikes = await _backendApiService.fetchUserHikes(userId);
-        await _offlineService.cacheHikeList(networkHikes, listKey: 'user_$userId');
+        await _offlineService.cacheHikeList(
+          networkHikes,
+          listKey: 'user_$userId',
+        );
         log("✅ Benutzer-Hikes aus Netzwerk geladen (Network-First)");
         return networkHikes;
       } catch (e) {
         log("⚠️ Network-First fehlgeschlagen, Fallback auf Cache: $e");
       }
     }
-    
+
     // Fallback auf Cache
-    final cachedHikes = await _offlineService.getCachedHikeList(listKey: 'user_$userId');
+    final cachedHikes = await _offlineService.getCachedHikeList(
+      listKey: 'user_$userId',
+    );
     if (cachedHikes != null) {
       return cachedHikes;
     }
-    
-    throw Exception('Keine Benutzer-Hikes verfügbar (Network-First gescheitert)');
+
+    throw Exception(
+      'Keine Benutzer-Hikes verfügbar (Network-First gescheitert)',
+    );
   }
 
   Future<Hike?> _getNetworkFirstHike(int hikeId) async {
@@ -307,7 +326,7 @@ class OfflineFirstHikeRepository {
         log("⚠️ Network-First fehlgeschlagen, Fallback auf Cache: $e");
       }
     }
-    
+
     return await _offlineService.getCachedHike(hikeId);
   }
 
@@ -321,7 +340,9 @@ class OfflineFirstHikeRepository {
   }
 
   Future<List<Hike>> _getCacheOnlyUserHikes(String userId) async {
-    final cachedHikes = await _offlineService.getCachedHikeList(listKey: 'user_$userId');
+    final cachedHikes = await _offlineService.getCachedHikeList(
+      listKey: 'user_$userId',
+    );
     if (cachedHikes != null) {
       return cachedHikes;
     }
@@ -337,7 +358,7 @@ class OfflineFirstHikeRepository {
     if (!_connectivityService.currentStatus.isConnected) {
       throw Exception('Keine Netzwerkverbindung für Network-Only-Strategie');
     }
-    
+
     final networkHikes = await _backendApiService.fetchHikes();
     await _offlineService.cacheHikeList(networkHikes);
     return networkHikes;
@@ -347,7 +368,7 @@ class OfflineFirstHikeRepository {
     if (!_connectivityService.currentStatus.isConnected) {
       throw Exception('Keine Netzwerkverbindung für Network-Only-Strategie');
     }
-    
+
     final networkHikes = await _backendApiService.fetchUserHikes(userId);
     await _offlineService.cacheHikeList(networkHikes, listKey: 'user_$userId');
     return networkHikes;
@@ -357,7 +378,7 @@ class OfflineFirstHikeRepository {
     if (!_connectivityService.currentStatus.isConnected) {
       throw Exception('Keine Netzwerkverbindung für Network-Only-Strategie');
     }
-    
+
     final allHikes = await _backendApiService.fetchHikes();
     final hike = allHikes.firstWhere(
       (h) => h.id == hikeId,
@@ -371,46 +392,48 @@ class OfflineFirstHikeRepository {
   Future<List<Hike>> _getStaleWhileRevalidateHikes() async {
     // 1. Sofort gecachte Daten zurückgeben
     final cachedHikes = await _offlineService.getCachedHikeList();
-    
+
     // 2. Background-Update starten
     if (_connectivityService.currentStatus.isConnected) {
       _updateHikesInBackground();
     }
-    
+
     // 3. Cache oder Exception
     if (cachedHikes != null) {
       return cachedHikes;
     }
-    
+
     // Falls kein Cache, fallback zu Cache-First
     return await _getCacheFirstHikes(false);
   }
 
   Future<List<Hike>> _getStaleWhileRevalidateUserHikes(String userId) async {
-    final cachedHikes = await _offlineService.getCachedHikeList(listKey: 'user_$userId');
-    
+    final cachedHikes = await _offlineService.getCachedHikeList(
+      listKey: 'user_$userId',
+    );
+
     if (_connectivityService.currentStatus.isConnected) {
       _updateUserHikesInBackground(userId);
     }
-    
+
     if (cachedHikes != null) {
       return cachedHikes;
     }
-    
+
     return await _getCacheFirstUserHikes(userId, false);
   }
 
   Future<Hike?> _getStaleWhileRevalidateHike(int hikeId) async {
     final cachedHike = await _offlineService.getCachedHike(hikeId);
-    
+
     if (_connectivityService.currentStatus.isConnected) {
       _updateHikeInBackground(hikeId);
     }
-    
+
     if (cachedHike != null) {
       return cachedHike;
     }
-    
+
     return await _getCacheFirstHike(hikeId, false);
   }
 
@@ -428,7 +451,10 @@ class OfflineFirstHikeRepository {
   void _updateUserHikesInBackground(String userId) async {
     try {
       final networkHikes = await _backendApiService.fetchUserHikes(userId);
-      await _offlineService.cacheHikeList(networkHikes, listKey: 'user_$userId');
+      await _offlineService.cacheHikeList(
+        networkHikes,
+        listKey: 'user_$userId',
+      );
       log("🔄 Background-Update für Benutzer-Hikes abgeschlossen");
     } catch (e) {
       log("⚠️ Background-Update für Benutzer-Hikes fehlgeschlagen: $e");
@@ -461,7 +487,9 @@ class OfflineFirstHikeRepository {
   }
 
   Future<bool> hasOfflineUserHikes(String userId) async {
-    final cachedHikes = await _offlineService.getCachedHikeList(listKey: 'user_$userId');
+    final cachedHikes = await _offlineService.getCachedHikeList(
+      listKey: 'user_$userId',
+    );
     return cachedHikes != null && cachedHikes.isNotEmpty;
   }
 
@@ -469,7 +497,7 @@ class OfflineFirstHikeRepository {
   Future<Map<String, dynamic>> getRepositoryStats() async {
     final cacheStats = await _offlineService.getCacheStats();
     final networkStats = _connectivityService.getNetworkStats();
-    
+
     return {
       'cache': cacheStats,
       'network': networkStats,
@@ -483,16 +511,16 @@ class OfflineFirstHikeRepository {
 enum CacheStrategy {
   /// Cache zuerst, dann Network als Fallback
   cacheFirst,
-  
-  /// Network zuerst, dann Cache als Fallback  
+
+  /// Network zuerst, dann Cache als Fallback
   networkFirst,
-  
+
   /// Nur aus Cache laden
   cacheOnly,
-  
+
   /// Nur aus Network laden
   networkOnly,
-  
+
   /// Cache sofort zurückgeben, Background-Update starten
   staleWhileRevalidate,
 }

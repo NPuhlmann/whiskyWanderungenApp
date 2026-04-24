@@ -27,28 +27,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 List<SingleChildWidget> get providers {
   return [
     // Services zuerst bereitstellen
-    Provider<AuthService>(
-      create: (_) => AuthService(),
-    ),
-    Provider<BackendApiService>(
-      create: (_) => BackendApiService(),
-    ),
-    Provider<LocalCacheService>(
-      create: (_) => LocalCacheService(),
-    ),
-    Provider<OfflineService>(
-      create: (_) => OfflineService(),
-    ),
-    Provider<OrderManagementService>(
-      create: (_) => OrderManagementService(),
-    ),
+    Provider<AuthService>(create: (_) => AuthService()),
+    Provider<BackendApiService>(create: (_) => BackendApiService()),
+    Provider<LocalCacheService>(create: (_) => LocalCacheService()),
+    Provider<OfflineService>(create: (_) => OfflineService()),
+    Provider<OrderManagementService>(create: (_) => OrderManagementService()),
     Provider<WhiskyManagementService>(
       create: (_) => WhiskyManagementService(Supabase.instance.client),
     ),
     Provider<CommissionService>(
       create: (_) => CommissionService(Supabase.instance.client),
     ),
-    
+
     // Dann alle Repositories
     Provider<ProfileRepository>(
       create: (context) => ProfileRepository(
@@ -57,25 +47,28 @@ List<SingleChildWidget> get providers {
       ),
     ),
     ChangeNotifierProvider<UserRepository>(
-        create: (context) => UserRepository(context.read<AuthService>())),
+      create: (context) => UserRepository(context.read<AuthService>()),
+    ),
     Provider<HikeRepository>(
       create: (context) => HikeRepository(context.read<BackendApiService>()),
     ),
     Provider<HikeImagesRepository>(
-      create: (context) => HikeImagesRepository(context.read<BackendApiService>()),
+      create: (context) =>
+          HikeImagesRepository(context.read<BackendApiService>()),
     ),
     // WaypointRepository explizit vor den ViewModels registrieren
     Provider<WaypointRepository>(
-      create: (context) => WaypointRepository(context.read<BackendApiService>()),
+      create: (context) =>
+          WaypointRepository(context.read<BackendApiService>()),
       lazy: false, // Sofort initialisieren, nicht erst bei Bedarf
     ),
     Provider<PaymentRepository>(
       create: (context) => PaymentRepositoryFactory.create(
         supabaseClient: null, // Will use default Supabase.instance.client
-        stripeService: null,  // Will use StripeService.instance
+        stripeService: null, // Will use StripeService.instance
       ),
     ),
-    
+
     // Dann alle ViewModels
     ChangeNotifierProvider<HomePageViewModel>(
       create: (context) => HomePageViewModel(
@@ -104,9 +97,8 @@ List<SingleChildWidget> get providers {
       ),
     ),
     ChangeNotifierProvider<WhiskyManagementProvider>(
-      create: (context) => WhiskyManagementProvider(
-        context.read<WhiskyManagementService>(),
-      ),
+      create: (context) =>
+          WhiskyManagementProvider(context.read<WhiskyManagementService>()),
     ),
     ChangeNotifierProvider<CommissionProvider>(
       create: (context) => CommissionProvider(

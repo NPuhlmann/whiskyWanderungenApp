@@ -40,18 +40,22 @@ class CommissionExportService {
           endDate,
         );
       } else {
-        commissions = await _commissionService.getCommissionsForCompany(companyId);
+        commissions = await _commissionService.getCommissionsForCompany(
+          companyId,
+        );
       }
 
       // Fetch statistics if requested
       Map<String, dynamic>? statistics;
       if (includeStatistics) {
-        statistics = await _commissionService.getCommissionStatistics(companyId);
+        statistics = await _commissionService.getCommissionStatistics(
+          companyId,
+        );
       }
 
       // Generate PDF
       final pdf = pw.Document();
-      
+
       pdf.addPage(
         pw.MultiPage(
           pageFormat: pageFormat,
@@ -75,27 +79,24 @@ class CommissionExportService {
               if (startDate != null && endDate != null) ...[
                 pw.Text(
                   'Period: ${_formatDate(startDate)} - ${_formatDate(endDate)}',
-                  style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
                 ),
                 pw.SizedBox(height: 20),
               ],
 
               // Statistics section
               if (includeStatistics && statistics != null) ...[
-                pw.Header(
-                  level: 1,
-                  child: pw.Text('Summary Statistics'),
-                ),
+                pw.Header(level: 1, child: pw.Text('Summary Statistics')),
                 pw.SizedBox(height: 10),
                 _buildStatisticsTable(statistics),
                 pw.SizedBox(height: 30),
               ],
 
               // Commission list
-              pw.Header(
-                level: 1,
-                child: pw.Text('Commission Details'),
-              ),
+              pw.Header(level: 1, child: pw.Text('Commission Details')),
               pw.SizedBox(height: 10),
 
               if (commissions.isEmpty) ...[
@@ -147,7 +148,9 @@ class CommissionExportService {
           endDate,
         );
       } else {
-        commissions = await _commissionService.getCommissionsForCompany(companyId);
+        commissions = await _commissionService.getCommissionsForCompany(
+          companyId,
+        );
       }
 
       // Generate CSV data
@@ -184,7 +187,7 @@ class CommissionExportService {
       }
 
       // Convert to CSV string
-      return const ListToCsvConverter().convert(csvData);
+      return csv.encode(csvData);
     } catch (e) {
       log('Error generating commission CSV: $e');
       rethrow;
@@ -198,12 +201,14 @@ class CommissionExportService {
     required String title,
   }) {
     final now = DateTime.now();
-    final dateString = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-    final timeString = '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
-    
+    final dateString =
+        '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final timeString =
+        '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
+
     final sanitizedTitle = title.toLowerCase().replaceAll(' ', '_');
     final sanitizedCompanyId = companyId.replaceAll(' ', '_');
-    
+
     return 'commission_${sanitizedTitle}_${sanitizedCompanyId}_${dateString}_$timeString.$type';
   }
 
@@ -217,19 +222,40 @@ class CommissionExportService {
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Metric', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text(
+                'Metric',
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Value', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              child: pw.Text(
+                'Value',
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
             ),
           ],
         ),
-        _buildStatisticRow('Total Commissions', statistics['totalCommissions'].toString()),
-        _buildStatisticRow('Total Amount', '€${(statistics['totalAmount'] as double).toStringAsFixed(2)}'),
-        _buildStatisticRow('Pending Amount', '€${(statistics['pendingAmount'] as double).toStringAsFixed(2)}'),
-        _buildStatisticRow('Paid Amount', '€${(statistics['paidAmount'] as double).toStringAsFixed(2)}'),
-        _buildStatisticRow('Average Rate', '${((statistics['averageCommissionRate'] as double) * 100).toStringAsFixed(1)}%'),
+        _buildStatisticRow(
+          'Total Commissions',
+          statistics['totalCommissions'].toString(),
+        ),
+        _buildStatisticRow(
+          'Total Amount',
+          '€${(statistics['totalAmount'] as double).toStringAsFixed(2)}',
+        ),
+        _buildStatisticRow(
+          'Pending Amount',
+          '€${(statistics['pendingAmount'] as double).toStringAsFixed(2)}',
+        ),
+        _buildStatisticRow(
+          'Paid Amount',
+          '€${(statistics['paidAmount'] as double).toStringAsFixed(2)}',
+        ),
+        _buildStatisticRow(
+          'Average Rate',
+          '${((statistics['averageCommissionRate'] as double) * 100).toStringAsFixed(1)}%',
+        ),
       ],
     );
   }
@@ -238,14 +264,8 @@ class CommissionExportService {
   pw.TableRow _buildStatisticRow(String label, String value) {
     return pw.TableRow(
       children: [
-        pw.Padding(
-          padding: const pw.EdgeInsets.all(8),
-          child: pw.Text(label),
-        ),
-        pw.Padding(
-          padding: const pw.EdgeInsets.all(8),
-          child: pw.Text(value),
-        ),
+        pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(label)),
+        pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(value)),
       ],
     );
   }
@@ -255,13 +275,13 @@ class CommissionExportService {
     return pw.Table(
       border: pw.TableBorder.all(),
       columnWidths: {
-        0: const pw.FixedColumnWidth(60),  // ID
-        1: const pw.FixedColumnWidth(60),  // Hike ID
-        2: const pw.FixedColumnWidth(80),  // Rate
-        3: const pw.FixedColumnWidth(80),  // Base Amount
-        4: const pw.FixedColumnWidth(80),  // Commission Amount
-        5: const pw.FixedColumnWidth(80),  // Status
-        6: const pw.FlexColumnWidth(),     // Created At
+        0: const pw.FixedColumnWidth(60), // ID
+        1: const pw.FixedColumnWidth(60), // Hike ID
+        2: const pw.FixedColumnWidth(80), // Rate
+        3: const pw.FixedColumnWidth(80), // Base Amount
+        4: const pw.FixedColumnWidth(80), // Commission Amount
+        5: const pw.FixedColumnWidth(80), // Status
+        6: const pw.FlexColumnWidth(), // Created At
       },
       children: [
         // Header row
@@ -278,17 +298,21 @@ class CommissionExportService {
           ],
         ),
         // Data rows
-        ...commissions.map((commission) => pw.TableRow(
-          children: [
-            _buildTableCell(commission.id.toString()),
-            _buildTableCell(commission.hikeId.toString()),
-            _buildTableCell('${(commission.commissionRate * 100).toStringAsFixed(1)}%'),
-            _buildTableCell(commission.formattedBaseAmount),
-            _buildTableCell(commission.formattedCommissionAmount),
-            _buildTableCell(commission.statusDisplay),
-            _buildTableCell(_formatDate(commission.createdAt)),
-          ],
-        )),
+        ...commissions.map(
+          (commission) => pw.TableRow(
+            children: [
+              _buildTableCell(commission.id.toString()),
+              _buildTableCell(commission.hikeId.toString()),
+              _buildTableCell(
+                '${(commission.commissionRate * 100).toStringAsFixed(1)}%',
+              ),
+              _buildTableCell(commission.formattedBaseAmount),
+              _buildTableCell(commission.formattedCommissionAmount),
+              _buildTableCell(commission.statusDisplay),
+              _buildTableCell(_formatDate(commission.createdAt)),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -299,10 +323,7 @@ class CommissionExportService {
       padding: const pw.EdgeInsets.all(6),
       child: pw.Text(
         text,
-        style: pw.TextStyle(
-          fontWeight: pw.FontWeight.bold,
-          fontSize: 10,
-        ),
+        style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
       ),
     );
   }
@@ -311,10 +332,7 @@ class CommissionExportService {
   pw.Widget _buildTableCell(String text) {
     return pw.Padding(
       padding: const pw.EdgeInsets.all(6),
-      child: pw.Text(
-        text,
-        style: const pw.TextStyle(fontSize: 9),
-      ),
+      child: pw.Text(text, style: const pw.TextStyle(fontSize: 9)),
     );
   }
 

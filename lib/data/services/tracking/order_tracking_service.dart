@@ -16,34 +16,36 @@ class OrderTrackingService {
     required BackendApiService backendApi,
     required SupabaseNotificationService notificationService,
     SupabaseClient? supabaseClient,
-  })  : _backendApi = backendApi,
-        _notificationService = notificationService,
-        _supabaseClient = supabaseClient ?? Supabase.instance.client;
+  }) : _backendApi = backendApi,
+       _notificationService = notificationService,
+       _supabaseClient = supabaseClient ?? Supabase.instance.client;
 
   /// Assign tracking number to an enhanced order
   Future<EnhancedOrder> assignTrackingNumber({
     required int orderId,
     required String trackingNumber,
-    required String shippingService,
+    required String shippingCarrier,
+    String? shippingService,
     DateTime? estimatedDelivery,
   }) async {
     try {
       dev.log('📦 Assigning tracking number $trackingNumber to order $orderId');
 
       // Validate tracking number format
-      _validateTrackingNumber(trackingNumber, shippingService);
+      _validateTrackingNumber(trackingNumber, shippingCarrier);
 
       // Update order with tracking information and mark as shipped
       final updatedOrder = await _backendApi.updateEnhancedOrderStatus(
         orderId: orderId,
         newStatus: 'shipped',
         trackingNumber: trackingNumber,
-        shippingService: shippingService,
+        shippingCarrier: shippingCarrier,
         estimatedDelivery: estimatedDelivery,
         metadata: {
           'tracking_assigned_at': DateTime.now().toIso8601String(),
           'tracking_assigned_by': 'system',
-          'shipping_service': shippingService,
+          'shipping_carrier': shippingCarrier,
+          'shipping_service': ?shippingService,
         },
       );
 
@@ -53,13 +55,12 @@ class OrderTrackingService {
         orderId: orderId,
         orderNumber: updatedOrder.orderNumber,
         trackingNumber: trackingNumber,
-        shippingService: shippingService,
+        shippingCarrier: shippingCarrier,
         estimatedDelivery: estimatedDelivery,
       );
 
       dev.log('✅ Tracking number assigned and customer notified');
       return updatedOrder;
-
     } catch (e) {
       dev.log('❌ Error assigning tracking number: $e', error: e);
       throw Exception('Failed to assign tracking number: $e');
@@ -123,7 +124,6 @@ class OrderTrackingService {
 
       dev.log('✅ Tracking status updated and notifications sent');
       return updatedOrder;
-
     } catch (e) {
       dev.log('❌ Error updating tracking status: $e', error: e);
       throw Exception('Failed to update tracking status: $e');
@@ -165,7 +165,6 @@ class OrderTrackingService {
 
       dev.log('✅ Order marked as out for delivery and customer notified');
       return updatedOrder;
-
     } catch (e) {
       dev.log('❌ Error marking order out for delivery: $e', error: e);
       throw Exception('Failed to mark order out for delivery: $e');
@@ -208,7 +207,6 @@ class OrderTrackingService {
 
       dev.log('✅ Order marked as delivered and customer notified');
       return updatedOrder;
-
     } catch (e) {
       dev.log('❌ Error marking order as delivered: $e', error: e);
       throw Exception('Failed to mark order as delivered: $e');
@@ -253,7 +251,6 @@ class OrderTrackingService {
         'statusHistory': statusHistory.map((h) => h.toJson()).toList(),
         'lastUpdated': order.updatedAt?.toIso8601String(),
       };
-
     } catch (e) {
       dev.log('❌ Error getting tracking information: $e', error: e);
       throw Exception('Failed to get tracking information: $e');
@@ -270,10 +267,7 @@ class OrderTrackingService {
         .eq('id', orderId)
         .map((data) {
           if (data.isEmpty) {
-            return {
-              'status': 'error',
-              'message': 'Order not found',
-            };
+            return {'status': 'error', 'message': 'Order not found'};
           }
 
           final orderData = data.first;
@@ -290,9 +284,13 @@ class OrderTrackingService {
   }
 
   /// Batch update multiple orders from carrier webhook
-  Future<void> batchUpdateTrackingStatus(List<Map<String, dynamic>> updates) async {
+  Future<void> batchUpdateTrackingStatus(
+    List<Map<String, dynamic>> updates,
+  ) async {
     try {
-      dev.log('📦 Processing batch tracking update for ${updates.length} orders');
+      dev.log(
+        '📦 Processing batch tracking update for ${updates.length} orders',
+      );
 
       for (final update in updates) {
         try {
@@ -301,19 +299,20 @@ class OrderTrackingService {
             newStatus: update['status'],
             statusDescription: update['description'],
             location: update['location'],
-            timestamp: update['timestamp'] != null 
+            timestamp: update['timestamp'] != null
                 ? DateTime.parse(update['timestamp'])
                 : null,
             carrierData: update['carrierData'],
           );
         } catch (e) {
-          dev.log('⚠️ Warning: Failed to update tracking for ${update['trackingNumber']}: $e');
+          dev.log(
+            '⚠️ Warning: Failed to update tracking for ${update['trackingNumber']}: $e',
+          );
           // Continue with other updates
         }
       }
 
       dev.log('✅ Batch tracking update completed');
-
     } catch (e) {
       dev.log('❌ Error in batch tracking update: $e', error: e);
       throw Exception('Failed to process batch tracking update: $e');
@@ -323,21 +322,27 @@ class OrderTrackingService {
   /// Validate tracking number format for different carriers
   void _validateTrackingNumber(String trackingNumber, String carrier) {
     final cleanTrackingNumber = trackingNumber.trim().toUpperCase();
-    
+
     switch (carrier.toUpperCase()) {
       case 'DHL_EXPRESS':
       case 'DHL_PAKET':
-        if (!RegExp(r'^[0-9]{10}$|^[0-9]{11}$|^JD[0-9]{18}$').hasMatch(cleanTrackingNumber)) {
+        if (!RegExp(
+          r'^[0-9]{10}$|^[0-9]{11}$|^JD[0-9]{18}$',
+        ).hasMatch(cleanTrackingNumber)) {
           throw ArgumentError('Invalid DHL tracking number format');
         }
         break;
       case 'UPS':
-        if (!RegExp(r'^1Z[A-Z0-9]{16}$|^[TH][0-9]{10}$').hasMatch(cleanTrackingNumber)) {
+        if (!RegExp(
+          r'^1Z[A-Z0-9]{16}$|^[TH][0-9]{10}$',
+        ).hasMatch(cleanTrackingNumber)) {
           throw ArgumentError('Invalid UPS tracking number format');
         }
         break;
       case 'FEDEX':
-        if (!RegExp(r'^[0-9]{12}$|^[0-9]{14}$|^96[0-9]{20}$').hasMatch(cleanTrackingNumber)) {
+        if (!RegExp(
+          r'^[0-9]{12}$|^[0-9]{14}$|^96[0-9]{20}$',
+        ).hasMatch(cleanTrackingNumber)) {
           throw ArgumentError('Invalid FedEx tracking number format');
         }
         break;
@@ -383,13 +388,17 @@ class OrderTrackingService {
       'carrier': carrier,
       'events': [
         {
-          'timestamp': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
+          'timestamp': DateTime.now()
+              .subtract(const Duration(hours: 2))
+              .toIso8601String(),
           'status': 'In Transit',
           'location': 'Sorting Facility',
           'description': 'Package is in transit to destination',
-        }
+        },
       ],
-      'estimatedDelivery': DateTime.now().add(const Duration(days: 1)).toIso8601String(),
+      'estimatedDelivery': DateTime.now()
+          .add(const Duration(days: 1))
+          .toIso8601String(),
     };
   }
 }
@@ -401,10 +410,12 @@ class OrderTrackingServiceFactory {
     SupabaseNotificationService? notificationService,
     SupabaseClient? supabaseClient,
   }) {
+    final client = supabaseClient ?? Supabase.instance.client;
     return OrderTrackingService(
       backendApi: backendApi ?? BackendApiService(),
-      notificationService: notificationService ?? SupabaseNotificationService(),
-      supabaseClient: supabaseClient,
+      notificationService:
+          notificationService ?? SupabaseNotificationService(client),
+      supabaseClient: client,
     );
   }
 }

@@ -40,72 +40,93 @@ void main() {
     });
 
     test('should validate rating range (1.0 to 5.0)', () {
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 0.5, // Unter 1.0
-        comment: 'Test',
-        createdAt: DateTime(2024, 8, 31),
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 0.5, // Unter 1.0
+          comment: 'Test',
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 5.5, // Über 5.0
-        comment: 'Test',
-        createdAt: DateTime(2024, 8, 31),
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 5.5, // Über 5.0
+          comment: 'Test',
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
       // Gültige Bewertungen
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 1.0,
-        comment: 'Test',
-        createdAt: DateTime(2024, 8, 31),
-      ), returnsNormally);
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 1.0,
+          comment: 'Test',
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        returnsNormally,
+      );
 
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 5.0,
-        comment: 'Test',
-        createdAt: DateTime(2024, 8, 31),
-      ), returnsNormally);
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 5.0,
+          comment: 'Test',
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        returnsNormally,
+      );
     });
 
     test('should validate comment length', () {
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 4.0,
-        comment: '', // Leerer Kommentar
-        createdAt: DateTime(2024, 8, 31),
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 4.0,
+          comment: '', // Leerer Kommentar
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 4.0,
-        comment: 'A' * 1001, // Zu lang (über 1000 Zeichen)
-        createdAt: DateTime(2024, 8, 31),
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 4.0,
+          comment: 'A' * 1001, // Zu lang (über 1000 Zeichen)
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
       // Gültige Kommentare
-      expect(() => Review(
-        id: 1,
-        hikeId: 123,
-        userId: 'user-123',
-        rating: 4.0,
-        comment: 'Ein guter Kommentar',
-        createdAt: DateTime(2024, 8, 31),
-      ), returnsNormally);
+      expect(
+        () => Review(
+          id: 1,
+          hikeId: 123,
+          userId: 'user-123',
+          rating: 4.0,
+          comment: 'Ein guter Kommentar',
+          createdAt: DateTime(2024, 8, 31),
+        ),
+        returnsNormally,
+      );
     });
 
     test('should convert to JSON and back', () {
@@ -129,7 +150,10 @@ void main() {
       expect(restoredReview.rating, equals(originalReview.rating));
       expect(restoredReview.comment, equals(originalReview.comment));
       expect(restoredReview.createdAt, equals(originalReview.createdAt));
-      expect(restoredReview.userFirstName, equals(originalReview.userFirstName));
+      expect(
+        restoredReview.userFirstName,
+        equals(originalReview.userFirstName),
+      );
       expect(restoredReview.userLastName, equals(originalReview.userLastName));
     });
 
@@ -207,7 +231,7 @@ void main() {
       );
 
       final stringRepresentation = review.toString();
-      
+
       expect(stringRepresentation, contains('Review'));
       expect(stringRepresentation, contains('id: 1'));
       expect(stringRepresentation, contains('hikeId: 123'));

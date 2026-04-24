@@ -1,4 +1,3 @@
-
 /// Review-Model für Whisky-Hike-Bewertungen
 class Review {
   final int id;
@@ -20,13 +19,13 @@ class Review {
     this.userFirstName,
     this.userLastName,
   }) : assert(
-          rating >= 1.0 && rating <= 5.0,
-          'Rating must be between 1.0 and 5.0',
-        ),
+         rating >= 1.0 && rating <= 5.0,
+         'Rating must be between 1.0 and 5.0',
+       ),
        assert(
-          comment.isNotEmpty && comment.length <= 1000,
-          'Comment must not be empty and must be 1000 characters or less',
-        );
+         comment.isNotEmpty && comment.length <= 1000,
+         'Comment must not be empty and must be 1000 characters or less',
+       );
 
   /// Erstellt eine Kopie des Reviews mit geänderten Werten
   Review copyWith({
@@ -100,11 +99,11 @@ class Review {
   String get starRating {
     final fullStars = rating.floor();
     final hasHalfStar = rating % 1 >= 0.5;
-    
+
     final stars = '★' * fullStars;
     final halfStar = hasHalfStar ? '☆' : '';
     final emptyStars = '☆' * (5 - fullStars - (hasHalfStar ? 1 : 0));
-    
+
     return stars + halfStar + emptyStars;
   }
 

@@ -33,10 +33,7 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('de', 'DE'),
-        ],
+        supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
         home: ChangeNotifierProvider<RouteManagementProvider>.value(
           value: mockProvider,
           child: Scaffold(body: child),
@@ -45,48 +42,63 @@ void main() {
     }
 
     group('Initial State', () {
-      testWidgets('should show empty state when no route selected', (tester) async {
+      testWidgets('should show empty state when no route selected', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.selectedRoute).thenReturn(null);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
         expect(find.text('Keine Route ausgewählt'), findsOneWidget);
-        expect(find.text('Wählen Sie eine Route aus, um Wegpunkte zu verwalten'), findsOneWidget);
+        expect(
+          find.text('Wählen Sie eine Route aus, um Wegpunkte zu verwalten'),
+          findsOneWidget,
+        );
         expect(find.byIcon(Icons.route), findsOneWidget);
       });
 
-      testWidgets('should show empty waypoints state when route selected but no waypoints', (tester) async {
-        // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
-        when(mockProvider.waypoints).thenReturn([]);
+      testWidgets(
+        'should show empty waypoints state when route selected but no waypoints',
+        (tester) async {
+          // Arrange
+          when(
+            mockProvider.selectedRoute,
+          ).thenReturn({'id': 123, 'name': 'Test Route'});
+          when(mockProvider.waypoints).thenReturn([]);
 
-        // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
-        await tester.pumpAndSettle();
+          // Act
+          await tester.pumpWidget(
+            createTestWidget(const WaypointManagementWidget()),
+          );
+          await tester.pumpAndSettle();
 
-        // Assert
-        expect(find.text('Keine Wegpunkte'), findsOneWidget);
-        expect(find.text('Fügen Sie Wegpunkte zu dieser Route hinzu'), findsOneWidget);
-        expect(find.byIcon(Icons.add_location), findsOneWidget);
-      });
+          // Assert
+          expect(find.text('Keine Wegpunkte'), findsOneWidget);
+          expect(
+            find.text('Fügen Sie Wegpunkte zu dieser Route hinzu'),
+            findsOneWidget,
+          );
+          expect(find.byIcon(Icons.add_location), findsOneWidget);
+        },
+      );
 
       testWidgets('should show loading state when loading', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.isLoading).thenReturn(true);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -95,12 +107,13 @@ void main() {
     });
 
     group('Waypoint Display', () {
-      testWidgets('should display waypoints list when waypoints available', (tester) async {
+      testWidgets('should display waypoints list when waypoints available', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -113,7 +126,7 @@ void main() {
               'latitude': 52.5200,
               'longitude': 13.4050,
               'whisky_info': 'Glenfiddich 12',
-            }
+            },
           },
           {
             'waypoint_id': 457,
@@ -125,14 +138,16 @@ void main() {
               'latitude': 52.5300,
               'longitude': 13.4150,
               'whisky_info': 'Macallan 15',
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -146,10 +161,9 @@ void main() {
 
       testWidgets('should show waypoint order numbers', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -160,7 +174,7 @@ void main() {
               'name': 'Erster Wegpunkt',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
           {
             'waypoint_id': 457,
@@ -170,14 +184,16 @@ void main() {
               'name': 'Zweiter Wegpunkt',
               'latitude': 52.5300,
               'longitude': 13.4150,
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -187,10 +203,9 @@ void main() {
 
       testWidgets('should display waypoint action buttons', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -201,14 +216,16 @@ void main() {
               'name': 'Test Wegpunkt',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -219,16 +236,19 @@ void main() {
     });
 
     group('Add Waypoint', () {
-      testWidgets('should show add waypoint button when route selected', (tester) async {
+      testWidgets('should show add waypoint button when route selected', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -236,16 +256,19 @@ void main() {
         expect(find.byIcon(Icons.add_location), findsAtLeastNWidgets(1));
       });
 
-      testWidgets('should open add waypoint dialog when button is tapped', (tester) async {
+      testWidgets('should open add waypoint dialog when button is tapped', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Wegpunkt hinzufügen'));
@@ -256,16 +279,19 @@ void main() {
         expect(find.text('Wegpunkt hinzufügen'), findsAtLeastNWidgets(1));
       });
 
-      testWidgets('should have form fields in add waypoint dialog', (tester) async {
+      testWidgets('should have form fields in add waypoint dialog', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Wegpunkt hinzufügen'));
@@ -280,28 +306,40 @@ void main() {
         expect(find.byType(TextFormField), findsAtLeastNWidgets(5));
       });
 
-      testWidgets('should call addWaypoint when form is submitted', (tester) async {
+      testWidgets('should call addWaypoint when form is submitted', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
         when(mockProvider.addWaypoint(any, any)).thenAnswer((_) async => {});
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Wegpunkt hinzufügen'));
         await tester.pumpAndSettle();
 
         // Fill form
-        await tester.enterText(find.byType(TextFormField).at(0), 'Test Wegpunkt');
-        await tester.enterText(find.byType(TextFormField).at(1), 'Test Beschreibung');
+        await tester.enterText(
+          find.byType(TextFormField).at(0),
+          'Test Wegpunkt',
+        );
+        await tester.enterText(
+          find.byType(TextFormField).at(1),
+          'Test Beschreibung',
+        );
         await tester.enterText(find.byType(TextFormField).at(2), '52.5200');
         await tester.enterText(find.byType(TextFormField).at(3), '13.4050');
-        await tester.enterText(find.byType(TextFormField).at(4), 'Glenfiddich 12');
+        await tester.enterText(
+          find.byType(TextFormField).at(4),
+          'Glenfiddich 12',
+        );
 
         await tester.tap(find.text('Hinzufügen'));
         await tester.pumpAndSettle();
@@ -312,12 +350,13 @@ void main() {
     });
 
     group('Edit Waypoint', () {
-      testWidgets('should open edit dialog when edit button is tapped', (tester) async {
+      testWidgets('should open edit dialog when edit button is tapped', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -330,14 +369,16 @@ void main() {
               'latitude': 52.5200,
               'longitude': 13.4050,
               'whisky_info': 'Glenfiddich 12',
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.edit));
@@ -346,15 +387,19 @@ void main() {
         // Assert
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Wegpunkt bearbeiten'), findsOneWidget);
-        expect(find.text('Test Wegpunkt'), findsAtLeastNWidgets(1)); // Pre-filled form
+        expect(
+          find.text('Test Wegpunkt'),
+          findsAtLeastNWidgets(1),
+        ); // Pre-filled form
       });
 
-      testWidgets('should pre-fill form with existing waypoint data', (tester) async {
+      testWidgets('should pre-fill form with existing waypoint data', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -367,14 +412,16 @@ void main() {
               'latitude': 52.5200,
               'longitude': 13.4050,
               'whisky_info': 'Existing Whisky',
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.edit));
@@ -392,10 +439,9 @@ void main() {
     group('Delete Waypoint', () {
       testWidgets('should show delete confirmation dialog', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -406,14 +452,16 @@ void main() {
               'name': 'Test Wegpunkt',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.delete));
@@ -422,17 +470,21 @@ void main() {
         // Assert
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.text('Wegpunkt löschen'), findsOneWidget);
-        expect(find.text('Möchten Sie diesen Wegpunkt wirklich löschen?'), findsOneWidget);
+        expect(
+          find.text('Möchten Sie diesen Wegpunkt wirklich löschen?'),
+          findsOneWidget,
+        );
         expect(find.text('Abbrechen'), findsOneWidget);
         expect(find.text('Löschen'), findsOneWidget);
       });
 
-      testWidgets('should call removeWaypoint when deletion is confirmed', (tester) async {
+      testWidgets('should call removeWaypoint when deletion is confirmed', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -443,7 +495,7 @@ void main() {
               'name': 'Test Wegpunkt',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
         ];
 
@@ -451,7 +503,9 @@ void main() {
         when(mockProvider.removeWaypoint(123, 456)).thenAnswer((_) async => {});
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.delete));
@@ -468,10 +522,9 @@ void main() {
     group('Drag and Drop Reordering', () {
       testWidgets('should show drag handles for reordering', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -482,7 +535,7 @@ void main() {
               'name': 'Wegpunkt 1',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
           {
             'waypoint_id': 457,
@@ -492,14 +545,16 @@ void main() {
               'name': 'Wegpunkt 2',
               'latitude': 52.5300,
               'longitude': 13.4150,
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -507,12 +562,13 @@ void main() {
         expect(find.byType(ReorderableListView), findsOneWidget);
       });
 
-      testWidgets('should call reorderWaypoints when items are reordered', (tester) async {
+      testWidgets('should call reorderWaypoints when items are reordered', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -523,7 +579,7 @@ void main() {
               'name': 'Wegpunkt 1',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
           {
             'waypoint_id': 457,
@@ -533,15 +589,19 @@ void main() {
               'name': 'Wegpunkt 2',
               'latitude': 52.5300,
               'longitude': 13.4150,
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
-        when(mockProvider.reorderWaypoints(any, any)).thenAnswer((_) async => {});
+        when(
+          mockProvider.reorderWaypoints(any, any),
+        ).thenAnswer((_) async => {});
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         final reorderableList = find.byType(ReorderableListView);
@@ -556,14 +616,15 @@ void main() {
     group('Map Integration', () {
       testWidgets('should show map view toggle button', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -571,12 +632,13 @@ void main() {
         expect(find.text('Kartenansicht'), findsOneWidget);
       });
 
-      testWidgets('should switch to map view when toggle is pressed', (tester) async {
+      testWidgets('should switch to map view when toggle is pressed', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
 
         final mockWaypoints = [
           {
@@ -587,14 +649,16 @@ void main() {
               'name': 'Test Wegpunkt',
               'latitude': 52.5200,
               'longitude': 13.4050,
-            }
+            },
           },
         ];
 
         when(mockProvider.waypoints).thenReturn(mockWaypoints);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Kartenansicht'));
@@ -609,14 +673,15 @@ void main() {
     group('Error Handling', () {
       testWidgets('should display error message when present', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.errorMessage).thenReturn('Failed to load waypoints');
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -626,15 +691,16 @@ void main() {
 
       testWidgets('should show retry option when error occurs', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.errorMessage).thenReturn('Network error');
         when(mockProvider.selectRoute(any)).thenAnswer((_) async => {});
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         // Assert
@@ -643,16 +709,19 @@ void main() {
     });
 
     group('Form Validation', () {
-      testWidgets('should validate required fields in add waypoint form', (tester) async {
+      testWidgets('should validate required fields in add waypoint form', (
+        tester,
+      ) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Wegpunkt hinzufügen'));
@@ -671,14 +740,15 @@ void main() {
 
       testWidgets('should validate coordinate format', (tester) async {
         // Arrange
-        when(mockProvider.selectedRoute).thenReturn({
-          'id': 123,
-          'name': 'Test Route',
-        });
+        when(
+          mockProvider.selectedRoute,
+        ).thenReturn({'id': 123, 'name': 'Test Route'});
         when(mockProvider.waypoints).thenReturn([]);
 
         // Act
-        await tester.pumpWidget(createTestWidget(const WaypointManagementWidget()));
+        await tester.pumpWidget(
+          createTestWidget(const WaypointManagementWidget()),
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Wegpunkt hinzufügen'));

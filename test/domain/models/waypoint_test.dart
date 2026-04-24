@@ -79,10 +79,7 @@ void main() {
       });
 
       test('should copy with new coordinates', () {
-        final relocated = baseWaypoint.copyWith(
-          latitude: 48.0,
-          longitude: 9.0,
-        );
+        final relocated = baseWaypoint.copyWith(latitude: 48.0, longitude: 9.0);
 
         expect(relocated.latitude, 48.0);
         expect(relocated.longitude, 9.0);

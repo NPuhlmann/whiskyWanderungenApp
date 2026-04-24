@@ -16,22 +16,21 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void login() async{
+  void login() async {
     final email = _emailController.text;
     final password = _passwordController.text;
 
     try {
       await widget.viewModel.loginWithEmailAndPassword(email, password);
     } catch (e) {
-      if(mounted){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,12 +38,19 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 100),
         children: [
           Image.asset('assets/logo.png', height: 250, width: 250),
-          Center(child: Text(AppLocalizations.of(context)!.appTitle, style: Theme.of(context).textTheme.headlineMedium)),
+          Center(
+            child: Text(
+              AppLocalizations.of(context)!.appTitle,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _emailController,
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
               labelText: AppLocalizations.of(context)!.email,
             ),
           ),
@@ -55,9 +61,10 @@ class _LoginPageState extends State<LoginPage> {
             controller: _passwordController,
 
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
               labelText: AppLocalizations.of(context)!.password,
-
             ),
             obscureText: true,
           ),
@@ -77,9 +84,9 @@ class _LoginPageState extends State<LoginPage> {
               },
               child: Text(AppLocalizations.of(context)!.signup),
             ),
-          )
+          ),
         ],
-      )
+      ),
     );
   }
 }

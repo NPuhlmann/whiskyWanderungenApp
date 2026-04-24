@@ -1,6 +1,7 @@
 /// ViewModel for the HikeDetailsPage
 /// Responsible for managing data and business logic for the hike details view
 /// Uses repositories to fetch and manage hike-related data
+library;
 
 import 'dart:convert';
 import 'dart:developer' as dev;
@@ -11,8 +12,7 @@ import '../../../data/repositories/hike_images_repository.dart';
 import '../../../data/repositories/waypoint_repository.dart';
 import '../../../domain/models/hike.dart';
 
-class HikeDetailsPageViewModel extends ChangeNotifier{
-
+class HikeDetailsPageViewModel extends ChangeNotifier {
   HikeDetailsPageViewModel({
     required HikeImagesRepository hikeImagesRepository,
     required WaypointRepository? waypointRepository,
@@ -20,7 +20,9 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
     // Ensure WaypointRepository is not null
     _waypointRepository = waypointRepository;
     if (_waypointRepository == null) {
-      dev.log("WARNING: WaypointRepository is null in HikeDetailsPageViewModel");
+      dev.log(
+        "WARNING: WaypointRepository is null in HikeDetailsPageViewModel",
+      );
     }
   }
 
@@ -49,25 +51,31 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
   Future<void> getHikeImages(int hikeId) async {
     // First check if images are already in cache
     if (_imageCache.containsKey(hikeId)) {
-      _hikeImages = List<String>.from(_imageCache[hikeId]!); // Create copy to avoid reference issues
+      _hikeImages = List<String>.from(
+        _imageCache[hikeId]!,
+      ); // Create copy to avoid reference issues
       // Safe call to notifyListeners()
       Future.microtask(() => notifyListeners());
       return;
     }
-    
+
     // If not in cache, fetch from repository
     final images = await _hikeImagesRepository.getHikeImages(hikeId);
-    
+
     // Store in cache
-    _imageCache[hikeId] = List<String>.from(images); // Create copy to avoid reference issues
-    
+    _imageCache[hikeId] = List<String>.from(
+      images,
+    ); // Create copy to avoid reference issues
+
     // Only update if hike ID is still current (could have changed during loading)
-    _hikeImages = List<String>.from(images); // Create copy to avoid reference issues
-    
+    _hikeImages = List<String>.from(
+      images,
+    ); // Create copy to avoid reference issues
+
     // Safe call to notifyListeners()
     Future.microtask(() => notifyListeners());
   }
-  
+
   /// Clear cache when no longer needed
   void clearCache() {
     _imageCache.clear();
@@ -77,15 +85,15 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
   Future<bool> saveHikeForOfflineUse(Hike hike) async {
     try {
       dev.log("Speichere Wanderung ${hike.id} für Offline-Nutzung");
-      
+
       // 1. SharedPreferences-Instanz holen
       final prefs = await SharedPreferences.getInstance();
-      
+
       // 2. Wanderungsdaten speichern
       final hikeJson = jsonEncode(hike.toJson());
       await prefs.setString('offline_hike_${hike.id}', hikeJson);
       dev.log("Wanderungsdaten gespeichert");
-      
+
       // 3. Bilder der Wanderung speichern
       if (_imageCache.containsKey(hike.id)) {
         final imageUrls = _imageCache[hike.id]!;
@@ -95,15 +103,24 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
         // Bilder laden, falls sie noch nicht im Cache sind
         final images = await _hikeImagesRepository.getHikeImages(hike.id);
         await prefs.setStringList('offline_hike_images_${hike.id}', images);
-        dev.log("${images.length} Bilder für Wanderung geladen und gespeichert");
+        dev.log(
+          "${images.length} Bilder für Wanderung geladen und gespeichert",
+        );
       }
-      
+
       // 4. Wegpunkte der Wanderung laden und speichern
       if (_waypointRepository != null) {
         try {
-          final waypoints = await _waypointRepository!.getWaypointsForHike(hike.id);
-          final waypointsJsonList = waypoints.map((wp) => jsonEncode(wp.toJson())).toList();
-          await prefs.setStringList('offline_hike_waypoints_${hike.id}', waypointsJsonList);
+          final waypoints = await _waypointRepository!.getWaypointsForHike(
+            hike.id,
+          );
+          final waypointsJsonList = waypoints
+              .map((wp) => jsonEncode(wp.toJson()))
+              .toList();
+          await prefs.setStringList(
+            'offline_hike_waypoints_${hike.id}',
+            waypointsJsonList,
+          );
           dev.log("${waypoints.length} Wegpunkte für Wanderung gespeichert");
         } catch (e) {
           dev.log("Fehler beim Laden der Wegpunkte: $e", error: e);
@@ -114,18 +131,23 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
         dev.log("WaypointRepository ist null, überspringe Wegpunkte");
         await prefs.setStringList('offline_hike_waypoints_${hike.id}', []);
       }
-      
+
       // 5. Liste der offline verfügbaren Wanderungen aktualisieren
       final offlineHikes = prefs.getStringList('offline_hikes') ?? [];
       if (!offlineHikes.contains(hike.id.toString())) {
         offlineHikes.add(hike.id.toString());
         await prefs.setStringList('offline_hikes', offlineHikes);
       }
-      
-      dev.log("Wanderung ${hike.id} erfolgreich für Offline-Nutzung gespeichert");
+
+      dev.log(
+        "Wanderung ${hike.id} erfolgreich für Offline-Nutzung gespeichert",
+      );
       return true;
     } catch (e) {
-      dev.log("Fehler beim Speichern der Wanderung für Offline-Nutzung: $e", error: e);
+      dev.log(
+        "Fehler beim Speichern der Wanderung für Offline-Nutzung: $e",
+        error: e,
+      );
       return false;
     }
   }
@@ -146,17 +168,17 @@ class HikeDetailsPageViewModel extends ChangeNotifier{
   Future<bool> removeOfflineHike(int hikeId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Alle zugehörigen Daten löschen
       await prefs.remove('offline_hike_$hikeId');
       await prefs.remove('offline_hike_images_$hikeId');
       await prefs.remove('offline_hike_waypoints_$hikeId');
-      
+
       // Aus der Liste der offline verfügbaren Wanderungen entfernen
       final offlineHikes = prefs.getStringList('offline_hikes') ?? [];
       offlineHikes.remove(hikeId.toString());
       await prefs.setStringList('offline_hikes', offlineHikes);
-      
+
       dev.log("Offline-Daten für Wanderung $hikeId erfolgreich gelöscht");
       return true;
     } catch (e) {

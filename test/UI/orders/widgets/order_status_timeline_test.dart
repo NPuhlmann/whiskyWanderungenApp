@@ -52,9 +52,7 @@ void main() {
       testWidgets('should display timeline for basic order', (tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: Scaffold(
-              body: OrderStatusTimeline.basic(order: basicOrder),
-            ),
+            home: Scaffold(body: OrderStatusTimeline.basic(order: basicOrder)),
           ),
         );
 
@@ -63,9 +61,11 @@ void main() {
         expect(find.byType(Card), findsOneWidget);
       });
 
-      testWidgets('should show correct status for pending order', (tester) async {
+      testWidgets('should show correct status for pending order', (
+        tester,
+      ) async {
         final pendingOrder = basicOrder.copyWith(status: OrderStatus.pending);
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -75,25 +75,33 @@ void main() {
         );
 
         expect(find.text('Bestellung eingegangen'), findsOneWidget);
-        expect(find.text('Deine Bestellung wurde erfolgreich aufgegeben'), findsOneWidget);
+        expect(
+          find.text('Deine Bestellung wurde erfolgreich aufgegeben'),
+          findsOneWidget,
+        );
       });
 
-      testWidgets('should show correct status for confirmed order', (tester) async {
+      testWidgets('should show correct status for confirmed order', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: Scaffold(
-              body: OrderStatusTimeline.basic(order: basicOrder),
-            ),
+            home: Scaffold(body: OrderStatusTimeline.basic(order: basicOrder)),
           ),
         );
 
         expect(find.text('Bestellung bestätigt'), findsOneWidget);
-        expect(find.text('Zahlung bestätigt, Bestellung wird vorbereitet'), findsOneWidget);
+        expect(
+          find.text('Zahlung bestätigt, Bestellung wird vorbereitet'),
+          findsOneWidget,
+        );
       });
 
-      testWidgets('should show correct status for shipped order', (tester) async {
+      testWidgets('should show correct status for shipped order', (
+        tester,
+      ) async {
         final shippedOrder = basicOrder.copyWith(status: OrderStatus.shipped);
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -106,9 +114,13 @@ void main() {
         expect(find.text('Dein Paket ist auf dem Weg'), findsOneWidget);
       });
 
-      testWidgets('should show correct status for delivered order', (tester) async {
-        final deliveredOrder = basicOrder.copyWith(status: OrderStatus.delivered);
-        
+      testWidgets('should show correct status for delivered order', (
+        tester,
+      ) async {
+        final deliveredOrder = basicOrder.copyWith(
+          status: OrderStatus.delivered,
+        );
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -118,12 +130,19 @@ void main() {
         );
 
         expect(find.text('Zugestellt'), findsOneWidget);
-        expect(find.text('Dein Paket wurde erfolgreich zugestellt'), findsOneWidget);
+        expect(
+          find.text('Dein Paket wurde erfolgreich zugestellt'),
+          findsOneWidget,
+        );
       });
 
-      testWidgets('should show correct status for cancelled order', (tester) async {
-        final cancelledOrder = basicOrder.copyWith(status: OrderStatus.cancelled);
-        
+      testWidgets('should show correct status for cancelled order', (
+        tester,
+      ) async {
+        final cancelledOrder = basicOrder.copyWith(
+          status: OrderStatus.cancelled,
+        );
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -162,14 +181,17 @@ void main() {
         );
 
         expect(find.text('Bestellung bestätigt'), findsOneWidget);
-        expect(find.text('Zahlung bestätigt, Bestellung wird vorbereitet'), findsOneWidget);
+        expect(
+          find.text('Zahlung bestätigt, Bestellung wird vorbereitet'),
+          findsOneWidget,
+        );
       });
 
       testWidgets('should show payment pending status', (tester) async {
         final paymentPendingOrder = enhancedOrder.copyWith(
           status: enhanced.EnhancedOrderStatus.paymentPending,
         );
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -186,7 +208,7 @@ void main() {
         final outForDeliveryOrder = enhancedOrder.copyWith(
           status: enhanced.EnhancedOrderStatus.outForDelivery,
         );
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -203,7 +225,7 @@ void main() {
         final refundedOrder = enhancedOrder.copyWith(
           status: enhanced.EnhancedOrderStatus.refunded,
         );
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -220,7 +242,7 @@ void main() {
         final failedOrder = enhancedOrder.copyWith(
           status: enhanced.EnhancedOrderStatus.failed,
         );
-        
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -230,28 +252,33 @@ void main() {
         );
 
         expect(find.text('Fehlgeschlagen'), findsOneWidget);
-        expect(find.text('Bestellung konnte nicht verarbeitet werden'), findsOneWidget);
+        expect(
+          find.text('Bestellung konnte nicht verarbeitet werden'),
+          findsOneWidget,
+        );
       });
     });
 
     group('Timeline Visual Elements', () {
-      testWidgets('should display timeline visual elements correctly', (tester) async {
+      testWidgets('should display timeline visual elements correctly', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: Scaffold(
-              body: OrderStatusTimeline.basic(order: basicOrder),
-            ),
+            home: Scaffold(body: OrderStatusTimeline.basic(order: basicOrder)),
           ),
         );
 
         // Check for timeline circles (status indicators)
         expect(find.byType(Container), findsWidgets);
-        
+
         // Check for check icons (completed status)
         expect(find.byIcon(Icons.check), findsWidgets);
       });
 
-      testWidgets('should handle unknown order type gracefully', (tester) async {
+      testWidgets('should handle unknown order type gracefully', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -266,29 +293,30 @@ void main() {
     });
 
     group('Status Progression Logic', () {
-      testWidgets('should show completed statuses correctly for shipped order', (tester) async {
-        final shippedOrder = basicOrder.copyWith(status: OrderStatus.shipped);
-        
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: OrderStatusTimeline.basic(order: shippedOrder),
-            ),
-          ),
-        );
+      testWidgets(
+        'should show completed statuses correctly for shipped order',
+        (tester) async {
+          final shippedOrder = basicOrder.copyWith(status: OrderStatus.shipped);
 
-        // Pending, confirmed, processing should be completed
-        // Shipped should be current
-        // Delivered should not be completed
-        expect(find.byIcon(Icons.check), findsWidgets);
-      });
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: OrderStatusTimeline.basic(order: shippedOrder),
+              ),
+            ),
+          );
+
+          // Pending, confirmed, processing should be completed
+          // Shipped should be current
+          // Delivered should not be completed
+          expect(find.byIcon(Icons.check), findsWidgets);
+        },
+      );
 
       testWidgets('should show current status correctly', (tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: Scaffold(
-              body: OrderStatusTimeline.basic(order: basicOrder),
-            ),
+            home: Scaffold(body: OrderStatusTimeline.basic(order: basicOrder)),
           ),
         );
 

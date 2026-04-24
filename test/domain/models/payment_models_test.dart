@@ -6,7 +6,6 @@ import 'package:whisky_hikes/domain/models/basic_order.dart';
 
 void main() {
   group('Payment Models Tests (TDD - Green Phase)', () {
-    
     group('Order Model', () {
       test('should create Order with all required fields', () {
         // Arrange & Act
@@ -70,16 +69,20 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        final deliveredOrder = pendingOrder.copyWith(status: OrderStatus.delivered);
-        final cancelledOrder = pendingOrder.copyWith(status: OrderStatus.cancelled);
+        final deliveredOrder = pendingOrder.copyWith(
+          status: OrderStatus.delivered,
+        );
+        final cancelledOrder = pendingOrder.copyWith(
+          status: OrderStatus.cancelled,
+        );
 
         // Assert
         expect(pendingOrder.canBeCancelled, isTrue);
         expect(pendingOrder.isFinalStatus, isFalse);
-        
+
         expect(deliveredOrder.canBeCancelled, isFalse);
         expect(deliveredOrder.isFinalStatus, isTrue);
-        
+
         expect(cancelledOrder.isFinalStatus, isTrue);
         expect(pendingOrder.formattedOrderNumber, equals('#WH2025-001'));
       });
@@ -99,7 +102,7 @@ void main() {
             'street': 'Teststraße 123',
             'city': 'Hamburg',
             'postalCode': '20095',
-            'country': 'DE'
+            'country': 'DE',
           },
         );
 
@@ -112,7 +115,10 @@ void main() {
         expect(deserializedOrder.orderNumber, equals(order.orderNumber));
         expect(deserializedOrder.deliveryType, equals(order.deliveryType));
         expect(deserializedOrder.status, equals(order.status));
-        expect(deserializedOrder.deliveryAddress?['street'], equals('Teststraße 123'));
+        expect(
+          deserializedOrder.deliveryAddress?['street'],
+          equals('Teststraße 123'),
+        );
       });
     });
 
@@ -171,20 +177,40 @@ void main() {
         expect(result.isSuccess, isFalse);
         expect(result.status, equals(PaymentStatus.cancelled));
         expect(result.wasCancelled, isTrue);
-        expect(result.friendlyErrorMessage, equals('Zahlung wurde abgebrochen.'));
+        expect(
+          result.friendlyErrorMessage,
+          equals('Zahlung wurde abgebrochen.'),
+        );
       });
 
       test('should provide friendly error messages in German', () {
         // Test various error scenarios
-        final declinedResult = PaymentResult.failure(error: 'Card was declined');
-        final networkResult = PaymentResult.failure(error: 'Network connection failed');
-        final expiredResult = PaymentResult.failure(error: 'Your card has expired');
-        final invalidResult = PaymentResult.failure(error: 'Invalid card number');
+        final declinedResult = PaymentResult.failure(
+          error: 'Card was declined',
+        );
+        final networkResult = PaymentResult.failure(
+          error: 'Network connection failed',
+        );
+        final expiredResult = PaymentResult.failure(
+          error: 'Your card has expired',
+        );
+        final invalidResult = PaymentResult.failure(
+          error: 'Invalid card number',
+        );
 
-        expect(declinedResult.friendlyErrorMessage, contains('Karte wurde abgelehnt'));
+        expect(
+          declinedResult.friendlyErrorMessage,
+          contains('Karte wurde abgelehnt'),
+        );
         expect(networkResult.friendlyErrorMessage, contains('Netzwerkfehler'));
-        expect(expiredResult.friendlyErrorMessage, contains('Karte ist abgelaufen'));
-        expect(invalidResult.friendlyErrorMessage, contains('Ungültige Kartendaten'));
+        expect(
+          expiredResult.friendlyErrorMessage,
+          contains('Karte ist abgelaufen'),
+        );
+        expect(
+          invalidResult.friendlyErrorMessage,
+          contains('Ungültige Kartendaten'),
+        );
       });
     });
 
@@ -207,7 +233,10 @@ void main() {
         expect(paymentIntent.amountInEuros, equals(25.99));
         expect(paymentIntent.requiresPaymentMethod, isTrue);
         expect(paymentIntent.isSucceeded, isFalse);
-        expect(paymentIntent.supportsPaymentMethod(PaymentMethodType.card), isTrue);
+        expect(
+          paymentIntent.supportsPaymentMethod(PaymentMethodType.card),
+          isTrue,
+        );
       });
 
       test('should handle different payment intent statuses', () {
@@ -223,8 +252,12 @@ void main() {
 
         // Test different statuses
         final succeededIntent = basePaymentIntent.copyWith(status: 'succeeded');
-        final requiresActionIntent = basePaymentIntent.copyWith(status: 'requires_action');
-        final processingIntent = basePaymentIntent.copyWith(status: 'processing');
+        final requiresActionIntent = basePaymentIntent.copyWith(
+          status: 'requires_action',
+        );
+        final processingIntent = basePaymentIntent.copyWith(
+          status: 'processing',
+        );
         final cancelledIntent = basePaymentIntent.copyWith(status: 'canceled');
 
         expect(succeededIntent.isSucceeded, isTrue);

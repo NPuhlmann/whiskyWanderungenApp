@@ -3,14 +3,13 @@ import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
 
 import '../../../domain/models/delivery_address.dart';
-import '../../../domain/models/company.dart';
 import '../database/backend_api.dart';
 
 /// Service für die Berechnung von Versandkosten
 /// Kommuniziert mit der calculate-shipping Edge Function
 class ShippingCalculationService {
   final BackendApiService _backendApi;
-  
+
   // Cache für Versandkosten-Berechnungen (5 Minuten TTL)
   final Map<String, _CachedShippingResult> _cache = {};
   static const Duration _cacheTtl = Duration(minutes: 5);
@@ -43,7 +42,9 @@ class ShippingCalculationService {
         }
       }
 
-      dev.log('🚚 Calculating shipping cost for company $companyId to ${deliveryAddress.countryCode}');
+      dev.log(
+        '🚚 Calculating shipping cost for company $companyId to ${deliveryAddress.countryCode}',
+      );
 
       // Edge Function aufrufen
       final result = await _callCalculateShippingFunction(
@@ -60,10 +61,9 @@ class ShippingCalculationService {
       );
 
       return result;
-
     } catch (e) {
       dev.log('❌ Error calculating shipping cost: $e');
-      
+
       // Fallback-Berechnung
       return _calculateFallbackShipping(deliveryAddress, orderValue);
     }
@@ -71,20 +71,21 @@ class ShippingCalculationService {
 
   /// Berechnet Versandkosten für mehrere Companies gleichzeitig
   /// Nützlich für Vergleiche oder Multi-Vendor-Carts
-  Future<Map<String, ShippingCostResult>> calculateShippingForMultipleCompanies({
+  Future<Map<String, ShippingCostResult>>
+  calculateShippingForMultipleCompanies({
     required List<String> companyIds,
     required DeliveryAddress deliveryAddress,
     required double orderValue,
   }) async {
     final results = <String, ShippingCostResult>{};
-    
+
     // Parallel requests für bessere Performance
-    final futures = companyIds.map((companyId) => 
-      calculateShippingCost(
+    final futures = companyIds.map(
+      (companyId) => calculateShippingCost(
         companyId: companyId,
         deliveryAddress: deliveryAddress,
         orderValue: orderValue,
-      ).then((result) => MapEntry(companyId, result))
+      ).then((result) => MapEntry(companyId, result)),
     );
 
     try {
@@ -140,7 +141,8 @@ class ShippingCalculationService {
       estimatedDaysMin: estimatedDaysMin,
       estimatedDaysMax: estimatedDaysMax,
       region: region,
-      description: 'Geschätzte Versandkosten • ${estimatedCost.toStringAsFixed(2)} € • $estimatedDaysMin-${estimatedDaysMax} Werktage',
+      description:
+          'Geschätzte Versandkosten • ${estimatedCost.toStringAsFixed(2)} € • $estimatedDaysMin-$estimatedDaysMax Werktage',
       trackingAvailable: true,
       signatureRequired: false,
     );
@@ -170,7 +172,7 @@ class ShippingCalculationService {
         'state': deliveryAddress.state,
       },
       'orderValue': orderValue,
-      if (hikeId != null) 'hikeId': hikeId,
+      'hikeId': ?hikeId,
     };
 
     final response = await http.post(
@@ -183,17 +185,19 @@ class ShippingCalculationService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Edge function returned status ${response.statusCode}: ${response.body}');
+      throw Exception(
+        'Edge function returned status ${response.statusCode}: ${response.body}',
+      );
     }
 
     final responseData = json.decode(response.body);
-    
+
     if (responseData['success'] != true) {
       throw Exception('Edge function error: ${responseData['error']}');
     }
 
     final result = responseData['result'];
-    
+
     return ShippingCostResult(
       cost: (result['cost'] as num).toDouble(),
       isFreeShipping: result['isFreeShipping'] as bool,
@@ -213,12 +217,12 @@ class ShippingCalculationService {
     double orderValue,
   ) {
     dev.log('🔄 Using fallback shipping calculation');
-    
+
     // Einfache Fallback-Logik
     double cost = 15.0; // Moderate internationale Schätzung
     int daysMin = 5;
     int daysMax = 10;
-    
+
     // Deutschland als Basis-Versender angenommen
     if (deliveryAddress.countryCode == 'DE') {
       cost = 4.90;
@@ -240,7 +244,8 @@ class ShippingCalculationService {
       serviceName: 'Standard (Fallback)',
       estimatedDaysMin: daysMin,
       estimatedDaysMax: daysMax,
-      description: 'Geschätzte Versandkosten (Fallback) • ${cost.toStringAsFixed(2)} € • $daysMin-$daysMax Werktage',
+      description:
+          'Geschätzte Versandkosten (Fallback) • ${cost.toStringAsFixed(2)} € • $daysMin-$daysMax Werktage',
       trackingAvailable: true,
       signatureRequired: false,
     );
@@ -263,9 +268,33 @@ class ShippingCalculationService {
   /// Prüft ob ein Land zur EU gehört
   bool _isEuRegion(String countryCode) {
     const euCountries = {
-      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
-      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
-      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'
+      'AT',
+      'BE',
+      'BG',
+      'HR',
+      'CY',
+      'CZ',
+      'DK',
+      'EE',
+      'FI',
+      'FR',
+      'DE',
+      'GR',
+      'HU',
+      'IE',
+      'IT',
+      'LV',
+      'LT',
+      'LU',
+      'MT',
+      'NL',
+      'PL',
+      'PT',
+      'RO',
+      'SK',
+      'SI',
+      'ES',
+      'SE',
     };
     return euCountries.contains(countryCode);
   }
@@ -293,13 +322,11 @@ class _CachedShippingResult {
   final ShippingCostResult result;
   final DateTime cachedAt;
 
-  _CachedShippingResult({
-    required this.result,
-    required this.cachedAt,
-  });
+  _CachedShippingResult({required this.result, required this.cachedAt});
 
   bool get isValid {
-    return DateTime.now().difference(cachedAt) < ShippingCalculationService._cacheTtl;
+    return DateTime.now().difference(cachedAt) <
+        ShippingCalculationService._cacheTtl;
   }
 }
 

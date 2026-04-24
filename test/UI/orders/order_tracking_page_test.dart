@@ -21,7 +21,7 @@ void main() {
 
     testWidgets('should display error state when error occurs', (tester) async {
       final mockViewModel = OrderTrackingViewModel(orderId: 1);
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: ChangeNotifierProvider<OrderTrackingViewModel>.value(
@@ -36,9 +36,11 @@ void main() {
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
-    testWidgets('should display order tracking content when order is loaded', (tester) async {
+    testWidgets('should display order tracking content when order is loaded', (
+      tester,
+    ) async {
       final mockViewModel = OrderTrackingViewModel(orderId: 1);
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: ChangeNotifierProvider<OrderTrackingViewModel>.value(

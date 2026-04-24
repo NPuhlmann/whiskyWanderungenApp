@@ -1,3 +1,6 @@
+// Web-only export helper: uses dart:html to trigger a browser download.
+// Migration to package:web + dart:js_interop is tracked separately.
+// ignore_for_file: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,10 +14,7 @@ import 'dart:html' as html show Blob, Url, AnchorElement, document;
 class CommissionExportWidget extends StatefulWidget {
   final String companyId;
 
-  const CommissionExportWidget({
-    super.key,
-    required this.companyId,
-  });
+  const CommissionExportWidget({super.key, required this.companyId});
 
   @override
   State<CommissionExportWidget> createState() => _CommissionExportWidgetState();
@@ -27,16 +27,15 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
   @override
   void initState() {
     super.initState();
-    _exportService = CommissionExportService(CommissionService(Supabase.instance.client));
+    _exportService = CommissionExportService(
+      CommissionService(Supabase.instance.client),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: Icon(
-        Icons.download,
-        color: Theme.of(context).colorScheme.primary,
-      ),
+      icon: Icon(Icons.download, color: Theme.of(context).colorScheme.primary),
       tooltip: 'Export',
       enabled: !_isExporting,
       onSelected: (value) => _handleExport(context, value),
@@ -91,9 +90,11 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
       _isExporting = true;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       final provider = context.read<CommissionProvider>();
-      
+
       switch (exportType) {
         case 'pdf':
           await _exportPDF(provider, includeFilters: false);
@@ -110,7 +111,7 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Export erfolgreich abgeschlossen'),
             backgroundColor: Colors.green,
@@ -119,7 +120,7 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Fehler beim Export: $e'),
             backgroundColor: Colors.red,
@@ -135,7 +136,10 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
     }
   }
 
-  Future<void> _exportPDF(CommissionProvider provider, {required bool includeFilters}) async {
+  Future<void> _exportPDF(
+    CommissionProvider provider, {
+    required bool includeFilters,
+  }) async {
     final DateTime? startDate;
     final DateTime? endDate;
     final String title;
@@ -143,7 +147,8 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
     if (includeFilters && provider.hasActiveFilters) {
       startDate = provider.startDate;
       endDate = provider.endDate;
-      title = 'Gefilterte Provisionen (${provider.filteredCommissions.length} Einträge)';
+      title =
+          'Gefilterte Provisionen (${provider.filteredCommissions.length} Einträge)';
     } else {
       startDate = null;
       endDate = null;
@@ -167,7 +172,10 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
     await _downloadFile(pdfBytes, filename, 'application/pdf');
   }
 
-  Future<void> _exportCSV(CommissionProvider provider, {required bool includeFilters}) async {
+  Future<void> _exportCSV(
+    CommissionProvider provider, {
+    required bool includeFilters,
+  }) async {
     final DateTime? startDate;
     final DateTime? endDate;
 
@@ -196,7 +204,11 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
     await _downloadFile(bytes, filename, 'text/csv');
   }
 
-  Future<void> _downloadFile(Uint8List bytes, String filename, String mimeType) async {
+  Future<void> _downloadFile(
+    Uint8List bytes,
+    String filename,
+    String mimeType,
+  ) async {
     final blob = html.Blob([bytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
     final anchor = html.document.createElement('a') as html.AnchorElement
@@ -218,8 +230,8 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
 extension CommissionProviderFilters on CommissionProvider {
   bool get hasActiveFilters {
     return startDate != null ||
-           endDate != null ||
-           searchTerm.isNotEmpty ||
-           currentFilter != 'all';
+        endDate != null ||
+        searchTerm.isNotEmpty ||
+        currentFilter != 'all';
   }
 }

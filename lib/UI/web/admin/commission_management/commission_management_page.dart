@@ -12,7 +12,8 @@ class CommissionManagementPage extends StatefulWidget {
   const CommissionManagementPage({super.key});
 
   @override
-  State<CommissionManagementPage> createState() => _CommissionManagementPageState();
+  State<CommissionManagementPage> createState() =>
+      _CommissionManagementPageState();
 }
 
 class _CommissionManagementPageState extends State<CommissionManagementPage> {
@@ -157,10 +158,11 @@ class _CommissionManagementPageState extends State<CommissionManagementPage> {
       builder: (context, provider, child) {
         final totalCount = provider.commissions.length;
         final filteredCount = provider.filteredCommissions.length;
-        final hasFilters = provider.currentFilter != 'all' ||
-                           provider.searchTerm.isNotEmpty ||
-                           provider.startDate != null ||
-                           provider.endDate != null;
+        final hasFilters =
+            provider.currentFilter != 'all' ||
+            provider.searchTerm.isNotEmpty ||
+            provider.startDate != null ||
+            provider.endDate != null;
 
         return Container(
           padding: const EdgeInsets.all(16),
@@ -181,9 +183,9 @@ class _CommissionManagementPageState extends State<CommissionManagementPage> {
               const SizedBox(width: 8),
               Text(
                 'Provisionen',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 8),
               Container(

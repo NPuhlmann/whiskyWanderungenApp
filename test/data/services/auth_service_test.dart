@@ -32,42 +32,55 @@ void main() {
     });
 
     group('Sign In', () {
-      test('signInWithEmailPassword should return successful AuthResponse', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'TestPassword123!';
-        final expectedResponse = AuthResponse(
-          user: mockUser,
-          session: mockSession,
-        );
+      test(
+        'signInWithEmailPassword should return successful AuthResponse',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'TestPassword123!';
+          final expectedResponse = AuthResponse(
+            user: mockUser,
+            session: mockSession,
+          );
 
-        when(mockAuthClient.signInWithPassword(email: email, password: password))
-            .thenAnswer((_) async => expectedResponse);
+          when(
+            mockAuthClient.signInWithPassword(email: email, password: password),
+          ).thenAnswer((_) async => expectedResponse);
 
-        // Act
-        final result = await authService.signInWithEmailPassword(email, password);
+          // Act
+          final result = await authService.signInWithEmailPassword(
+            email,
+            password,
+          );
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        expect(result.user, equals(mockUser));
-        expect(result.session, equals(mockSession));
-        verify(mockAuthClient.signInWithPassword(email: email, password: password)).called(1);
-      });
+          // Assert
+          expect(result, equals(expectedResponse));
+          expect(result.user, equals(mockUser));
+          expect(result.session, equals(mockSession));
+          verify(
+            mockAuthClient.signInWithPassword(email: email, password: password),
+          ).called(1);
+        },
+      );
 
-      test('signInWithEmailPassword should handle authentication errors', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'wrongpassword';
+      test(
+        'signInWithEmailPassword should handle authentication errors',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'wrongpassword';
 
-        when(mockAuthClient.signInWithPassword(email: email, password: password))
-            .thenThrow(AuthException('Invalid login credentials'));
+          when(
+            mockAuthClient.signInWithPassword(email: email, password: password),
+          ).thenThrow(AuthException('Invalid login credentials'));
 
-        // Act & Assert
-        expect(
-          () => authService.signInWithEmailPassword(email, password),
-          throwsA(isA<AuthException>()),
-        );
-      });
+          // Act & Assert
+          expect(
+            () => authService.signInWithEmailPassword(email, password),
+            throwsA(isA<AuthException>()),
+          );
+        },
+      );
     });
 
     group('Sign Up', () {
@@ -76,137 +89,206 @@ void main() {
         const email = 'newuser@example.com';
         const password = 'TestPassword123!';
         final userData = {'firstName': 'John', 'lastName': 'Doe'};
-        final expectedResponse = AuthResponse(user: mockUser, session: mockSession);
+        final expectedResponse = AuthResponse(
+          user: mockUser,
+          session: mockSession,
+        );
 
-        when(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: userData,
-          emailRedirectTo: 'whiskyhikes://email-confirm',
-        )).thenAnswer((_) async => expectedResponse);
+        when(
+          mockAuthClient.signUp(
+            email: email,
+            password: password,
+            data: userData,
+            emailRedirectTo: 'whiskyhikes://email-confirm',
+          ),
+        ).thenAnswer((_) async => expectedResponse);
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: false);
+        final service = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: false,
+        );
 
         // Act
-        final result = await service.signUpWithEmailPassword(email, password, userData);
+        final result = await service.signUpWithEmailPassword(
+          email,
+          password,
+          userData,
+        );
 
         // Assert
         expect(result, equals(expectedResponse));
-        verify(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: userData,
-          emailRedirectTo: 'whiskyhikes://email-confirm',
-        )).called(1);
+        verify(
+          mockAuthClient.signUp(
+            email: email,
+            password: password,
+            data: userData,
+            emailRedirectTo: 'whiskyhikes://email-confirm',
+          ),
+        ).called(1);
       });
 
-      test('signUpWithEmailPassword should work in dev mode with confirmed email', () async {
-        // Arrange
-        const email = 'devuser@example.com';
-        const password = 'TestPassword123!';
-        final userData = {'firstName': 'Dev', 'lastName': 'User'};
-        
-        when(mockUser.emailConfirmedAt).thenReturn(DateTime.now().toIso8601String());
-        final expectedResponse = AuthResponse(user: mockUser, session: mockSession);
+      test(
+        'signUpWithEmailPassword should work in dev mode with confirmed email',
+        () async {
+          // Arrange
+          const email = 'devuser@example.com';
+          const password = 'TestPassword123!';
+          final userData = {'firstName': 'Dev', 'lastName': 'User'};
 
-        when(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: userData,
-          emailRedirectTo: null,
-        )).thenAnswer((_) async => expectedResponse);
+          when(
+            mockUser.emailConfirmedAt,
+          ).thenReturn(DateTime.now().toIso8601String());
+          final expectedResponse = AuthResponse(
+            user: mockUser,
+            session: mockSession,
+          );
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
+          when(
+            mockAuthClient.signUp(
+              email: email,
+              password: password,
+              data: userData,
+              emailRedirectTo: null,
+            ),
+          ).thenAnswer((_) async => expectedResponse);
 
-        // Act
-        final result = await service.signUpWithEmailPassword(email, password, userData);
+          final service = AuthService(
+            client: mockSupabaseClient,
+            isDevMode: true,
+          );
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        verify(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: userData,
-          emailRedirectTo: null,
-        )).called(1);
-      });
+          // Act
+          final result = await service.signUpWithEmailPassword(
+            email,
+            password,
+            userData,
+          );
 
-      test('signUpWithEmailPassword should auto-confirm in dev mode when email not confirmed', () async {
-        // Arrange
-        const email = 'unconfirmed@example.com';
-        const password = 'TestPassword123!';
-        final userData = {'firstName': 'Unconfirmed', 'lastName': 'User'};
-        
-        when(mockUser.emailConfirmedAt).thenReturn(null); // Not confirmed
-        final signUpResponse = AuthResponse(user: mockUser, session: null);
-        final signInResponse = AuthResponse(user: mockUser, session: mockSession);
+          // Assert
+          expect(result, equals(expectedResponse));
+          verify(
+            mockAuthClient.signUp(
+              email: email,
+              password: password,
+              data: userData,
+              emailRedirectTo: null,
+            ),
+          ).called(1);
+        },
+      );
 
-        when(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: userData,
-          emailRedirectTo: null,
-        )).thenAnswer((_) async => signUpResponse);
+      test(
+        'signUpWithEmailPassword should auto-confirm in dev mode when email not confirmed',
+        () async {
+          // Arrange
+          const email = 'unconfirmed@example.com';
+          const password = 'TestPassword123!';
+          final userData = {'firstName': 'Unconfirmed', 'lastName': 'User'};
 
-        when(mockAuthClient.signOut()).thenAnswer((_) async => {});
-        when(mockAuthClient.signInWithPassword(email: email, password: password))
-            .thenAnswer((_) async => signInResponse);
+          when(mockUser.emailConfirmedAt).thenReturn(null); // Not confirmed
+          final signUpResponse = AuthResponse(user: mockUser, session: null);
+          final signInResponse = AuthResponse(
+            user: mockUser,
+            session: mockSession,
+          );
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
+          when(
+            mockAuthClient.signUp(
+              email: email,
+              password: password,
+              data: userData,
+              emailRedirectTo: null,
+            ),
+          ).thenAnswer((_) async => signUpResponse);
 
-        // Act
-        final result = await service.signUpWithEmailPassword(email, password, userData);
+          when(mockAuthClient.signOut()).thenAnswer((_) async => {});
+          when(
+            mockAuthClient.signInWithPassword(email: email, password: password),
+          ).thenAnswer((_) async => signInResponse);
 
-        // Assert
-        expect(result.user, equals(mockUser));
-        expect(result.session, equals(mockSession));
-        verify(mockAuthClient.signOut()).called(1);
-        verify(mockAuthClient.signInWithPassword(email: email, password: password)).called(1);
-      });
+          final service = AuthService(
+            client: mockSupabaseClient,
+            isDevMode: true,
+          );
 
-      test('signUpWithEmailPassword should handle dev mode auto-confirm failure gracefully', () async {
-        // Arrange
-        const email = 'failuser@example.com';
-        const password = 'TestPassword123!';
-        final userData = {'firstName': 'Fail', 'lastName': 'User'};
-        
-        when(mockUser.emailConfirmedAt).thenReturn(null);
-        final signUpResponse = AuthResponse(user: mockUser, session: null);
+          // Act
+          final result = await service.signUpWithEmailPassword(
+            email,
+            password,
+            userData,
+          );
 
-        when(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: userData,
-          emailRedirectTo: null,
-        )).thenAnswer((_) async => signUpResponse);
+          // Assert
+          expect(result.user, equals(mockUser));
+          expect(result.session, equals(mockSession));
+          verify(mockAuthClient.signOut()).called(1);
+          verify(
+            mockAuthClient.signInWithPassword(email: email, password: password),
+          ).called(1);
+        },
+      );
 
-        when(mockAuthClient.signOut()).thenAnswer((_) async => {});
-        when(mockAuthClient.signInWithPassword(email: email, password: password))
-            .thenThrow(AuthException('Email not confirmed'));
+      test(
+        'signUpWithEmailPassword should handle dev mode auto-confirm failure gracefully',
+        () async {
+          // Arrange
+          const email = 'failuser@example.com';
+          const password = 'TestPassword123!';
+          final userData = {'firstName': 'Fail', 'lastName': 'User'};
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
+          when(mockUser.emailConfirmedAt).thenReturn(null);
+          final signUpResponse = AuthResponse(user: mockUser, session: null);
 
-        // Act
-        final result = await service.signUpWithEmailPassword(email, password, userData);
+          when(
+            mockAuthClient.signUp(
+              email: email,
+              password: password,
+              data: userData,
+              emailRedirectTo: null,
+            ),
+          ).thenAnswer((_) async => signUpResponse);
 
-        // Assert - should return original signup response
-        expect(result, equals(signUpResponse));
-        expect(result.session, isNull);
-      });
+          when(mockAuthClient.signOut()).thenAnswer((_) async => {});
+          when(
+            mockAuthClient.signInWithPassword(email: email, password: password),
+          ).thenThrow(AuthException('Email not confirmed'));
+
+          final service = AuthService(
+            client: mockSupabaseClient,
+            isDevMode: true,
+          );
+
+          // Act
+          final result = await service.signUpWithEmailPassword(
+            email,
+            password,
+            userData,
+          );
+
+          // Assert - should return original signup response
+          expect(result, equals(signUpResponse));
+          expect(result.session, isNull);
+        },
+      );
 
       test('signUpWithEmailPassword should handle signup errors', () async {
         // Arrange
         const email = 'existing@example.com';
         const password = 'TestPassword123!';
 
-        when(mockAuthClient.signUp(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
-          data: anyNamed('data'),
-          emailRedirectTo: anyNamed('emailRedirectTo'),
-        )).thenThrow(AuthException('User already registered'));
+        when(
+          mockAuthClient.signUp(
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+            data: anyNamed('data'),
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).thenThrow(AuthException('User already registered'));
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: false);
+        final service = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: false,
+        );
 
         // Act & Assert
         expect(
@@ -230,31 +312,32 @@ void main() {
 
       test('signOut should handle errors', () async {
         // Arrange
-        when(mockAuthClient.signOut())
-            .thenThrow(AuthException('Sign out failed'));
+        when(
+          mockAuthClient.signOut(),
+        ).thenThrow(AuthException('Sign out failed'));
 
         // Act & Assert
-        expect(
-          () => authService.signOut(),
-          throwsA(isA<AuthException>()),
-        );
+        expect(() => authService.signOut(), throwsA(isA<AuthException>()));
       });
     });
 
     group('User Info Retrieval', () {
-      test('getCurrentUserEmail should return user email when logged in', () async {
-        // Arrange
-        const expectedEmail = 'user@example.com';
-        when(mockUser.email).thenReturn(expectedEmail);
-        when(mockSession.user).thenReturn(mockUser);
-        when(mockAuthClient.currentSession).thenReturn(mockSession);
+      test(
+        'getCurrentUserEmail should return user email when logged in',
+        () async {
+          // Arrange
+          const expectedEmail = 'user@example.com';
+          when(mockUser.email).thenReturn(expectedEmail);
+          when(mockSession.user).thenReturn(mockUser);
+          when(mockAuthClient.currentSession).thenReturn(mockSession);
 
-        // Act
-        final email = authService.getCurrentUserEmail();
+          // Act
+          final email = authService.getCurrentUserEmail();
 
-        // Assert
-        expect(email, equals(expectedEmail));
-      });
+          // Assert
+          expect(email, equals(expectedEmail));
+        },
+      );
 
       test('getCurrentUserEmail should return null when no session', () async {
         // Arrange
@@ -292,17 +375,20 @@ void main() {
         expect(userId, isNull);
       });
 
-      test('isUserLoggedIn should return true when user is logged in', () async {
-        // Arrange
-        when(mockSession.user).thenReturn(mockUser);
-        when(mockAuthClient.currentSession).thenReturn(mockSession);
+      test(
+        'isUserLoggedIn should return true when user is logged in',
+        () async {
+          // Arrange
+          when(mockSession.user).thenReturn(mockUser);
+          when(mockAuthClient.currentSession).thenReturn(mockSession);
 
-        // Act
-        final isLoggedIn = authService.isUserLoggedIn();
+          // Act
+          final isLoggedIn = authService.isUserLoggedIn();
 
-        // Assert
-        expect(isLoggedIn, true);
-      });
+          // Assert
+          expect(isLoggedIn, true);
+        },
+      );
 
       test('isUserLoggedIn should return false when no session', () async {
         // Arrange
@@ -315,19 +401,22 @@ void main() {
         expect(isLoggedIn, false);
       });
 
-      test('isUserLoggedIn should return false when session has no user', () async {
-        // Arrange
-        // Create a session that throws when accessing user (simulating no user)
-        final mockEmptySession = MockSession();
-        when(mockEmptySession.user).thenThrow(ArgumentError('No user'));
-        when(mockAuthClient.currentSession).thenReturn(mockEmptySession);
+      test(
+        'isUserLoggedIn should return false when session has no user',
+        () async {
+          // Arrange
+          // Create a session that throws when accessing user (simulating no user)
+          final mockEmptySession = MockSession();
+          when(mockEmptySession.user).thenThrow(ArgumentError('No user'));
+          when(mockAuthClient.currentSession).thenReturn(mockEmptySession);
 
-        // Act
-        final isLoggedIn = authService.isUserLoggedIn();
+          // Act
+          final isLoggedIn = authService.isUserLoggedIn();
 
-        // Assert
-        expect(isLoggedIn, false);
-      });
+          // Assert
+          expect(isLoggedIn, false);
+        },
+      );
     });
 
     group('Email Update', () {
@@ -335,28 +424,42 @@ void main() {
         // Arrange
         const newEmail = 'newemail@example.com';
         // Mock successful user update - return UserResponse.fromJson
-        when(mockAuthClient.updateUser(any)).thenAnswer((_) async => UserResponse.fromJson({'user': null}));
+        when(
+          mockAuthClient.updateUser(any),
+        ).thenAnswer((_) async => UserResponse.fromJson({'user': null}));
 
         // Act
         await authService.updateUserEmail(newEmail);
 
         // Assert
-        verify(mockAuthClient.updateUser(
-          argThat(predicate<UserAttributes>((attrs) => attrs.email == newEmail))
-        )).called(1);
+        verify(
+          mockAuthClient.updateUser(
+            argThat(
+              predicate<UserAttributes>((attrs) => attrs.email == newEmail),
+            ),
+          ),
+        ).called(1);
       });
 
       test('updateUserEmail should handle update errors', () async {
         // Arrange
         const newEmail = 'invalid@example.com';
-        when(mockAuthClient.updateUser(any))
-            .thenThrow(AuthException('Email update failed'));
+        when(
+          mockAuthClient.updateUser(any),
+        ).thenThrow(AuthException('Email update failed'));
 
         // Act & Assert
         expect(
           () => authService.updateUserEmail(newEmail),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Fehler beim Aktualisieren der E-Mail-Adresse'))),
+          throwsA(
+            predicate(
+              (e) =>
+                  e is Exception &&
+                  e.toString().contains(
+                    'Fehler beim Aktualisieren der E-Mail-Adresse',
+                  ),
+            ),
+          ),
         );
       });
     });
@@ -367,7 +470,10 @@ void main() {
         when(mockUser.emailConfirmedAt).thenReturn(null);
         when(mockAuthClient.currentUser).thenReturn(mockUser);
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
+        final service = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: true,
+        );
 
         // Act & Assert - should not throw
         expect(() => service.confirmEmailManually(), returnsNormally);
@@ -375,106 +481,158 @@ void main() {
 
       test('confirmEmailManually should throw in production mode', () async {
         // Arrange
-        final service = AuthService(client: mockSupabaseClient, isDevMode: false);
+        final service = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: false,
+        );
 
         // Act & Assert
         expect(
           () => service.confirmEmailManually(),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('only available in development mode'))),
+          throwsA(
+            predicate(
+              (e) =>
+                  e is Exception &&
+                  e.toString().contains('only available in development mode'),
+            ),
+          ),
         );
       });
 
-      test('confirmEmailManually should throw when no user logged in', () async {
-        // Arrange
-        when(mockAuthClient.currentUser).thenReturn(null);
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
+      test(
+        'confirmEmailManually should throw when no user logged in',
+        () async {
+          // Arrange
+          when(mockAuthClient.currentUser).thenReturn(null);
+          final service = AuthService(
+            client: mockSupabaseClient,
+            isDevMode: true,
+          );
 
-        // Act & Assert
-        expect(
-          () => service.confirmEmailManually(),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('No user logged in'))),
-        );
-      });
+          // Act & Assert
+          expect(
+            () => service.confirmEmailManually(),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is Exception &&
+                    e.toString().contains('No user logged in'),
+              ),
+            ),
+          );
+        },
+      );
 
-      test('confirmEmailManually should handle already confirmed email', () async {
-        // Arrange
-        when(mockUser.emailConfirmedAt).thenReturn(DateTime.now().toIso8601String());
-        when(mockAuthClient.currentUser).thenReturn(mockUser);
+      test(
+        'confirmEmailManually should handle already confirmed email',
+        () async {
+          // Arrange
+          when(
+            mockUser.emailConfirmedAt,
+          ).thenReturn(DateTime.now().toIso8601String());
+          when(mockAuthClient.currentUser).thenReturn(mockUser);
 
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
+          final service = AuthService(
+            client: mockSupabaseClient,
+            isDevMode: true,
+          );
 
-        // Act & Assert - should not throw and should handle gracefully
-        expect(() => service.confirmEmailManually(), returnsNormally);
-      });
+          // Act & Assert - should not throw and should handle gracefully
+          expect(() => service.confirmEmailManually(), returnsNormally);
+        },
+      );
 
       test('handleEmailConfirmation should verify OTP token', () async {
         // Arrange
         const token = 'confirmation_token_123';
         const type = 'email';
-        when(mockAuthClient.verifyOTP(token: token, type: OtpType.email))
-            .thenAnswer((_) async => AuthResponse());
+        when(
+          mockAuthClient.verifyOTP(token: token, type: OtpType.email),
+        ).thenAnswer((_) async => AuthResponse());
 
         // Act
         await authService.handleEmailConfirmation(token, type);
 
         // Assert
-        verify(mockAuthClient.verifyOTP(token: token, type: OtpType.email)).called(1);
+        verify(
+          mockAuthClient.verifyOTP(token: token, type: OtpType.email),
+        ).called(1);
       });
 
-      test('handleEmailConfirmation should handle verification errors', () async {
-        // Arrange
-        const token = 'invalid_token';
-        const type = 'email';
-        when(mockAuthClient.verifyOTP(token: token, type: OtpType.email))
-            .thenThrow(AuthException('Invalid token'));
+      test(
+        'handleEmailConfirmation should handle verification errors',
+        () async {
+          // Arrange
+          const token = 'invalid_token';
+          const type = 'email';
+          when(
+            mockAuthClient.verifyOTP(token: token, type: OtpType.email),
+          ).thenThrow(AuthException('Invalid token'));
 
-        // Act & Assert
-        expect(
-          () => authService.handleEmailConfirmation(token, type),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Error confirming email'))),
-        );
-      });
+          // Act & Assert
+          expect(
+            () => authService.handleEmailConfirmation(token, type),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is Exception &&
+                    e.toString().contains('Error confirming email'),
+              ),
+            ),
+          );
+        },
+      );
     });
 
     group('Development Mode Behavior', () {
       test('should detect dev mode from environment', () async {
         // This test depends on how the environment is set up
         // The actual isDevMode getter reads from dotenv
-        final service = AuthService(client: mockSupabaseClient, isDevMode: true);
-        
+        final service = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: true,
+        );
+
         // We can't easily test the actual dotenv reading, but we can test the behavior
         expect(service.isDevMode, true);
       });
 
       test('should handle different modes correctly in signup', () async {
         // Test production mode
-        final prodService = AuthService(client: mockSupabaseClient, isDevMode: false);
-        final devService = AuthService(client: mockSupabaseClient, isDevMode: true);
+        final prodService = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: false,
+        );
+        final devService = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: true,
+        );
 
         const email = 'test@example.com';
         const password = 'TestPassword123!';
 
-        when(mockAuthClient.signUp(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
-          data: anyNamed('data'),
-          emailRedirectTo: anyNamed('emailRedirectTo'),
-        )).thenAnswer((_) async => AuthResponse());
+        when(
+          mockAuthClient.signUp(
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+            data: anyNamed('data'),
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).thenAnswer((_) async => AuthResponse());
 
         // Act & Assert - both should work but with different redirect URLs
         await prodService.signUpWithEmailPassword(email, password);
         await devService.signUpWithEmailPassword(email, password);
 
         // Verify different redirect URLs were used
-        final capturedCalls = verify(mockAuthClient.signUp(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
-          data: anyNamed('data'),
-          emailRedirectTo: captureAnyNamed('emailRedirectTo'),
-        )).captured;
+        final capturedCalls = verify(
+          mockAuthClient.signUp(
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+            data: anyNamed('data'),
+            emailRedirectTo: captureAnyNamed('emailRedirectTo'),
+          ),
+        ).captured;
 
         expect(capturedCalls.length, 2);
         expect(capturedCalls[0], 'whiskyhikes://email-confirm'); // Production
@@ -507,15 +665,21 @@ void main() {
         const password = 'TestPassword123!';
         final expectedResponse = AuthResponse();
 
-        when(mockAuthClient.signUp(
-          email: email,
-          password: password,
-          data: null,
-          emailRedirectTo: anyNamed('emailRedirectTo'),
-        )).thenAnswer((_) async => expectedResponse);
+        when(
+          mockAuthClient.signUp(
+            email: email,
+            password: password,
+            data: null,
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).thenAnswer((_) async => expectedResponse);
 
         // Act
-        final result = await authService.signUpWithEmailPassword(email, password, null);
+        final result = await authService.signUpWithEmailPassword(
+          email,
+          password,
+          null,
+        );
 
         // Assert
         expect(result, equals(expectedResponse));
@@ -526,8 +690,9 @@ void main() {
         const email = 'test@example.com';
         const password = 'TestPassword123!';
 
-        when(mockAuthClient.signInWithPassword(email: email, password: password))
-            .thenThrow(Exception('Network timeout'));
+        when(
+          mockAuthClient.signInWithPassword(email: email, password: password),
+        ).thenThrow(Exception('Network timeout'));
 
         // Act & Assert
         expect(

@@ -9,13 +9,11 @@ import 'commission_status_chip.dart';
 class CommissionDetailsDialog extends StatefulWidget {
   final Commission commission;
 
-  const CommissionDetailsDialog({
-    super.key,
-    required this.commission,
-  });
+  const CommissionDetailsDialog({super.key, required this.commission});
 
   @override
-  State<CommissionDetailsDialog> createState() => _CommissionDetailsDialogState();
+  State<CommissionDetailsDialog> createState() =>
+      _CommissionDetailsDialogState();
 }
 
 class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
@@ -40,9 +38,7 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
             _buildHeader(context),
             const Divider(height: 32),
             Expanded(
-              child: SingleChildScrollView(
-                child: _buildContent(context),
-              ),
+              child: SingleChildScrollView(child: _buildContent(context)),
             ),
             const Divider(height: 32),
             _buildActions(context),
@@ -87,25 +83,44 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
         const SizedBox(height: 24),
         _buildSection('Finanzielle Details', [
           _buildInfoRow('Grundbetrag', _currentCommission.formattedBaseAmount),
-          _buildInfoRow('Provisionssatz', '${_currentCommission.commissionRatePercentage.toStringAsFixed(1)}%'),
-          _buildInfoRow('Provisionsbetrag', _currentCommission.formattedCommissionAmount),
+          _buildInfoRow(
+            'Provisionssatz',
+            '${_currentCommission.commissionRatePercentage.toStringAsFixed(1)}%',
+          ),
+          _buildInfoRow(
+            'Provisionsbetrag',
+            _currentCommission.formattedCommissionAmount,
+          ),
         ]),
         const SizedBox(height: 24),
         _buildSection('Status & Zeitstempel', [
           _buildStatusRow('Status', _currentCommission.status),
-          _buildInfoRow('Erstellt am', _formatDateTime(_currentCommission.createdAt)),
+          _buildInfoRow(
+            'Erstellt am',
+            _formatDateTime(_currentCommission.createdAt),
+          ),
           if (_currentCommission.paidAt != null)
-            _buildInfoRow('Bezahlt am', _formatDateTime(_currentCommission.paidAt!)),
+            _buildInfoRow(
+              'Bezahlt am',
+              _formatDateTime(_currentCommission.paidAt!),
+            ),
           if (_currentCommission.updatedAt != null)
-            _buildInfoRow('Zuletzt aktualisiert', _formatDateTime(_currentCommission.updatedAt!)),
+            _buildInfoRow(
+              'Zuletzt aktualisiert',
+              _formatDateTime(_currentCommission.updatedAt!),
+            ),
         ]),
         if (_currentCommission.billingPeriodId != null) ...[
           const SizedBox(height: 24),
           _buildSection('Abrechnungsdetails', [
-            _buildInfoRow('Abrechnungsperiode', _currentCommission.billingPeriodId!),
+            _buildInfoRow(
+              'Abrechnungsperiode',
+              _currentCommission.billingPeriodId!,
+            ),
           ]),
         ],
-        if (_currentCommission.notes != null && _currentCommission.notes!.isNotEmpty) ...[
+        if (_currentCommission.notes != null &&
+            _currentCommission.notes!.isNotEmpty) ...[
           const SizedBox(height: 24),
           _buildSection('Notizen', [
             _buildNotesSection(_currentCommission.notes!),
@@ -121,9 +136,9 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         ...children,
@@ -141,16 +156,13 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
             width: 150,
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),
@@ -166,9 +178,9 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
             width: 150,
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(
@@ -177,8 +189,8 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
                 CommissionStatusChip(
                   status: status,
                   showAction: _canUpdateStatus(status),
-                  onStatusChange: _canUpdateStatus(status) 
-                      ? () => _showStatusUpdateDialog(context) 
+                  onStatusChange: _canUpdateStatus(status)
+                      ? () => _showStatusUpdateDialog(context)
                       : null,
                 ),
                 if (_isUpdating) ...[
@@ -206,10 +218,7 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
         borderRadius: BorderRadius.circular(8),
         color: Theme.of(context).colorScheme.surface,
       ),
-      child: Text(
-        notes,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      child: Text(notes, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 
@@ -224,8 +233,8 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
         if (_canUpdateStatus(_currentCommission.status)) ...[
           const SizedBox(width: 8),
           ElevatedButton(
-            onPressed: _isUpdating 
-                ? null 
+            onPressed: _isUpdating
+                ? null
                 : () => _showStatusUpdateDialog(context),
             child: _isUpdating
                 ? const SizedBox(
@@ -241,8 +250,10 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
   }
 
   void _showStatusUpdateDialog(BuildContext context) {
-    final availableStatuses = _getAvailableStatusUpdates(_currentCommission.status);
-    
+    final availableStatuses = _getAvailableStatusUpdates(
+      _currentCommission.status,
+    );
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -278,7 +289,7 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
     try {
       final provider = context.read<CommissionProvider>();
       await provider.updateCommissionStatus(_currentCommission.id, newStatus);
-      
+
       setState(() {
         _currentCommission = _currentCommission.copyWith(
           status: newStatus,
@@ -312,10 +323,13 @@ class _CommissionDetailsDialogState extends State<CommissionDetailsDialog> {
   }
 
   bool _canUpdateStatus(CommissionStatus status) {
-    return status != CommissionStatus.paid && status != CommissionStatus.cancelled;
+    return status != CommissionStatus.paid &&
+        status != CommissionStatus.cancelled;
   }
 
-  List<CommissionStatus> _getAvailableStatusUpdates(CommissionStatus currentStatus) {
+  List<CommissionStatus> _getAvailableStatusUpdates(
+    CommissionStatus currentStatus,
+  ) {
     switch (currentStatus) {
       case CommissionStatus.pending:
         return [CommissionStatus.calculated, CommissionStatus.cancelled];

@@ -22,9 +22,7 @@ class CommissionListWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, CommissionProvider provider) {
     if (provider.isLoading && provider.commissions.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (provider.errorMessage != null) {
@@ -65,7 +63,9 @@ class CommissionListWidget extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => provider.loadCommissionsForCompany('current-company'), // TODO: Get actual company ID
+            onPressed: () => provider.loadCommissionsForCompany(
+              'current-company',
+            ), // TODO: Get actual company ID
             child: const Text('Wiederholen'),
           ),
         ],
@@ -76,7 +76,7 @@ class CommissionListWidget extends StatelessWidget {
   Widget _buildEmptyState(BuildContext context, CommissionProvider provider) {
     final hasCommissions = provider.commissions.isNotEmpty;
     final icon = hasCommissions ? Icons.filter_alt_off : Icons.receipt_long;
-    final title = hasCommissions 
+    final title = hasCommissions
         ? 'Keine Provisionen entsprechen den Filterkriterien'
         : 'Keine Provisionen gefunden';
     final subtitle = hasCommissions
@@ -87,11 +87,7 @@ class CommissionListWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 64,
-            color: Theme.of(context).colorScheme.outline,
-          ),
+          Icon(icon, size: 64, color: Theme.of(context).colorScheme.outline),
           const SizedBox(height: 16),
           Text(
             title,
@@ -147,7 +143,11 @@ class CommissionListWidget extends StatelessWidget {
             cells: [
               DataCell(Text(commission.formattedCommissionAmount)),
               DataCell(Text(commission.formattedBaseAmount)),
-              DataCell(Text('${commission.commissionRatePercentage.toStringAsFixed(1)}%')),
+              DataCell(
+                Text(
+                  '${commission.commissionRatePercentage.toStringAsFixed(1)}%',
+                ),
+              ),
               DataCell(CommissionStatusChip(status: commission.status)),
               DataCell(Text(commission.companyId)),
               DataCell(Text(_formatDate(commission.createdAt))),
@@ -166,7 +166,11 @@ class CommissionListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileCard(BuildContext context, Commission commission, CommissionProvider provider) {
+  Widget _buildMobileCard(
+    BuildContext context,
+    Commission commission,
+    CommissionProvider provider,
+  ) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: InkWell(
@@ -216,7 +220,11 @@ class CommissionListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletCard(BuildContext context, Commission commission, CommissionProvider provider) {
+  Widget _buildTabletCard(
+    BuildContext context,
+    Commission commission,
+    CommissionProvider provider,
+  ) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(

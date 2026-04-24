@@ -9,10 +9,7 @@ import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 class TastingSetSelectionPage extends StatelessWidget {
   final Hike hike;
 
-  const TastingSetSelectionPage({
-    Key? key,
-    required this.hike,
-  }) : super(key: key);
+  const TastingSetSelectionPage({super.key, required this.hike});
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +32,13 @@ class TastingSetSelectionPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red[300],
-                    ),
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                     const SizedBox(height: 16),
                     Text(
                       'Fehler beim Laden',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.red[700],
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(color: Colors.red[700]),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -68,17 +61,13 @@ class TastingSetSelectionPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.wine_bar,
-                      size: 64,
-                      color: Colors.grey[300],
-                    ),
+                    Icon(Icons.wine_bar, size: 64, color: Colors.grey[300]),
                     const SizedBox(height: 16),
                     Text(
                       'Kein Tasting Set verfügbar',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.grey[700],
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(color: Colors.grey[700]),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -114,7 +103,10 @@ class TastingSetSelectionPage extends StatelessWidget {
                                 width: 60,
                                 height: 60,
                                 color: Colors.grey[300],
-                                child: const Icon(Icons.hiking, color: Colors.grey),
+                                child: const Icon(
+                                  Icons.hiking,
+                                  color: Colors.grey,
+                                ),
                               );
                             },
                           ),
@@ -136,16 +128,14 @@ class TastingSetSelectionPage extends StatelessWidget {
                           children: [
                             Text(
                               hike.name,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Inklusives Tasting Set',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                           ],
                         ),
@@ -169,7 +159,7 @@ class TastingSetSelectionPage extends StatelessWidget {
                     color: Theme.of(context).colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha:0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, -2),
                       ),
@@ -185,16 +175,16 @@ class TastingSetSelectionPage extends StatelessWidget {
                             children: [
                               Text(
                                 'Tasting Set inklusive',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.green[700],
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: Colors.green[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
                               ),
                               Text(
                                 '${viewModel.totalSampleCount} Samples • ${viewModel.totalVolumeMl.toStringAsFixed(0)}ml',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: Colors.grey[600]),
                               ),
                             ],
                           ),
@@ -202,14 +192,18 @@ class TastingSetSelectionPage extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () => _proceedToCheckout(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
                               vertical: 12,
                             ),
                           ),
-                          child: Text(AppLocalizations.of(context)!.proceedToCheckout),
+                          child: Text(
+                            AppLocalizations.of(context)!.proceedToCheckout,
+                          ),
                         ),
                       ],
                     ),
@@ -226,11 +220,11 @@ class TastingSetSelectionPage extends StatelessWidget {
   void _proceedToCheckout(BuildContext context) {
     // Navigate to checkout with the hike (tasting set is automatically included)
     // This will be implemented when the checkout system is ready
-          ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.redirectingToCheckout),
-          duration: Duration(seconds: 2),
-        ),
-      );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.redirectingToCheckout),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 }

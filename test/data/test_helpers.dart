@@ -35,7 +35,8 @@ class TestHelpers {
       'is_active': isActive ?? true,
       'region': region ?? 'Speyside',
       'image_url': imageUrl ?? 'https://example.com/hike$id.jpg',
-      'preview_image_url': previewImageUrl ?? 'https://example.com/preview$id.jpg',
+      'preview_image_url':
+          previewImageUrl ?? 'https://example.com/preview$id.jpg',
       'created_at': (createdAt ?? DateTime.now()).toIso8601String(),
       'updated_at': (updatedAt ?? DateTime.now()).toIso8601String(),
     };
@@ -57,21 +58,23 @@ class TestHelpers {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Hike.fromJson(createTestHikeJson(
-      id: id,
-      name: name,
-      description: description,
-      difficulty: difficulty,
-      price: price,
-      distance: distance,
-      duration: duration,
-      isActive: isActive,
-      region: region,
-      imageUrl: imageUrl,
-      previewImageUrl: previewImageUrl,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    ));
+    return Hike.fromJson(
+      createTestHikeJson(
+        id: id,
+        name: name,
+        description: description,
+        difficulty: difficulty,
+        price: price,
+        distance: distance,
+        duration: duration,
+        isActive: isActive,
+        region: region,
+        imageUrl: imageUrl,
+        previewImageUrl: previewImageUrl,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      ),
+    );
   }
 
   /// Creates a test profile JSON map
@@ -110,16 +113,18 @@ class TestHelpers {
     DateTime? updatedAt,
   }) {
     final finalId = id ?? userId ?? 'test-user-123';
-    return Profile.fromJson(createTestProfileJson(
-      id: finalId,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      imageUrl: imageUrl,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    ));
+    return Profile.fromJson(
+      createTestProfileJson(
+        id: finalId,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        imageUrl: imageUrl,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      ),
+    );
   }
 
   /// Creates a test waypoint JSON map
@@ -159,17 +164,19 @@ class TestHelpers {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Waypoint.fromJson(createTestWaypointJson(
-      id: id,
-      name: name,
-      description: description,
-      latitude: latitude,
-      longitude: longitude,
-      orderIndex: orderIndex,
-      imageUrl: imageUrl,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    ));
+    return Waypoint.fromJson(
+      createTestWaypointJson(
+        id: id,
+        name: name,
+        description: description,
+        latitude: latitude,
+        longitude: longitude,
+        orderIndex: orderIndex,
+        imageUrl: imageUrl,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      ),
+    );
   }
 
   /// Creates a test order JSON map
@@ -215,52 +222,74 @@ class TestHelpers {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Order.fromJson(createTestOrderJson(
-      id: id,
-      userId: userId,
-      hikeId: hikeId,
-      status: status,
-      totalAmount: totalAmount,
-      paymentMethod: paymentMethod,
-      paymentStatus: paymentStatus,
-      shippingAddress: shippingAddress,
-      trackingNumber: trackingNumber,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    ));
+    return Order.fromJson(
+      createTestOrderJson(
+        id: id,
+        userId: userId,
+        hikeId: hikeId,
+        status: status,
+        totalAmount: totalAmount,
+        paymentMethod: paymentMethod,
+        paymentStatus: paymentStatus,
+        shippingAddress: shippingAddress,
+        trackingNumber: trackingNumber,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      ),
+    );
   }
 
   /// Creates a list of test hikes
   static List<Hike> createTestHikesList({int count = 3}) {
-    return List.generate(count, (index) => createTestHike(
-      id: index + 1,
-      name: 'Test Hike ${index + 1}',
-      description: 'Description for test hike ${index + 1}',
-      price: 39.99 + (index * 10),
-      difficulty: index == 0 ? 'easy' : index == 1 ? 'medium' : 'hard',
-    ));
+    return List.generate(
+      count,
+      (index) => createTestHike(
+        id: index + 1,
+        name: 'Test Hike ${index + 1}',
+        description: 'Description for test hike ${index + 1}',
+        price: 39.99 + (index * 10),
+        difficulty: index == 0
+            ? 'easy'
+            : index == 1
+            ? 'medium'
+            : 'hard',
+      ),
+    );
   }
 
   /// Creates a list of test waypoints
-  static List<Waypoint> createTestWaypointsList({int count = 3, int startId = 1}) {
-    return List.generate(count, (index) => createTestWaypoint(
-      id: startId + index,
-      name: 'Waypoint ${index + 1}',
-      latitude: 52.5200 + (index * 0.001),
-      longitude: 13.4050 + (index * 0.001),
-      orderIndex: index + 1,
-    ));
+  static List<Waypoint> createTestWaypointsList({
+    int count = 3,
+    int startId = 1,
+  }) {
+    return List.generate(
+      count,
+      (index) => createTestWaypoint(
+        id: startId + index,
+        name: 'Waypoint ${index + 1}',
+        latitude: 52.5200 + (index * 0.001),
+        longitude: 13.4050 + (index * 0.001),
+        orderIndex: index + 1,
+      ),
+    );
   }
 
   /// Creates a list of test orders
   static List<Order> createTestOrdersList({int count = 3}) {
-    return List.generate(count, (index) => createTestOrder(
-      id: index + 1,
-      userId: 'user-${index + 1}',
-      hikeId: index + 1,
-      status: index == 0 ? 'pending' : index == 1 ? 'processing' : 'shipped',
-      totalAmount: 49.99 + (index * 10),
-    ));
+    return List.generate(
+      count,
+      (index) => createTestOrder(
+        id: index + 1,
+        userId: 'user-${index + 1}',
+        hikeId: index + 1,
+        status: index == 0
+            ? 'pending'
+            : index == 1
+            ? 'processing'
+            : 'shipped',
+        totalAmount: 49.99 + (index * 10),
+      ),
+    );
   }
 
   /// Creates test dashboard metrics data
@@ -274,12 +303,12 @@ class TestHelpers {
       'orders_growth': 8.7,
       'routes_growth': 0.0,
       'rating_growth': 2.3,
-      'recent_orders': createTestOrdersList(count: 5)
-          .map((order) => order.toJson())
-          .toList(),
-      'popular_routes': createTestHikesList(count: 3)
-          .map((hike) => hike.toJson())
-          .toList(),
+      'recent_orders': createTestOrdersList(
+        count: 5,
+      ).map((order) => order.toJson()).toList(),
+      'popular_routes': createTestHikesList(
+        count: 3,
+      ).map((hike) => hike.toJson()).toList(),
     };
   }
 
@@ -291,9 +320,9 @@ class TestHelpers {
   }) {
     return {
       'route': createTestHikeJson(id: routeId, name: routeName),
-      'waypoints': createTestWaypointsList(count: waypointCount)
-          .map((waypoint) => waypoint.toJson())
-          .toList(),
+      'waypoints': createTestWaypointsList(
+        count: waypointCount,
+      ).map((waypoint) => waypoint.toJson()).toList(),
     };
   }
 
@@ -312,7 +341,10 @@ class TestHelpers {
   }
 
   /// Helper method to create valid email addresses for testing
-  static String createTestEmail({String prefix = 'test', String domain = 'example.com'}) {
+  static String createTestEmail({
+    String prefix = 'test',
+    String domain = 'example.com',
+  }) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     return '$prefix$timestamp@$domain';
   }
@@ -326,8 +358,10 @@ class TestHelpers {
   /// Helper method to create test coordinates within Germany
   static Map<String, double> createTestCoordinatesGermany() {
     // Coordinates roughly within Germany bounds
-    final latBase = 47.0 + (DateTime.now().millisecondsSinceEpoch % 8000) / 1000.0;
-    final lngBase = 6.0 + (DateTime.now().millisecondsSinceEpoch % 10000) / 1000.0;
+    final latBase =
+        47.0 + (DateTime.now().millisecondsSinceEpoch % 8000) / 1000.0;
+    final lngBase =
+        6.0 + (DateTime.now().millisecondsSinceEpoch % 10000) / 1000.0;
 
     return {
       'latitude': double.parse(latBase.toStringAsFixed(6)),
@@ -369,22 +403,24 @@ class TestHelpers {
       'name': name ?? 'Test Tasting Set',
       'description': description ?? 'A delicious whisky tasting set',
       'price': price ?? 0.0, // Tasting sets are included in hike price
-      'samples': samples ?? [
-        {
-          'id': 1,
-          'name': 'Highland Single Malt',
-          'description': 'A smooth highland whisky',
-          'region': 'Highland',
-          'age': 12,
-        },
-        {
-          'id': 2,
-          'name': 'Speyside Classic',
-          'description': 'A classic speyside expression',
-          'region': 'Speyside',
-          'age': 15,
-        }
-      ],
+      'samples':
+          samples ??
+          [
+            {
+              'id': 1,
+              'name': 'Highland Single Malt',
+              'description': 'A smooth highland whisky',
+              'region': 'Highland',
+              'age': 12,
+            },
+            {
+              'id': 2,
+              'name': 'Speyside Classic',
+              'description': 'A classic speyside expression',
+              'region': 'Speyside',
+              'age': 15,
+            },
+          ],
       'created_at': DateTime.now().toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),
     };

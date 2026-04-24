@@ -12,11 +12,15 @@ class ReviewRating {
     required this.rating,
     this.notes,
     DateTime? createdAt,
-  })  : assert(rating >= 1.0 && rating <= 5.0,
-            'Rating must be between 1.0 and 5.0'),
-        assert(notes == null || notes.length <= 500,
-            'Notes must be 500 characters or less'),
-        createdAt = createdAt ?? DateTime.now();
+  }) : assert(
+         rating >= 1.0 && rating <= 5.0,
+         'Rating must be between 1.0 and 5.0',
+       ),
+       assert(
+         notes == null || notes.length <= 500,
+         'Notes must be 500 characters or less',
+       ),
+       createdAt = createdAt ?? DateTime.now();
 
   ReviewRating copyWith({
     int? reviewId,

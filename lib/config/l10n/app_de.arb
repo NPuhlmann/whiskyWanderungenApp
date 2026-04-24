@@ -186,5 +186,14 @@
   "errorUploadingImageGeneral": "Fehler beim Hochladen des Bildes",
   "errorRemovingImage": "Fehler beim Entfernen des Bildes",
   "noImageSelected": "Kein Bild ausgewählt",
-  "years": "Jahre"
+  "years": "Jahre",
+  "price": "Preis",
+  "mainRegion": "Hauptregion",
+  "totalVolume": "Gesamtvolumen",
+  "createdAt": "Erstellt",
+  "lastUpdated": "Zuletzt aktualisiert",
+  "whiskySamples": "Whisky-Proben",
+  "noSamplesYet": "Noch keine Proben",
+  "statistics": "Statistiken",
+  "averageAbv": "Durchschnittlicher ABV"
 }

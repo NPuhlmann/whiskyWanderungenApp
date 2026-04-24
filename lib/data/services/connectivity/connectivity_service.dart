@@ -8,16 +8,17 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 /// Service für erweiterte Netzwerkkonnektivitätsprüfungen
 class ConnectivityService {
   static ConnectivityService? _instance;
-  static ConnectivityService get instance => _instance ??= ConnectivityService._internal();
+  static ConnectivityService get instance =>
+      _instance ??= ConnectivityService._internal();
   ConnectivityService._internal();
 
   final Connectivity _connectivity = Connectivity();
   final InternetConnection _internetChecker = InternetConnection();
-  
+
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   StreamSubscription<InternetStatus>? _internetSubscription;
-  
-  final StreamController<NetworkStatus> _networkStatusController = 
+
+  final StreamController<NetworkStatus> _networkStatusController =
       StreamController<NetworkStatus>.broadcast();
 
   NetworkStatus _currentStatus = NetworkStatus.unknown;
@@ -26,14 +27,15 @@ class ConnectivityService {
 
   /// Aktueller Netzwerkstatus
   NetworkStatus get currentStatus => _currentStatus;
-  
+
   /// Stream für Netzwerkstatus-Änderungen
-  Stream<NetworkStatus> get networkStatusStream => _networkStatusController.stream;
+  Stream<NetworkStatus> get networkStatusStream =>
+      _networkStatusController.stream;
 
   /// Letzte Verbindungszeit
   DateTime? get lastConnectedTime => _lastConnectedTime;
-  
-  /// Letzte Trennungszeit  
+
+  /// Letzte Trennungszeit
   DateTime? get lastDisconnectedTime => _lastDisconnectedTime;
 
   /// Service initialisieren und Überwachung starten
@@ -41,21 +43,22 @@ class ConnectivityService {
     try {
       // Initialen Status ermitteln
       _currentStatus = await checkNetworkStatus();
-      
+
       // Connectivity-Changes überwachen
       _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
         _onConnectivityChanged,
-        onError: (error) => log("❌ Connectivity-Stream Fehler: $error", error: error),
+        onError: (error) =>
+            log("❌ Connectivity-Stream Fehler: $error", error: error),
       );
-      
+
       // Internet-Verbindung überwachen
       _internetSubscription = _internetChecker.onStatusChange.listen(
         _onInternetStatusChanged,
-        onError: (error) => log("❌ Internet-Status-Stream Fehler: $error", error: error),
+        onError: (error) =>
+            log("❌ Internet-Status-Stream Fehler: $error", error: error),
       );
-      
+
       log("📡 ConnectivityService initialisiert - Status: $_currentStatus");
-      
     } catch (e) {
       log("❌ Fehler bei ConnectivityService-Initialisierung: $e", error: e);
       _currentStatus = NetworkStatus.unknown;
@@ -67,14 +70,14 @@ class ConnectivityService {
     try {
       await _connectivitySubscription?.cancel();
       _connectivitySubscription = null;
-      
+
       await _internetSubscription?.cancel();
       _internetSubscription = null;
-      
+
       if (!_networkStatusController.isClosed) {
         await _networkStatusController.close();
       }
-      
+
       log("🔒 ConnectivityService beendet");
     } catch (e) {
       log("⚠️ Fehler beim ConnectivityService dispose: $e", error: e);
@@ -87,38 +90,36 @@ class ConnectivityService {
     try {
       // 1. Connectivity prüfen
       final connectivityResults = await _connectivity.checkConnectivity();
-      
+
       if (connectivityResults.contains(ConnectivityResult.none)) {
         return NetworkStatus.disconnected;
       }
-      
+
       // 2. Tatsächliche Internet-Verbindung prüfen
       final hasInternet = await _internetChecker.hasInternetAccess;
-      
+
       if (!hasInternet) {
-        return NetworkStatus.connected_no_internet;
+        return NetworkStatus.connectedNoInternet;
       }
-      
+
       // 3. Verbindungsqualität ermitteln
       final connectionType = _getConnectionType(connectivityResults);
       final quality = await _checkConnectionQuality();
-      
+
       switch (quality) {
         case ConnectionQuality.good:
-          return connectionType == ConnectionType.wifi 
-              ? NetworkStatus.connected_wifi_good
-              : NetworkStatus.connected_mobile_good;
+          return connectionType == ConnectionType.wifi
+              ? NetworkStatus.connectedWifiGood
+              : NetworkStatus.connectedMobileGood;
         case ConnectionQuality.poor:
-          return connectionType == ConnectionType.wifi 
-              ? NetworkStatus.connected_wifi_poor
-              : NetworkStatus.connected_mobile_poor;
+          return connectionType == ConnectionType.wifi
+              ? NetworkStatus.connectedWifiPoor
+              : NetworkStatus.connectedMobilePoor;
         case ConnectionQuality.unknown:
-        default:
-          return connectionType == ConnectionType.wifi 
-              ? NetworkStatus.connected_wifi
-              : NetworkStatus.connected_mobile;
+          return connectionType == ConnectionType.wifi
+              ? NetworkStatus.connectedWifi
+              : NetworkStatus.connectedMobile;
       }
-      
     } catch (e) {
       log("❌ Fehler bei Netzwerkstatus-Prüfung: $e", error: e);
       return NetworkStatus.unknown;
@@ -149,18 +150,14 @@ class ConnectivityService {
   /// Prüfe Supabase-Erreichbarkeit
   Future<bool> canReachSupabase() async {
     // Supabase verwendet verschiedene Domains, prüfe die wichtigsten
-    final hosts = [
-      'supabase.co',
-      'supabase.io',
-      'postgrest.org',
-    ];
-    
+    final hosts = ['supabase.co', 'supabase.io', 'postgrest.org'];
+
     for (final host in hosts) {
       if (await canReachHost(host)) {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -168,17 +165,17 @@ class ConnectivityService {
   Future<ConnectionQuality> _checkConnectionQuality() async {
     try {
       final stopwatch = Stopwatch()..start();
-      
+
       // Einfacher Ping-Test zu einem schnellen Server
       final result = await InternetAddress.lookup('1.1.1.1');
       stopwatch.stop();
-      
+
       if (result.isEmpty) {
         return ConnectionQuality.unknown;
       }
-      
+
       final latency = stopwatch.elapsedMilliseconds;
-      
+
       if (latency < 100) {
         return ConnectionQuality.good;
       } else if (latency < 500) {
@@ -186,7 +183,6 @@ class ConnectivityService {
       } else {
         return ConnectionQuality.poor;
       }
-      
     } catch (e) {
       log("❌ Fehler bei Verbindungsqualitäts-Messung: $e", error: e);
       return ConnectionQuality.unknown;
@@ -218,7 +214,7 @@ class ConnectivityService {
     if (_currentStatus != newStatus) {
       final oldStatus = _currentStatus;
       _currentStatus = newStatus;
-      
+
       // Zeitstempel aktualisieren
       if (_isConnected(newStatus) && !_isConnected(oldStatus)) {
         _lastConnectedTime = DateTime.now();
@@ -227,7 +223,7 @@ class ConnectivityService {
         _lastDisconnectedTime = DateTime.now();
         log("🔴 Netzwerkverbindung verloren: $newStatus");
       }
-      
+
       // Status-Änderung broadcasten
       _networkStatusController.add(_currentStatus);
       log("📡 Netzwerkstatus geändert: $oldStatus -> $newStatus");
@@ -236,9 +232,9 @@ class ConnectivityService {
 
   /// Hilfsmethoden
   bool _isConnected(NetworkStatus status) {
-    return status != NetworkStatus.disconnected && 
-           status != NetworkStatus.connected_no_internet &&
-           status != NetworkStatus.unknown;
+    return status != NetworkStatus.disconnected &&
+        status != NetworkStatus.connectedNoInternet &&
+        status != NetworkStatus.unknown;
   }
 
   ConnectionType _getConnectionType(List<ConnectivityResult> results) {
@@ -259,10 +255,10 @@ class ConnectivityService {
       'lastConnectedTime': _lastConnectedTime?.toIso8601String(),
       'lastDisconnectedTime': _lastDisconnectedTime?.toIso8601String(),
       'isConnected': _isConnected(_currentStatus),
-      'uptime': _lastConnectedTime != null 
+      'uptime': _lastConnectedTime != null
           ? DateTime.now().difference(_lastConnectedTime!).inSeconds
           : null,
-      'downtime': _lastDisconnectedTime != null 
+      'downtime': _lastDisconnectedTime != null
           ? DateTime.now().difference(_lastDisconnectedTime!).inSeconds
           : null,
     };
@@ -273,111 +269,102 @@ class ConnectivityService {
 enum NetworkStatus {
   unknown,
   disconnected,
-  connected_no_internet,
-  connected_wifi,
-  connected_wifi_good,
-  connected_wifi_poor,
-  connected_mobile,
-  connected_mobile_good,
-  connected_mobile_poor,
-  connected_ethernet,
+  connectedNoInternet,
+  connectedWifi,
+  connectedWifiGood,
+  connectedWifiPoor,
+  connectedMobile,
+  connectedMobileGood,
+  connectedMobilePoor,
+  connectedEthernet,
 }
 
 /// Verbindungstyp-Enumeration
-enum ConnectionType {
-  wifi,
-  mobile,
-  ethernet,
-  other,
-}
+enum ConnectionType { wifi, mobile, ethernet, other }
 
 /// Verbindungsqualität-Enumeration
-enum ConnectionQuality {
-  unknown,
-  poor,
-  good,
-}
+enum ConnectionQuality { unknown, poor, good }
 
 /// Erweiterungen für bessere Lesbarkeit
 extension NetworkStatusExtension on NetworkStatus {
   bool get isConnected {
     switch (this) {
-      case NetworkStatus.connected_wifi:
-      case NetworkStatus.connected_wifi_good:
-      case NetworkStatus.connected_wifi_poor:
-      case NetworkStatus.connected_mobile:
-      case NetworkStatus.connected_mobile_good:
-      case NetworkStatus.connected_mobile_poor:
-      case NetworkStatus.connected_ethernet:
+      case NetworkStatus.connectedWifi:
+      case NetworkStatus.connectedWifiGood:
+      case NetworkStatus.connectedWifiPoor:
+      case NetworkStatus.connectedMobile:
+      case NetworkStatus.connectedMobileGood:
+      case NetworkStatus.connectedMobilePoor:
+      case NetworkStatus.connectedEthernet:
         return true;
       default:
         return false;
     }
   }
-  
+
   bool get isWifi {
     switch (this) {
-      case NetworkStatus.connected_wifi:
-      case NetworkStatus.connected_wifi_good:
-      case NetworkStatus.connected_wifi_poor:
+      case NetworkStatus.connectedWifi:
+      case NetworkStatus.connectedWifiGood:
+      case NetworkStatus.connectedWifiPoor:
         return true;
       default:
         return false;
     }
   }
-  
+
   bool get isMobile {
     switch (this) {
-      case NetworkStatus.connected_mobile:
-      case NetworkStatus.connected_mobile_good:
-      case NetworkStatus.connected_mobile_poor:
+      case NetworkStatus.connectedMobile:
+      case NetworkStatus.connectedMobileGood:
+      case NetworkStatus.connectedMobilePoor:
         return true;
       default:
         return false;
     }
   }
-  
+
   bool get isGoodQuality {
     switch (this) {
-      case NetworkStatus.connected_wifi_good:
-      case NetworkStatus.connected_mobile_good:
+      case NetworkStatus.connectedWifiGood:
+      case NetworkStatus.connectedMobileGood:
         return true;
       default:
         return false;
     }
   }
-  
+
   bool get isPoorQuality {
     switch (this) {
-      case NetworkStatus.connected_wifi_poor:
-      case NetworkStatus.connected_mobile_poor:
+      case NetworkStatus.connectedWifiPoor:
+      case NetworkStatus.connectedMobilePoor:
         return true;
       default:
         return false;
     }
   }
-  
+
   String get displayName {
     switch (this) {
       case NetworkStatus.unknown:
         return 'Unbekannt';
       case NetworkStatus.disconnected:
         return 'Nicht verbunden';
-      case NetworkStatus.connected_no_internet:
+      case NetworkStatus.connectedNoInternet:
         return 'Verbunden, kein Internet';
-      case NetworkStatus.connected_wifi:
+      case NetworkStatus.connectedWifi:
         return 'WLAN verbunden';
-      case NetworkStatus.connected_wifi_good:
+      case NetworkStatus.connectedWifiGood:
         return 'WLAN (gut)';
-      case NetworkStatus.connected_wifi_poor:
+      case NetworkStatus.connectedWifiPoor:
         return 'WLAN (schwach)';
-      case NetworkStatus.connected_mobile:
+      case NetworkStatus.connectedMobile:
         return 'Mobil verbunden';
-      case NetworkStatus.connected_mobile_good:
+      case NetworkStatus.connectedMobileGood:
         return 'Mobil (gut)';
-      case NetworkStatus.connected_mobile_poor:
+      case NetworkStatus.connectedMobilePoor:
         return 'Mobil (schwach)';
-      case NetworkStatus.connected_ethernet:
+      case NetworkStatus.connectedEthernet:
         return 'Ethernet verbunden';
     }
   }

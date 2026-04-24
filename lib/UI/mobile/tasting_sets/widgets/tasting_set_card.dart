@@ -8,11 +8,11 @@ class TastingSetCard extends StatelessWidget {
   final ValueChanged<bool> onSelectionChanged;
 
   const TastingSetCard({
-    Key? key,
+    super.key,
     required this.tastingSet,
     required this.isSelected,
     required this.onSelectionChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +21,7 @@ class TastingSetCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: isSelected
-            ? BorderSide(
-                color: Theme.of(context).colorScheme.primary,
-                width: 2,
-              )
+            ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)
             : BorderSide.none,
       ),
       child: InkWell(
@@ -79,7 +76,7 @@ class TastingSetCard extends StatelessWidget {
                       ),
                     ),
                   const SizedBox(width: 16),
-                  
+
                   // Tasting set info
                   Expanded(
                     child: Column(
@@ -87,33 +84,26 @@ class TastingSetCard extends StatelessWidget {
                       children: [
                         Text(
                           tastingSet.name,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           tastingSet.shortDescription,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey[600]),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(
-                              Icons.list,
-                              size: 16,
-                              color: Colors.grey[600],
-                            ),
+                            Icon(Icons.list, size: 16, color: Colors.grey[600]),
                             const SizedBox(width: 4),
                             Text(
                               '${tastingSet.sampleCount} Samples',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                             const SizedBox(width: 16),
                             Icon(
@@ -124,16 +114,15 @@ class TastingSetCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               '${tastingSet.totalVolumeMl.toStringAsFixed(0)}ml',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  
+
                   // Selection checkbox
                   Transform.scale(
                     scale: 1.2,
@@ -148,9 +137,9 @@ class TastingSetCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Price and availability info
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,15 +166,16 @@ class TastingSetCard extends StatelessWidget {
                           ),
                           child: Text(
                             'Im Preis inklusive',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.green[800],
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Colors.green[800],
+                                  fontWeight: FontWeight.w500,
+                                ),
                           ),
                         ),
                     ],
                   ),
-                  
+
                   // Availability indicator
                   if (!tastingSet.isCurrentlyAvailable)
                     Container(
@@ -207,9 +197,9 @@ class TastingSetCard extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Sample preview
               if (tastingSet.hasSamples) ...[
                 Text(
@@ -236,9 +226,9 @@ class TastingSetCard extends StatelessWidget {
                       ),
                       child: Text(
                         sample.displayName,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontSize: 11,
-                        ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(fontSize: 11),
                       ),
                     );
                   }).toList(),

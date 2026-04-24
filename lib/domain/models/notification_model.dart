@@ -22,7 +22,7 @@ class NotificationModel {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
-  factory NotificationModel.fromJson(Map<String, dynamic> json) => 
+  factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       _$NotificationModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$NotificationModelToJson(this);
@@ -57,12 +57,21 @@ class NotificationModel {
         other.type == type &&
         other.data.toString() == data.toString() &&
         other.isRead == isRead &&
-        other.createdAt.millisecondsSinceEpoch == createdAt.millisecondsSinceEpoch;
+        other.createdAt.millisecondsSinceEpoch ==
+            createdAt.millisecondsSinceEpoch;
   }
 
   @override
   int get hashCode {
-    return Object.hash(id, title, body, type, data.toString(), isRead, createdAt.millisecondsSinceEpoch);
+    return Object.hash(
+      id,
+      title,
+      body,
+      type,
+      data.toString(),
+      isRead,
+      createdAt.millisecondsSinceEpoch,
+    );
   }
 
   @override
@@ -71,10 +80,4 @@ class NotificationModel {
   }
 }
 
-enum NotificationType {
-  orderUpdate,
-  deliveryUpdate,
-  general,
-  urgent,
-  success,
-}
+enum NotificationType { orderUpdate, deliveryUpdate, general, urgent, success }

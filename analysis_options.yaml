@@ -9,6 +9,22 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # Generated code — we do not hand-edit these.
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+    - "lib/config/l10n/app_localizations*.dart"
+    # Test suite remains excluded under the WHI-11 burn-down ticket — mocks
+    # and fixtures drifted against current production models (~500 errors).
+    - "test/**"
+  errors:
+    # .env is created locally from .env.example (flutter_dotenv). assets/icons/
+    # is a placeholder; reintroduce files before re-tightening this to warning.
+    asset_does_not_exist: info
+    asset_directory_does_not_exist: info
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

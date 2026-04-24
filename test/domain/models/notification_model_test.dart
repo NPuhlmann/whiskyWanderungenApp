@@ -16,7 +16,10 @@ void main() {
 
       expect(notification.id, '1');
       expect(notification.title, 'Bestellstatus aktualisiert');
-      expect(notification.body, 'Deine Bestellung #123 hat den Status: bestätigt');
+      expect(
+        notification.body,
+        'Deine Bestellung #123 hat den Status: bestätigt',
+      );
       expect(notification.type, NotificationType.orderUpdate);
       expect(notification.data, {'order_id': '123', 'status': 'confirmed'});
       expect(notification.isRead, false);
@@ -56,8 +59,10 @@ void main() {
       expect(restoredNotification.type, originalNotification.type);
       expect(restoredNotification.data, originalNotification.data);
       expect(restoredNotification.isRead, originalNotification.isRead);
-      expect(restoredNotification.createdAt.millisecondsSinceEpoch, 
-             originalNotification.createdAt.millisecondsSinceEpoch);
+      expect(
+        restoredNotification.createdAt.millisecondsSinceEpoch,
+        originalNotification.createdAt.millisecondsSinceEpoch,
+      );
     });
 
     test('should handle different notification types', () {

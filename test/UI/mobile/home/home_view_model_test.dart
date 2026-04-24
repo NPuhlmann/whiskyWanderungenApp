@@ -10,7 +10,9 @@ import 'package:whisky_hikes/domain/models/profile.dart';
 import '../../test_helpers.dart';
 
 class MockHikeRepository extends Mock implements HikeRepository {}
+
 class MockProfileRepository extends Mock implements ProfileRepository {}
+
 class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
@@ -26,7 +28,7 @@ void main() {
       mockHikeRepository = MockHikeRepository();
       mockProfileRepository = MockProfileRepository();
       mockUserRepository = MockUserRepository();
-      
+
       homeViewModel = HomePageViewModel(
         hikeRepository: mockHikeRepository,
         profileRepository: mockProfileRepository,
@@ -57,7 +59,9 @@ void main() {
     group('Load Hikes Tests', () {
       test('should load hikes successfully', () async {
         // Arrange
-        when(mockHikeRepository.getAllHikes()).thenAnswer((_) async => testHikes);
+        when(
+          mockHikeRepository.getAllHikes(),
+        ).thenAnswer((_) async => testHikes);
 
         // Act
         await homeViewModel.loadHikes();
@@ -77,17 +81,19 @@ void main() {
 
         // Act
         final loadingFuture = homeViewModel.loadHikes();
-        
+
         // Assert loading state
         expect(homeViewModel.isLoading, true);
-        
+
         await loadingFuture;
         expect(homeViewModel.isLoading, false);
       });
 
       test('should handle hike loading error gracefully', () async {
         // Arrange
-        when(mockHikeRepository.getAllHikes()).thenThrow(Exception('Network error'));
+        when(
+          mockHikeRepository.getAllHikes(),
+        ).thenThrow(Exception('Network error'));
 
         // Act
         await homeViewModel.loadHikes();
@@ -103,7 +109,9 @@ void main() {
       test('should get user first name successfully', () async {
         // Arrange
         when(mockUserRepository.getCurrentUserId()).thenReturn('user123');
-        when(mockProfileRepository.getUserProfileById('user123')).thenAnswer((_) async => testProfile);
+        when(
+          mockProfileRepository.getUserProfileById('user123'),
+        ).thenAnswer((_) async => testProfile);
 
         // Act
         await homeViewModel.getUserFirstName();
@@ -130,7 +138,9 @@ void main() {
       test('should handle profile loading error', () async {
         // Arrange
         when(mockUserRepository.getCurrentUserId()).thenReturn('user123');
-        when(mockProfileRepository.getUserProfileById('user123')).thenThrow(Exception('Profile not found'));
+        when(
+          mockProfileRepository.getUserProfileById('user123'),
+        ).thenThrow(Exception('Profile not found'));
 
         // Act
         await homeViewModel.getUserFirstName();
@@ -154,28 +164,35 @@ void main() {
         expect(homeViewModel.showFavorites, false);
       });
 
-      test('should return only favorite hikes when showFavorites is true', () async {
-        // Arrange
-        when(mockHikeRepository.getAllHikes()).thenAnswer((_) async => testHikes);
-        await homeViewModel.loadHikes();
+      test(
+        'should return only favorite hikes when showFavorites is true',
+        () async {
+          // Arrange
+          when(
+            mockHikeRepository.getAllHikes(),
+          ).thenAnswer((_) async => testHikes);
+          await homeViewModel.loadHikes();
 
-        // Act
-        homeViewModel.toggleShowFavorites();
+          // Act
+          homeViewModel.toggleShowFavorites();
 
-        // Assert
-        final favoriteHikes = homeViewModel.hikes;
-        expect(favoriteHikes.length, 1);
-        expect(favoriteHikes.first.isFavorite, true);
-        expect(favoriteHikes.first.name, 'Hike 2');
-      });
+          // Assert
+          final favoriteHikes = homeViewModel.hikes;
+          expect(favoriteHikes.length, 1);
+          expect(favoriteHikes.first.isFavorite, true);
+          expect(favoriteHikes.first.name, 'Hike 2');
+        },
+      );
 
       test('should return all hikes when showFavorites is false', () async {
         // Arrange
-        when(mockHikeRepository.getAllHikes()).thenAnswer((_) async => testHikes);
+        when(
+          mockHikeRepository.getAllHikes(),
+        ).thenAnswer((_) async => testHikes);
         await homeViewModel.loadHikes();
 
         // Act - showFavorites is false by default
-        
+
         // Assert
         expect(homeViewModel.hikes, equals(testHikes));
         expect(homeViewModel.hikes.length, 3);
@@ -185,8 +202,12 @@ void main() {
     group('Toggle Favorite Tests', () {
       test('should toggle hike favorite status', () async {
         // Arrange
-        when(mockHikeRepository.getAllHikes()).thenAnswer((_) async => testHikes);
-        when(mockHikeRepository.toggleHikeFavorite(any)).thenAnswer((_) async {});
+        when(
+          mockHikeRepository.getAllHikes(),
+        ).thenAnswer((_) async => testHikes);
+        when(
+          mockHikeRepository.toggleHikeFavorite(any),
+        ).thenAnswer((_) async {});
         await homeViewModel.loadHikes();
 
         final hikeToToggle = testHikes[0]; // Not favorite initially
@@ -200,8 +221,12 @@ void main() {
 
       test('should handle toggle favorite error gracefully', () async {
         // Arrange
-        when(mockHikeRepository.getAllHikes()).thenAnswer((_) async => testHikes);
-        when(mockHikeRepository.toggleHikeFavorite(any)).thenThrow(Exception('Database error'));
+        when(
+          mockHikeRepository.getAllHikes(),
+        ).thenAnswer((_) async => testHikes);
+        when(
+          mockHikeRepository.toggleHikeFavorite(any),
+        ).thenThrow(Exception('Database error'));
         await homeViewModel.loadHikes();
 
         final hikeToToggle = testHikes[0];
@@ -215,7 +240,9 @@ void main() {
     group('Notification Tests', () {
       test('should notify listeners during loadHikes', () async {
         // Arrange
-        when(mockHikeRepository.getAllHikes()).thenAnswer((_) async => testHikes);
+        when(
+          mockHikeRepository.getAllHikes(),
+        ).thenAnswer((_) async => testHikes);
         bool wasNotified = false;
         homeViewModel.addListener(() => wasNotified = true);
 
@@ -256,7 +283,9 @@ void main() {
         // Arrange
         final profileWithoutName = testProfile.copyWith(firstName: '');
         when(mockUserRepository.getCurrentUserId()).thenReturn('user123');
-        when(mockProfileRepository.getUserProfileById('user123')).thenAnswer((_) async => profileWithoutName);
+        when(
+          mockProfileRepository.getUserProfileById('user123'),
+        ).thenAnswer((_) async => profileWithoutName);
 
         // Act
         await homeViewModel.getUserFirstName();
@@ -272,7 +301,9 @@ void main() {
           return testHikes;
         });
         when(mockUserRepository.getCurrentUserId()).thenReturn('user123');
-        when(mockProfileRepository.getUserProfileById('user123')).thenAnswer((_) async {
+        when(mockProfileRepository.getUserProfileById('user123')).thenAnswer((
+          _,
+        ) async {
           await Future.delayed(Duration(milliseconds: 30));
           return testProfile;
         });

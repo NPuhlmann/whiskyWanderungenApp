@@ -55,124 +55,163 @@ void main() {
     });
 
     group('signUpWithEmailPassword', () {
-      test('should call authService signUpWithEmailPassword and notify listeners', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'TestPassword123!';
-        final expectedResponse = AuthResponse(user: null, session: null);
+      test(
+        'should call authService signUpWithEmailPassword and notify listeners',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'TestPassword123!';
+          final expectedResponse = AuthResponse(user: null, session: null);
 
-        when(mockAuthService.signUpWithEmailPassword(email, password, null))
-            .thenAnswer((_) async => expectedResponse);
+          when(
+            mockAuthService.signUpWithEmailPassword(email, password, null),
+          ).thenAnswer((_) async => expectedResponse);
 
-        bool listenerCalled = false;
-        userRepository.addListener(() => listenerCalled = true);
+          bool listenerCalled = false;
+          userRepository.addListener(() => listenerCalled = true);
 
-        // Act
-        final result = await userRepository.signUpWithEmailPassword(email, password);
+          // Act
+          final result = await userRepository.signUpWithEmailPassword(
+            email,
+            password,
+          );
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        verify(mockAuthService.signUpWithEmailPassword(email, password, null)).called(1);
-        expect(listenerCalled, true);
-      });
+          // Assert
+          expect(result, equals(expectedResponse));
+          verify(
+            mockAuthService.signUpWithEmailPassword(email, password, null),
+          ).called(1);
+          expect(listenerCalled, true);
+        },
+      );
 
-      test('should call authService with user data and notify listeners', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'TestPassword123!';
-        final userData = {'firstName': 'John', 'lastName': 'Doe'};
-        final expectedResponse = AuthResponse(user: null, session: null);
+      test(
+        'should call authService with user data and notify listeners',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'TestPassword123!';
+          final userData = {'firstName': 'John', 'lastName': 'Doe'};
+          final expectedResponse = AuthResponse(user: null, session: null);
 
-        when(mockAuthService.signUpWithEmailPassword(email, password, userData))
-            .thenAnswer((_) async => expectedResponse);
+          when(
+            mockAuthService.signUpWithEmailPassword(email, password, userData),
+          ).thenAnswer((_) async => expectedResponse);
 
-        bool listenerCalled = false;
-        userRepository.addListener(() => listenerCalled = true);
+          bool listenerCalled = false;
+          userRepository.addListener(() => listenerCalled = true);
 
-        // Act
-        final result = await userRepository.signUpWithEmailPassword(email, password, userData);
+          // Act
+          final result = await userRepository.signUpWithEmailPassword(
+            email,
+            password,
+            userData,
+          );
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        verify(mockAuthService.signUpWithEmailPassword(email, password, userData)).called(1);
-        expect(listenerCalled, true);
-      });
+          // Assert
+          expect(result, equals(expectedResponse));
+          verify(
+            mockAuthService.signUpWithEmailPassword(email, password, userData),
+          ).called(1);
+          expect(listenerCalled, true);
+        },
+      );
 
       test('should notify listeners even when signUp throws', () async {
         // Arrange
         const email = 'test@example.com';
         const password = 'TestPassword123!';
-        when(mockAuthService.signUpWithEmailPassword(email, password, null))
-            .thenThrow(Exception('Sign up failed'));
+        when(
+          mockAuthService.signUpWithEmailPassword(email, password, null),
+        ).thenThrow(Exception('Sign up failed'));
 
         bool listenerCalled = false;
         userRepository.addListener(() => listenerCalled = true);
 
         // Act & Assert
         expect(
-          () async => await userRepository.signUpWithEmailPassword(email, password),
+          () async =>
+              await userRepository.signUpWithEmailPassword(email, password),
           throwsA(isA<Exception>()),
         );
         expect(listenerCalled, true);
-        verify(mockAuthService.signUpWithEmailPassword(email, password, null)).called(1);
+        verify(
+          mockAuthService.signUpWithEmailPassword(email, password, null),
+        ).called(1);
       });
     });
 
     group('loginWithEmailAndPassword', () {
-      test('should call authService signInWithEmailPassword and notify listeners', () async {
-        // Arrange
-        const email = 'test@example.com';
-        const password = 'TestPassword123!';
-        final expectedResponse = AuthResponse(user: null, session: null);
+      test(
+        'should call authService signInWithEmailPassword and notify listeners',
+        () async {
+          // Arrange
+          const email = 'test@example.com';
+          const password = 'TestPassword123!';
+          final expectedResponse = AuthResponse(user: null, session: null);
 
-        when(mockAuthService.signInWithEmailPassword(email, password))
-            .thenAnswer((_) async => expectedResponse);
+          when(
+            mockAuthService.signInWithEmailPassword(email, password),
+          ).thenAnswer((_) async => expectedResponse);
 
-        bool listenerCalled = false;
-        userRepository.addListener(() => listenerCalled = true);
+          bool listenerCalled = false;
+          userRepository.addListener(() => listenerCalled = true);
 
-        // Act
-        final result = await userRepository.loginWithEmailAndPassword(email, password);
+          // Act
+          final result = await userRepository.loginWithEmailAndPassword(
+            email,
+            password,
+          );
 
-        // Assert
-        expect(result, equals(expectedResponse));
-        verify(mockAuthService.signInWithEmailPassword(email, password)).called(1);
-        expect(listenerCalled, true);
-      });
+          // Assert
+          expect(result, equals(expectedResponse));
+          verify(
+            mockAuthService.signInWithEmailPassword(email, password),
+          ).called(1);
+          expect(listenerCalled, true);
+        },
+      );
 
       test('should notify listeners even when login throws', () async {
         // Arrange
         const email = 'test@example.com';
         const password = 'TestPassword123!';
-        when(mockAuthService.signInWithEmailPassword(email, password))
-            .thenThrow(Exception('Login failed'));
+        when(
+          mockAuthService.signInWithEmailPassword(email, password),
+        ).thenThrow(Exception('Login failed'));
 
         bool listenerCalled = false;
         userRepository.addListener(() => listenerCalled = true);
 
         // Act & Assert
         expect(
-          () async => await userRepository.loginWithEmailAndPassword(email, password),
+          () async =>
+              await userRepository.loginWithEmailAndPassword(email, password),
           throwsA(isA<Exception>()),
         );
         expect(listenerCalled, true);
-        verify(mockAuthService.signInWithEmailPassword(email, password)).called(1);
+        verify(
+          mockAuthService.signInWithEmailPassword(email, password),
+        ).called(1);
       });
     });
 
     group('isUserLoggedIn', () {
-      test('should call authService isUserLoggedIn and update isLoggedIn field', () {
-        // Arrange
-        when(mockAuthService.isUserLoggedIn()).thenReturn(true);
+      test(
+        'should call authService isUserLoggedIn and update isLoggedIn field',
+        () {
+          // Arrange
+          when(mockAuthService.isUserLoggedIn()).thenReturn(true);
 
-        // Act
-        final result = userRepository.isUserLoggedIn();
+          // Act
+          final result = userRepository.isUserLoggedIn();
 
-        // Assert
-        expect(result, true);
-        expect(userRepository.isLoggedIn, true);
-        verify(mockAuthService.isUserLoggedIn()).called(1);
-      });
+          // Assert
+          expect(result, true);
+          expect(userRepository.isLoggedIn, true);
+          verify(mockAuthService.isUserLoggedIn()).called(1);
+        },
+      );
 
       test('should return false when authService returns false', () {
         // Arrange
@@ -243,40 +282,48 @@ void main() {
     });
 
     group('updateUserEmail', () {
-      test('should call authService updateUserEmail and notify listeners', () async {
-        // Arrange
-        const newEmail = 'newemail@example.com';
-        when(mockAuthService.updateUserEmail(newEmail))
-            .thenAnswer((_) async {});
+      test(
+        'should call authService updateUserEmail and notify listeners',
+        () async {
+          // Arrange
+          const newEmail = 'newemail@example.com';
+          when(
+            mockAuthService.updateUserEmail(newEmail),
+          ).thenAnswer((_) async {});
 
-        bool listenerCalled = false;
-        userRepository.addListener(() => listenerCalled = true);
+          bool listenerCalled = false;
+          userRepository.addListener(() => listenerCalled = true);
 
-        // Act
-        await userRepository.updateUserEmail(newEmail);
+          // Act
+          await userRepository.updateUserEmail(newEmail);
 
-        // Assert
-        verify(mockAuthService.updateUserEmail(newEmail)).called(1);
-        expect(listenerCalled, true);
-      });
+          // Assert
+          verify(mockAuthService.updateUserEmail(newEmail)).called(1);
+          expect(listenerCalled, true);
+        },
+      );
 
-      test('should notify listeners even when updateUserEmail throws', () async {
-        // Arrange
-        const newEmail = 'newemail@example.com';
-        when(mockAuthService.updateUserEmail(newEmail))
-            .thenThrow(Exception('Update failed'));
+      test(
+        'should notify listeners even when updateUserEmail throws',
+        () async {
+          // Arrange
+          const newEmail = 'newemail@example.com';
+          when(
+            mockAuthService.updateUserEmail(newEmail),
+          ).thenThrow(Exception('Update failed'));
 
-        bool listenerCalled = false;
-        userRepository.addListener(() => listenerCalled = true);
+          bool listenerCalled = false;
+          userRepository.addListener(() => listenerCalled = true);
 
-        // Act & Assert
-        expect(
-          () async => await userRepository.updateUserEmail(newEmail),
-          throwsA(isA<Exception>()),
-        );
-        expect(listenerCalled, true);
-        verify(mockAuthService.updateUserEmail(newEmail)).called(1);
-      });
+          // Act & Assert
+          expect(
+            () async => await userRepository.updateUserEmail(newEmail),
+            throwsA(isA<Exception>()),
+          );
+          expect(listenerCalled, true);
+          verify(mockAuthService.updateUserEmail(newEmail)).called(1);
+        },
+      );
     });
 
     group('Multiple Operations', () {
@@ -284,7 +331,9 @@ void main() {
         // Arrange
         when(mockAuthService.isUserLoggedIn()).thenReturn(true);
         when(mockAuthService.getCurrentUserId()).thenReturn('user123');
-        when(mockAuthService.getCurrentUserEmail()).thenReturn('user@example.com');
+        when(
+          mockAuthService.getCurrentUserEmail(),
+        ).thenReturn('user@example.com');
 
         // Act & Assert
         expect(userRepository.isUserLoggedIn(), true);

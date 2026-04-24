@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/admin/order_management_service.dart';
 
@@ -8,7 +7,8 @@ class OrderManagementProvider extends ChangeNotifier {
   final OrderManagementService _orderManagementService;
 
   OrderManagementProvider({OrderManagementService? orderManagementService})
-      : _orderManagementService = orderManagementService ?? OrderManagementService();
+    : _orderManagementService =
+          orderManagementService ?? OrderManagementService();
 
   // State
   List<Map<String, dynamic>> _orders = [];
@@ -265,7 +265,9 @@ class OrderManagementProvider extends ChangeNotifier {
       if (status == 'all') {
         _filteredOrders = List.from(_orders);
       } else {
-        _filteredOrders = await _orderManagementService.getOrdersByStatus(status);
+        _filteredOrders = await _orderManagementService.getOrdersByStatus(
+          status,
+        );
       }
 
       notifyListeners();
@@ -288,7 +290,9 @@ class OrderManagementProvider extends ChangeNotifier {
       if (searchTerm.isEmpty) {
         _filteredOrders = List.from(_orders);
       } else {
-        _filteredOrders = await _orderManagementService.searchOrders(searchTerm);
+        _filteredOrders = await _orderManagementService.searchOrders(
+          searchTerm,
+        );
       }
 
       notifyListeners();
@@ -300,13 +304,21 @@ class OrderManagementProvider extends ChangeNotifier {
   }
 
   /// Filtert Bestellungen nach Datumsbereich
-  Future<void> filterOrdersByDateRange(DateTime startDate, DateTime endDate) async {
+  Future<void> filterOrdersByDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     clearError();
 
     try {
-      log('Filtering orders by date range: ${startDate.toIso8601String()} to ${endDate.toIso8601String()}');
+      log(
+        'Filtering orders by date range: ${startDate.toIso8601String()} to ${endDate.toIso8601String()}',
+      );
 
-      _filteredOrders = await _orderManagementService.getOrdersByDateRange(startDate, endDate);
+      _filteredOrders = await _orderManagementService.getOrdersByDateRange(
+        startDate,
+        endDate,
+      );
       notifyListeners();
 
       log('Date filter returned ${_filteredOrders.length} orders');
@@ -360,7 +372,9 @@ class OrderManagementProvider extends ChangeNotifier {
 
     try {
       log('Loading recent orders (limit: $limit)...');
-      _recentOrders = await _orderManagementService.getRecentOrders(limit: limit);
+      _recentOrders = await _orderManagementService.getRecentOrders(
+        limit: limit,
+      );
       notifyListeners();
       log('Loaded ${_recentOrders.length} recent orders');
     } catch (e) {
@@ -372,7 +386,10 @@ class OrderManagementProvider extends ChangeNotifier {
   // Sorting
 
   /// Sortiert Bestellungen nach verschiedenen Kriterien
-  List<Map<String, dynamic>> sortOrders(String sortBy, {bool ascending = true}) {
+  List<Map<String, dynamic>> sortOrders(
+    String sortBy, {
+    bool ascending = true,
+  }) {
     final sortedOrders = List<Map<String, dynamic>>.from(_orders);
 
     sortedOrders.sort((a, b) {
@@ -426,14 +443,24 @@ class OrderManagementProvider extends ChangeNotifier {
     }
 
     final totalOrders = _orders.length;
-    final totalRevenue = _orders.fold<double>(0.0, (sum, order) =>
-        sum + (order['total_amount'] as num? ?? 0.0).toDouble());
+    final totalRevenue = _orders.fold<double>(
+      0.0,
+      (sum, order) => sum + (order['total_amount'] as num? ?? 0.0).toDouble(),
+    );
     final averageOrderValue = totalRevenue / totalOrders;
 
-    final pendingOrders = _orders.where((order) =>
-        _orderManagementService.isPendingStatus(order['status'] ?? '')).length;
-    final completedOrders = _orders.where((order) =>
-        _orderManagementService.isCompletedStatus(order['status'] ?? '')).length;
+    final pendingOrders = _orders
+        .where(
+          (order) =>
+              _orderManagementService.isPendingStatus(order['status'] ?? ''),
+        )
+        .length;
+    final completedOrders = _orders
+        .where(
+          (order) =>
+              _orderManagementService.isCompletedStatus(order['status'] ?? ''),
+        )
+        .length;
 
     return {
       'totalOrders': totalOrders,
@@ -520,7 +547,9 @@ class OrderManagementProvider extends ChangeNotifier {
     final validStatuses = getValidOrderStatuses();
 
     for (final status in validStatuses) {
-      counts[status] = _orders.where((order) => order['status'] == status).length;
+      counts[status] = _orders
+          .where((order) => order['status'] == status)
+          .length;
     }
 
     return counts;

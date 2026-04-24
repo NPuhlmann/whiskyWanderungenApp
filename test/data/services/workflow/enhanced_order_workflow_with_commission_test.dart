@@ -19,7 +19,6 @@ import 'enhanced_order_workflow_with_commission_test.mocks.dart';
   SupabaseNotificationService,
   OrderTrackingService,
 ])
-
 void main() {
   group('EnhancedOrderWorkflowWithCommission', () {
     late EnhancedOrderWorkflowWithCommission workflow;
@@ -33,42 +32,48 @@ void main() {
       mockBackendApi = MockBackendApiService();
       mockNotificationService = MockSupabaseNotificationService();
       mockTrackingService = MockOrderTrackingService();
-      
+
       workflow = EnhancedOrderWorkflowWithCommission(
         backendApi: mockBackendApi,
         notificationService: mockNotificationService,
         trackingService: mockTrackingService,
         commissionService: mockCommissionService,
       );
-      
+
       // Set up default mock responses for tracking service
-      when(mockTrackingService.markDelivered(
-        orderId: anyNamed('orderId'),
-        deliveryTime: anyNamed('deliveryTime'),
-        deliveryLocation: anyNamed('deliveryLocation'),
-        recipientName: anyNamed('recipientName'),
-        deliveryProofUrl: anyNamed('deliveryProofUrl'),
-        deliveryNotes: anyNamed('deliveryNotes'),
-      )).thenAnswer((_) async => _createTestOrder(
-        id: 1,
-        orderNumber: 'ORD-001',
-        hikeId: 100,
-        totalAmount: 150.0,
-        status: EnhancedOrderStatus.delivered,
-      ));
-      
+      when(
+        mockTrackingService.markDelivered(
+          orderId: anyNamed('orderId'),
+          deliveryTime: anyNamed('deliveryTime'),
+          deliveryLocation: anyNamed('deliveryLocation'),
+          recipientName: anyNamed('recipientName'),
+          deliveryProofUrl: anyNamed('deliveryProofUrl'),
+          deliveryNotes: anyNamed('deliveryNotes'),
+        ),
+      ).thenAnswer(
+        (_) async => _createTestOrder(
+          id: 1,
+          orderNumber: 'ORD-001',
+          hikeId: 100,
+          totalAmount: 150.0,
+          status: EnhancedOrderStatus.delivered,
+        ),
+      );
+
       // Set up generic mock for updateEnhancedOrderStatus with metadata
-      when(mockBackendApi.updateEnhancedOrderStatus(
-        orderId: anyNamed('orderId'),
-        newStatus: anyNamed('newStatus'),
-        reason: anyNamed('reason'),
-        notes: anyNamed('notes'),
-        trackingNumber: anyNamed('trackingNumber'),
-        trackingUrl: anyNamed('trackingUrl'),
-        shippingCarrier: anyNamed('shippingCarrier'),
-        estimatedDelivery: anyNamed('estimatedDelivery'),
-        metadata: anyNamed('metadata'),
-      )).thenAnswer((invocation) async {
+      when(
+        mockBackendApi.updateEnhancedOrderStatus(
+          orderId: anyNamed('orderId'),
+          newStatus: anyNamed('newStatus'),
+          reason: anyNamed('reason'),
+          notes: anyNamed('notes'),
+          trackingNumber: anyNamed('trackingNumber'),
+          trackingUrl: anyNamed('trackingUrl'),
+          shippingCarrier: anyNamed('shippingCarrier'),
+          estimatedDelivery: anyNamed('estimatedDelivery'),
+          metadata: anyNamed('metadata'),
+        ),
+      ).thenAnswer((invocation) async {
         final orderId = invocation.namedArguments[#orderId] as int;
         final newStatus = invocation.namedArguments[#newStatus] as String;
         // Use different amounts for different order IDs to support different test scenarios
@@ -78,7 +83,9 @@ void main() {
           orderNumber: 'ORD-001',
           hikeId: 100,
           totalAmount: totalAmount,
-          status: EnhancedOrderStatus.values.firstWhere((s) => s.name == newStatus),
+          status: EnhancedOrderStatus.values.firstWhere(
+            (s) => s.name == newStatus,
+          ),
           companyId: 'test-company', // Always use test-company
         );
       });
@@ -101,38 +108,46 @@ void main() {
         );
 
         // Mock existing order lookup
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockBackendApi.getEnhancedOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
         // Mock successful status update
-        when(mockBackendApi.updateEnhancedOrderStatus(
-          orderId: 1,
-          newStatus: 'delivered',
-          reason: null,
-          notes: null,
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApi.updateEnhancedOrderStatus(
+            orderId: 1,
+            newStatus: 'delivered',
+            reason: null,
+            notes: null,
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         // Mock no existing commissions
-        when(mockCommissionService.getCommissionsForCompany('test-company'))
-            .thenAnswer((_) async => <Commission>[]);
+        when(
+          mockCommissionService.getCommissionsForCompany('test-company'),
+        ).thenAnswer((_) async => <Commission>[]);
 
         // Mock successful commission creation
-        when(mockCommissionService.createCommissionForOrder(
-          hikeId: 100,
-          companyId: 'test-company',
-          orderId: 'ORD-001',
-          baseAmount: 150.0,
-          commissionRate: 0.15,
-          notes: anyNamed('notes'),
-        )).thenAnswer((_) async => TestHelpers.createTestCommission(
-          id: 1,
-          hikeId: 100,
-          companyId: 'test-company',
-          orderId: 'ORD-001',
-          baseAmount: 150.0,
-          commissionRate: 0.15,
-          commissionAmount: 22.5,
-        ));
+        when(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: 100,
+            companyId: 'test-company',
+            orderId: 'ORD-001',
+            baseAmount: 150.0,
+            commissionRate: 0.15,
+            notes: anyNamed('notes'),
+          ),
+        ).thenAnswer(
+          (_) async => TestHelpers.createTestCommission(
+            id: 1,
+            hikeId: 100,
+            companyId: 'test-company',
+            orderId: 'ORD-001',
+            baseAmount: 150.0,
+            commissionRate: 0.15,
+            commissionAmount: 22.5,
+          ),
+        );
 
         // Act
         final result = await workflow.transitionOrderStatus(
@@ -142,15 +157,17 @@ void main() {
 
         // Assert
         expect(result.status, equals(EnhancedOrderStatus.delivered));
-        
-        verify(mockCommissionService.createCommissionForOrder(
-          hikeId: 100,
-          companyId: 'test-company',
-          orderId: 'ORD-001',
-          baseAmount: 150.0,
-          commissionRate: 0.15,
-          notes: argThat(contains('Automatisch erstellt'), named: 'notes'),
-        )).called(1);
+
+        verify(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: 100,
+            companyId: 'test-company',
+            orderId: 'ORD-001',
+            baseAmount: 150.0,
+            commissionRate: 0.15,
+            notes: argThat(contains('Automatisch erstellt'), named: 'notes'),
+          ),
+        ).called(1);
       });
 
       test('should not create commission if one already exists', () async {
@@ -172,19 +189,23 @@ void main() {
           orderId: 'ORD-001',
         );
 
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockBackendApi.getEnhancedOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
-        when(mockBackendApi.updateEnhancedOrderStatus(
-          orderId: 1,
-          newStatus: 'delivered',
-          reason: null,
-          notes: null,
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApi.updateEnhancedOrderStatus(
+            orderId: 1,
+            newStatus: 'delivered',
+            reason: null,
+            notes: null,
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         // Mock existing commission
-        when(mockCommissionService.getCommissionsForCompany('test-company'))
-            .thenAnswer((_) async => [existingCommission]);
+        when(
+          mockCommissionService.getCommissionsForCompany('test-company'),
+        ).thenAnswer((_) async => [existingCommission]);
 
         // Act
         final result = await workflow.transitionOrderStatus(
@@ -194,16 +215,18 @@ void main() {
 
         // Assert
         expect(result.status, equals(EnhancedOrderStatus.delivered));
-        
+
         // Verify commission creation was NOT called
-        verifyNever(mockCommissionService.createCommissionForOrder(
-          hikeId: anyNamed('hikeId'),
-          companyId: anyNamed('companyId'),
-          orderId: anyNamed('orderId'),
-          baseAmount: anyNamed('baseAmount'),
-          commissionRate: anyNamed('commissionRate'),
-          notes: anyNamed('notes'),
-        ));
+        verifyNever(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: anyNamed('hikeId'),
+            companyId: anyNamed('companyId'),
+            orderId: anyNamed('orderId'),
+            baseAmount: anyNamed('baseAmount'),
+            commissionRate: anyNamed('commissionRate'),
+            notes: anyNamed('notes'),
+          ),
+        );
       });
 
       test('should not create commission for non-delivered status', () async {
@@ -220,24 +243,29 @@ void main() {
           status: EnhancedOrderStatus.shipped,
         );
 
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockBackendApi.getEnhancedOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
-        when(mockBackendApi.updateEnhancedOrderStatus(
-          orderId: 1,
-          newStatus: 'shipped',
-          reason: null,
-          notes: null,
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApi.updateEnhancedOrderStatus(
+            orderId: 1,
+            newStatus: 'shipped',
+            reason: null,
+            notes: null,
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         // Mock the tracking service call
-        when(mockTrackingService.assignTrackingNumber(
-          orderId: anyNamed('orderId'),
-          trackingNumber: anyNamed('trackingNumber'),
-          shippingCarrier: anyNamed('shippingCarrier'),
-          shippingService: anyNamed('shippingService'),
-          estimatedDelivery: anyNamed('estimatedDelivery'),
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockTrackingService.assignTrackingNumber(
+            orderId: anyNamed('orderId'),
+            trackingNumber: anyNamed('trackingNumber'),
+            shippingCarrier: anyNamed('shippingCarrier'),
+            shippingService: anyNamed('shippingService'),
+            estimatedDelivery: anyNamed('estimatedDelivery'),
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         // Act
         final result = await workflow.transitionOrderStatus(
@@ -251,16 +279,18 @@ void main() {
 
         // Assert
         expect(result.status, equals(EnhancedOrderStatus.shipped));
-        
+
         // Verify commission creation was NOT called
-        verifyNever(mockCommissionService.createCommissionForOrder(
-          hikeId: anyNamed('hikeId'),
-          companyId: anyNamed('companyId'),
-          orderId: anyNamed('orderId'),
-          baseAmount: anyNamed('baseAmount'),
-          commissionRate: anyNamed('commissionRate'),
-          notes: anyNamed('notes'),
-        ));
+        verifyNever(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: anyNamed('hikeId'),
+            companyId: anyNamed('companyId'),
+            orderId: anyNamed('orderId'),
+            baseAmount: anyNamed('baseAmount'),
+            commissionRate: anyNamed('commissionRate'),
+            notes: anyNamed('notes'),
+          ),
+        );
       });
 
       test('should handle commission creation errors gracefully', () async {
@@ -278,28 +308,34 @@ void main() {
           status: EnhancedOrderStatus.delivered,
         );
 
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockBackendApi.getEnhancedOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
-        when(mockBackendApi.updateEnhancedOrderStatus(
-          orderId: 1,
-          newStatus: 'delivered',
-          reason: null,
-          notes: null,
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApi.updateEnhancedOrderStatus(
+            orderId: 1,
+            newStatus: 'delivered',
+            reason: null,
+            notes: null,
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
-        when(mockCommissionService.getCommissionsForCompany('test-company'))
-            .thenAnswer((_) async => <Commission>[]);
+        when(
+          mockCommissionService.getCommissionsForCompany('test-company'),
+        ).thenAnswer((_) async => <Commission>[]);
 
         // Mock commission creation error
-        when(mockCommissionService.createCommissionForOrder(
-          hikeId: anyNamed('hikeId'),
-          companyId: anyNamed('companyId'),
-          orderId: anyNamed('orderId'),
-          baseAmount: anyNamed('baseAmount'),
-          commissionRate: anyNamed('commissionRate'),
-          notes: anyNamed('notes'),
-        )).thenThrow(Exception('Commission creation failed'));
+        when(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: anyNamed('hikeId'),
+            companyId: anyNamed('companyId'),
+            orderId: anyNamed('orderId'),
+            baseAmount: anyNamed('baseAmount'),
+            commissionRate: anyNamed('commissionRate'),
+            notes: anyNamed('notes'),
+          ),
+        ).thenThrow(Exception('Commission creation failed'));
 
         // Act & Assert - should not throw, order status should still be updated
         final result = await workflow.transitionOrderStatus(
@@ -327,27 +363,33 @@ void main() {
           status: EnhancedOrderStatus.delivered,
         );
 
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockBackendApi.getEnhancedOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
-        when(mockBackendApi.updateEnhancedOrderStatus(
-          orderId: 1,
-          newStatus: 'delivered',
-          reason: null,
-          notes: null,
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApi.updateEnhancedOrderStatus(
+            orderId: 1,
+            newStatus: 'delivered',
+            reason: null,
+            notes: null,
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
-        when(mockCommissionService.getCommissionsForCompany('test-company'))
-            .thenAnswer((_) async => <Commission>[]);
+        when(
+          mockCommissionService.getCommissionsForCompany('test-company'),
+        ).thenAnswer((_) async => <Commission>[]);
 
-        when(mockCommissionService.createCommissionForOrder(
-          hikeId: anyNamed('hikeId'),
-          companyId: anyNamed('companyId'),
-          orderId: anyNamed('orderId'),
-          baseAmount: anyNamed('baseAmount'),
-          commissionRate: anyNamed('commissionRate'),
-          notes: anyNamed('notes'),
-        )).thenAnswer((_) async => TestHelpers.createTestCommission());
+        when(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: anyNamed('hikeId'),
+            companyId: anyNamed('companyId'),
+            orderId: anyNamed('orderId'),
+            baseAmount: anyNamed('baseAmount'),
+            commissionRate: anyNamed('commissionRate'),
+            notes: anyNamed('notes'),
+          ),
+        ).thenAnswer((_) async => TestHelpers.createTestCommission());
 
         // Act
         await workflow.transitionOrderStatus(
@@ -356,22 +398,25 @@ void main() {
         );
 
         // Assert
-        verify(mockCommissionService.createCommissionForOrder(
-          hikeId: 100,
-          companyId: 'test-company',
-          orderId: 'ORD-001',
-          baseAmount: 150.0, // Updated to match actual call from mock
-          commissionRate: 0.15, // 15% default rate
-          notes: anyNamed('notes'),
-        )).called(1);
+        verify(
+          mockCommissionService.createCommissionForOrder(
+            hikeId: 100,
+            companyId: 'test-company',
+            orderId: 'ORD-001',
+            baseAmount: 150.0, // Updated to match actual call from mock
+            commissionRate: 0.15, // 15% default rate
+            notes: anyNamed('notes'),
+          ),
+        ).called(1);
       });
     });
 
     group('Error Handling', () {
       test('should handle backend API errors during order lookup', () async {
         // Arrange
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenThrow(Exception('Database error'));
+        when(
+          mockBackendApi.getEnhancedOrderById(1),
+        ).thenThrow(Exception('Database error'));
 
         // Act & Assert
         expect(
@@ -383,43 +428,50 @@ void main() {
         );
       });
 
-      test('should handle commission service errors during commission lookup', () async {
-        // Arrange
-        final testOrder = _createTestOrder(
-          id: 1,
-          orderNumber: 'ORD-001',
-          hikeId: 100,
-          totalAmount: 150.0,
-          status: EnhancedOrderStatus.shipped,
-          companyId: 'test-company',
-        );
+      test(
+        'should handle commission service errors during commission lookup',
+        () async {
+          // Arrange
+          final testOrder = _createTestOrder(
+            id: 1,
+            orderNumber: 'ORD-001',
+            hikeId: 100,
+            totalAmount: 150.0,
+            status: EnhancedOrderStatus.shipped,
+            companyId: 'test-company',
+          );
 
-        final updatedOrder = testOrder.copyWith(
-          status: EnhancedOrderStatus.delivered,
-        );
+          final updatedOrder = testOrder.copyWith(
+            status: EnhancedOrderStatus.delivered,
+          );
 
-        when(mockBackendApi.getEnhancedOrderById(1))
-            .thenAnswer((_) async => testOrder);
+          when(
+            mockBackendApi.getEnhancedOrderById(1),
+          ).thenAnswer((_) async => testOrder);
 
-        when(mockBackendApi.updateEnhancedOrderStatus(
-          orderId: 1,
-          newStatus: 'delivered',
-          reason: null,
-          notes: null,
-        )).thenAnswer((_) async => updatedOrder);
+          when(
+            mockBackendApi.updateEnhancedOrderStatus(
+              orderId: 1,
+              newStatus: 'delivered',
+              reason: null,
+              notes: null,
+            ),
+          ).thenAnswer((_) async => updatedOrder);
 
-        // Mock commission lookup error
-        when(mockCommissionService.getCommissionsForCompany('test-company'))
-            .thenThrow(Exception('Commission lookup failed'));
+          // Mock commission lookup error
+          when(
+            mockCommissionService.getCommissionsForCompany('test-company'),
+          ).thenThrow(Exception('Commission lookup failed'));
 
-        // Act & Assert - should not throw, commission creation error should be handled gracefully
-        final result = await workflow.transitionOrderStatus(
-          orderId: 1,
-          toStatus: EnhancedOrderStatus.delivered,
-        );
+          // Act & Assert - should not throw, commission creation error should be handled gracefully
+          final result = await workflow.transitionOrderStatus(
+            orderId: 1,
+            toStatus: EnhancedOrderStatus.delivered,
+          );
 
-        expect(result.status, equals(EnhancedOrderStatus.delivered));
-      });
+          expect(result.status, equals(EnhancedOrderStatus.delivered));
+        },
+      );
     });
   });
 }

@@ -1153,6 +1153,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'years'**
   String get years;
+
+  /// No description provided for @price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get price;
+
+  /// No description provided for @mainRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Region'**
+  String get mainRegion;
+
+  /// No description provided for @totalVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Volume'**
+  String get totalVolume;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get createdAt;
+
+  /// No description provided for @lastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Updated'**
+  String get lastUpdated;
+
+  /// No description provided for @whiskySamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Whisky Samples'**
+  String get whiskySamples;
+
+  /// No description provided for @noSamplesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No samples yet'**
+  String get noSamplesYet;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @averageAbv.
+  ///
+  /// In en, this message translates to:
+  /// **'Average ABV'**
+  String get averageAbv;
 }
 
 class _AppLocalizationsDelegate

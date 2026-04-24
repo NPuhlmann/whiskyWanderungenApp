@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/enhanced_order.dart' as enhanced;
 import '../../../domain/models/basic_order.dart' as basic;
-import '../../../domain/models/delivery_address.dart';
 import 'order_tracking_view_model.dart';
 import 'widgets/order_status_timeline.dart';
 import 'widgets/shipping_info_card.dart';
@@ -17,7 +16,8 @@ class OrderTrackingPage extends StatelessWidget {
   const OrderTrackingPage({
     super.key,
     required this.orderId,
-    this.useEnhancedOrder = true, // Default to enhanced order for better features
+    this.useEnhancedOrder =
+        true, // Default to enhanced order for better features
   });
 
   @override
@@ -36,9 +36,7 @@ class OrderTrackingPage extends StatelessWidget {
         body: Consumer<OrderTrackingViewModel>(
           builder: (context, viewModel, child) {
             if (viewModel.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (viewModel.error != null) {
@@ -115,11 +113,9 @@ class OrderTrackingPage extends StatelessWidget {
       return _buildEnhancedOrderContent(context, viewModel.enhancedOrder!);
     } else if (viewModel.order != null) {
       return _buildBasicOrderContent(context, viewModel.order!);
-          } else {
-        return Center(
-          child: Text(AppLocalizations.of(context)!.unexpectedState),
-        );
-      }
+    } else {
+      return Center(child: Text(AppLocalizations.of(context)!.unexpectedState));
+    }
   }
 
   Widget _buildEnhancedOrderContent(
@@ -168,10 +164,7 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicOrderContent(
-    BuildContext context,
-    basic.BasicOrder order,
-  ) {
+  Widget _buildBasicOrderContent(BuildContext context, basic.BasicOrder order) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -199,7 +192,10 @@ class OrderTrackingPage extends StatelessWidget {
 
           // Tracking Information (if available)
           if (order.trackingNumber?.isNotEmpty == true &&
-              [basic.OrderStatus.shipped, basic.OrderStatus.delivered].contains(order.status)) ...[
+              [
+                basic.OrderStatus.shipped,
+                basic.OrderStatus.delivered,
+              ].contains(order.status)) ...[
             TrackingInfoCard.basic(order: order),
             const SizedBox(height: 24),
           ],
@@ -236,15 +232,15 @@ class OrderTrackingPage extends StatelessWidget {
                     children: [
                       Text(
                         order.formattedOrderNumber,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         order.statusDisplayText,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: _getStatusColor(context, order.status),
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: _getStatusColor(context, order.status),
+                            ),
                       ),
                     ],
                   ),
@@ -297,15 +293,18 @@ class OrderTrackingPage extends StatelessWidget {
                     children: [
                       Text(
                         order.formattedOrderNumber,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         _getBasicStatusText(order.status),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: _getBasicStatusColor(context, order.status),
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: _getBasicStatusColor(
+                                context,
+                                order.status,
+                              ),
+                            ),
                       ),
                     ],
                   ),
@@ -337,7 +336,10 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryInfoCard(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildDeliveryInfoCard(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     if (order.deliveryAddress == null) return const SizedBox.shrink();
 
     return Card(
@@ -370,7 +372,10 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicDeliveryInfoCard(BuildContext context, basic.BasicOrder order) {
+  Widget _buildBasicDeliveryInfoCard(
+    BuildContext context,
+    basic.BasicOrder order,
+  ) {
     if (order.deliveryAddress == null) return const SizedBox.shrink();
 
     return Card(
@@ -403,7 +408,10 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderDetailsCard(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildOrderDetailsCard(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -424,11 +432,7 @@ class OrderTrackingPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            _buildInfoRow(
-              context,
-              'Versandart',
-              order.deliveryTypeDisplayText,
-            ),
+            _buildInfoRow(context, 'Versandart', order.deliveryTypeDisplayText),
             const SizedBox(height: 8),
             _buildInfoRow(
               context,
@@ -457,7 +461,10 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicOrderDetailsCard(BuildContext context, basic.BasicOrder order) {
+  Widget _buildBasicOrderDetailsCard(
+    BuildContext context,
+    basic.BasicOrder order,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -499,7 +506,10 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, enhanced.EnhancedOrder order) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    enhanced.EnhancedOrder order,
+  ) {
     return Row(
       children: [
         if (order.canBeCancelled) ...[
@@ -525,7 +535,10 @@ class OrderTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicActionButtons(BuildContext context, basic.BasicOrder order) {
+  Widget _buildBasicActionButtons(
+    BuildContext context,
+    basic.BasicOrder order,
+  ) {
     return Row(
       children: [
         if (order.canBeCancelled) ...[
@@ -568,16 +581,19 @@ class OrderTrackingPage extends StatelessWidget {
           flex: 3,
           child: Text(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
         ),
       ],
     );
   }
 
-  Color _getStatusColor(BuildContext context, enhanced.EnhancedOrderStatus status) {
+  Color _getStatusColor(
+    BuildContext context,
+    enhanced.EnhancedOrderStatus status,
+  ) {
     switch (status) {
       case enhanced.EnhancedOrderStatus.pending:
       case enhanced.EnhancedOrderStatus.paymentPending:
@@ -643,64 +659,23 @@ class OrderTrackingPage extends StatelessWidget {
     final houseNumber = address['house_number'] ?? '';
     final postalCode = address['postal_code'] ?? '';
     final city = address['city'] ?? '';
-    
-    return '$street $houseNumber\n$postalCode $city';
-  }
 
-  String _formatEnhancedAddress(DeliveryAddress address) {
-    final parts = <String>[];
-    
-    // Add full name
-    parts.add(address.fullName);
-    
-    // Add company if business address
-    if (address.company?.isNotEmpty == true) {
-      parts.add(address.company!);
-    }
-    
-    // Add address lines
-    parts.add(address.addressLine1);
-    if (address.addressLine2?.isNotEmpty == true) {
-      parts.add(address.addressLine2!);
-    }
-    
-    // Add city and postal code
-    parts.add('${address.postalCode} ${address.city}');
-    
-    // Add state if available
-    if (address.state?.isNotEmpty == true) {
-      parts.add(address.state!);
-    }
-    
-    // Add country
-    parts.add(address.countryName);
-    
-    // Add phone if available
-    if (address.phone?.isNotEmpty == true) {
-      parts.add('Tel: ${address.phone}');
-    }
-    
-    // Add delivery instructions if available
-    if (address.deliveryInstructions?.isNotEmpty == true) {
-      parts.add('Hinweise: ${address.deliveryInstructions}');
-    }
-    
-    return parts.join('\n');
+    return '$street $houseNumber\n$postalCode $city';
   }
 
   String _formatEnhancedAddressFromMap(Map<String, dynamic> addressMap) {
     final parts = <String>[];
-    
+
     // Add full name
     if (addressMap['fullName'] != null) {
       parts.add(addressMap['fullName']);
     }
-    
+
     // Add company if business address
     if (addressMap['company']?.isNotEmpty == true) {
       parts.add(addressMap['company']);
     }
-    
+
     // Add address lines
     if (addressMap['addressLine1'] != null) {
       parts.add(addressMap['addressLine1']);
@@ -708,7 +683,7 @@ class OrderTrackingPage extends StatelessWidget {
     if (addressMap['addressLine2']?.isNotEmpty == true) {
       parts.add(addressMap['addressLine2']);
     }
-    
+
     // Add city, state, postal code
     final cityStateZip = <String>[];
     if (addressMap['city'] != null) {
@@ -723,22 +698,22 @@ class OrderTrackingPage extends StatelessWidget {
     if (cityStateZip.isNotEmpty) {
       parts.add(cityStateZip.join(', '));
     }
-    
+
     // Add country
     if (addressMap['country'] != null) {
       parts.add(addressMap['country']);
     }
-    
+
     // Add phone if available
     if (addressMap['phone']?.isNotEmpty == true) {
       parts.add('Tel: ${addressMap['phone']}');
     }
-    
+
     // Add delivery instructions if available
     if (addressMap['deliveryInstructions']?.isNotEmpty == true) {
       parts.add('Hinweise: ${addressMap['deliveryInstructions']}');
     }
-    
+
     return parts.join('\n');
   }
 
@@ -747,7 +722,9 @@ class OrderTrackingPage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Bestellung stornieren'),
-        content: const Text('Möchtest du diese Bestellung wirklich stornieren?'),
+        content: const Text(
+          'Möchtest du diese Bestellung wirklich stornieren?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -770,48 +747,48 @@ class OrderTrackingPage extends StatelessWidget {
   }
 
   void _cancelOrder(BuildContext context, dynamic order) async {
-    final viewModel = Provider.of<OrderTrackingViewModel>(context, listen: false);
-    
+    final viewModel = Provider.of<OrderTrackingViewModel>(
+      context,
+      listen: false,
+    );
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
+
     try {
       // Show loading state
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
-      
+
       // Attempt to cancel the order
       await viewModel.cancelOrder();
-      
+
       // Close loading dialog
-      Navigator.of(context).pop();
-      
+      navigator.pop();
+
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: const Text('Bestellung wurde erfolgreich storniert'),
           backgroundColor: Colors.green,
-          action: SnackBarAction(
-            label: 'OK',
-            onPressed: () {},
-          ),
+          action: SnackBarAction(label: 'OK', onPressed: () {}),
         ),
       );
-      
+
       // Refresh order data
       viewModel.retry();
-      
     } catch (e) {
       // Close loading dialog if open
-      Navigator.of(context).pop();
-      
+      navigator.pop();
+
       // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('Fehler beim Stornieren: ${e.toString()}'),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: errorColor,
           action: SnackBarAction(
             label: 'Erneut versuchen',
             onPressed: () => _cancelOrder(context, order),
@@ -887,7 +864,7 @@ class OrderTrackingPage extends StatelessWidget {
         duration: const Duration(seconds: 2),
       ),
     );
-    
+
     // Here you would implement email launching:
     // await launch('mailto:support@whisky-hikes.de?subject=Bestellungsanfrage');
   }
@@ -900,7 +877,7 @@ class OrderTrackingPage extends StatelessWidget {
         duration: const Duration(seconds: 2),
       ),
     );
-    
+
     // Here you would implement phone calling:
     // await launch('tel:+491234567890');
   }
@@ -913,7 +890,7 @@ class OrderTrackingPage extends StatelessWidget {
         duration: const Duration(seconds: 2),
       ),
     );
-    
+
     // Here you would implement live chat integration:
     // Navigator.push(context, MaterialPageRoute(builder: (_) => LiveChatPage()));
   }

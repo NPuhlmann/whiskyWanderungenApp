@@ -38,16 +38,14 @@ class SyncStatusIndicator extends StatelessWidget {
       stream: DataSyncService.instance.syncStatusStream,
       builder: (context, snapshot) {
         final syncStatus = snapshot.data ?? SyncStatus.idle;
-        
+
         return Column(
           children: [
-            if (syncStatus == SyncStatus.syncing)
-              _buildSyncProgressBar(),
-            
+            if (syncStatus == SyncStatus.syncing) _buildSyncProgressBar(),
+
             Expanded(child: child),
-            
-            if (showSyncButton)
-              _buildSyncButton(context, syncStatus),
+
+            if (showSyncButton) _buildSyncButton(context, syncStatus),
           ],
         );
       },
@@ -71,9 +69,11 @@ class SyncStatusIndicator extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton.icon(
-            onPressed: syncStatus.isActive ? null : () async {
-              await DataSyncService.instance.syncNow();
-            },
+            onPressed: syncStatus.isActive
+                ? null
+                : () async {
+                    await DataSyncService.instance.syncNow();
+                  },
             icon: syncStatus.isActive
                 ? const SizedBox(
                     width: 16,
@@ -81,7 +81,9 @@ class SyncStatusIndicator extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.sync),
-            label: Text(syncStatus.isActive ? 'Synchronisiert...' : 'Synchronisieren'),
+            label: Text(
+              syncStatus.isActive ? 'Synchronisiert...' : 'Synchronisieren',
+            ),
           ),
         ],
       ),
@@ -118,11 +120,11 @@ class ItemSyncStatusIndicator extends StatelessWidget {
       stream: DataSyncService.instance.syncStatusStream,
       builder: (context, snapshot) {
         final syncStatus = snapshot.data ?? SyncStatus.idle;
-        
+
         return Stack(
           children: [
             child,
-            
+
             // Sync-Indikator falls Item synchronisiert wird
             if (syncStatus == SyncStatus.syncing)
               Positioned(
@@ -153,7 +155,11 @@ class ItemSyncStatusIndicator extends StatelessWidget {
 
 /// Toast-Nachricht für Sync-Status-Updates
 class SyncStatusToast {
-  static void _show(BuildContext context, String message, Color backgroundColor) {
+  static void _show(
+    BuildContext context,
+    String message,
+    Color backgroundColor,
+  ) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -193,10 +199,9 @@ class SyncStatusToast {
 
 /// Mixin für einfache Sync-Status-Integration in Widgets
 mixin SyncStatusMixin<T extends StatefulWidget> on State<T> {
-  
   void _handleSyncStatusChanged(SyncStatus status) {
     if (!mounted) return;
-    
+
     switch (status) {
       case SyncStatus.success:
         SyncStatusToast.showSuccess(context);
@@ -215,7 +220,7 @@ mixin SyncStatusMixin<T extends StatefulWidget> on State<T> {
         // Nichts tun
         break;
     }
-    
+
     // Optional: Callback für abgeleitete Klassen
     onSyncStatusChanged(status);
   }
@@ -258,11 +263,7 @@ class OfflineAvailableBadge extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.offline_bolt,
-              size: 14,
-              color: Colors.green.shade700,
-            ),
+            Icon(Icons.offline_bolt, size: 14, color: Colors.green.shade700),
             const SizedBox(width: 4),
             Text(
               'Offline verfügbar',
@@ -293,7 +294,7 @@ class SyncStatsWidget extends StatelessWidget {
         }
 
         final stats = snapshot.data ?? {};
-        
+
         return Card(
           margin: const EdgeInsets.all(16),
           child: Padding(
@@ -306,33 +307,33 @@ class SyncStatsWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                
+
                 _buildStatRow(
                   'Letzte Synchronisation',
                   stats['lastSyncTime']?.toString() ?? 'Nie',
                   Icons.sync,
                 ),
-                
+
                 _buildStatRow(
                   'Ausstehende Elemente',
                   stats['queueSize']?.toString() ?? '0',
                   Icons.queue,
                 ),
-                
+
                 _buildStatRow(
                   'Status',
                   stats['isActive'] == true ? 'Aktiv' : 'Bereit',
                   stats['isActive'] == true ? Icons.sync : Icons.check_circle,
                 ),
-                
+
                 _buildStatRow(
                   'Netzwerk',
                   stats['isOnline'] == true ? 'Online' : 'Offline',
                   stats['isOnline'] == true ? Icons.wifi : Icons.wifi_off,
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 Row(
                   children: [
                     Expanded(
@@ -382,10 +383,7 @@ class SyncStatsWidget extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

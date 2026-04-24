@@ -45,10 +45,13 @@ void main() {
     });
 
     group('Order History to Order Tracking Flow', () {
-      testWidgets('should display order history and navigate to tracking', (tester) async {
+      testWidgets('should display order history and navigate to tracking', (
+        tester,
+      ) async {
         // Arrange
-        when(mockBackendApiService.fetchUserOrders(any))
-            .thenAnswer((_) async => orderList);
+        when(
+          mockBackendApiService.fetchUserOrders(any),
+        ).thenAnswer((_) async => orderList);
 
         // Build the app with providers
         await tester.pumpWidget(
@@ -84,8 +87,9 @@ void main() {
 
       testWidgets('should handle empty order history', (tester) async {
         // Arrange
-        when(mockBackendApiService.fetchUserOrders(any))
-            .thenAnswer((_) async => []);
+        when(
+          mockBackendApiService.fetchUserOrders(any),
+        ).thenAnswer((_) async => []);
 
         // Build the app
         await tester.pumpWidget(
@@ -104,14 +108,18 @@ void main() {
 
         // Assert
         expect(find.text('Keine Bestellungen gefunden'), findsOneWidget);
-        expect(find.text('Ihre Bestellungen werden hier angezeigt'), findsOneWidget);
+        expect(
+          find.text('Ihre Bestellungen werden hier angezeigt'),
+          findsOneWidget,
+        );
         expect(find.byIcon(Icons.shopping_bag_outlined), findsOneWidget);
       });
 
       testWidgets('should handle order history loading error', (tester) async {
         // Arrange
-        when(mockBackendApiService.fetchUserOrders(any))
-            .thenThrow(Exception('Network error'));
+        when(
+          mockBackendApiService.fetchUserOrders(any),
+        ).thenThrow(Exception('Network error'));
 
         // Build the app
         await tester.pumpWidget(
@@ -129,7 +137,10 @@ void main() {
         await tester.pumpAndSettle();
 
         // Assert
-        expect(find.text('Fehler beim Laden der Bestellhistorie'), findsOneWidget);
+        expect(
+          find.text('Fehler beim Laden der Bestellhistorie'),
+          findsOneWidget,
+        );
         expect(find.text('Erneut versuchen'), findsOneWidget);
         expect(find.byIcon(Icons.error_outline), findsOneWidget);
       });
@@ -137,8 +148,7 @@ void main() {
       testWidgets('should retry loading after error', (tester) async {
         // Arrange - first call fails, second succeeds
         int callCount = 0;
-        when(mockBackendApiService.fetchUserOrders(any))
-            .thenAnswer((_) async {
+        when(mockBackendApiService.fetchUserOrders(any)).thenAnswer((_) async {
           callCount++;
           if (callCount == 1) {
             throw Exception('Network error');
@@ -171,10 +181,13 @@ void main() {
         verify(mockBackendApiService.fetchUserOrders(any)).called(2);
       });
 
-      testWidgets('should refresh order history with pull to refresh', (tester) async {
+      testWidgets('should refresh order history with pull to refresh', (
+        tester,
+      ) async {
         // Arrange
-        when(mockBackendApiService.fetchUserOrders(any))
-            .thenAnswer((_) async => orderList);
+        when(
+          mockBackendApiService.fetchUserOrders(any),
+        ).thenAnswer((_) async => orderList);
 
         // Build the app
         await tester.pumpWidget(
@@ -192,7 +205,11 @@ void main() {
         await tester.pumpAndSettle();
 
         // Act: Pull to refresh
-        await tester.fling(find.text('WH2024-12345'), const Offset(0, 300), 1000);
+        await tester.fling(
+          find.text('WH2024-12345'),
+          const Offset(0, 300),
+          1000,
+        );
         await tester.pumpAndSettle();
 
         // Assert: Should have called fetchUserOrders again
@@ -203,8 +220,9 @@ void main() {
     group('Order Tracking Page', () {
       testWidgets('should display order tracking information', (tester) async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockPaymentRepository.getOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
         // Build the order tracking page
         await tester.pumpWidget(
@@ -238,8 +256,9 @@ void main() {
 
       testWidgets('should handle order tracking loading error', (tester) async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(1))
-            .thenThrow(Exception('Order not found'));
+        when(
+          mockPaymentRepository.getOrderById(1),
+        ).thenThrow(Exception('Order not found'));
 
         // Build the order tracking page
         await tester.pumpWidget(
@@ -263,8 +282,7 @@ void main() {
       testWidgets('should retry loading order after error', (tester) async {
         // Arrange - first call fails, second succeeds
         int callCount = 0;
-        when(mockPaymentRepository.getOrderById(1))
-            .thenAnswer((_) async {
+        when(mockPaymentRepository.getOrderById(1)).thenAnswer((_) async {
           callCount++;
           if (callCount == 1) {
             throw Exception('Network error');
@@ -295,11 +313,16 @@ void main() {
         verify(mockPaymentRepository.getOrderById(1)).called(2);
       });
 
-      testWidgets('should show different content for pickup orders', (tester) async {
+      testWidgets('should show different content for pickup orders', (
+        tester,
+      ) async {
         // Arrange - pickup order
-        final pickupOrder = testOrder.copyWith(deliveryType: DeliveryType.pickup);
-        when(mockPaymentRepository.getOrderById(1))
-            .thenAnswer((_) async => pickupOrder);
+        final pickupOrder = testOrder.copyWith(
+          deliveryType: DeliveryType.pickup,
+        );
+        when(
+          mockPaymentRepository.getOrderById(1),
+        ).thenAnswer((_) async => pickupOrder);
 
         // Build the order tracking page
         await tester.pumpWidget(
@@ -321,8 +344,9 @@ void main() {
 
       testWidgets('should display action buttons', (tester) async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockPaymentRepository.getOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
         // Build the order tracking page
         await tester.pumpWidget(
@@ -339,15 +363,16 @@ void main() {
 
         // Assert: Check action buttons
         expect(find.text('Support kontaktieren'), findsOneWidget);
-        
+
         // For orders that can be cancelled
         // expect(find.text('Bestellung stornieren'), findsOneWidget);
       });
 
       testWidgets('should show contact support dialog', (tester) async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(1))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockPaymentRepository.getOrderById(1),
+        ).thenAnswer((_) async => testOrder);
 
         // Build the order tracking page
         await tester.pumpWidget(
@@ -376,7 +401,7 @@ void main() {
         // This test would simulate the complete flow from order creation
         // through payment to order tracking, but requires more complex setup
         // with actual routing and navigation context
-        
+
         // For now, we focus on individual component testing
         // Full E2E tests would be better implemented as integration tests
         // with a test driver or as widget tests with proper routing setup

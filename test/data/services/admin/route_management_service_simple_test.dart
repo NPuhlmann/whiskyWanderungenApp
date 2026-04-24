@@ -74,10 +74,7 @@ void main() {
         expect(service.validateWaypointData(validData), isTrue);
 
         // Missing required field
-        final invalidData1 = {
-          'latitude': 52.5200,
-          'longitude': 13.4050,
-        };
+        final invalidData1 = {'latitude': 52.5200, 'longitude': 13.4050};
 
         expect(service.validateWaypointData(invalidData1), isFalse);
 
@@ -119,7 +116,10 @@ void main() {
 
         // We can test this indirectly by creating waypoints and calculating route distance
         // This tests the actual mathematical formula
-        expect(true, isTrue); // Placeholder - would need to test actual implementation
+        expect(
+          true,
+          isTrue,
+        ); // Placeholder - would need to test actual implementation
       });
     });
 
@@ -182,8 +182,11 @@ void main() {
             'price': 89.99,
           };
 
-          expect(service.validateRouteData(data), isTrue,
-                 reason: 'Difficulty $difficulty should be valid');
+          expect(
+            service.validateRouteData(data),
+            isTrue,
+            reason: 'Difficulty $difficulty should be valid',
+          );
         }
       });
 
@@ -225,7 +228,8 @@ void main() {
           expect(
             service.validateWaypointData(data),
             equals(test['shouldPass']),
-            reason: 'Coordinates (${test['lat']}, ${test['lng']}) validation failed'
+            reason:
+                'Coordinates (${test['lat']}, ${test['lng']}) validation failed',
           );
         }
       });

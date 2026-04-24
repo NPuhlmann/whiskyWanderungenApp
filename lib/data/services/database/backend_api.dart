@@ -9,7 +9,6 @@ import '../../../domain/models/waypoint.dart';
 import '../../../domain/models/basic_order.dart' as basic;
 import '../../../domain/models/enhanced_order.dart' as enhanced;
 import '../../../domain/models/delivery_address.dart';
-import '../../../domain/models/order.dart';
 import '../../../domain/models/tasting_set.dart';
 import '../../../domain/models/review.dart';
 import '../shipping/shipping_calculation_service.dart';
@@ -23,10 +22,10 @@ class BackendApiService {
   late final ShippingCalculationService _shippingService;
   late final ProfileService _profileService;
   late final HikeService _hikeService;
-  
+
   // Constructor für Dependency Injection in Tests
-  BackendApiService({SupabaseClient? client}) 
-      : client = client ?? Supabase.instance.client {
+  BackendApiService({SupabaseClient? client})
+    : client = client ?? Supabase.instance.client {
     _shippingService = ShippingCalculationService(this);
     _profileService = ProfileService(client: client);
     _hikeService = HikeService(client: client);
@@ -40,14 +39,16 @@ class BackendApiService {
   Future<Profile> getUserProfileById(String id) async {
     return await _profileService.getUserProfileById(id);
   }
-  
+
   // get a list of hikes from the 'hikes' table
   Future<List<Hike>> fetchHikes() async {
     return await _hikeService.fetchHikes();
   }
 
   // get paginated hikes
-  Future<PaginationResult<Hike>> fetchHikesPaginated(PaginationParams params) async {
+  Future<PaginationResult<Hike>> fetchHikesPaginated(
+    PaginationParams params,
+  ) async {
     return await _hikeService.fetchHikesPaginated(params);
   }
 
@@ -63,21 +64,24 @@ class BackendApiService {
   // image_url: text
   // created_at: timestamp
 
-
   // get images for a hike by hike.id
   Future<List<String>> getHikeImages(int hikeId) async {
-    final response = await client.from('hike_images').select().eq('hike_id', hikeId);
+    final response = await client
+        .from('hike_images')
+        .select()
+        .eq('hike_id', hikeId);
     final List<dynamic> hikeImageData = response as List<dynamic>;
 
-    return hikeImageData.map((element) => element['image_url'] as String).toList();
+    return hikeImageData
+        .map((element) => element['image_url'] as String)
+        .toList();
   }
 
   // upload images for a hike with hike id and image urls
   Future<void> uploadHikeImages(int hikeId, List<String> imageUrls) async {
-    final List<Map<String, dynamic>> imageRecords = imageUrls.map((imageUrl) => {
-      'hike_id': hikeId,
-      'image_url': imageUrl,
-    }).toList();
+    final List<Map<String, dynamic>> imageRecords = imageUrls
+        .map((imageUrl) => {'hike_id': hikeId, 'image_url': imageUrl})
+        .toList();
 
     await client.from('hike_images').upsert(imageRecords);
   }
@@ -86,9 +90,13 @@ class BackendApiService {
   Future<void> updateUserProfile(Profile profile) async {
     // Konvertiere das Profil in JSON und entferne Felder, die in der Datenbank nicht existieren
     final Map<String, dynamic> profileJson = profile.toJson();
-    profileJson.remove('email'); // Email-Feld entfernen, da es in der auth.users Tabelle gespeichert wird
-    profileJson.remove('imageUrl'); // imageUrl-Feld entfernen, da es in der Datenbank nicht existiert
-    
+    profileJson.remove(
+      'email',
+    ); // Email-Feld entfernen, da es in der auth.users Tabelle gespeichert wird
+    profileJson.remove(
+      'imageUrl',
+    ); // imageUrl-Feld entfernen, da es in der Datenbank nicht existiert
+
     // Stelle sicher, dass die ID gesetzt ist
     if (profileJson['id'] == null || profileJson['id'].isEmpty) {
       final String? userId = client.auth.currentUser?.id;
@@ -98,47 +106,55 @@ class BackendApiService {
         throw Exception('Benutzer-ID konnte nicht ermittelt werden');
       }
     }
-    
+
     // Verwende update statt upsert, um die RLS-Policy zu respektieren
     final String userId = profileJson['id'];
-    await client.from('profiles')
-        .update(profileJson)
-        .eq('id', userId);
+    await client.from('profiles').update(profileJson).eq('id', userId);
   }
 
   // Methode zum Hochladen eines Profilbilds
-  Future<String> uploadProfileImage(String userId, Uint8List fileBytes, String fileExt) async {
+  Future<String> uploadProfileImage(
+    String userId,
+    Uint8List fileBytes,
+    String fileExt,
+  ) async {
     final String path = '$userId/profile.$fileExt';
-    
+
     dev.log("Beginne Upload nach $path mit ${fileBytes.length} Bytes");
-    
+
     try {
       // Prüfen, ob der Bucket existiert, bevor wir hochladen
       try {
         final List<Bucket> buckets = await client.storage.listBuckets();
-        final bool bucketExists = buckets.any((bucket) => bucket.name == 'avatars');
+        final bool bucketExists = buckets.any(
+          (bucket) => bucket.name == 'avatars',
+        );
         if (!bucketExists) {
           dev.log("Der Bucket 'avatars' existiert nicht!");
-          throw Exception("Der Storage-Bucket 'avatars' existiert nicht. Bitte erstellen Sie ihn in Supabase.");
+          throw Exception(
+            "Der Storage-Bucket 'avatars' existiert nicht. Bitte erstellen Sie ihn in Supabase.",
+          );
         }
         dev.log("Bucket 'avatars' gefunden, fahre mit Upload fort");
       } catch (bucketError) {
-        dev.log("Fehler beim Prüfen der Buckets: $bucketError", error: bucketError);
+        dev.log(
+          "Fehler beim Prüfen der Buckets: $bucketError",
+          error: bucketError,
+        );
         // Wir versuchen trotzdem hochzuladen, falls es nur ein Berechtigungsproblem war
       }
-      
+
       // Bild in den Storage hochladen
-      await client.storage.from('avatars').uploadBinary(
-        path,
-        fileBytes,
-        fileOptions: FileOptions(
-          cacheControl: '3600',
-          upsert: true,
-        ),
-      );
-      
+      await client.storage
+          .from('avatars')
+          .uploadBinary(
+            path,
+            fileBytes,
+            fileOptions: FileOptions(cacheControl: '3600', upsert: true),
+          );
+
       dev.log("Upload erfolgreich abgeschlossen");
-      
+
       // Öffentliche URL des Bildes zurückgeben
       final String imageUrl = client.storage.from('avatars').getPublicUrl(path);
       dev.log("Generierte öffentliche URL: $imageUrl");
@@ -152,28 +168,33 @@ class BackendApiService {
   Future<String?> getProfileImageUrl(String userId) async {
     try {
       dev.log("🔍 Suche Profilbild für User: $userId");
-      
+
       // Suche nach Dateien im Benutzer-spezifischen Ordner
-      final List<FileObject> files = await client.storage.from('avatars')
+      final List<FileObject> files = await client.storage
+          .from('avatars')
           .list(path: userId);
-      
+
       dev.log("📁 Gefundene Dateien in $userId/: ${files.length}");
-      
+
       if (files.isNotEmpty) {
         for (var file in files) {
-          dev.log("📄 Datei: ${file.name}, Größe: ${file.metadata?['size']}, Typ: ${file.metadata?['mimetype']}");
+          dev.log(
+            "📄 Datei: ${file.name}, Größe: ${file.metadata?['size']}, Typ: ${file.metadata?['mimetype']}",
+          );
         }
       }
-      
+
       // Filtere die Dateien nach "profile.*" Dateien
-      final List<FileObject> userFiles = files.where(
-        (file) => file.name.startsWith('profile.')
-      ).toList();
-      
+      final List<FileObject> userFiles = files
+          .where((file) => file.name.startsWith('profile.'))
+          .toList();
+
       if (userFiles.isNotEmpty) {
         final String filePath = '$userId/${userFiles.first.name}';
-        final String publicUrl = client.storage.from('avatars').getPublicUrl(filePath);
-        
+        final String publicUrl = client.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
         dev.log("✅ Profilbild-URL gefunden: $publicUrl");
         return publicUrl;
       } else {
@@ -181,15 +202,18 @@ class BackendApiService {
         return null;
       }
     } catch (e) {
-      dev.log("💥 Fehler beim Abrufen des Profilbilds für $userId: $e", error: e);
-      
+      dev.log(
+        "💥 Fehler beim Abrufen des Profilbilds für $userId: $e",
+        error: e,
+      );
+
       // Spezifische Fehlerbehandlung
       if (e.toString().contains('permission')) {
         dev.log("🔐 Storage Permission Problem");
       } else if (e.toString().contains('network')) {
         dev.log("🌐 Network Problem beim Storage-Zugriff");
       }
-      
+
       return null;
     }
   }
@@ -202,11 +226,13 @@ class BackendApiService {
           .select('waypoint_id, order_index')
           .eq('hike_id', hikeId)
           .order('order_index', ascending: true);
-      
+
       return List<Map<String, dynamic>>.from(response as List<dynamic>);
     } catch (e) {
       dev.log('Fehler beim Abrufen der Wegpunkt-Daten: $e', error: e);
-      throw Exception('Fehler beim Abrufen der Wegpunkt-Daten für Wanderung $hikeId: $e');
+      throw Exception(
+        'Fehler beim Abrufen der Wegpunkt-Daten für Wanderung $hikeId: $e',
+      );
     }
   }
 
@@ -214,75 +240,90 @@ class BackendApiService {
   Future<List<Waypoint>> getWaypointsForHike(int hikeId) async {
     try {
       // Zuerst die Wegpunkt-Daten mit order_index für die Wanderung abrufen
-      final List<Map<String, dynamic>> waypointDataList = await _getWaypointDataForHike(hikeId);
-      
+      final List<Map<String, dynamic>> waypointDataList =
+          await _getWaypointDataForHike(hikeId);
+
       if (waypointDataList.isEmpty) {
         return [];
       }
-      
+
       // Map für orderIndex pro waypoint_id erstellen
       final Map<int, int> waypointOrderMap = {};
       final List<int> waypointIds = [];
-      
+
       for (var data in waypointDataList) {
         final waypointId = int.parse(data['waypoint_id'].toString());
         final orderIndex = int.parse(data['order_index'].toString());
         waypointIds.add(waypointId);
         waypointOrderMap[waypointId] = orderIndex;
       }
-      
+
       // Dann die Wegpunkte für diese IDs abrufen
       final response = await client
           .from('waypoints')
           .select()
           .filter('id', 'in', waypointIds);
-      
+
       final List<dynamic> waypointData = response as List<dynamic>;
-      
+
       List<Waypoint> waypoints = waypointData.map((element) {
         // Sicherstellen, dass alle erforderlichen Felder vorhanden und vom richtigen Typ sind
         Map<String, dynamic> safeElement = Map<String, dynamic>.from(element);
-        
+
         // Überprüfen und konvertieren der numerischen Werte
         if (safeElement['latitude'] == null) safeElement['latitude'] = 0.0;
         if (safeElement['longitude'] == null) safeElement['longitude'] = 0.0;
-        
+
         // Sicherstellen, dass die Werte den richtigen Typ haben
-        safeElement['latitude'] = double.parse(safeElement['latitude'].toString());
-        safeElement['longitude'] = double.parse(safeElement['longitude'].toString());
-        
+        safeElement['latitude'] = double.parse(
+          safeElement['latitude'].toString(),
+        );
+        safeElement['longitude'] = double.parse(
+          safeElement['longitude'].toString(),
+        );
+
         // Füge hikeId und orderIndex hinzu
         safeElement['hikeId'] = hikeId;
         final waypointId = int.parse(safeElement['id'].toString());
         safeElement['orderIndex'] = waypointOrderMap[waypointId] ?? 0;
-        
+
         return Waypoint.fromJson(safeElement);
       }).toList();
-      
+
       // Sortierung nach orderIndex (zusätzliche Sicherheit)
       waypoints.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
-      
+
       return waypoints;
     } catch (e) {
       dev.log('Fehler beim Abrufen der Wegpunkte: $e', error: e);
-      throw Exception('Fehler beim Abrufen der Wegpunkte für Wanderung $hikeId: $e');
+      throw Exception(
+        'Fehler beim Abrufen der Wegpunkte für Wanderung $hikeId: $e',
+      );
     }
   }
 
   // Methode zum Hinzufügen eines neuen Wegpunkts
-  Future<void> addWaypoint(Waypoint waypoint, int hikeId, {int? orderIndex}) async {
+  Future<void> addWaypoint(
+    Waypoint waypoint,
+    int hikeId, {
+    int? orderIndex,
+  }) async {
     try {
       // Zuerst den Wegpunkt in die 'waypoints' Tabelle einfügen
-      final waypointResponse = await client.from('waypoints').insert({
-        'name': waypoint.name,
-        'description': waypoint.description,
-        'latitude': waypoint.latitude,
-        'longitude': waypoint.longitude,
-      }).select('id').single();
-      
+      final waypointResponse = await client
+          .from('waypoints')
+          .insert({
+            'name': waypoint.name,
+            'description': waypoint.description,
+            'latitude': waypoint.latitude,
+            'longitude': waypoint.longitude,
+          })
+          .select('id')
+          .single();
+
       // Die ID des neu erstellten Wegpunkts abrufen
       final int newWaypointId = waypointResponse['id'];
-      
+
       // Wenn kein orderIndex angegeben, den nächsten verfügbaren verwenden
       int finalOrderIndex = orderIndex ?? waypoint.orderIndex;
       if (finalOrderIndex == 0) {
@@ -293,66 +334,71 @@ class BackendApiService {
             .eq('hike_id', hikeId)
             .order('order_index', ascending: false)
             .limit(1);
-        
+
         if (maxOrderResponse.isNotEmpty) {
-          final maxOrder = int.parse(maxOrderResponse.first['order_index'].toString());
+          final maxOrder = int.parse(
+            maxOrderResponse.first['order_index'].toString(),
+          );
           finalOrderIndex = maxOrder + 1;
         } else {
           finalOrderIndex = 1;
         }
       }
-      
+
       // Verknüpfung zwischen Wanderung und Wegpunkt in der 'hikes_waypoints' Tabelle erstellen
       await client.from('hikes_waypoints').insert({
         'hike_id': hikeId,
         'waypoint_id': newWaypointId,
         'order_index': finalOrderIndex,
       });
-      
     } catch (e) {
       dev.log('Fehler beim Hinzufügen des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Hinzufügen des Wegpunkts: $e');
     }
   }
-  
+
   // Methode zum Aktualisieren eines bestehenden Wegpunkts
   Future<void> updateWaypoint(Waypoint waypoint) async {
     try {
-      await client.from('waypoints').update({
-        'name': waypoint.name,
-        'description': waypoint.description,
-        'latitude': waypoint.latitude,
-        'longitude': waypoint.longitude,
-      }).eq('id', waypoint.id);
-      
+      await client
+          .from('waypoints')
+          .update({
+            'name': waypoint.name,
+            'description': waypoint.description,
+            'latitude': waypoint.latitude,
+            'longitude': waypoint.longitude,
+          })
+          .eq('id', waypoint.id);
     } catch (e) {
       dev.log('Fehler beim Aktualisieren des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Aktualisieren des Wegpunkts: $e');
     }
   }
-  
+
   // Methode zum Löschen eines Wegpunkts
   Future<void> deleteWaypoint(int waypointId, int hikeId) async {
     try {
       // Zuerst die Verknüpfung in der 'hikes_waypoints' Tabelle löschen
-      await client.from('hikes_waypoints')
+      await client
+          .from('hikes_waypoints')
           .delete()
           .eq('waypoint_id', waypointId)
           .eq('hike_id', hikeId);
-      
+
       // Dann den Wegpunkt selbst aus der 'waypoints' Tabelle löschen
-      await client.from('waypoints')
-          .delete()
-          .eq('id', waypointId);
-      
+      await client.from('waypoints').delete().eq('id', waypointId);
     } catch (e) {
       dev.log('Fehler beim Löschen des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Löschen des Wegpunkts: $e');
     }
   }
-  
+
   // Methode zum Aktualisieren der Wegpunkt-Reihenfolge
-  Future<void> updateWaypointOrder(int hikeId, int waypointId, int newOrderIndex) async {
+  Future<void> updateWaypointOrder(
+    int hikeId,
+    int waypointId,
+    int newOrderIndex,
+  ) async {
     try {
       await client
           .from('hikes_waypoints')
@@ -360,7 +406,10 @@ class BackendApiService {
           .eq('hike_id', hikeId)
           .eq('waypoint_id', waypointId);
     } catch (e) {
-      dev.log('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e', error: e);
+      dev.log(
+        'Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e',
+        error: e,
+      );
       throw Exception('Fehler beim Aktualisieren der Wegpunkt-Reihenfolge: $e');
     }
   }
@@ -387,12 +436,13 @@ class BackendApiService {
       final List<dynamic> orderData = response as List<dynamic>;
 
       List<basic.BasicOrder> orders = orderData
-          .map<basic.BasicOrder>((json) => basic.BasicOrder.fromJson(json as Map<String, dynamic>))
+          .map<basic.BasicOrder>(
+            (json) => basic.BasicOrder.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
       dev.log('✅ Found ${orders.length} orders for user $userId');
       return orders;
-
     } catch (e) {
       dev.log('❌ Error fetching user orders: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -417,7 +467,6 @@ class BackendApiService {
 
       dev.log('✅ Order $orderId fetched successfully');
       return basic.BasicOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching order $orderId: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -446,9 +495,10 @@ class BackendApiService {
       final List<dynamic> purchaseData = response as List<dynamic>;
       final bool hasPurchased = purchaseData.isNotEmpty;
 
-      dev.log('✅ User $userId has${hasPurchased ? '' : ' not'} purchased hike $hikeId');
+      dev.log(
+        '✅ User $userId has${hasPurchased ? '' : ' not'} purchased hike $hikeId',
+      );
       return hasPurchased;
-
     } catch (e) {
       dev.log('❌ Error checking hike purchase: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -457,7 +507,11 @@ class BackendApiService {
   }
 
   /// Record a successful hike purchase
-  Future<void> recordHikePurchase(String userId, int hikeId, int orderId) async {
+  Future<void> recordHikePurchase(
+    String userId,
+    int hikeId,
+    int orderId,
+  ) async {
     if (userId.isEmpty) {
       throw ArgumentError('User ID cannot be empty');
     }
@@ -469,7 +523,9 @@ class BackendApiService {
     }
 
     try {
-      dev.log('💰 Recording hike purchase: user=$userId, hike=$hikeId, order=$orderId');
+      dev.log(
+        '💰 Recording hike purchase: user=$userId, hike=$hikeId, order=$orderId',
+      );
 
       final purchaseData = {
         'user_id': userId,
@@ -481,7 +537,6 @@ class BackendApiService {
       await client.from('purchased_hikes').insert(purchaseData);
 
       dev.log('✅ Hike purchase recorded successfully');
-
     } catch (e) {
       dev.log('❌ Error recording hike purchase: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -506,7 +561,6 @@ class BackendApiService {
 
       dev.log('✅ Order $orderId with payment details fetched');
       return basic.BasicOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching order with payment details: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -528,7 +582,9 @@ class BackendApiService {
     }
 
     try {
-      dev.log('💳 Updating order $orderId after payment: status=${status.name}');
+      dev.log(
+        '💳 Updating order $orderId after payment: status=${status.name}',
+      );
 
       final updateData = {
         'status': status.name,
@@ -545,7 +601,6 @@ class BackendApiService {
 
       dev.log('✅ Order $orderId updated after payment');
       return basic.BasicOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error updating order after payment: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -554,7 +609,9 @@ class BackendApiService {
   }
 
   /// Get payment history for a user using JOIN query
-  Future<List<Map<String, dynamic>>> getUserPaymentHistory(String userId) async {
+  Future<List<Map<String, dynamic>>> getUserPaymentHistory(
+    String userId,
+  ) async {
     if (userId.isEmpty) {
       throw ArgumentError('User ID cannot be empty');
     }
@@ -575,7 +632,6 @@ class BackendApiService {
 
       dev.log('✅ Found ${payments.length} payment records for user $userId');
       return payments;
-
     } catch (e) {
       dev.log('❌ Error fetching payment history: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -609,7 +665,6 @@ class BackendApiService {
 
       dev.log('✅ Tasting set found for hike $hikeId');
       return TastingSet.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching tasting set for hike $hikeId: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -639,7 +694,6 @@ class BackendApiService {
 
       dev.log('✅ Tasting set $tastingSetId fetched successfully');
       return TastingSet.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching tasting set $tastingSetId: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -659,12 +713,13 @@ class BackendApiService {
 
       final List<dynamic> tastingSetData = response as List<dynamic>;
       final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .map<TastingSet>(
+            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
       dev.log('✅ Found ${tastingSets.length} tasting sets');
       return tastingSets;
-
     } catch (e) {
       dev.log('❌ Error fetching all tasting sets: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -673,7 +728,9 @@ class BackendApiService {
   }
 
   /// Get whisky samples for a specific tasting set
-  Future<List<WhiskySample>> getWhiskySamplesForTastingSet(int tastingSetId) async {
+  Future<List<WhiskySample>> getWhiskySamplesForTastingSet(
+    int tastingSetId,
+  ) async {
     if (tastingSetId <= 0) {
       throw ArgumentError('Tasting set ID must be greater than 0');
     }
@@ -689,12 +746,15 @@ class BackendApiService {
 
       final List<dynamic> sampleData = response as List<dynamic>;
       final List<WhiskySample> samples = sampleData
-          .map<WhiskySample>((json) => WhiskySample.fromJson(json as Map<String, dynamic>))
+          .map<WhiskySample>(
+            (json) => WhiskySample.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
-      dev.log('✅ Found ${samples.length} whisky samples for tasting set $tastingSetId');
+      dev.log(
+        '✅ Found ${samples.length} whisky samples for tasting set $tastingSetId',
+      );
       return samples;
-
     } catch (e) {
       dev.log('❌ Error fetching whisky samples: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -719,12 +779,13 @@ class BackendApiService {
 
       final List<dynamic> tastingSetData = response as List<dynamic>;
       final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .map<TastingSet>(
+            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
       dev.log('✅ Found ${tastingSets.length} tasting sets matching "$query"');
       return tastingSets;
-
     } catch (e) {
       dev.log('❌ Error searching tasting sets: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -749,12 +810,13 @@ class BackendApiService {
 
       final List<dynamic> tastingSetData = response as List<dynamic>;
       final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .map<TastingSet>(
+            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
       dev.log('✅ Found ${tastingSets.length} tasting sets from region $region');
       return tastingSets;
-
     } catch (e) {
       dev.log('❌ Error fetching tasting sets by region: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -778,12 +840,13 @@ class BackendApiService {
 
       final List<dynamic> tastingSetData = response as List<dynamic>;
       final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .map<TastingSet>(
+            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
       dev.log('✅ Found ${tastingSets.length} currently available tasting sets');
       return tastingSets;
-
     } catch (e) {
       dev.log('❌ Error fetching available tasting sets: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -792,13 +855,18 @@ class BackendApiService {
   }
 
   /// Update tasting set availability status
-  Future<void> updateTastingSetAvailability(int tastingSetId, bool isAvailable) async {
+  Future<void> updateTastingSetAvailability(
+    int tastingSetId,
+    bool isAvailable,
+  ) async {
     if (tastingSetId <= 0) {
       throw ArgumentError('Tasting set ID must be greater than 0');
     }
 
     try {
-      dev.log('🔄 Updating tasting set $tastingSetId availability: $isAvailable');
+      dev.log(
+        '🔄 Updating tasting set $tastingSetId availability: $isAvailable',
+      );
 
       final updateData = {
         'is_available': isAvailable,
@@ -811,7 +879,6 @@ class BackendApiService {
           .eq('id', tastingSetId);
 
       dev.log('✅ Tasting set $tastingSetId availability updated');
-
     } catch (e) {
       dev.log('❌ Error updating tasting set availability: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -834,7 +901,9 @@ class BackendApiService {
     }
 
     try {
-      dev.log('🔍 Fetching tasting sets with pagination: limit=$limit, offset=$offset');
+      dev.log(
+        '🔍 Fetching tasting sets with pagination: limit=$limit, offset=$offset',
+      );
 
       var query = client
           .from('tasting_sets')
@@ -848,12 +917,15 @@ class BackendApiService {
       final response = await query;
       final List<dynamic> tastingSetData = response as List<dynamic>;
       final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>((json) => TastingSet.fromJson(json as Map<String, dynamic>))
+          .map<TastingSet>(
+            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
-      dev.log('✅ Found ${tastingSets.length} tasting sets (page ${offset ~/ limit + 1})');
+      dev.log(
+        '✅ Found ${tastingSets.length} tasting sets (page ${offset ~/ limit + 1})',
+      );
       return tastingSets;
-
     } catch (e) {
       dev.log('❌ Error fetching tasting sets with pagination: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -905,7 +977,6 @@ class BackendApiService {
 
       dev.log('✅ Tasting set created successfully');
       return TastingSet.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error creating tasting set: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -935,13 +1006,21 @@ class BackendApiService {
         'updated_at': DateTime.now().toIso8601String(),
       };
 
-      if (name != null && name.trim().isNotEmpty) updateData['name'] = name.trim();
-      if (description != null && description.trim().isNotEmpty) updateData['description'] = description.trim();
+      if (name != null && name.trim().isNotEmpty) {
+        updateData['name'] = name.trim();
+      }
+      if (description != null && description.trim().isNotEmpty) {
+        updateData['description'] = description.trim();
+      }
       if (imageUrl != null) updateData['image_url'] = imageUrl;
       if (isIncluded != null) updateData['is_included'] = isIncluded;
       if (isAvailable != null) updateData['is_available'] = isAvailable;
-      if (availableFrom != null) updateData['available_from'] = availableFrom.toIso8601String();
-      if (availableUntil != null) updateData['available_until'] = availableUntil.toIso8601String();
+      if (availableFrom != null) {
+        updateData['available_from'] = availableFrom.toIso8601String();
+      }
+      if (availableUntil != null) {
+        updateData['available_until'] = availableUntil.toIso8601String();
+      }
 
       final response = await client
           .from('tasting_sets')
@@ -952,7 +1031,6 @@ class BackendApiService {
 
       dev.log('✅ Tasting set $tastingSetId updated successfully');
       return TastingSet.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error updating tasting set: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -976,13 +1054,9 @@ class BackendApiService {
           .eq('tasting_set_id', tastingSetId);
 
       // Then delete the tasting set
-      await client
-          .from('tasting_sets')
-          .delete()
-          .eq('id', tastingSetId);
+      await client.from('tasting_sets').delete().eq('id', tastingSetId);
 
       dev.log('✅ Tasting set $tastingSetId deleted successfully');
-
     } catch (e) {
       dev.log('❌ Error deleting tasting set: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1012,12 +1086,14 @@ class BackendApiService {
     List<String>? tags,
   }) async {
     try {
-      dev.log('🆕 Creating enhanced order with shipping calculation: $orderNumber');
+      dev.log(
+        '🆕 Creating enhanced order with shipping calculation: $orderNumber',
+      );
 
       // Calculate shipping cost if not pickup
       ShippingCostResult? shippingResult;
       double shippingCost = 0.0;
-      
+
       if (deliveryType != basic.DeliveryType.pickup) {
         shippingResult = await _shippingService.calculateShippingCost(
           companyId: companyId,
@@ -1048,23 +1124,23 @@ class BackendApiService {
         customerPhone: customerPhone,
         notes: notes,
         metadata: {
-          if (shippingResult != null) 'shipping_calculation_result': {
-            'cost': shippingResult.cost,
-            'isFreeShipping': shippingResult.isFreeShipping,
-            'serviceName': shippingResult.serviceName,
-            'estimatedDaysMin': shippingResult.estimatedDaysMin,
-            'estimatedDaysMax': shippingResult.estimatedDaysMax,
-            'region': shippingResult.region,
-            'description': shippingResult.description,
-            'trackingAvailable': shippingResult.trackingAvailable,
-            'signatureRequired': shippingResult.signatureRequired,
-          },
+          if (shippingResult != null)
+            'shipping_calculation_result': {
+              'cost': shippingResult.cost,
+              'isFreeShipping': shippingResult.isFreeShipping,
+              'serviceName': shippingResult.serviceName,
+              'estimatedDaysMin': shippingResult.estimatedDaysMin,
+              'estimatedDaysMax': shippingResult.estimatedDaysMax,
+              'region': shippingResult.region,
+              'description': shippingResult.description,
+              'trackingAvailable': shippingResult.trackingAvailable,
+              'signatureRequired': shippingResult.signatureRequired,
+            },
           'auto_calculated_shipping': true,
           ...?metadata,
         },
         tags: tags,
       );
-
     } catch (e) {
       dev.log('❌ Error creating enhanced order with shipping: $e', error: e);
       throw Exception('Failed to create enhanced order with shipping: $e');
@@ -1105,7 +1181,9 @@ class BackendApiService {
     }
 
     try {
-      dev.log('🆕 Creating enhanced order $orderNumber for customer $customerId');
+      dev.log(
+        '🆕 Creating enhanced order $orderNumber for customer $customerId',
+      );
 
       final insertData = {
         'order_number': orderNumber.trim(),
@@ -1137,7 +1215,6 @@ class BackendApiService {
 
       dev.log('✅ Enhanced order $orderNumber created successfully');
       return enhanced.EnhancedOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error creating enhanced order: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1167,7 +1244,6 @@ class BackendApiService {
 
       dev.log('✅ Enhanced order $orderId fetched successfully');
       return enhanced.EnhancedOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching enhanced order $orderId: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1176,7 +1252,9 @@ class BackendApiService {
   }
 
   /// Get enhanced order by order number
-  Future<enhanced.EnhancedOrder?> getEnhancedOrderByNumber(String orderNumber) async {
+  Future<enhanced.EnhancedOrder?> getEnhancedOrderByNumber(
+    String orderNumber,
+  ) async {
     if (orderNumber.trim().isEmpty) {
       throw ArgumentError('Order number cannot be empty');
     }
@@ -1197,7 +1275,6 @@ class BackendApiService {
 
       dev.log('✅ Enhanced order $orderNumber fetched successfully');
       return enhanced.EnhancedOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching enhanced order by number: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1235,12 +1312,16 @@ class BackendApiService {
       final response = await query;
       final List<dynamic> orderData = response as List<dynamic>;
       final List<enhanced.EnhancedOrder> orders = orderData
-          .map<enhanced.EnhancedOrder>((json) => enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>))
+          .map<enhanced.EnhancedOrder>(
+            (json) =>
+                enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
-      dev.log('✅ Found ${orders.length} enhanced orders for customer $customerId');
+      dev.log(
+        '✅ Found ${orders.length} enhanced orders for customer $customerId',
+      );
       return orders;
-
     } catch (e) {
       dev.log('❌ Error fetching customer enhanced orders: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1290,12 +1371,16 @@ class BackendApiService {
       final response = await query;
       final List<dynamic> orderData = response as List<dynamic>;
       final List<enhanced.EnhancedOrder> orders = orderData
-          .map<enhanced.EnhancedOrder>((json) => enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>))
+          .map<enhanced.EnhancedOrder>(
+            (json) =>
+                enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
 
-      dev.log('✅ Found ${orders.length} enhanced orders for company $companyId');
+      dev.log(
+        '✅ Found ${orders.length} enhanced orders for company $companyId',
+      );
       return orders;
-
     } catch (e) {
       dev.log('❌ Error fetching company enhanced orders: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1328,11 +1413,12 @@ class BackendApiService {
       final updateData = <String, dynamic>{
         'status': newStatus.trim(),
         'updated_at': DateTime.now().toIso8601String(),
-        if (trackingNumber != null) 'tracking_number': trackingNumber,
-        if (trackingUrl != null) 'tracking_url': trackingUrl,
-        if (shippingCarrier != null) 'shipping_carrier': shippingCarrier,
-        if (estimatedDelivery != null) 'estimated_delivery': estimatedDelivery.toIso8601String(),
-        if (metadata != null) 'metadata': metadata,
+        'tracking_number': ?trackingNumber,
+        'tracking_url': ?trackingUrl,
+        'shipping_carrier': ?shippingCarrier,
+        if (estimatedDelivery != null)
+          'estimated_delivery': estimatedDelivery.toIso8601String(),
+        'metadata': ?metadata,
       };
 
       final response = await client
@@ -1344,7 +1430,6 @@ class BackendApiService {
 
       dev.log('✅ Enhanced order $orderId status updated to $newStatus');
       return enhanced.EnhancedOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error updating enhanced order status: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1374,7 +1459,10 @@ class BackendApiService {
       // Auto-generate tracking URL if not provided
       String? finalTrackingUrl = trackingUrl;
       if (finalTrackingUrl == null && shippingCarrier != null) {
-        finalTrackingUrl = await _generateTrackingUrl(shippingCarrier, trackingNumber);
+        finalTrackingUrl = await _generateTrackingUrl(
+          shippingCarrier,
+          trackingNumber,
+        );
       }
 
       final updateData = {
@@ -1395,7 +1483,6 @@ class BackendApiService {
 
       dev.log('✅ Tracking information added to enhanced order $orderId');
       return enhanced.EnhancedOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error adding tracking to enhanced order: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1404,7 +1491,9 @@ class BackendApiService {
   }
 
   /// Get order status history
-  Future<List<enhanced.OrderStatusChange>> getOrderStatusHistory(int orderId) async {
+  Future<List<enhanced.OrderStatusChange>> getOrderStatusHistory(
+    int orderId,
+  ) async {
     if (orderId <= 0) {
       throw ArgumentError('Order ID must be greater than 0');
     }
@@ -1420,12 +1509,15 @@ class BackendApiService {
 
       final List<dynamic> historyData = response as List<dynamic>;
       final List<enhanced.OrderStatusChange> history = historyData
-          .map<enhanced.OrderStatusChange>((json) => enhanced.OrderStatusChange.fromJson(json as Map<String, dynamic>))
+          .map<enhanced.OrderStatusChange>(
+            (json) => enhanced.OrderStatusChange.fromJson(
+              json as Map<String, dynamic>,
+            ),
+          )
           .toList();
 
       dev.log('✅ Found ${history.length} status changes for order $orderId');
       return history;
-
     } catch (e) {
       dev.log('❌ Error fetching order status history: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1446,7 +1538,6 @@ class BackendApiService {
 
       dev.log('✅ Found ${(response as List).length} shipping carriers');
       return List<Map<String, dynamic>>.from(response);
-
     } catch (e) {
       dev.log('❌ Error fetching shipping carriers: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1455,7 +1546,9 @@ class BackendApiService {
   }
 
   /// Get shipping methods for a carrier
-  Future<List<Map<String, dynamic>>> getShippingMethods(String carrierCode) async {
+  Future<List<Map<String, dynamic>>> getShippingMethods(
+    String carrierCode,
+  ) async {
     if (carrierCode.trim().isEmpty) {
       throw ArgumentError('Carrier code cannot be empty');
     }
@@ -1470,9 +1563,10 @@ class BackendApiService {
           .eq('is_active', true)
           .order('base_cost', ascending: true);
 
-      dev.log('✅ Found ${(response as List).length} shipping methods for $carrierCode');
+      dev.log(
+        '✅ Found ${(response as List).length} shipping methods for $carrierCode',
+      );
       return List<Map<String, dynamic>>.from(response);
-
     } catch (e) {
       dev.log('❌ Error fetching shipping methods: $e', error: e);
       if (e is PostgrestException) rethrow;
@@ -1496,13 +1590,25 @@ class BackendApiService {
         companyId: companyId,
         customerId: basicOrder.userId,
         hikeId: basicOrder.hikeId,
-        subtotal: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.standardShipping ? 5.0 : 0.0),
-        shippingCost: basicOrder.deliveryType == basic.DeliveryType.standardShipping ? 5.0 : 0.0,
+        subtotal:
+            basicOrder.totalAmount -
+            (basicOrder.deliveryType == basic.DeliveryType.standardShipping
+                ? 5.0
+                : 0.0),
+        shippingCost:
+            basicOrder.deliveryType == basic.DeliveryType.standardShipping
+            ? 5.0
+            : 0.0,
         totalAmount: basicOrder.totalAmount,
-        baseAmount: basicOrder.totalAmount - (basicOrder.deliveryType == basic.DeliveryType.standardShipping ? 5.0 : 0.0),
+        baseAmount:
+            basicOrder.totalAmount -
+            (basicOrder.deliveryType == basic.DeliveryType.standardShipping
+                ? 5.0
+                : 0.0),
         deliveryAddress: deliveryAddress,
-        deliveryType: basicOrder.deliveryType == basic.DeliveryType.standardShipping 
-            ? basic.DeliveryType.standardShipping 
+        deliveryType:
+            basicOrder.deliveryType == basic.DeliveryType.standardShipping
+            ? basic.DeliveryType.standardShipping
             : basic.DeliveryType.pickup,
         customerEmail: customerEmail,
         customerPhone: customerPhone,
@@ -1512,7 +1618,6 @@ class BackendApiService {
           'conversion_date': DateTime.now().toIso8601String(),
         },
       );
-
     } catch (e) {
       dev.log('❌ Error converting basic to enhanced order: $e', error: e);
       throw Exception('Failed to convert basic to enhanced order: $e');
@@ -1520,7 +1625,10 @@ class BackendApiService {
   }
 
   /// Generate tracking URL from carrier code and tracking number
-  Future<String?> _generateTrackingUrl(String carrierCode, String trackingNumber) async {
+  Future<String?> _generateTrackingUrl(
+    String carrierCode,
+    String trackingNumber,
+  ) async {
     try {
       final response = await client
           .from('shipping_carriers')
@@ -1534,9 +1642,10 @@ class BackendApiService {
       }
 
       return null;
-
     } catch (e) {
-      dev.log('⚠️ Warning: Could not generate tracking URL for $carrierCode: $e');
+      dev.log(
+        '⚠️ Warning: Could not generate tracking URL for $carrierCode: $e',
+      );
       return null;
     }
   }
@@ -1568,7 +1677,6 @@ class BackendApiService {
           userLastName: profileData?['last_name'] as String?,
         );
       }).toList();
-
     } catch (e) {
       dev.log('❌ Error getting reviews for hike $hikeId: $e', error: e);
       throw Exception('Failed to get reviews for hike: $e');
@@ -1608,7 +1716,6 @@ class BackendApiService {
         userFirstName: profileData?['first_name'] as String?,
         userLastName: profileData?['last_name'] as String?,
       );
-
     } catch (e) {
       dev.log('❌ Error creating review: $e', error: e);
       throw Exception('Failed to create review: $e');
@@ -1632,7 +1739,10 @@ class BackendApiService {
           .from('reviews')
           .update(updates)
           .eq('id', reviewId)
-          .eq('user_id', userId) // Ensure user can only update their own reviews
+          .eq(
+            'user_id',
+            userId,
+          ) // Ensure user can only update their own reviews
           .select('''
             id, hike_id, user_id, rating, comment, created_at,
             profiles(first_name, last_name)
@@ -1650,7 +1760,6 @@ class BackendApiService {
         userFirstName: profileData?['first_name'] as String?,
         userLastName: profileData?['last_name'] as String?,
       );
-
     } catch (e) {
       dev.log('❌ Error updating review $reviewId: $e', error: e);
       throw Exception('Failed to update review: $e');
@@ -1667,8 +1776,10 @@ class BackendApiService {
           .from('reviews')
           .delete()
           .eq('id', reviewId)
-          .eq('user_id', userId); // Ensure user can only delete their own reviews
-
+          .eq(
+            'user_id',
+            userId,
+          ); // Ensure user can only delete their own reviews
     } catch (e) {
       dev.log('❌ Error deleting review $reviewId: $e', error: e);
       throw Exception('Failed to delete review: $e');
@@ -1701,7 +1812,6 @@ class BackendApiService {
           userLastName: profileData?['last_name'] as String?,
         );
       }).toList();
-
     } catch (e) {
       dev.log('❌ Error getting reviews by user $userId: $e', error: e);
       throw Exception('Failed to get reviews by user: $e');
@@ -1718,11 +1828,12 @@ class BackendApiService {
 
       if (response.isEmpty) return 0.0;
 
-      final ratings = response.map<double>((data) => (data['rating'] as num).toDouble());
+      final ratings = response.map<double>(
+        (data) => (data['rating'] as num).toDouble(),
+      );
       final average = ratings.reduce((a, b) => a + b) / ratings.length;
-      
-      return double.parse(average.toStringAsFixed(1));
 
+      return double.parse(average.toStringAsFixed(1));
     } catch (e) {
       dev.log('❌ Error getting average rating for hike $hikeId: $e', error: e);
       throw Exception('Failed to get average rating: $e');
@@ -1758,7 +1869,6 @@ class BackendApiService {
         userFirstName: profileData?['first_name'] as String?,
         userLastName: profileData?['last_name'] as String?,
       );
-
     } catch (e) {
       dev.log('❌ Error getting user review for hike $hikeId: $e', error: e);
       throw Exception('Failed to get user review: $e');
@@ -1782,9 +1892,11 @@ class BackendApiService {
         };
       }
 
-      final ratings = response.map<int>((data) => (data['rating'] as num).round());
+      final ratings = response.map<int>(
+        (data) => (data['rating'] as num).round(),
+      );
       final averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
-      
+
       final distribution = <int, int>{1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
       for (final rating in ratings) {
         distribution[rating] = (distribution[rating] ?? 0) + 1;
@@ -1795,7 +1907,6 @@ class BackendApiService {
         'averageRating': double.parse(averageRating.toStringAsFixed(1)),
         'ratingDistribution': distribution,
       };
-
     } catch (e) {
       dev.log('❌ Error getting review stats for hike $hikeId: $e', error: e);
       throw Exception('Failed to get review statistics: $e');
@@ -1828,7 +1939,6 @@ class BackendApiService {
           userLastName: profileData?['last_name'] as String?,
         );
       }).toList();
-
     } catch (e) {
       dev.log('❌ Error getting recent reviews: $e', error: e);
       throw Exception('Failed to get recent reviews: $e');

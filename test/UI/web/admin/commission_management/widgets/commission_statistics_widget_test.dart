@@ -28,47 +28,52 @@ void main() {
     }
 
     group('Statistics Display', () {
-      testWidgets('should display all KPI cards when statistics are available', (tester) async {
-        // Arrange
-        final statistics = {
-          'totalCommissions': 25,
-          'pendingCommissions': 8,
-          'paidCommissions': 15,
-          'cancelledCommissions': 2,
-          'totalAmount': 1250.50,
-          'pendingAmount': 400.00,
-          'paidAmount': 750.50,
-          'averageCommission': 50.02,
-        };
-        
-        when(mockProvider.statistics).thenReturn(statistics);
-        when(mockProvider.isLoading).thenReturn(false);
-        when(mockProvider.errorMessage).thenReturn(null);
+      testWidgets(
+        'should display all KPI cards when statistics are available',
+        (tester) async {
+          // Arrange
+          final statistics = {
+            'totalCommissions': 25,
+            'pendingCommissions': 8,
+            'paidCommissions': 15,
+            'cancelledCommissions': 2,
+            'totalAmount': 1250.50,
+            'pendingAmount': 400.00,
+            'paidAmount': 750.50,
+            'averageCommission': 50.02,
+          };
 
-        // Act
-        await tester.pumpWidget(createTestWidget());
+          when(mockProvider.statistics).thenReturn(statistics);
+          when(mockProvider.isLoading).thenReturn(false);
+          when(mockProvider.errorMessage).thenReturn(null);
 
-        // Assert
-        expect(find.text('Gesamt Provisionen'), findsOneWidget);
-        expect(find.text('25'), findsOneWidget);
-        
-        expect(find.text('Ausstehende Provisionen'), findsOneWidget);
-        expect(find.text('8'), findsOneWidget);
-        
-        expect(find.text('Bezahlte Provisionen'), findsOneWidget);
-        expect(find.text('15'), findsOneWidget);
-        
-        expect(find.text('Gesamt Betrag'), findsOneWidget);
-        expect(find.text('€1.250,50'), findsOneWidget);
-        
-        expect(find.text('Ausstehender Betrag'), findsOneWidget);
-        expect(find.text('€400,00'), findsOneWidget);
-        
-        expect(find.text('Durchschnitt'), findsOneWidget);
-        expect(find.text('€50,02'), findsOneWidget);
-      });
+          // Act
+          await tester.pumpWidget(createTestWidget());
 
-      testWidgets('should display zero values when statistics are empty', (tester) async {
+          // Assert
+          expect(find.text('Gesamt Provisionen'), findsOneWidget);
+          expect(find.text('25'), findsOneWidget);
+
+          expect(find.text('Ausstehende Provisionen'), findsOneWidget);
+          expect(find.text('8'), findsOneWidget);
+
+          expect(find.text('Bezahlte Provisionen'), findsOneWidget);
+          expect(find.text('15'), findsOneWidget);
+
+          expect(find.text('Gesamt Betrag'), findsOneWidget);
+          expect(find.text('€1.250,50'), findsOneWidget);
+
+          expect(find.text('Ausstehender Betrag'), findsOneWidget);
+          expect(find.text('€400,00'), findsOneWidget);
+
+          expect(find.text('Durchschnitt'), findsOneWidget);
+          expect(find.text('€50,02'), findsOneWidget);
+        },
+      );
+
+      testWidgets('should display zero values when statistics are empty', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.statistics).thenReturn({});
         when(mockProvider.isLoading).thenReturn(false);
@@ -121,7 +126,7 @@ void main() {
           'pendingAmount': 400.00,
           'averageCommission': 50.02,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);
@@ -130,14 +135,28 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         // Assert
-        expect(find.byIcon(Icons.receipt_long), findsOneWidget); // Total commissions
-        expect(find.byIcon(Icons.pending), findsOneWidget);      // Pending commissions
-        expect(find.byIcon(Icons.check_circle), findsOneWidget); // Paid commissions
-        expect(find.byIcon(Icons.euro), findsAtLeastNWidgets(3)); // Amount indicators
-        expect(find.byIcon(Icons.analytics), findsOneWidget);    // Average
+        expect(
+          find.byIcon(Icons.receipt_long),
+          findsOneWidget,
+        ); // Total commissions
+        expect(
+          find.byIcon(Icons.pending),
+          findsOneWidget,
+        ); // Pending commissions
+        expect(
+          find.byIcon(Icons.check_circle),
+          findsOneWidget,
+        ); // Paid commissions
+        expect(
+          find.byIcon(Icons.euro),
+          findsAtLeastNWidgets(3),
+        ); // Amount indicators
+        expect(find.byIcon(Icons.analytics), findsOneWidget); // Average
       });
 
-      testWidgets('should use correct colors for different KPI types', (tester) async {
+      testWidgets('should use correct colors for different KPI types', (
+        tester,
+      ) async {
         // Arrange
         final statistics = {
           'totalCommissions': 25,
@@ -145,7 +164,7 @@ void main() {
           'paidCommissions': 15,
           'totalAmount': 1250.50,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);
@@ -168,7 +187,7 @@ void main() {
           'paidCommissions': 15,
           'totalAmount': 1250.50,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);
@@ -181,7 +200,7 @@ void main() {
 
         // Assert - Should use vertical layout on mobile
         expect(find.byType(GridView), findsOneWidget);
-        
+
         // Reset surface size
         await tester.binding.setSurfaceSize(null);
       });
@@ -194,7 +213,7 @@ void main() {
           'paidCommissions': 15,
           'totalAmount': 1250.50,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);
@@ -207,7 +226,7 @@ void main() {
 
         // Assert - Should use horizontal layout on desktop
         expect(find.byType(GridView), findsOneWidget);
-        
+
         // Reset surface size
         await tester.binding.setSurfaceSize(null);
       });
@@ -221,7 +240,7 @@ void main() {
           'totalAmount': 123456.789,
           'averageCommission': 1234.56,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);
@@ -230,19 +249,27 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         // Assert
-        expect(find.text('1.234'), findsOneWidget); // Large number with thousands separator
+        expect(
+          find.text('1.234'),
+          findsOneWidget,
+        ); // Large number with thousands separator
         expect(find.text('€123.456,79'), findsOneWidget); // Currency formatting
-        expect(find.text('€1.234,56'), findsOneWidget); // Average with correct decimals
+        expect(
+          find.text('€1.234,56'),
+          findsOneWidget,
+        ); // Average with correct decimals
       });
 
-      testWidgets('should handle null and zero values gracefully', (tester) async {
+      testWidgets('should handle null and zero values gracefully', (
+        tester,
+      ) async {
         // Arrange
         final statistics = {
           'totalCommissions': 0,
           'pendingCommissions': null,
           'totalAmount': 0.0,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);
@@ -270,7 +297,9 @@ void main() {
         expect(find.byIcon(Icons.refresh), findsOneWidget);
       });
 
-      testWidgets('should trigger statistics reload on refresh', (tester) async {
+      testWidgets('should trigger statistics reload on refresh', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.statistics).thenReturn({});
         when(mockProvider.isLoading).thenReturn(false);
@@ -278,7 +307,7 @@ void main() {
 
         // Act
         await tester.pumpWidget(createTestWidget());
-        
+
         final refreshButton = find.byIcon(Icons.refresh);
         await tester.tap(refreshButton);
 
@@ -296,7 +325,7 @@ void main() {
           'paidCommissions': 15,
           'totalAmount': 1250.50,
         };
-        
+
         when(mockProvider.statistics).thenReturn(statistics);
         when(mockProvider.isLoading).thenReturn(false);
         when(mockProvider.errorMessage).thenReturn(null);

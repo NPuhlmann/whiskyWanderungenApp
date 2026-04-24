@@ -22,34 +22,50 @@ void main() {
     }
 
     group('Visual Display', () {
-      testWidgets('should display correct text for pending status', (tester) async {
+      testWidgets('should display correct text for pending status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.pending));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.pending),
+        );
 
         // Assert
         expect(find.text('Ausstehend'), findsOneWidget);
         expect(find.byType(Chip), findsOneWidget);
       });
 
-      testWidgets('should display correct text for calculated status', (tester) async {
+      testWidgets('should display correct text for calculated status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.calculated));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.calculated),
+        );
 
         // Assert
         expect(find.text('Berechnet'), findsOneWidget);
       });
 
-      testWidgets('should display correct text for paid status', (tester) async {
+      testWidgets('should display correct text for paid status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.paid));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.paid),
+        );
 
         // Assert
         expect(find.text('Bezahlt'), findsOneWidget);
       });
 
-      testWidgets('should display correct text for cancelled status', (tester) async {
+      testWidgets('should display correct text for cancelled status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.cancelled));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.cancelled),
+        );
 
         // Assert
         expect(find.text('Storniert'), findsOneWidget);
@@ -57,18 +73,26 @@ void main() {
     });
 
     group('Color Coding', () {
-      testWidgets('should use correct color for pending status', (tester) async {
+      testWidgets('should use correct color for pending status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.pending));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.pending),
+        );
 
         // Assert
         final chip = tester.widget<Chip>(find.byType(Chip));
         expect(chip.backgroundColor, Colors.orange.shade100);
       });
 
-      testWidgets('should use correct color for calculated status', (tester) async {
+      testWidgets('should use correct color for calculated status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.calculated));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.calculated),
+        );
 
         // Assert
         final chip = tester.widget<Chip>(find.byType(Chip));
@@ -77,16 +101,22 @@ void main() {
 
       testWidgets('should use correct color for paid status', (tester) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.paid));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.paid),
+        );
 
         // Assert
         final chip = tester.widget<Chip>(find.byType(Chip));
         expect(chip.backgroundColor, Colors.green.shade100);
       });
 
-      testWidgets('should use correct color for cancelled status', (tester) async {
+      testWidgets('should use correct color for cancelled status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.cancelled));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.cancelled),
+        );
 
         // Assert
         final chip = tester.widget<Chip>(find.byType(Chip));
@@ -97,14 +127,18 @@ void main() {
     group('Interactive Behavior', () {
       testWidgets('should be non-interactive by default', (tester) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.pending));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.pending),
+        );
 
         // Assert
         final chip = tester.widget<Chip>(find.byType(Chip));
         expect(chip.onDeleted, isNull);
       });
 
-      testWidgets('should show action button when showAction is true', (tester) async {
+      testWidgets('should show action button when showAction is true', (
+        tester,
+      ) async {
         // Arrange
         bool callbackCalled = false;
         void onStatusChange() {
@@ -112,26 +146,29 @@ void main() {
         }
 
         // Act
-        await tester.pumpWidget(createTestWidget(
-          status: CommissionStatus.pending,
-          showAction: true,
-          onStatusChange: onStatusChange,
-        ));
+        await tester.pumpWidget(
+          createTestWidget(
+            status: CommissionStatus.pending,
+            showAction: true,
+            onStatusChange: onStatusChange,
+          ),
+        );
 
         // Assert
         expect(find.byIcon(Icons.edit), findsOneWidget);
-        
+
         // Tap the action button
         await tester.tap(find.byIcon(Icons.edit));
         expect(callbackCalled, isTrue);
       });
 
-      testWidgets('should not show action button when showAction is false', (tester) async {
+      testWidgets('should not show action button when showAction is false', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(
-          status: CommissionStatus.pending,
-          showAction: false,
-        ));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.pending, showAction: false),
+        );
 
         // Assert
         expect(find.byIcon(Icons.edit), findsNothing);
@@ -139,28 +176,38 @@ void main() {
 
       testWidgets('should handle null callback gracefully', (tester) async {
         // Act & Assert (should not throw)
-        await tester.pumpWidget(createTestWidget(
-          status: CommissionStatus.pending,
-          showAction: true,
-          onStatusChange: null,
-        ));
+        await tester.pumpWidget(
+          createTestWidget(
+            status: CommissionStatus.pending,
+            showAction: true,
+            onStatusChange: null,
+          ),
+        );
 
         expect(find.byType(Chip), findsOneWidget);
       });
     });
 
     group('Icons', () {
-      testWidgets('should show correct icon for pending status', (tester) async {
+      testWidgets('should show correct icon for pending status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.pending));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.pending),
+        );
 
         // Assert
         expect(find.byIcon(Icons.pending), findsOneWidget);
       });
 
-      testWidgets('should show correct icon for calculated status', (tester) async {
+      testWidgets('should show correct icon for calculated status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.calculated));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.calculated),
+        );
 
         // Assert
         expect(find.byIcon(Icons.calculate), findsOneWidget);
@@ -168,15 +215,21 @@ void main() {
 
       testWidgets('should show correct icon for paid status', (tester) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.paid));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.paid),
+        );
 
         // Assert
         expect(find.byIcon(Icons.check_circle), findsOneWidget);
       });
 
-      testWidgets('should show correct icon for cancelled status', (tester) async {
+      testWidgets('should show correct icon for cancelled status', (
+        tester,
+      ) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.cancelled));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.cancelled),
+        );
 
         // Assert
         expect(find.byIcon(Icons.cancel), findsOneWidget);
@@ -186,7 +239,9 @@ void main() {
     group('Accessibility', () {
       testWidgets('should have proper semantics', (tester) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.pending));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.pending),
+        );
 
         // Assert
         expect(find.byTooltip('Status: Ausstehend'), findsOneWidget);
@@ -194,7 +249,9 @@ void main() {
 
       testWidgets('should support screen readers', (tester) async {
         // Act
-        await tester.pumpWidget(createTestWidget(status: CommissionStatus.paid));
+        await tester.pumpWidget(
+          createTestWidget(status: CommissionStatus.paid),
+        );
 
         // Assert
         final chip = tester.widget<Chip>(find.byType(Chip));

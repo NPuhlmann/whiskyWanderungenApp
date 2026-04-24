@@ -38,8 +38,10 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
         _errorMessage = null;
       });
 
-      final commission = await _commissionService.getCommissionByOrderId(widget.orderId);
-      
+      final commission = await _commissionService.getCommissionByOrderId(
+        widget.orderId,
+      );
+
       setState(() {
         _commission = commission;
         _isLoading = false;
@@ -126,9 +128,9 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.1),
+        color: chipColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: chipColor.withOpacity(0.3)),
+        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
       ),
       child: Text(
         statusText,
@@ -199,7 +201,7 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -236,7 +238,7 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
 
   Widget _buildCommissionDetails() {
     final commission = _commission!;
-    
+
     return Column(
       children: [
         _buildDetailRow('Provision ID', '#${commission.id}'),
@@ -255,30 +257,21 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
           '€${commission.commissionAmount.toStringAsFixed(2)}',
           isAmount: true,
         ),
-        _buildDetailRow(
-          'Erstellt am',
-          _formatDate(commission.createdAt),
-        ),
+        _buildDetailRow('Erstellt am', _formatDate(commission.createdAt)),
         if (commission.paidAt != null)
-          _buildDetailRow(
-            'Bezahlt am',
-            _formatDate(commission.paidAt!),
-          ),
+          _buildDetailRow('Bezahlt am', _formatDate(commission.paidAt!)),
         if (commission.notes != null && commission.notes!.isNotEmpty) ...[
           const SizedBox(height: 12),
           const Divider(),
           const SizedBox(height: 8),
           Text(
             'Notizen:',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 4),
-          Text(
-            commission.notes!,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text(commission.notes!, style: Theme.of(context).textTheme.bodySmall),
         ],
       ],
     );
@@ -294,9 +287,9 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
             width: 120,
             child: Text(
               '$label:',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(

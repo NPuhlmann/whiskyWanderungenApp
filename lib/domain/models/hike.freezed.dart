@@ -19,7 +19,7 @@ mixin _$Hike {
  int get id; String get name; double get length; double get steep; int get elevation; String get description; double get price; Difficulty get difficulty;@JsonKey(name: 'thumbnail_image_url') String? get thumbnailImageUrl;@JsonKey(name: 'is_favorite') bool get isFavorite;// Multi-Vendor System Erweiterungen
 @JsonKey(name: 'company_id') String? get companyId; Company? get company;// Populated via JOIN oder separater API call
 // Zusätzliche Felder für erweiterte Funktionalität
- bool get isAvailable; DateTime? get availableFrom; DateTime? get availableUntil;// Kategorisierung 
+ bool get isAvailable; DateTime? get availableFrom; DateTime? get availableUntil;// Kategorisierung
  String get category; List<String> get tags;// z.B. ['Highland', 'Scotch', 'Premium']
 // Rating System (für zukünftige Review-Funktionalität)
  double get averageRating; int get reviewCount;// System Fields
@@ -271,7 +271,7 @@ class _Hike implements Hike {
 @override@JsonKey() final  bool isAvailable;
 @override final  DateTime? availableFrom;
 @override final  DateTime? availableUntil;
-// Kategorisierung 
+// Kategorisierung
 @override@JsonKey() final  String category;
  final  List<String> _tags;
 @override@JsonKey() List<String> get tags {

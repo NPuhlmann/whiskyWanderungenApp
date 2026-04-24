@@ -15,11 +15,19 @@ import 'dart:typed_data';
 import '../../test_helpers.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<dynamic> {}
-class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<List<Map<String, dynamic>>> {}
+
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder<dynamic> {}
+
+class MockPostgrestTransformBuilder extends Mock
+    implements PostgrestTransformBuilder<List<Map<String, dynamic>>> {}
+
 class MockGoTrueClient extends Mock implements GoTrueClient {}
+
 class MockSupabaseStorageClient extends Mock implements SupabaseStorageClient {}
+
 class MockStorageFileApi extends Mock implements StorageFileApi {}
 
 void main() {
@@ -47,7 +55,7 @@ void main() {
       when(mockClient.storage).thenReturn(mockStorage);
       when(mockStorage.from('avatars')).thenReturn(mockBucket);
       when(mockStorage.from('hike_images')).thenReturn(mockBucket);
-      
+
       backendApi = BackendApiService(client: mockClient);
     });
 
@@ -58,10 +66,12 @@ void main() {
           TestHelpers.createTestHikeJson(id: 1, name: 'Hike 1'),
           TestHelpers.createTestHikeJson(id: 2, name: 'Hike 2'),
         ];
-        
+
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => hikeData);
 
         // Act
@@ -78,7 +88,9 @@ void main() {
         // Arrange
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
 
         // Act
@@ -93,11 +105,18 @@ void main() {
         // Arrange
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenThrow(PostgrestException(message: 'Database error', code: '500'));
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.then(any),
+        ).thenThrow(PostgrestException(message: 'Database error', code: '500'));
 
         // Act & Assert
-        expect(() => backendApi.fetchHikes(), throwsA(isA<PostgrestException>()));
+        expect(
+          () => backendApi.fetchHikes(),
+          throwsA(isA<PostgrestException>()),
+        );
       });
 
       test('fetchUserHikes should return user specific hikes', () async {
@@ -106,10 +125,12 @@ void main() {
         final hikeData = [
           TestHelpers.createTestHikeJson(id: 1, name: 'User Hike 1'),
         ];
-        
+
         when(mockClient.from('purchased_hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('user_id', userId)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('user_id', userId),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => hikeData);
 
         // Act
@@ -128,11 +149,17 @@ void main() {
           {'image_url': 'https://example.com/image1.jpg'},
           {'image_url': 'https://example.com/image2.jpg'},
         ];
-        
+
         when(mockClient.from('hike_images')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.select('image_url')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: true)).thenReturn(mockTransformBuilder);
+        when(
+          mockQueryBuilder.select('image_url'),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.eq('hike_id', hikeId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: true),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => imageData);
 
         // Act
@@ -145,52 +172,75 @@ void main() {
         expect(result[1], equals('https://example.com/image2.jpg'));
       });
 
-      test('hasUserPurchasedHike should return true for purchased hikes', () async {
-        // Arrange
-        const userId = 'user123';
-        const hikeId = 1;
-        final purchaseData = [{'id': 1, 'user_id': userId, 'hike_id': hikeId}];
-        
-        when(mockClient.from('purchased_hikes')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.select('id')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('user_id', userId)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenAnswer((_) async => purchaseData);
+      test(
+        'hasUserPurchasedHike should return true for purchased hikes',
+        () async {
+          // Arrange
+          const userId = 'user123';
+          const hikeId = 1;
+          final purchaseData = [
+            {'id': 1, 'user_id': userId, 'hike_id': hikeId},
+          ];
 
-        // Act
-        final result = await backendApi.hasUserPurchasedHike(userId, hikeId);
+          when(mockClient.from('purchased_hikes')).thenReturn(mockQueryBuilder);
+          when(mockQueryBuilder.select('id')).thenReturn(mockFilterBuilder);
+          when(
+            mockFilterBuilder.eq('user_id', userId),
+          ).thenReturn(mockFilterBuilder);
+          when(
+            mockFilterBuilder.eq('hike_id', hikeId),
+          ).thenReturn(mockTransformBuilder);
+          when(
+            mockTransformBuilder.then(any),
+          ).thenAnswer((_) async => purchaseData);
 
-        // Assert
-        expect(result, true);
-      });
+          // Act
+          final result = await backendApi.hasUserPurchasedHike(userId, hikeId);
 
-      test('hasUserPurchasedHike should return false for unpurchased hikes', () async {
-        // Arrange
-        const userId = 'user123';
-        const hikeId = 1;
-        
-        when(mockClient.from('purchased_hikes')).thenReturn(mockQueryBuilder);
-        when(mockQueryBuilder.select('id')).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('user_id', userId)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
+          // Assert
+          expect(result, true);
+        },
+      );
 
-        // Act
-        final result = await backendApi.hasUserPurchasedHike(userId, hikeId);
+      test(
+        'hasUserPurchasedHike should return false for unpurchased hikes',
+        () async {
+          // Arrange
+          const userId = 'user123';
+          const hikeId = 1;
 
-        // Assert
-        expect(result, false);
-      });
+          when(mockClient.from('purchased_hikes')).thenReturn(mockQueryBuilder);
+          when(mockQueryBuilder.select('id')).thenReturn(mockFilterBuilder);
+          when(
+            mockFilterBuilder.eq('user_id', userId),
+          ).thenReturn(mockFilterBuilder);
+          when(
+            mockFilterBuilder.eq('hike_id', hikeId),
+          ).thenReturn(mockTransformBuilder);
+          when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
+
+          // Act
+          final result = await backendApi.hasUserPurchasedHike(userId, hikeId);
+
+          // Assert
+          expect(result, false);
+        },
+      );
     });
 
     group('Profile Operations Tests', () {
       test('updateUserProfile should update profile successfully', () async {
         // Arrange
-        final profile = TestHelpers.createTestProfile(userId: 'user123', firstName: 'John');
-        
+        final profile = TestHelpers.createTestProfile(
+          userId: 'user123',
+          firstName: 'John',
+        );
+
         when(mockClient.from('profiles')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.update(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('user_id', profile.userId)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('user_id', profile.userId),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
 
         // Act & Assert - should not throw
@@ -205,17 +255,32 @@ void main() {
         const fileExt = 'jpg';
         final imageBytes = Uint8List.fromList([1, 2, 3, 4]);
         const expectedUrl = 'https://storage.supabase.com/image.jpg';
-        
-        when(mockBucket.uploadBinary(any, imageBytes, fileOptions: anyNamed('fileOptions')))
-            .thenAnswer((_) async => 'success');
+
+        when(
+          mockBucket.uploadBinary(
+            any,
+            imageBytes,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).thenAnswer((_) async => 'success');
         when(mockBucket.getPublicUrl(any)).thenReturn(expectedUrl);
 
         // Act
-        final result = await backendApi.uploadProfileImage(userId, imageBytes, fileExt);
+        final result = await backendApi.uploadProfileImage(
+          userId,
+          imageBytes,
+          fileExt,
+        );
 
         // Assert
         expect(result, equals(expectedUrl));
-        verify(mockBucket.uploadBinary(any, imageBytes, fileOptions: anyNamed('fileOptions'))).called(1);
+        verify(
+          mockBucket.uploadBinary(
+            any,
+            imageBytes,
+            fileOptions: anyNamed('fileOptions'),
+          ),
+        ).called(1);
         verify(mockBucket.getPublicUrl(any)).called(1);
       });
 
@@ -223,20 +288,24 @@ void main() {
         // Arrange
         const userId = 'user123';
         const expectedUrl = 'https://storage.supabase.com/profile.jpg';
-        
-        when(mockBucket.list(path: '$userId/')).thenAnswer((_) async => [
-          FileObject(
-            bucketId: 'avatars',
-            name: 'profile.jpg',
-            id: 'profile-id',
-            owner: userId,
-            createdAt: DateTime.now().toIso8601String(),
-            updatedAt: DateTime.now().toIso8601String(),
-            lastAccessedAt: DateTime.now().toIso8601String(),
-            metadata: {'size': 1024},
-          )
-        ]);
-        when(mockBucket.getPublicUrl('$userId/profile.jpg')).thenReturn(expectedUrl);
+
+        when(mockBucket.list(path: '$userId/')).thenAnswer(
+          (_) async => [
+            FileObject(
+              bucketId: 'avatars',
+              name: 'profile.jpg',
+              id: 'profile-id',
+              owner: userId,
+              createdAt: DateTime.now().toIso8601String(),
+              updatedAt: DateTime.now().toIso8601String(),
+              lastAccessedAt: DateTime.now().toIso8601String(),
+              metadata: {'size': 1024},
+            ),
+          ],
+        );
+        when(
+          mockBucket.getPublicUrl('$userId/profile.jpg'),
+        ).thenReturn(expectedUrl);
 
         // Act
         final result = await backendApi.getProfileImageUrl(userId);
@@ -245,18 +314,21 @@ void main() {
         expect(result, equals(expectedUrl));
       });
 
-      test('getProfileImageUrl should return null when no image exists', () async {
-        // Arrange
-        const userId = 'user123';
-        
-        when(mockBucket.list(path: '$userId/')).thenAnswer((_) async => []);
+      test(
+        'getProfileImageUrl should return null when no image exists',
+        () async {
+          // Arrange
+          const userId = 'user123';
 
-        // Act
-        final result = await backendApi.getProfileImageUrl(userId);
+          when(mockBucket.list(path: '$userId/')).thenAnswer((_) async => []);
 
-        // Assert
-        expect(result, isNull);
-      });
+          // Act
+          final result = await backendApi.getProfileImageUrl(userId);
+
+          // Assert
+          expect(result, isNull);
+        },
+      );
     });
 
     group('Waypoint Operations Tests', () {
@@ -267,12 +339,18 @@ void main() {
           TestHelpers.createTestWaypointJson(id: 1, name: 'Start Point'),
           TestHelpers.createTestWaypointJson(id: 2, name: 'End Point'),
         ];
-        
+
         when(mockClient.from('hikes_waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('order_index', ascending: true)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenAnswer((_) async => waypointData);
+        when(
+          mockFilterBuilder.eq('hike_id', hikeId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('order_index', ascending: true),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.then(any),
+        ).thenAnswer((_) async => waypointData);
 
         // Act
         final result = await backendApi.getWaypointsForHike(hikeId);
@@ -285,14 +363,17 @@ void main() {
 
       test('addWaypoint should insert waypoint successfully', () async {
         // Arrange
-        final waypoint = TestHelpers.createTestWaypoint(id: 1, name: 'New Point');
+        final waypoint = TestHelpers.createTestWaypoint(
+          id: 1,
+          name: 'New Point',
+        );
         const hikeId = 1;
-        
+
         when(mockClient.from('waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.insert(any)).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.select()).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.single()).thenAnswer((_) async => {'id': 1});
-        
+
         when(mockClient.from('hikes_waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.insert(any)).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
@@ -305,11 +386,16 @@ void main() {
 
       test('updateWaypoint should update waypoint successfully', () async {
         // Arrange
-        final waypoint = TestHelpers.createTestWaypoint(id: 1, name: 'Updated Point');
-        
+        final waypoint = TestHelpers.createTestWaypoint(
+          id: 1,
+          name: 'Updated Point',
+        );
+
         when(mockClient.from('waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.update(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('id', waypoint.id)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('id', waypoint.id),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
 
         // Act & Assert - should not throw
@@ -321,16 +407,22 @@ void main() {
         // Arrange
         const waypointId = 1;
         const hikeId = 1;
-        
+
         when(mockClient.from('hikes_waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('waypoint_id', waypointId)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('waypoint_id', waypointId),
+        ).thenReturn(mockFilterBuilder);
+        when(
+          mockFilterBuilder.eq('hike_id', hikeId),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
-        
+
         when(mockClient.from('waypoints')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('id', waypointId)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('id', waypointId),
+        ).thenReturn(mockTransformBuilder);
 
         // Act & Assert - should not throw
         await backendApi.deleteWaypoint(waypointId, hikeId);
@@ -347,11 +439,15 @@ void main() {
           TestHelpers.createTestBasicOrderJson(id: 1, userId: userId),
           TestHelpers.createTestBasicOrderJson(id: 2, userId: userId),
         ];
-        
+
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('user_id', userId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('user_id', userId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => orderData);
 
         // Act
@@ -366,11 +462,16 @@ void main() {
       test('fetchOrderById should return specific order', () async {
         // Arrange
         const orderId = 1;
-        final orderData = TestHelpers.createTestBasicOrderJson(id: orderId, userId: 'user123');
-        
+        final orderData = TestHelpers.createTestBasicOrderJson(
+          id: orderId,
+          userId: 'user123',
+        );
+
         when(mockClient.from('orders')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('id', orderId)).thenReturn(mockTransformBuilder);
+        when(
+          mockFilterBuilder.eq('id', orderId),
+        ).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.single()).thenAnswer((_) async => orderData);
 
         // Act
@@ -387,19 +488,21 @@ void main() {
         const userId = 'user123';
         const hikeId = 1;
         const orderId = 1;
-        
+
         when(mockClient.from('purchased_hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.insert(any)).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
 
         // Act & Assert - should not throw
         await backendApi.recordHikePurchase(userId, hikeId, orderId);
-        verify(mockQueryBuilder.insert({
-          'user_id': userId,
-          'hike_id': hikeId,
-          'order_id': orderId,
-          'purchased_at': anyNamed('purchased_at'),
-        })).called(1);
+        verify(
+          mockQueryBuilder.insert({
+            'user_id': userId,
+            'hike_id': hikeId,
+            'order_id': orderId,
+            'purchased_at': anyNamed('purchased_at'),
+          }),
+        ).called(1);
       });
     });
 
@@ -407,12 +510,19 @@ void main() {
       test('getTastingSetForHike should return tasting set', () async {
         // Arrange
         const hikeId = 1;
-        final tastingSetData = TestHelpers.createTestTastingSetJson(id: 1, hikeId: hikeId);
-        
+        final tastingSetData = TestHelpers.createTestTastingSetJson(
+          id: 1,
+          hikeId: hikeId,
+        );
+
         when(mockClient.from('tasting_sets')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single()).thenAnswer((_) async => tastingSetData);
+        when(
+          mockFilterBuilder.eq('hike_id', hikeId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.single(),
+        ).thenAnswer((_) async => tastingSetData);
 
         // Act
         final result = await backendApi.getTastingSetForHike(hikeId);
@@ -426,14 +536,21 @@ void main() {
       test('getTastingSetForHike should handle not found', () async {
         // Arrange
         const hikeId = 1;
-        
+
         when(mockClient.from('tasting_sets')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select(any)).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.single()).thenThrow(PostgrestException(message: 'No rows found', code: 'PGRST116'));
+        when(
+          mockFilterBuilder.eq('hike_id', hikeId),
+        ).thenReturn(mockTransformBuilder);
+        when(mockTransformBuilder.single()).thenThrow(
+          PostgrestException(message: 'No rows found', code: 'PGRST116'),
+        );
 
         // Act & Assert
-        expect(() => backendApi.getTastingSetForHike(hikeId), throwsA(isA<PostgrestException>()));
+        expect(
+          () => backendApi.getTastingSetForHike(hikeId),
+          throwsA(isA<PostgrestException>()),
+        );
       });
     });
 
@@ -447,7 +564,7 @@ void main() {
           rating: 5,
           comment: 'Great hike!',
         );
-        
+
         when(mockClient.from('reviews')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.insert(any)).thenReturn(mockTransformBuilder);
         when(mockTransformBuilder.then(any)).thenAnswer((_) async => []);
@@ -464,12 +581,18 @@ void main() {
           TestHelpers.createTestReviewJson(hikeId: hikeId, rating: 5),
           TestHelpers.createTestReviewJson(hikeId: hikeId, rating: 4),
         ];
-        
+
         when(mockClient.from('reviews')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-        when(mockFilterBuilder.eq('hike_id', hikeId)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenAnswer((_) async => reviewData);
+        when(
+          mockFilterBuilder.eq('hike_id', hikeId),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.then(any),
+        ).thenAnswer((_) async => reviewData);
 
         // Act
         final result = await backendApi.getHikeReviews(hikeId);
@@ -486,8 +609,12 @@ void main() {
         // Arrange
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenThrow(Exception('Network timeout'));
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.then(any),
+        ).thenThrow(Exception('Network timeout'));
 
         // Act & Assert
         expect(() => backendApi.fetchHikes(), throwsA(isA<Exception>()));
@@ -495,12 +622,18 @@ void main() {
 
       test('should handle malformed data gracefully', () async {
         // Arrange
-        final malformedData = [{'invalid': 'data'}]; // Missing required fields
-        
+        final malformedData = [
+          {'invalid': 'data'},
+        ]; // Missing required fields
+
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenAnswer((_) async => malformedData);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.then(any),
+        ).thenAnswer((_) async => malformedData);
 
         // Act & Assert
         expect(() => backendApi.fetchHikes(), throwsA(isA<Exception>()));
@@ -510,13 +643,20 @@ void main() {
     group('Performance Tests', () {
       test('should handle large datasets efficiently', () async {
         // Arrange
-        final largeDataset = List.generate(1000, (index) => 
-            TestHelpers.createTestHikeJson(id: index, name: 'Hike $index'));
-        
+        final largeDataset = List.generate(
+          1000,
+          (index) =>
+              TestHelpers.createTestHikeJson(id: index, name: 'Hike $index'),
+        );
+
         when(mockClient.from('hikes')).thenReturn(mockQueryBuilder);
         when(mockQueryBuilder.select()).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.order('created_at', ascending: false)).thenReturn(mockTransformBuilder);
-        when(mockTransformBuilder.then(any)).thenAnswer((_) async => largeDataset);
+        when(
+          mockTransformBuilder.order('created_at', ascending: false),
+        ).thenReturn(mockTransformBuilder);
+        when(
+          mockTransformBuilder.then(any),
+        ).thenAnswer((_) async => largeDataset);
 
         // Act
         final stopwatch = Stopwatch()..start();
@@ -525,7 +665,10 @@ void main() {
 
         // Assert
         expect(result.length, equals(1000));
-        expect(stopwatch.elapsedMilliseconds, lessThan(5000)); // Should complete within 5 seconds
+        expect(
+          stopwatch.elapsedMilliseconds,
+          lessThan(5000),
+        ); // Should complete within 5 seconds
       });
     });
   });

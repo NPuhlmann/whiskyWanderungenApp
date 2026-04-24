@@ -32,15 +32,19 @@ abstract class RoutePerformance with _$RoutePerformance {
 
   /// Returns formatted revenue with Euro symbol
   String get formattedRevenue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€')
-        .format(totalRevenue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(totalRevenue);
   }
 
   /// Returns formatted average revenue per sale
   String get formattedAverageRevenue {
     final avgRevenue = totalSales > 0 ? totalRevenue / totalSales : 0.0;
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€')
-        .format(avgRevenue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(avgRevenue);
   }
 
   /// Returns formatted conversion rate as percentage
@@ -83,9 +87,7 @@ abstract class RoutePerformance with _$RoutePerformance {
   /// Returns best performing month by sales count
   String? get bestMonth {
     if (salesByMonth.isEmpty) return null;
-    return salesByMonth.entries
-        .reduce((a, b) => a.value > b.value ? a : b)
-        .key;
+    return salesByMonth.entries.reduce((a, b) => a.value > b.value ? a : b).key;
   }
 
   /// Creates an empty RoutePerformance instance

@@ -29,22 +29,13 @@ class ResponsiveNavigation extends StatelessWidget {
       selectedItemColor: Colors.amber[800],
       unselectedItemColor: Colors.grey[600],
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: 'Wanderrouten',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Wanderrouten'),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
           label: 'Bestellungen',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profil',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
       ],
     );
   }
@@ -66,22 +57,19 @@ class ResponsiveNavigation extends StatelessWidget {
                 const SizedBox(width: 12),
                 const Text(
                   'Whisky Hikes',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Admin Navigation
           _buildAdminNavigationSection(),
-          
+
           const Divider(),
-          
+
           // User Navigation
           _buildUserNavigationSection(),
         ],
@@ -223,7 +211,7 @@ class ResponsiveNavigation extends StatelessWidget {
         onTap: () {
           // Hier würde die Navigation erfolgen
           // Für jetzt nur ein print
-          print('Navigate to: $route');
+          debugPrint('Navigate to: $route');
         },
       ),
     );

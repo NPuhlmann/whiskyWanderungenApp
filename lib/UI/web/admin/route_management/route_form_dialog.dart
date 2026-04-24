@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/providers/route_management_provider.dart';
-import '../../../../config/l10n/app_localizations.dart';
 
 /// Dialog für das Erstellen oder Bearbeiten einer Route
 class RouteFormDialog extends StatefulWidget {
@@ -44,7 +43,8 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
     _distanceController.text = (route['distance'] ?? 0.0).toString();
     _durationController.text = (route['duration'] ?? 0).toString();
     _priceController.text = (route['price'] ?? 0.0).toString();
-    _maxParticipantsController.text = (route['max_participants'] ?? 0).toString();
+    _maxParticipantsController.text = (route['max_participants'] ?? 0)
+        .toString();
     _selectedDifficulty = route['difficulty'] ?? 'moderate';
     _isActive = route['is_active'] ?? true;
   }
@@ -84,16 +84,13 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
   Widget _buildHeader() {
     return Row(
       children: [
-        Icon(
-          widget.isEdit ? Icons.edit : Icons.add,
-          color: Colors.amber[800],
-        ),
+        Icon(widget.isEdit ? Icons.edit : Icons.add, color: Colors.amber[800]),
         const SizedBox(width: 12),
         Text(
           widget.isEdit ? 'Route bearbeiten' : 'Neue Route erstellen',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const Spacer(),
         IconButton(
@@ -139,14 +136,17 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _selectedDifficulty,
+                    initialValue: _selectedDifficulty,
                     decoration: const InputDecoration(
                       labelText: 'Schwierigkeit *',
                       border: OutlineInputBorder(),
                     ),
                     items: const [
                       DropdownMenuItem(value: 'easy', child: Text('Leicht')),
-                      DropdownMenuItem(value: 'moderate', child: Text('Mittel')),
+                      DropdownMenuItem(
+                        value: 'moderate',
+                        child: Text('Mittel'),
+                      ),
                       DropdownMenuItem(value: 'hard', child: Text('Schwer')),
                     ],
                     onChanged: (value) {
@@ -194,7 +194,9 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                       border: OutlineInputBorder(),
                       suffixText: 'km',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -224,9 +226,7 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                       suffixText: 'min',
                     ),
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Dauer ist erforderlich';
@@ -235,7 +235,8 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                       if (duration == null || duration <= 0) {
                         return 'Ungültige Dauer';
                       }
-                      if (duration > 1440) { // 24 Stunden
+                      if (duration > 1440) {
+                        // 24 Stunden
                         return 'Dauer darf maximal 24 Stunden betragen';
                       }
                       return null;
@@ -258,7 +259,9 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                       border: OutlineInputBorder(),
                       suffixText: '€',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -288,9 +291,7 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                       suffixText: 'Pers.',
                     ),
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (value) {
                       if (value != null && value.isNotEmpty) {
                         final participants = int.tryParse(value);
@@ -316,14 +317,16 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
 
             SwitchListTile(
               title: const Text('Route ist aktiv'),
-              subtitle: const Text('Aktive Routen können von Kunden gebucht werden'),
+              subtitle: const Text(
+                'Aktive Routen können von Kunden gebucht werden',
+              ),
               value: _isActive,
               onChanged: (value) {
                 setState(() {
                   _isActive = value;
                 });
               },
-              activeColor: Colors.amber[800],
+              activeThumbColor: Colors.amber[800],
             ),
 
             const SizedBox(height: 16),
@@ -375,9 +378,7 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
                 )
               : Icon(widget.isEdit ? Icons.save : Icons.add),
           label: Text(widget.isEdit ? 'Speichern' : 'Erstellen'),
-          style: FilledButton.styleFrom(
-            backgroundColor: Colors.amber[800],
-          ),
+          style: FilledButton.styleFrom(backgroundColor: Colors.amber[800]),
         ),
       ],
     );
@@ -439,10 +440,7 @@ class _RouteFormDialogState extends State<RouteFormDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Fehler: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Fehler: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {

@@ -38,15 +38,17 @@ class CommissionStatisticsWidget extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         IconButton(
-          onPressed: provider.isLoading 
-              ? null 
-              : () => provider.loadStatistics('current-company'), // TODO: Get actual company ID
-          icon: provider.isLoading 
+          onPressed: provider.isLoading
+              ? null
+              : () => provider.loadStatistics(
+                  'current-company',
+                ), // TODO: Get actual company ID
+          icon: provider.isLoading
               ? const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
-                ) 
+                )
               : const Icon(Icons.refresh),
           tooltip: 'Statistiken aktualisieren',
         ),
@@ -56,9 +58,7 @@ class CommissionStatisticsWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, CommissionProvider provider) {
     if (provider.isLoading && provider.statistics.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (provider.errorMessage != null) {
@@ -129,9 +129,12 @@ class CommissionStatisticsWidget extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildKpiCards(BuildContext context, CommissionProvider provider) {
+  List<Widget> _buildKpiCards(
+    BuildContext context,
+    CommissionProvider provider,
+  ) {
     final statistics = provider.statistics;
-    
+
     return [
       _buildKpiCard(
         context,
@@ -192,11 +195,7 @@ class CommissionStatisticsWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            Icon(icon, color: color, size: 24),
             const SizedBox(height: 8),
             Text(
               value,
@@ -224,7 +223,7 @@ class CommissionStatisticsWidget extends StatelessWidget {
 
   String _formatNumber(dynamic value) {
     if (value == null) return '0';
-    
+
     final number = value is int ? value : (value as double).toInt();
     final formatter = NumberFormat('#,##0', 'de_DE');
     return formatter.format(number);
@@ -232,7 +231,7 @@ class CommissionStatisticsWidget extends StatelessWidget {
 
   String _formatCurrency(dynamic value) {
     if (value == null) return '€0,00';
-    
+
     final amount = value is double ? value : (value as int).toDouble();
     final formatter = NumberFormat.currency(
       locale: 'de_DE',

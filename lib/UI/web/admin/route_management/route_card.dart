@@ -53,9 +53,8 @@ class RouteCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             name,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -116,13 +115,16 @@ class RouteCard extends StatelessWidget {
           // Bild oder Platzhalter
           if (thumbnailUrl != null && thumbnailUrl.isNotEmpty)
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8),
+              ),
               child: Image.network(
                 thumbnailUrl,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildImagePlaceholder(),
               ),
             )
           else
@@ -134,8 +136,10 @@ class RouteCard extends StatelessWidget {
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                color: Colors.black.withOpacity(0.6),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(8),
+                ),
+                color: Colors.black.withValues(alpha: 0.6),
               ),
               child: const Center(
                 child: Text(
@@ -161,11 +165,7 @@ class RouteCard extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
         color: Colors.grey[300],
       ),
-      child: Icon(
-        Icons.landscape,
-        size: 48,
-        color: Colors.grey[500],
-      ),
+      child: Icon(Icons.landscape, size: 48, color: Colors.grey[500]),
     );
   }
 
@@ -212,9 +212,9 @@ class RouteCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -234,7 +234,12 @@ class RouteCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRouteDetails(double price, double distance, int duration, BuildContext context) {
+  Widget _buildRouteDetails(
+    double price,
+    double distance,
+    int duration,
+    BuildContext context,
+  ) {
     return Column(
       children: [
         Row(
@@ -243,9 +248,9 @@ class RouteCard extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               '${price.toStringAsFixed(2)} €',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
             ),
             const Spacer(),
             Icon(Icons.straighten, size: 16, color: Colors.grey[600]),
@@ -308,9 +313,7 @@ class RouteCard extends StatelessWidget {
           icon: const Icon(Icons.delete),
           tooltip: 'Löschen',
           iconSize: 20,
-          style: IconButton.styleFrom(
-            foregroundColor: Colors.red[600],
-          ),
+          style: IconButton.styleFrom(foregroundColor: Colors.red[600]),
         ),
       ],
     );

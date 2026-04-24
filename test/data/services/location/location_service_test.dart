@@ -21,8 +21,10 @@ class MockGeolocator extends Mock {
     );
   }
 
-  static Future<LocationPermission> requestPermission() async => LocationPermission.whileInUse;
-  static Future<LocationPermission> checkPermission() async => LocationPermission.whileInUse;
+  static Future<LocationPermission> requestPermission() async =>
+      LocationPermission.whileInUse;
+  static Future<LocationPermission> checkPermission() async =>
+      LocationPermission.whileInUse;
   static Future<bool> isLocationServiceEnabled() async => true;
 }
 
@@ -75,15 +77,15 @@ void main() {
         // Test distance calculation
         const lat1 = 47.3769; // Zurich
         const lon1 = 8.5417;
-        const lat2 = 46.9481; // Bern  
+        const lat2 = 46.9481; // Bern
         const lon2 = 7.4474;
 
         // Using Haversine formula for expected distance (approximately 94 km)
         const expectedDistance = 94.0; // km
-        
+
         // This would test the actual distance calculation method
         expect(locationService, isA<LocationService>());
-        
+
         // In a real test, we would call:
         // final distance = locationService.calculateDistance(lat1, lon1, lat2, lon2);
         // expect(distance, closeTo(expectedDistance, 5.0)); // Within 5km tolerance
@@ -93,10 +95,10 @@ void main() {
         // Test same point distance
         const lat = 47.3769;
         const lon = 8.5417;
-        
+
         // Distance to same point should be 0
         expect(locationService, isA<LocationService>());
-        
+
         // In a real test:
         // final distance = locationService.calculateDistance(lat, lon, lat, lon);
         // expect(distance, equals(0.0));

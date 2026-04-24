@@ -10,7 +10,8 @@ import 'dashboard_metrics_service_test.mocks.dart';
 
 // Create a test-specific service that exposes the logic we want to test
 class TestableDashboardMetricsService extends DashboardMetricsService {
-  TestableDashboardMetricsService(SupabaseClient client) : super(client: client);
+  TestableDashboardMetricsService(SupabaseClient client)
+    : super(client: client);
 
   // Extract the calculation logic for testing
   double calculateTotalFromResults(List<Map<String, dynamic>> results) {
@@ -90,7 +91,10 @@ void main() {
         ];
 
         // The current implementation would throw, which is expected behavior
-        expect(() => service.calculateTotalFromResults(results), throwsA(isA<TypeError>()));
+        expect(
+          () => service.calculateTotalFromResults(results),
+          throwsA(isA<TypeError>()),
+        );
       });
     });
 
@@ -170,12 +174,20 @@ void main() {
       test('should handle date calculations correctly', () {
         final today = DateTime.now();
         final todayStr = today.toIso8601String().split('T')[0];
-        final tomorrowStr = today.add(Duration(days: 1)).toIso8601String().split('T')[0];
+        final tomorrowStr = today
+            .add(Duration(days: 1))
+            .toIso8601String()
+            .split('T')[0];
 
         // Verify date string formatting
         expect(todayStr.length, equals(10)); // YYYY-MM-DD
         expect(tomorrowStr.length, equals(10));
-        expect(DateTime.parse(tomorrowStr).difference(DateTime.parse(todayStr)).inDays, equals(1));
+        expect(
+          DateTime.parse(
+            tomorrowStr,
+          ).difference(DateTime.parse(todayStr)).inDays,
+          equals(1),
+        );
       });
 
       test('should handle weekly date range calculations', () {
@@ -186,7 +198,10 @@ void main() {
         // Verify week start calculation
         expect(weekStart.weekday, equals(1)); // Monday
         expect(weekStartStr.length, equals(10));
-        expect(weekStart.isBefore(now) || weekStart.isAtSameMomentAs(now), isTrue);
+        expect(
+          weekStart.isBefore(now) || weekStart.isAtSameMomentAs(now),
+          isTrue,
+        );
       });
     });
 
@@ -205,16 +220,8 @@ void main() {
 
       test('should validate popular routes data structure', () {
         final mockRoutes = [
-          {
-            'hike_id': 1,
-            'route_name': 'Highland Trail',
-            'order_count': 15
-          },
-          {
-            'hike_id': 2,
-            'route_name': 'Speyside Walk',
-            'order_count': 12
-          }
+          {'hike_id': 1, 'route_name': 'Highland Trail', 'order_count': 15},
+          {'hike_id': 2, 'route_name': 'Speyside Walk', 'order_count': 12},
         ];
 
         expect(mockRoutes, hasLength(2));

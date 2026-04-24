@@ -29,12 +29,18 @@ abstract class SalesStatistics with _$SalesStatistics {
 
   /// Returns formatted revenue with Euro symbol
   String get formattedRevenue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€').format(totalRevenue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(totalRevenue);
   }
 
   /// Returns formatted average order value with Euro symbol
   String get formattedAverageOrderValue {
-    return NumberFormat.currency(locale: 'de_DE', symbol: '€').format(averageOrderValue);
+    return NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€',
+    ).format(averageOrderValue);
   }
 
   /// Number of unique routes with orders

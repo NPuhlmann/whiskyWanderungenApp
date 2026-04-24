@@ -26,7 +26,7 @@ class TastingSetRepository {
     } catch (e) {
       throw Exception('Fehler beim Laden des Tasting Sets: $e');
     }
-    }
+  }
 
   /// Get all tasting sets (for admin/company management)
   Future<List<TastingSet>> getAllTastingSets() async {
@@ -39,9 +39,13 @@ class TastingSetRepository {
   }
 
   /// Get whisky samples for a specific tasting set
-  Future<List<WhiskySample>> getWhiskySamplesForTastingSet(int tastingSetId) async {
+  Future<List<WhiskySample>> getWhiskySamplesForTastingSet(
+    int tastingSetId,
+  ) async {
     try {
-      final response = await _backendApi.getWhiskySamplesForTastingSet(tastingSetId);
+      final response = await _backendApi.getWhiskySamplesForTastingSet(
+        tastingSetId,
+      );
       return response;
     } catch (e) {
       throw Exception('Fehler beim Laden der Whisky Samples: $e');
@@ -74,7 +78,9 @@ class TastingSetRepository {
       final response = await _backendApi.getCurrentlyAvailableTastingSets();
       return response;
     } catch (e) {
-      throw Exception('Fehler beim Laden der aktuell verfügbaren Tasting Sets: $e');
+      throw Exception(
+        'Fehler beim Laden der aktuell verfügbaren Tasting Sets: $e',
+      );
     }
   }
 
@@ -86,12 +92,11 @@ class TastingSetRepository {
     DateTime? availableUntil,
   }) async {
     try {
-      await _backendApi.updateTastingSetAvailability(
-        tastingSetId, 
-        isAvailable,
-      );
+      await _backendApi.updateTastingSetAvailability(tastingSetId, isAvailable);
     } catch (e) {
-      throw Exception('Fehler beim Aktualisieren der Tasting Set Verfügbarkeit: $e');
+      throw Exception(
+        'Fehler beim Aktualisieren der Tasting Set Verfügbarkeit: $e',
+      );
     }
   }
 

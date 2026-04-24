@@ -9,8 +9,8 @@ import '../../models/pagination_result.dart';
 class HikeService {
   final SupabaseClient client;
 
-  HikeService({SupabaseClient? client}) 
-      : client = client ?? Supabase.instance.client;
+  HikeService({SupabaseClient? client})
+    : client = client ?? Supabase.instance.client;
 
   /// Get list of hikes from the 'hikes' table
   Future<List<Hike>> fetchHikes() async {
@@ -18,23 +18,25 @@ class HikeService {
       final response = await client.from('hikes').select();
       final List<dynamic> hikeData = response as List<dynamic>;
 
-      return hikeData.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
+      return hikeData
+          .map((element) => Hike.fromJson(element as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       throw ErrorHandler.createSafeException('Fetch hikes', e);
     }
   }
 
   /// Get paginated list of hikes
-  Future<PaginationResult<Hike>> fetchHikesPaginated(PaginationParams params) async {
+  Future<PaginationResult<Hike>> fetchHikesPaginated(
+    PaginationParams params,
+  ) async {
     try {
       // Calculate offset
       final offset = (params.page - 1) * params.pageSize;
       final limit = params.pageSize;
 
       // Get total count first
-      final countResponse = await client
-          .from('hikes')
-          .select('id');
+      final countResponse = await client.from('hikes').select('id');
       final totalItems = countResponse.length;
       final totalPages = (totalItems / params.pageSize).ceil();
 
@@ -47,17 +49,19 @@ class HikeService {
 
       // Apply filters if provided
       if (params.filters != null) {
-        for (final entry in params.filters!.entries) {
-          // Note: eq method doesn't exist in current Postgrest version
-          // TODO: Implement filtering when Postgrest is updated
-          // query = query.eq(entry.key, entry.value);
-        }
+        // Note: eq method doesn't exist in current Postgrest version
+        // TODO: Implement filtering when Postgrest is updated
+        // for (final entry in params.filters!.entries) {
+        //   query = query.eq(entry.key, entry.value);
+        // }
       }
 
       final response = await query;
       final List<dynamic> hikeData = response as List<dynamic>;
 
-      final hikes = hikeData.map((element) => Hike.fromJson(element as Map<String, dynamic>)).toList();
+      final hikes = hikeData
+          .map((element) => Hike.fromJson(element as Map<String, dynamic>))
+          .toList();
 
       return PaginationResult<Hike>(
         items: hikes,
@@ -80,7 +84,7 @@ class HikeService {
           .from('purchased_hikes')
           .select('hike_id')
           .eq('user_id', userId);
-      
+
       final List<dynamic> userHikeData = response as List<dynamic>;
       if (userHikeData.isEmpty) {
         return [];
@@ -119,7 +123,9 @@ class HikeService {
       final List<dynamic> purchaseData = response as List<dynamic>;
       final bool hasPurchased = purchaseData.isNotEmpty;
 
-      dev.log('✅ User $userId has${hasPurchased ? '' : ' not'} purchased hike $hikeId');
+      dev.log(
+        '✅ User $userId has${hasPurchased ? '' : ' not'} purchased hike $hikeId',
+      );
       return hasPurchased;
     } catch (e) {
       throw ErrorHandler.createSafeException('Check hike purchase', e);
@@ -127,7 +133,11 @@ class HikeService {
   }
 
   /// Record successful hike purchase
-  Future<void> recordHikePurchase(String userId, int hikeId, int orderId) async {
+  Future<void> recordHikePurchase(
+    String userId,
+    int hikeId,
+    int orderId,
+  ) async {
     if (userId.isEmpty) {
       throw ArgumentError('User ID cannot be empty');
     }
@@ -139,7 +149,9 @@ class HikeService {
     }
 
     try {
-      dev.log('💰 Recording hike purchase: user=$userId, hike=$hikeId, order=$orderId');
+      dev.log(
+        '💰 Recording hike purchase: user=$userId, hike=$hikeId, order=$orderId',
+      );
 
       final purchaseData = {
         'user_id': userId,
@@ -175,7 +187,7 @@ class HikeService {
             .from('hikes')
             .select()
             .eq('id', hikeId);
-        
+
         final List<dynamic> hikeDataList = hikeResponse as List<dynamic>;
         if (hikeDataList.isNotEmpty) {
           final hikeData = hikeDataList.first as Map<String, dynamic>;

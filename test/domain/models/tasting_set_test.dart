@@ -23,7 +23,10 @@ void main() {
       expect(sample.age, equals(12));
       expect(sample.region, equals('Highland'));
       expect(sample.tastingNotes, equals('Honig, Vanille, leichte Rauchnoten'));
-      expect(sample.imageUrl, equals('https://example.com/highland-park-12.jpg'));
+      expect(
+        sample.imageUrl,
+        equals('https://example.com/highland-park-12.jpg'),
+      );
       expect(sample.abv, equals(43.0));
       expect(sample.category, equals('Single Malt'));
       expect(sample.sampleSizeMl, equals(5.0));
@@ -132,10 +135,16 @@ void main() {
       expect(tastingSet.id, equals(1));
       expect(tastingSet.hikeId, equals(100));
       expect(tastingSet.name, equals('Highland Collection'));
-      expect(tastingSet.description, equals('Eine Auswahl der besten Highland Whiskys'));
+      expect(
+        tastingSet.description,
+        equals('Eine Auswahl der besten Highland Whiskys'),
+      );
       expect(tastingSet.samples, equals([sampleWhisky]));
       expect(tastingSet.price, equals(0.0)); // Always 0
-      expect(tastingSet.imageUrl, equals('https://example.com/highland-collection.jpg'));
+      expect(
+        tastingSet.imageUrl,
+        equals('https://example.com/highland-collection.jpg'),
+      );
     });
 
     test('should create TastingSet with default values', () {
@@ -224,7 +233,10 @@ void main() {
       expect(tastingSet.sampleCount, equals(1));
       expect(tastingSet.hasSamples, isTrue);
       expect(tastingSet.totalVolumeMl, equals(5.0));
-      expect(tastingSet.formattedPrice, equals('Inklusive')); // Always "Inklusive"
+      expect(
+        tastingSet.formattedPrice,
+        equals('Inklusive'),
+      ); // Always "Inklusive"
       expect(tastingSet.shortDescription, equals('Test description'));
       expect(tastingSet.mainRegion, equals('Test Region'));
       expect(tastingSet.averageAge, equals(10.0));

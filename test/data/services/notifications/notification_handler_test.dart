@@ -18,7 +18,10 @@ void main() {
 
         // Assert
         expect(notification.title, 'Bestellstatus aktualisiert');
-        expect(notification.body, 'Deine Bestellung #ORD-123 hat den Status: confirmed');
+        expect(
+          notification.body,
+          'Deine Bestellung #ORD-123 hat den Status: confirmed',
+        );
         expect(notification.type, NotificationType.orderUpdate);
         expect(notification.data, data);
         expect(notification.isRead, false);
@@ -27,30 +30,30 @@ void main() {
 
       test('should handle missing order_id gracefully', () {
         // Arrange
-        final data = {
-          'status': 'confirmed',
-          'order_number': 'ORD-123',
-        };
+        final data = {'status': 'confirmed', 'order_number': 'ORD-123'};
 
         // Act
         final notification = NotificationHandler.handleOrderStatusUpdate(data);
 
         // Assert
-        expect(notification.body, 'Deine Bestellung #ORD-123 hat den Status: confirmed');
+        expect(
+          notification.body,
+          'Deine Bestellung #ORD-123 hat den Status: confirmed',
+        );
       });
 
       test('should handle missing status gracefully', () {
         // Arrange
-        final data = {
-          'order_id': '123',
-          'order_number': 'ORD-123',
-        };
+        final data = {'order_id': '123', 'order_number': 'ORD-123'};
 
         // Act
         final notification = NotificationHandler.handleOrderStatusUpdate(data);
 
         // Assert
-        expect(notification.body, 'Deine Bestellung #ORD-123 hat den Status: null');
+        expect(
+          notification.body,
+          'Deine Bestellung #ORD-123 hat den Status: null',
+        );
       });
     });
 
@@ -68,7 +71,10 @@ void main() {
 
         // Assert
         expect(notification.title, 'Versand-Updates');
-        expect(notification.body, 'Bestellung #ORD-123 wurde versendet. Tracking: TRK-456');
+        expect(
+          notification.body,
+          'Bestellung #ORD-123 wurde versendet. Tracking: TRK-456',
+        );
         expect(notification.type, NotificationType.deliveryUpdate);
         expect(notification.data, data);
         expect(notification.isRead, false);
@@ -77,16 +83,16 @@ void main() {
 
       test('should handle missing tracking number gracefully', () {
         // Arrange
-        final data = {
-          'order_id': '123',
-          'order_number': 'ORD-123',
-        };
+        final data = {'order_id': '123', 'order_number': 'ORD-123'};
 
         // Act
         final notification = NotificationHandler.handleDeliveryUpdate(data);
 
         // Assert
-        expect(notification.body, 'Bestellung #ORD-123 wurde versendet. Tracking: null');
+        expect(
+          notification.body,
+          'Bestellung #ORD-123 wurde versendet. Tracking: null',
+        );
       });
     });
 
@@ -141,8 +147,12 @@ void main() {
         final data2 = {'order_id': '456'};
 
         // Act
-        final notification1 = NotificationHandler.handleOrderStatusUpdate(data1);
-        final notification2 = NotificationHandler.handleOrderStatusUpdate(data2);
+        final notification1 = NotificationHandler.handleOrderStatusUpdate(
+          data1,
+        );
+        final notification2 = NotificationHandler.handleOrderStatusUpdate(
+          data2,
+        );
 
         // Assert
         expect(notification1.id, isNot(notification2.id));
@@ -154,8 +164,12 @@ void main() {
         final data2 = {'order_id': '456', 'status': 'confirmed'};
 
         // Act
-        final notification1 = NotificationHandler.handleOrderStatusUpdate(data1);
-        final notification2 = NotificationHandler.handleOrderStatusUpdate(data2);
+        final notification1 = NotificationHandler.handleOrderStatusUpdate(
+          data1,
+        );
+        final notification2 = NotificationHandler.handleOrderStatusUpdate(
+          data2,
+        );
 
         // Assert
         expect(notification1.id, isNot(notification2.id));
@@ -163,4 +177,3 @@ void main() {
     });
   });
 }
-

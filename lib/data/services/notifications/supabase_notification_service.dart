@@ -5,7 +5,8 @@ import '../../../../domain/models/notification_model.dart';
 
 class SupabaseNotificationService {
   final SupabaseClient _supabase;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   RealtimeChannel? _orderUpdatesChannel;
 
   SupabaseNotificationService(this._supabase);
@@ -15,10 +16,10 @@ class SupabaseNotificationService {
     try {
       // Configure local notifications
       await _configureLocalNotifications();
-      
+
       // Subscribe to order updates
       await subscribeToOrderUpdates();
-      
+
       log("✅ Notification service initialized successfully");
     } catch (e) {
       log("❌ Failed to initialize notification service: $e", error: e);
@@ -28,20 +29,22 @@ class SupabaseNotificationService {
 
   /// Configure local notifications
   Future<void> _configureLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    
+
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
 
     await _localNotifications.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
   }
@@ -80,16 +83,16 @@ class SupabaseNotificationService {
   void _handleOrderUpdate(PostgresChangePayload payload) {
     try {
       log("📨 Received order update: $payload");
-      
-      if (payload.newRecord != null && payload.oldRecord != null) {
-        final newStatus = payload.newRecord['status'] as String?;
-        final oldStatus = payload.oldRecord['status'] as String?;
-        final orderNumber = payload.newRecord['order_number'] as String?;
-        
-        if (newStatus != null && oldStatus != null && 
-            newStatus != oldStatus && orderNumber != null) {
-          _showOrderStatusNotification(orderNumber, newStatus);
-        }
+
+      final newStatus = payload.newRecord['status'] as String?;
+      final oldStatus = payload.oldRecord['status'] as String?;
+      final orderNumber = payload.newRecord['order_number'] as String?;
+
+      if (newStatus != null &&
+          oldStatus != null &&
+          newStatus != oldStatus &&
+          orderNumber != null) {
+        _showOrderStatusNotification(orderNumber, newStatus);
       }
     } catch (e) {
       log("❌ Error handling order update: $e", error: e);
@@ -97,7 +100,10 @@ class SupabaseNotificationService {
   }
 
   /// Show local notification for order status update
-  Future<void> _showOrderStatusNotification(String orderNumber, String newStatus) async {
+  Future<void> _showOrderStatusNotification(
+    String orderNumber,
+    String newStatus,
+  ) async {
     try {
       const androidDetails = AndroidNotificationDetails(
         'order_updates',
@@ -107,23 +113,23 @@ class SupabaseNotificationService {
         priority: Priority.high,
         showWhen: true,
       );
-      
+
       const iosDetails = DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
       );
-      
+
       const details = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
 
       await _localNotifications.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        'Bestellstatus aktualisiert',
-        'Deine Bestellung #$orderNumber hat den Status: $newStatus',
-        details,
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        title: 'Bestellstatus aktualisiert',
+        body: 'Deine Bestellung #$orderNumber hat den Status: $newStatus',
+        notificationDetails: details,
         payload: 'order_$orderNumber',
       );
 
@@ -136,7 +142,7 @@ class SupabaseNotificationService {
   /// Handle notification tap
   void _onNotificationTapped(NotificationResponse response) {
     log("👆 Notification tapped: ${response.payload}");
-    
+
     // TODO: Navigate to order details when notification is tapped
     // This will be implemented when the navigation system is ready
   }
@@ -157,23 +163,23 @@ class SupabaseNotificationService {
         priority: Priority.low,
         showWhen: true,
       );
-      
+
       const iosDetails = DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
       );
-      
+
       const details = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
 
       await _localNotifications.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        title,
-        body,
-        details,
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        title: title,
+        body: body,
+        notificationDetails: details,
         payload: payload,
       );
 
@@ -275,13 +281,14 @@ class SupabaseNotificationService {
     DateTime? estimatedDelivery,
   }) async {
     try {
-      final deliveryText = estimatedDelivery != null 
+      final deliveryText = estimatedDelivery != null
           ? ' Voraussichtliche Lieferung: ${_formatDate(estimatedDelivery)}'
           : '';
 
       await showNotification(
         title: '📦 Bestellung versendet',
-        body: 'Deine Bestellung #$orderNumber wurde versendet. Tracking: $trackingNumber$deliveryText',
+        body:
+            'Deine Bestellung #$orderNumber wurde versendet. Tracking: $trackingNumber$deliveryText',
         payload: 'order_tracking_$orderId',
         type: NotificationType.orderUpdate,
       );
@@ -331,14 +338,13 @@ class SupabaseNotificationService {
       final timeText = estimatedDeliveryTime != null
           ? ' bis ${_formatTime(estimatedDeliveryTime)}'
           : '';
-      
-      final courierText = courierName != null
-          ? ' Kurier: $courierName'
-          : '';
+
+      final courierText = courierName != null ? ' Kurier: $courierName' : '';
 
       await showNotification(
         title: '🚛 Zustellung heute!',
-        body: 'Deine Bestellung #$orderNumber wird heute$timeText geliefert.$courierText',
+        body:
+            'Deine Bestellung #$orderNumber wird heute$timeText geliefert.$courierText',
         payload: 'order_delivery_$orderId',
         type: NotificationType.urgent,
       );
@@ -359,13 +365,12 @@ class SupabaseNotificationService {
     String? deliveryProofUrl,
   }) async {
     try {
-      final recipientText = recipientName != null
-          ? ' an $recipientName'
-          : '';
+      final recipientText = recipientName != null ? ' an $recipientName' : '';
 
       await showNotification(
         title: '✅ Bestellung zugestellt!',
-        body: 'Deine Bestellung #$orderNumber wurde um ${_formatTime(deliveryTime)}$recipientText zugestellt.',
+        body:
+            'Deine Bestellung #$orderNumber wurde um ${_formatTime(deliveryTime)}$recipientText zugestellt.',
         payload: 'order_delivered_$orderId',
         type: NotificationType.success,
       );
@@ -381,7 +386,9 @@ class SupabaseNotificationService {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
-        log("⚠️ User not authenticated, skipping enhanced order updates subscription");
+        log(
+          "⚠️ User not authenticated, skipping enhanced order updates subscription",
+        );
         return;
       }
 
@@ -415,56 +422,57 @@ class SupabaseNotificationService {
   void _handleEnhancedOrderUpdate(PostgresChangePayload payload) {
     try {
       log("📨 Received enhanced order update: ${payload.eventType}");
-      
-      if (payload.newRecord != null && payload.oldRecord != null) {
-        final newStatus = payload.newRecord['status'] as String?;
-        final oldStatus = payload.oldRecord['status'] as String?;
-        final orderNumber = payload.newRecord['order_number'] as String?;
-        final trackingNumber = payload.newRecord['tracking_number'] as String?;
-        final orderId = payload.newRecord['id'] as int?;
 
-        if (newStatus != null && oldStatus != null && newStatus != oldStatus && 
-            orderNumber != null && orderId != null) {
-          
-          // Show appropriate notification based on status change
-          if (newStatus == 'shipped' && trackingNumber != null) {
-            sendOrderTrackingNotification(
-              customerId: payload.newRecord['customer_id'],
-              orderId: orderId,
-              orderNumber: orderNumber,
-              trackingNumber: trackingNumber,
-              shippingCarrier: payload.newRecord['shipping_carrier'] ?? 'Carrier',
-              estimatedDelivery: payload.newRecord['estimated_delivery'] != null
-                  ? DateTime.parse(payload.newRecord['estimated_delivery'])
-                  : null,
-            );
-          } else if (newStatus == 'outForDelivery') {
-            sendOrderOutForDeliveryNotification(
-              customerId: payload.newRecord['customer_id'],
-              orderId: orderId,
-              orderNumber: orderNumber,
-              estimatedDeliveryTime: payload.newRecord['estimated_delivery'] != null
-                  ? DateTime.parse(payload.newRecord['estimated_delivery'])
-                  : null,
-            );
-          } else if (newStatus == 'delivered') {
-            sendOrderDeliveredNotification(
-              customerId: payload.newRecord['customer_id'],
-              orderId: orderId,
-              orderNumber: orderNumber,
-              deliveryTime: payload.newRecord['delivered_at'] != null
-                  ? DateTime.parse(payload.newRecord['delivered_at'])
-                  : DateTime.now(),
-            );
-          } else {
-            sendOrderStatusChangeNotification(
-              customerId: payload.newRecord['customer_id'],
-              orderId: orderId,
-              orderNumber: orderNumber,
-              newStatus: newStatus,
-              trackingNumber: trackingNumber,
-            );
-          }
+      final newStatus = payload.newRecord['status'] as String?;
+      final oldStatus = payload.oldRecord['status'] as String?;
+      final orderNumber = payload.newRecord['order_number'] as String?;
+      final trackingNumber = payload.newRecord['tracking_number'] as String?;
+      final orderId = payload.newRecord['id'] as int?;
+
+      if (newStatus != null &&
+          oldStatus != null &&
+          newStatus != oldStatus &&
+          orderNumber != null &&
+          orderId != null) {
+        // Show appropriate notification based on status change
+        if (newStatus == 'shipped' && trackingNumber != null) {
+          sendOrderTrackingNotification(
+            customerId: payload.newRecord['customer_id'],
+            orderId: orderId,
+            orderNumber: orderNumber,
+            trackingNumber: trackingNumber,
+            shippingCarrier: payload.newRecord['shipping_carrier'] ?? 'Carrier',
+            estimatedDelivery: payload.newRecord['estimated_delivery'] != null
+                ? DateTime.parse(payload.newRecord['estimated_delivery'])
+                : null,
+          );
+        } else if (newStatus == 'outForDelivery') {
+          sendOrderOutForDeliveryNotification(
+            customerId: payload.newRecord['customer_id'],
+            orderId: orderId,
+            orderNumber: orderNumber,
+            estimatedDeliveryTime:
+                payload.newRecord['estimated_delivery'] != null
+                ? DateTime.parse(payload.newRecord['estimated_delivery'])
+                : null,
+          );
+        } else if (newStatus == 'delivered') {
+          sendOrderDeliveredNotification(
+            customerId: payload.newRecord['customer_id'],
+            orderId: orderId,
+            orderNumber: orderNumber,
+            deliveryTime: payload.newRecord['delivered_at'] != null
+                ? DateTime.parse(payload.newRecord['delivered_at'])
+                : DateTime.now(),
+          );
+        } else {
+          sendOrderStatusChangeNotification(
+            customerId: payload.newRecord['customer_id'],
+            orderId: orderId,
+            orderNumber: orderNumber,
+            newStatus: newStatus,
+            trackingNumber: trackingNumber,
+          );
         }
       }
     } catch (e) {
@@ -479,34 +487,56 @@ class SupabaseNotificationService {
   /// Get display text for order status
   String _getStatusDisplayText(String status) {
     switch (status.toLowerCase()) {
-      case 'pending': return 'Ausstehend';
-      case 'paymentpending': return 'Zahlung ausstehend';
-      case 'confirmed': return 'Bestätigt';
-      case 'processing': return 'In Bearbeitung';
-      case 'shipped': return 'Versendet';
-      case 'outfordelivery': return 'Zustellung unterwegs';
-      case 'delivered': return 'Zugestellt';
-      case 'cancelled': return 'Storniert';
-      case 'refunded': return 'Erstattet';
-      case 'failed': return 'Fehlgeschlagen';
-      default: return status;
+      case 'pending':
+        return 'Ausstehend';
+      case 'paymentpending':
+        return 'Zahlung ausstehend';
+      case 'confirmed':
+        return 'Bestätigt';
+      case 'processing':
+        return 'In Bearbeitung';
+      case 'shipped':
+        return 'Versendet';
+      case 'outfordelivery':
+        return 'Zustellung unterwegs';
+      case 'delivered':
+        return 'Zugestellt';
+      case 'cancelled':
+        return 'Storniert';
+      case 'refunded':
+        return 'Erstattet';
+      case 'failed':
+        return 'Fehlgeschlagen';
+      default:
+        return status;
     }
   }
 
   /// Get description for order status
   String _getStatusDescription(String status) {
     switch (status.toLowerCase()) {
-      case 'pending': return 'Bestellung eingegangen';
-      case 'paymentpending': return 'Warte auf Zahlungsbestätigung';
-      case 'confirmed': return 'Zahlung bestätigt, Bestellung wird vorbereitet';
-      case 'processing': return 'Bestellung wird bearbeitet';
-      case 'shipped': return 'Paket ist auf dem Weg';
-      case 'outfordelivery': return 'Zustellung erfolgt heute';
-      case 'delivered': return 'Paket wurde zugestellt';
-      case 'cancelled': return 'Bestellung wurde storniert';
-      case 'refunded': return 'Betrag wurde erstattet';
-      case 'failed': return 'Bestellung konnte nicht verarbeitet werden';
-      default: return 'Status wurde aktualisiert';
+      case 'pending':
+        return 'Bestellung eingegangen';
+      case 'paymentpending':
+        return 'Warte auf Zahlungsbestätigung';
+      case 'confirmed':
+        return 'Zahlung bestätigt, Bestellung wird vorbereitet';
+      case 'processing':
+        return 'Bestellung wird bearbeitet';
+      case 'shipped':
+        return 'Paket ist auf dem Weg';
+      case 'outfordelivery':
+        return 'Zustellung erfolgt heute';
+      case 'delivered':
+        return 'Paket wurde zugestellt';
+      case 'cancelled':
+        return 'Bestellung wurde storniert';
+      case 'refunded':
+        return 'Betrag wurde erstattet';
+      case 'failed':
+        return 'Bestellung konnte nicht verarbeitet werden';
+      default:
+        return 'Status wurde aktualisiert';
     }
   }
 

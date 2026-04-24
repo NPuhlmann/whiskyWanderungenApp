@@ -74,10 +74,19 @@ void main() {
     group('Commission Status Enum', () {
       test('should have correct commission status values', () {
         expect(CommissionStatus.values.length, equals(4));
-        expect(CommissionStatus.values.contains(CommissionStatus.pending), isTrue);
-        expect(CommissionStatus.values.contains(CommissionStatus.calculated), isTrue);
+        expect(
+          CommissionStatus.values.contains(CommissionStatus.pending),
+          isTrue,
+        );
+        expect(
+          CommissionStatus.values.contains(CommissionStatus.calculated),
+          isTrue,
+        );
         expect(CommissionStatus.values.contains(CommissionStatus.paid), isTrue);
-        expect(CommissionStatus.values.contains(CommissionStatus.cancelled), isTrue);
+        expect(
+          CommissionStatus.values.contains(CommissionStatus.cancelled),
+          isTrue,
+        );
       });
 
       test('should convert status to string correctly', () {
@@ -125,8 +134,10 @@ void main() {
       });
 
       test('should check if commission is paid', () {
-        final paidCommission = commission.copyWith(status: CommissionStatus.paid);
-        
+        final paidCommission = commission.copyWith(
+          status: CommissionStatus.paid,
+        );
+
         expect(paidCommission.isPending, isFalse);
         expect(paidCommission.isCalculated, isFalse);
         expect(paidCommission.isPaid, isTrue);
@@ -138,7 +149,9 @@ void main() {
       });
 
       test('should detect invalid commission calculation', () {
-        final invalidCommission = commission.copyWith(commissionAmount: 10.0); // Should be 7.50
+        final invalidCommission = commission.copyWith(
+          commissionAmount: 10.0,
+        ); // Should be 7.50
         expect(invalidCommission.isCalculationValid, isFalse);
       });
 
@@ -151,9 +164,11 @@ void main() {
           createdAt: DateTime(2024, 1, 1), // Over a year ago
         );
         expect(oldCommission.isOverdue, isTrue);
-        
+
         final recentCommission = commission.copyWith(
-          createdAt: DateTime.now().subtract(const Duration(days: 5)), // 5 days ago
+          createdAt: DateTime.now().subtract(
+            const Duration(days: 5),
+          ), // 5 days ago
         );
         expect(recentCommission.isOverdue, isFalse);
       });
@@ -162,7 +177,7 @@ void main() {
         final testDate = DateTime.now();
         final recentCommission = commission.copyWith(createdAt: testDate);
         expect(recentCommission.ageInDays, equals(0));
-        
+
         final oldCommission = commission.copyWith(
           createdAt: testDate.subtract(const Duration(days: 30)),
         );
@@ -256,10 +271,13 @@ void main() {
         expect(updatedCommission.status, equals(CommissionStatus.paid));
         expect(updatedCommission.paidAt, equals(DateTime(2025, 2, 1)));
         expect(updatedCommission.updatedAt, equals(DateTime(2025, 2, 1)));
-        
+
         // Original fields should remain unchanged
         expect(updatedCommission.id, equals(originalCommission.id));
-        expect(updatedCommission.commissionAmount, equals(originalCommission.commissionAmount));
+        expect(
+          updatedCommission.commissionAmount,
+          equals(originalCommission.commissionAmount),
+        );
       });
 
       test('should handle copyWith with amount changes', () {
@@ -339,7 +357,7 @@ void main() {
         );
 
         final stringRepresentation = commission.toString();
-        
+
         expect(stringRepresentation, contains('Commission'));
         expect(stringRepresentation, contains('id: 1'));
         expect(stringRepresentation, contains('7.5'));

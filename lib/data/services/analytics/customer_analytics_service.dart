@@ -70,7 +70,8 @@ class CustomerAnalyticsService {
         final createdAt = DateTime.parse(order['created_at'] as String);
 
         ordersByCustomer.putIfAbsent(userId, () => []).add(order);
-        lifetimeValueByCustomer[userId] = (lifetimeValueByCustomer[userId] ?? 0.0) + amount;
+        lifetimeValueByCustomer[userId] =
+            (lifetimeValueByCustomer[userId] ?? 0.0) + amount;
 
         if (!firstOrderByCustomer.containsKey(userId) ||
             createdAt.isBefore(firstOrderByCustomer[userId]!)) {
@@ -97,7 +98,8 @@ class CustomerAnalyticsService {
         totalLifetimeValue += ltv;
 
         // Check if customer is new in this period
-        final isNewInPeriod = firstOrderDate.isAfter(startDate.subtract(Duration(days: 1))) &&
+        final isNewInPeriod =
+            firstOrderDate.isAfter(startDate.subtract(Duration(days: 1))) &&
             firstOrderDate.isBefore(endDate.add(Duration(days: 1)));
 
         if (isNewInPeriod) {
@@ -114,7 +116,8 @@ class CustomerAnalyticsService {
         // Aggregate by location
         final location = userLocations[userId];
         if (location != null && location.isNotEmpty) {
-          customersByLocation[location] = (customersByLocation[location] ?? 0) + 1;
+          customersByLocation[location] =
+              (customersByLocation[location] ?? 0) + 1;
         }
 
         // Build frequency distribution
@@ -183,11 +186,7 @@ class CustomerAnalyticsService {
         }
       }
 
-      return {
-        'high': highValue,
-        'medium': mediumValue,
-        'low': lowValue,
-      };
+      return {'high': highValue, 'medium': mediumValue, 'low': lowValue};
     } catch (e) {
       log('Error getting customer segmentation: $e');
       rethrow;

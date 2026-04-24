@@ -14,9 +14,9 @@ class OrderFilterWidget extends StatelessWidget {
           children: [
             Text(
               'Filter',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
@@ -44,17 +44,19 @@ class OrderFilterWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusFilter(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildStatusFilter(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Status',
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
+        Text('Status', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: provider.currentFilter == 'all' ? null : provider.currentFilter,
+          initialValue: provider.currentFilter == 'all'
+              ? null
+              : provider.currentFilter,
           decoration: const InputDecoration(
             hintText: 'Alle Status',
             border: OutlineInputBorder(),
@@ -84,14 +86,14 @@ class OrderFilterWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDateRangeFilter(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildDateRangeFilter(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Zeitraum',
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
+        Text('Zeitraum', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -120,14 +122,14 @@ class OrderFilterWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountRangeFilter(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildAmountRangeFilter(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Betrag',
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
+        Text('Betrag', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -136,7 +138,10 @@ class OrderFilterWidget extends StatelessWidget {
                 decoration: const InputDecoration(
                   hintText: 'Min €',
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
@@ -151,7 +156,10 @@ class OrderFilterWidget extends StatelessWidget {
                 decoration: const InputDecoration(
                   hintText: 'Max €',
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
@@ -166,14 +174,14 @@ class OrderFilterWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchFilter(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildSearchFilter(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Suche',
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
+        Text('Suche', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         TextFormField(
           decoration: const InputDecoration(
@@ -188,8 +196,12 @@ class OrderFilterWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterActions(BuildContext context, OrderManagementProvider provider) {
-    final hasActiveFilters = provider.currentFilter != 'all' ||
+  Widget _buildFilterActions(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
+    final hasActiveFilters =
+        provider.currentFilter != 'all' ||
         provider.startDate != null ||
         provider.endDate != null ||
         provider.minAmount != null ||
@@ -215,7 +227,10 @@ class OrderFilterWidget extends StatelessWidget {
     );
   }
 
-  Future<void> _selectDateRange(BuildContext context, OrderManagementProvider provider) async {
+  Future<void> _selectDateRange(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),

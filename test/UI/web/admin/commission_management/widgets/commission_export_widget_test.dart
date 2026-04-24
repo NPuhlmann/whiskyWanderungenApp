@@ -8,10 +8,7 @@ import 'package:whisky_hikes/data/providers/commission_provider.dart';
 import '../../../../../test_helpers.dart';
 import 'commission_export_widget_test.mocks.dart';
 
-@GenerateMocks([
-  CommissionProvider,
-])
-
+@GenerateMocks([CommissionProvider])
 void main() {
   group('CommissionExportWidget UI Tests', () {
     late MockCommissionProvider mockProvider;
@@ -21,8 +18,12 @@ void main() {
 
       // Setup default mock behavior
       when(mockProvider.isLoading).thenReturn(false);
-      when(mockProvider.commissions).thenReturn(TestHelpers.createSampleCommissions());
-      when(mockProvider.filteredCommissions).thenReturn(TestHelpers.createSampleCommissions());
+      when(
+        mockProvider.commissions,
+      ).thenReturn(TestHelpers.createSampleCommissions());
+      when(
+        mockProvider.filteredCommissions,
+      ).thenReturn(TestHelpers.createSampleCommissions());
       when(mockProvider.currentFilter).thenReturn('all');
       when(mockProvider.startDate).thenReturn(null);
       when(mockProvider.endDate).thenReturn(null);
@@ -97,7 +98,9 @@ void main() {
     group('Provider Integration', () {
       testWidgets('should use commission count from provider', (tester) async {
         // Arrange
-        final testCommissions = TestHelpers.createSampleCommissions().take(3).toList();
+        final testCommissions = TestHelpers.createSampleCommissions()
+            .take(3)
+            .toList();
         when(mockProvider.commissions).thenReturn(testCommissions);
         when(mockProvider.filteredCommissions).thenReturn(testCommissions);
 

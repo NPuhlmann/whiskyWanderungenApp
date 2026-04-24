@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class RecentOrdersWidget extends StatelessWidget {
   final List<Map<String, dynamic>> orders;
 
-  const RecentOrdersWidget({
-    Key? key,
-    required this.orders,
-  }) : super(key: key);
+  const RecentOrdersWidget({super.key, required this.orders});
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +20,7 @@ class RecentOrdersWidget extends StatelessWidget {
             SizedBox(height: 8),
             Text(
               'No recent orders',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -47,10 +41,7 @@ class RecentOrdersWidget extends StatelessWidget {
 class _OrderListItem extends StatelessWidget {
   final Map<String, dynamic> order;
 
-  const _OrderListItem({
-    Key? key,
-    required this.order,
-  }) : super(key: key);
+  const _OrderListItem({required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +49,9 @@ class _OrderListItem extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
       leading: CircleAvatar(
         radius: 20,
-        backgroundColor: _getStatusColor(order['status']).withOpacity(0.1),
+        backgroundColor: _getStatusColor(
+          order['status'],
+        ).withValues(alpha: 0.1),
         child: Icon(
           _getStatusIcon(order['status']),
           size: 16,
@@ -78,10 +71,7 @@ class _OrderListItem extends StatelessWidget {
         children: [
           Text(
             order['hike_name'] ?? 'Unknown Route',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
           SizedBox(height: 2),
           Row(
@@ -148,10 +138,7 @@ class _OrderListItem extends StatelessWidget {
 class _StatusChip extends StatelessWidget {
   final String? status;
 
-  const _StatusChip({
-    Key? key,
-    required this.status,
-  }) : super(key: key);
+  const _StatusChip({required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -161,12 +148,9 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Text(
         statusText,

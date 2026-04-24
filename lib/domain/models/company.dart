@@ -13,7 +13,7 @@ abstract class Company with _$Company {
     String? description,
     required String contactEmail,
     String? phone,
-    
+
     // Location Information
     required String countryCode, // ISO 3166-1 alpha-2 (e.g., 'DE', 'AU', 'GB')
     required String countryName,
@@ -21,13 +21,13 @@ abstract class Company with _$Company {
     String? postalCode,
     String? addressLine1,
     String? addressLine2,
-    
+
     // Business Information
     String? companyRegistrationNumber,
     String? vatNumber,
     String? websiteUrl,
     String? logoUrl,
-    
+
     // System Fields
     @Default(true) bool isActive,
     @Default(false) bool isVerified,
@@ -35,18 +35,19 @@ abstract class Company with _$Company {
     DateTime? updatedAt,
   }) = _Company;
 
-  factory Company.fromJson(Map<String, dynamic> json) => _$CompanyFromJson(json);
+  factory Company.fromJson(Map<String, dynamic> json) =>
+      _$CompanyFromJson(json);
 }
 
 /// Extension für Business Logic auf Company
 extension CompanyExtensions on Company {
   /// Prüft ob die Firma eine DACH-Adresse hat (Deutschland, Österreich, Schweiz)
   bool get isDachAddress => ['DE', 'AT', 'CH'].contains(countryCode);
-  
+
   /// Generiert eine Anzeige-Adresse für die Firma
   String get displayAddress {
     final parts = <String>[];
-    
+
     if (addressLine1?.isNotEmpty == true) parts.add(addressLine1!);
     if (addressLine2?.isNotEmpty == true) parts.add(addressLine2!);
     if (postalCode?.isNotEmpty == true && city.isNotEmpty) {
@@ -55,36 +56,37 @@ extension CompanyExtensions on Company {
       parts.add(city);
     }
     if (countryName.isNotEmpty) parts.add(countryName);
-    
+
     return parts.join(', ');
   }
-  
+
   /// Prüft ob die Firma vollständig verifiziert ist
   bool get isFullyVerified => isActive && isVerified;
-  
+
   /// Generiert einen Display-Namen mit Land
   String get displayNameWithCountry => '$name ($countryCode)';
-  
+
   /// Prüft ob die Firma internationale Lieferungen macht
   /// (basierend darauf ob sie in einem anderen Land als Deutschland ist)
   bool get isInternationalVendor => countryCode != 'DE';
-  
+
   /// Generiert einen sicheren Kontakt-String (Email wird teilweise maskiert)
   String get maskedContactEmail {
     if (contactEmail.isEmpty) return '';
-    
+
     final atIndex = contactEmail.indexOf('@');
     if (atIndex == -1) return contactEmail;
-    
+
     final username = contactEmail.substring(0, atIndex);
     final domain = contactEmail.substring(atIndex);
-    
+
     if (username.length <= 3) return contactEmail;
-    
-    final masked = username.substring(0, 2) + 
-                   '*' * (username.length - 3) +
-                   username.substring(username.length - 1);
-    
+
+    final masked =
+        username.substring(0, 2) +
+        '*' * (username.length - 3) +
+        username.substring(username.length - 1);
+
     return masked + domain;
   }
 }
@@ -110,7 +112,7 @@ abstract class CompanyShippingRule with _$CompanyShippingRule {
     DateTime? updatedAt,
   }) = _CompanyShippingRule;
 
-  factory CompanyShippingRule.fromJson(Map<String, dynamic> json) => 
+  factory CompanyShippingRule.fromJson(Map<String, dynamic> json) =>
       _$CompanyShippingRuleFromJson(json);
 }
 
@@ -118,10 +120,10 @@ abstract class CompanyShippingRule with _$CompanyShippingRule {
 extension CompanyShippingRuleExtensions on CompanyShippingRule {
   /// Prüft ob kostenloser Versand für einen Bestellwert verfügbar ist
   bool isFreeShippingAvailable(double orderValue) {
-    return freeShippingThreshold != null && 
-           orderValue >= freeShippingThreshold!;
+    return freeShippingThreshold != null &&
+        orderValue >= freeShippingThreshold!;
   }
-  
+
   /// Berechnet die tatsächlichen Versandkosten für einen Bestellwert
   double calculateActualShippingCost(double orderValue) {
     if (isFreeShippingAvailable(orderValue)) {
@@ -129,36 +131,38 @@ extension CompanyShippingRuleExtensions on CompanyShippingRule {
     }
     return shippingCost;
   }
-  
+
   /// Generiert einen Lieferzeit-String
   String get estimatedDeliveryString {
     if (estimatedDeliveryDaysMin == null || estimatedDeliveryDaysMax == null) {
       return 'Lieferzeit auf Anfrage';
     }
-    
+
     if (estimatedDeliveryDaysMin == estimatedDeliveryDaysMax) {
       return '$estimatedDeliveryDaysMin Werktage';
     }
-    
+
     return '$estimatedDeliveryDaysMin-$estimatedDeliveryDaysMax Werktage';
   }
-  
+
   /// Generiert eine Versand-Beschreibung mit allen wichtigen Infos
   String get shippingDescription {
     final parts = <String>[];
-    
+
     parts.add('${shippingCost.toStringAsFixed(2)} €');
-    
+
     if (freeShippingThreshold != null) {
-      parts.add('(kostenlos ab ${freeShippingThreshold!.toStringAsFixed(2)} €)');
+      parts.add(
+        '(kostenlos ab ${freeShippingThreshold!.toStringAsFixed(2)} €)',
+      );
     }
-    
+
     parts.add(estimatedDeliveryString);
-    
+
     if (trackingAvailable) {
       parts.add('mit Sendungsverfolgung');
     }
-    
+
     return parts.join(' • ');
   }
 }

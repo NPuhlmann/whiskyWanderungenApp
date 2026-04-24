@@ -33,10 +33,7 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('de', 'DE'),
-        ],
+        supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
         home: ChangeNotifierProvider<RouteManagementProvider>.value(
           value: provider,
           child: child,
@@ -45,7 +42,9 @@ void main() {
     }
 
     group('Complete Route Management Workflow', () {
-      testWidgets('should complete full route creation workflow', (tester) async {
+      testWidgets('should complete full route creation workflow', (
+        tester,
+      ) async {
         // Arrange
         final mockRoutes = <Map<String, dynamic>>[];
         final newRoute = {
@@ -62,24 +61,26 @@ void main() {
           'updated_at': '2024-01-01T10:00:00Z',
         };
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => mockRoutes);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => mockRoutes);
 
-        when(mockService.createRoute(any))
-            .thenAnswer((_) async => newRoute);
+        when(mockService.createRoute(any)).thenAnswer((_) async => newRoute);
 
-        when(mockService.validateRouteData(any))
-            .thenReturn(true);
+        when(mockService.validateRouteData(any)).thenReturn(true);
 
         // Act - Start with empty state
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Verify empty state
         expect(find.text('Keine Routen verfügbar'), findsOneWidget);
-        expect(find.text('Erstellen Sie Ihre erste Wanderroute'), findsOneWidget);
+        expect(
+          find.text('Erstellen Sie Ihre erste Wanderroute'),
+          findsOneWidget,
+        );
 
         // Tap create route button
         await tester.tap(find.text('Erste Route erstellen'));
@@ -116,8 +117,9 @@ void main() {
 
         // Mock successful creation and reload
         mockRoutes.add(newRoute);
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => mockRoutes);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => mockRoutes);
 
         // Submit form
         await tester.tap(find.text('Erstellen'));
@@ -135,7 +137,9 @@ void main() {
         expect(find.text('89,99 €'), findsOneWidget);
       });
 
-      testWidgets('should complete full waypoint management workflow', (tester) async {
+      testWidgets('should complete full waypoint management workflow', (
+        tester,
+      ) async {
         // Arrange
         final mockRoute = {
           'id': 123,
@@ -150,22 +154,23 @@ void main() {
 
         final mockWaypoints = <Map<String, dynamic>>[];
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => [mockRoute]);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => [mockRoute]);
 
-        when(mockService.getRouteWaypoints(123))
-            .thenAnswer((_) async => mockWaypoints);
+        when(
+          mockService.getRouteWaypoints(123),
+        ).thenAnswer((_) async => mockWaypoints);
 
-        when(mockService.validateWaypointData(any))
-            .thenReturn(true);
+        when(mockService.validateWaypointData(any)).thenReturn(true);
 
         // Start with route selected
         provider.routes.add(mockRoute);
         await provider.selectRoute(mockRoute);
 
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Verify route is selected and waypoint panel is visible
@@ -199,15 +204,17 @@ void main() {
             'latitude': 52.5200,
             'longitude': 13.4050,
             'whisky_info': 'Glenfiddich 12',
-          }
+          },
         };
 
-        when(mockService.addWaypointToRoute(123, any))
-            .thenAnswer((_) async => newWaypoint['waypoints']);
+        when(
+          mockService.addWaypointToRoute(123, any),
+        ).thenAnswer((_) async => newWaypoint['waypoints']);
 
         mockWaypoints.add(newWaypoint);
-        when(mockService.getRouteWaypoints(123))
-            .thenAnswer((_) async => mockWaypoints);
+        when(
+          mockService.getRouteWaypoints(123),
+        ).thenAnswer((_) async => mockWaypoints);
 
         // Submit waypoint form
         await tester.tap(find.text('Hinzufügen'));
@@ -223,7 +230,9 @@ void main() {
         expect(find.text('52.5200, 13.4050'), findsOneWidget);
       });
 
-      testWidgets('should handle search and filter functionality', (tester) async {
+      testWidgets('should handle search and filter functionality', (
+        tester,
+      ) async {
         // Arrange
         final mockRoutes = [
           {
@@ -258,12 +267,13 @@ void main() {
           },
         ];
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => mockRoutes);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => mockRoutes);
 
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Verify all routes are shown initially
@@ -314,12 +324,13 @@ void main() {
     group('Error Handling Integration', () {
       testWidgets('should handle service errors gracefully', (tester) async {
         // Arrange
-        when(mockService.getAllRoutesForAdmin())
-            .thenThrow(Exception('Network error'));
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenThrow(Exception('Network error'));
 
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Verify error state
@@ -328,8 +339,7 @@ void main() {
         expect(find.byIcon(Icons.error), findsOneWidget);
 
         // Test retry functionality
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => []);
+        when(mockService.getAllRoutesForAdmin()).thenAnswer((_) async => []);
 
         await tester.tap(find.text('Erneut versuchen'));
         await tester.pumpAndSettle();
@@ -341,12 +351,11 @@ void main() {
 
       testWidgets('should handle form validation errors', (tester) async {
         // Arrange
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => []);
+        when(mockService.getAllRoutesForAdmin()).thenAnswer((_) async => []);
 
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Open create dialog
@@ -371,7 +380,9 @@ void main() {
     group('Responsive Layout Integration', () {
       testWidgets('should adapt layout for mobile screen', (tester) async {
         // Arrange
-        await tester.binding.setSurfaceSize(const Size(400, 800)); // Mobile size
+        await tester.binding.setSurfaceSize(
+          const Size(400, 800),
+        ); // Mobile size
 
         final mockRoute = {
           'id': 123,
@@ -382,12 +393,13 @@ void main() {
           'duration': 240,
         };
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => [mockRoute]);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => [mockRoute]);
 
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Verify mobile layout elements
@@ -401,7 +413,9 @@ void main() {
 
       testWidgets('should adapt layout for desktop screen', (tester) async {
         // Arrange
-        await tester.binding.setSurfaceSize(const Size(1200, 800)); // Desktop size
+        await tester.binding.setSurfaceSize(
+          const Size(1200, 800),
+        ); // Desktop size
 
         final mockRoute = {
           'id': 123,
@@ -412,19 +426,22 @@ void main() {
           'duration': 240,
         };
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => [mockRoute]);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => [mockRoute]);
 
-        when(mockService.getRouteWaypoints(123))
-            .thenAnswer((_) async => []);
+        when(mockService.getRouteWaypoints(123)).thenAnswer((_) async => []);
 
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
 
         // Verify desktop layout elements
-        expect(find.byType(AppBar), findsNothing); // No app bar in desktop layout
+        expect(
+          find.byType(AppBar),
+          findsNothing,
+        ); // No app bar in desktop layout
         expect(find.byType(GridView), findsOneWidget);
 
         // Select a route to show waypoint panel
@@ -439,31 +456,38 @@ void main() {
     group('Performance Integration', () {
       testWidgets('should handle large datasets efficiently', (tester) async {
         // Arrange
-        final largeRouteList = List.generate(100, (index) => {
-          'id': index,
-          'name': 'Route $index',
-          'description': 'Description $index',
-          'difficulty': ['easy', 'moderate', 'hard'][index % 3],
-          'distance': 8.0 + index,
-          'duration': 180 + index * 10,
-          'price': 79.99 + index,
-          'is_active': index % 2 == 0,
-          'created_at': '2024-01-01T10:00:00Z',
-        });
+        final largeRouteList = List.generate(
+          100,
+          (index) => {
+            'id': index,
+            'name': 'Route $index',
+            'description': 'Description $index',
+            'difficulty': ['easy', 'moderate', 'hard'][index % 3],
+            'distance': 8.0 + index,
+            'duration': 180 + index * 10,
+            'price': 79.99 + index,
+            'is_active': index % 2 == 0,
+            'created_at': '2024-01-01T10:00:00Z',
+          },
+        );
 
-        when(mockService.getAllRoutesForAdmin())
-            .thenAnswer((_) async => largeRouteList);
+        when(
+          mockService.getAllRoutesForAdmin(),
+        ).thenAnswer((_) async => largeRouteList);
 
         // Act
         final stopwatch = Stopwatch()..start();
-        await tester.pumpWidget(createTestApp(
-          child: const RouteManagementPage(),
-        ));
+        await tester.pumpWidget(
+          createTestApp(child: const RouteManagementPage()),
+        );
         await tester.pumpAndSettle();
         stopwatch.stop();
 
         // Assert
-        expect(stopwatch.elapsedMilliseconds, lessThan(2000)); // Should render within 2 seconds
+        expect(
+          stopwatch.elapsedMilliseconds,
+          lessThan(2000),
+        ); // Should render within 2 seconds
         expect(find.text('Route 0'), findsOneWidget);
         expect(find.text('Route 99'), findsOneWidget);
 
@@ -473,7 +497,10 @@ void main() {
         await tester.pumpAndSettle();
         searchStopwatch.stop();
 
-        expect(searchStopwatch.elapsedMilliseconds, lessThan(500)); // Search should be fast
+        expect(
+          searchStopwatch.elapsedMilliseconds,
+          lessThan(500),
+        ); // Search should be fast
         expect(find.text('Route 5'), findsOneWidget);
         expect(find.text('Route 50'), findsOneWidget); // Matches substring
       });

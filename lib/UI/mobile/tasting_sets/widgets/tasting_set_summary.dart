@@ -9,12 +9,12 @@ class TastingSetSummary extends StatelessWidget {
   final Function(TastingSet) onRemoveTastingSet;
 
   const TastingSetSummary({
-    Key? key,
+    super.key,
     required this.selectedTastingSets,
     required this.totalPrice,
     required this.onProceedToCheckout,
     required this.onRemoveTastingSet,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class TastingSetSummary extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           // Header
           Padding(
             padding: const EdgeInsets.all(20),
@@ -50,9 +50,9 @@ class TastingSetSummary extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'Ausgewählte Tasting Sets',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 Container(
@@ -75,7 +75,7 @@ class TastingSetSummary extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Selected tasting sets list
           Flexible(
             child: ListView.builder(
@@ -94,13 +94,15 @@ class TastingSetSummary extends StatelessWidget {
               },
             ),
           ),
-          
+
           // Total price and checkout button
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.grey[50],
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
             child: SafeArea(
               child: Column(
@@ -111,9 +113,8 @@ class TastingSetSummary extends StatelessWidget {
                     children: [
                       Text(
                         'Gesamtpreis:',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w500),
                       ),
                       Text(
                         '${totalPrice.toStringAsFixed(2)} €',
@@ -124,9 +125,9 @@ class TastingSetSummary extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Sample count
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,9 +146,9 @@ class TastingSetSummary extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Total volume
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,9 +167,9 @@ class TastingSetSummary extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Checkout button
                   SizedBox(
                     width: double.infinity,
@@ -221,7 +222,7 @@ class _TastingSetSummaryItem extends StatelessWidget {
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -263,15 +264,11 @@ class _TastingSetSummaryItem extends StatelessWidget {
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
-                Icons.wine_bar,
-                size: 20,
-                color: Colors.grey,
-              ),
+              child: const Icon(Icons.wine_bar, size: 20, color: Colors.grey),
             ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Tasting set info
           Expanded(
             child: Column(
@@ -279,23 +276,23 @@ class _TastingSetSummaryItem extends StatelessWidget {
               children: [
                 Text(
                   tastingSet.name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${tastingSet.sampleCount} Samples • ${tastingSet.totalVolumeMl.toStringAsFixed(0)}ml',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 ),
               ],
             ),
           ),
-          
+
           // Price and remove button
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -316,10 +313,7 @@ class _TastingSetSummaryItem extends StatelessWidget {
                   size: 20,
                 ),
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 24,
-                  minHeight: 24,
-                ),
+                constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
               ),
             ],
           ),

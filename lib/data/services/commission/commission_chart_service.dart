@@ -3,12 +3,7 @@ import 'package:whisky_hikes/data/services/commission/commission_service.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
 
 /// Enum for chart time periods
-enum ChartPeriod {
-  daily,
-  weekly,
-  monthly,
-  yearly,
-}
+enum ChartPeriod { daily, weekly, monthly, yearly }
 
 /// Data class for commission timeline chart
 class CommissionTimelineData {
@@ -118,12 +113,14 @@ class CommissionChartService {
 
       // Calculate date range if not provided
       final DateTime effectiveEndDate = endDate ?? DateTime.now();
-      final DateTime effectiveStartDate = startDate ?? _calculateStartDate(
-        effectiveEndDate,
-        period,
-        months: months,
-        weeks: weeks,
-      );
+      final DateTime effectiveStartDate =
+          startDate ??
+          _calculateStartDate(
+            effectiveEndDate,
+            period,
+            months: months,
+            weeks: weeks,
+          );
 
       // Fetch commission data
       final commissions = await _commissionService.getCommissionsForDateRange(
@@ -159,12 +156,14 @@ class CommissionChartService {
       final dataPoints = <TimelineDataPoint>[];
       for (final entry in aggregatedAmounts.entries) {
         final date = _parseDataPointKey(entry.key, period);
-        dataPoints.add(TimelineDataPoint(
-          date: date,
-          amount: entry.value,
-          count: aggregatedCounts[entry.key] ?? 0,
-          label: _formatDataPointLabel(date, period),
-        ));
+        dataPoints.add(
+          TimelineDataPoint(
+            date: date,
+            amount: entry.value,
+            count: aggregatedCounts[entry.key] ?? 0,
+            label: _formatDataPointLabel(date, period),
+          ),
+        );
       }
 
       // Sort by date
@@ -209,7 +208,9 @@ class CommissionChartService {
           endDate,
         );
       } else {
-        commissions = await _commissionService.getCommissionsForCompany(companyId);
+        commissions = await _commissionService.getCommissionsForCompany(
+          companyId,
+        );
       }
 
       // Group by status
@@ -252,11 +253,12 @@ class CommissionChartService {
       }
 
       // Fetch commission summary by hike
-      final hikeCommissions = await _commissionService.getCommissionSummaryByHike(
-        companyId,
-        startDate: startDate,
-        endDate: endDate,
-      );
+      final hikeCommissions = await _commissionService
+          .getCommissionSummaryByHike(
+            companyId,
+            startDate: startDate,
+            endDate: endDate,
+          );
 
       // Convert to hike data list and sort by commission amount
       final hikeDataList = <HikeCommissionData>[];
@@ -264,17 +266,22 @@ class CommissionChartService {
         final hikeId = entry.key;
         final summary = entry.value;
         final commissions = summary['commissions'] as List<Commission>;
-        
-        hikeDataList.add(HikeCommissionData(
-          hikeId: hikeId,
-          hikeName: 'Hike #$hikeId', // TODO: Get actual hike name from service
-          commissionAmount: summary['totalAmount'] as double,
-          commissionCount: commissions.length,
-        ));
+
+        hikeDataList.add(
+          HikeCommissionData(
+            hikeId: hikeId,
+            hikeName:
+                'Hike #$hikeId', // TODO: Get actual hike name from service
+            commissionAmount: summary['totalAmount'] as double,
+            commissionCount: commissions.length,
+          ),
+        );
       }
 
       // Sort by commission amount (highest first) and limit
-      hikeDataList.sort((a, b) => b.commissionAmount.compareTo(a.commissionAmount));
+      hikeDataList.sort(
+        (a, b) => b.commissionAmount.compareTo(a.commissionAmount),
+      );
       final limitedHikeData = hikeDataList.take(limit).toList();
 
       // Calculate totals
@@ -299,143 +306,163 @@ class CommissionChartService {
   }
 
   /// Aggregate commissions by month
-  Map<String, double> aggregateCommissionsByMonth(List<Commission> commissions) {
+  Map<String, double> aggregateCommissionsByMonth(
+    List<Commission> commissions,
+  ) {
     final Map<String, double> aggregated = {};
-    
+
     for (final commission in commissions) {
-      final key = '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}';
+      final key =
+          '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}';
       aggregated[key] = (aggregated[key] ?? 0.0) + commission.commissionAmount;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commission counts by month
-  Map<String, int> aggregateCommissionCountsByMonth(List<Commission> commissions) {
+  Map<String, int> aggregateCommissionCountsByMonth(
+    List<Commission> commissions,
+  ) {
     final Map<String, int> aggregated = {};
-    
+
     for (final commission in commissions) {
-      final key = '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}';
+      final key =
+          '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}';
       aggregated[key] = (aggregated[key] ?? 0) + 1;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commissions by week
   Map<String, double> aggregateCommissionsByWeek(List<Commission> commissions) {
     final Map<String, double> aggregated = {};
-    
+
     for (final commission in commissions) {
       final weekStart = _getWeekStart(commission.createdAt);
       final key = '${weekStart.year}-W${_getWeekNumber(weekStart)}';
       aggregated[key] = (aggregated[key] ?? 0.0) + commission.commissionAmount;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commission counts by week
-  Map<String, int> aggregateCommissionCountsByWeek(List<Commission> commissions) {
+  Map<String, int> aggregateCommissionCountsByWeek(
+    List<Commission> commissions,
+  ) {
     final Map<String, int> aggregated = {};
-    
+
     for (final commission in commissions) {
       final weekStart = _getWeekStart(commission.createdAt);
       final key = '${weekStart.year}-W${_getWeekNumber(weekStart)}';
       aggregated[key] = (aggregated[key] ?? 0) + 1;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commissions by day
   Map<String, double> aggregateCommissionsByDay(List<Commission> commissions) {
     final Map<String, double> aggregated = {};
-    
+
     for (final commission in commissions) {
-      final key = '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}-${commission.createdAt.day.toString().padLeft(2, '0')}';
+      final key =
+          '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}-${commission.createdAt.day.toString().padLeft(2, '0')}';
       aggregated[key] = (aggregated[key] ?? 0.0) + commission.commissionAmount;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commission counts by day
-  Map<String, int> aggregateCommissionCountsByDay(List<Commission> commissions) {
+  Map<String, int> aggregateCommissionCountsByDay(
+    List<Commission> commissions,
+  ) {
     final Map<String, int> aggregated = {};
-    
+
     for (final commission in commissions) {
-      final key = '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}-${commission.createdAt.day.toString().padLeft(2, '0')}';
+      final key =
+          '${commission.createdAt.year}-${commission.createdAt.month.toString().padLeft(2, '0')}-${commission.createdAt.day.toString().padLeft(2, '0')}';
       aggregated[key] = (aggregated[key] ?? 0) + 1;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commissions by year
   Map<String, double> aggregateCommissionsByYear(List<Commission> commissions) {
     final Map<String, double> aggregated = {};
-    
+
     for (final commission in commissions) {
       final key = commission.createdAt.year.toString();
       aggregated[key] = (aggregated[key] ?? 0.0) + commission.commissionAmount;
     }
-    
+
     return aggregated;
   }
 
   /// Aggregate commission counts by year
-  Map<String, int> aggregateCommissionCountsByYear(List<Commission> commissions) {
+  Map<String, int> aggregateCommissionCountsByYear(
+    List<Commission> commissions,
+  ) {
     final Map<String, int> aggregated = {};
-    
+
     for (final commission in commissions) {
       final key = commission.createdAt.year.toString();
       aggregated[key] = (aggregated[key] ?? 0) + 1;
     }
-    
+
     return aggregated;
   }
 
   /// Group commissions by status
-  Map<CommissionStatus, int> groupCommissionsByStatus(List<Commission> commissions) {
+  Map<CommissionStatus, int> groupCommissionsByStatus(
+    List<Commission> commissions,
+  ) {
     final Map<CommissionStatus, int> grouped = {};
-    
+
     // Initialize all statuses with 0
     for (final status in CommissionStatus.values) {
       grouped[status] = 0;
     }
-    
+
     // Count commissions by status
     for (final commission in commissions) {
       grouped[commission.status] = (grouped[commission.status] ?? 0) + 1;
     }
-    
+
     return grouped;
   }
 
   /// Group commission amounts by status
-  Map<CommissionStatus, double> groupCommissionAmountsByStatus(List<Commission> commissions) {
+  Map<CommissionStatus, double> groupCommissionAmountsByStatus(
+    List<Commission> commissions,
+  ) {
     final Map<CommissionStatus, double> grouped = {};
-    
+
     // Initialize all statuses with 0.0
     for (final status in CommissionStatus.values) {
       grouped[status] = 0.0;
     }
-    
+
     // Sum commission amounts by status
     for (final commission in commissions) {
-      grouped[commission.status] = (grouped[commission.status] ?? 0.0) + commission.commissionAmount;
+      grouped[commission.status] =
+          (grouped[commission.status] ?? 0.0) + commission.commissionAmount;
     }
-    
+
     return grouped;
   }
 
   /// Calculate start date based on period and duration
   DateTime _calculateStartDate(
     DateTime endDate,
-    ChartPeriod period,
-    {int? months, int? weeks}
-  ) {
+    ChartPeriod period, {
+    int? months,
+    int? weeks,
+  }) {
     switch (period) {
       case ChartPeriod.monthly:
         return DateTime(
@@ -450,17 +477,9 @@ class CommissionChartService {
           endDate.day - (weeks ?? 4) * 7,
         );
       case ChartPeriod.daily:
-        return DateTime(
-          endDate.year,
-          endDate.month,
-          endDate.day - 30,
-        );
+        return DateTime(endDate.year, endDate.month, endDate.day - 30);
       case ChartPeriod.yearly:
-        return DateTime(
-          endDate.year - 3,
-          endDate.month,
-          endDate.day,
-        );
+        return DateTime(endDate.year - 3, endDate.month, endDate.day);
     }
   }
 
@@ -477,7 +496,11 @@ class CommissionChartService {
         return _getDateFromWeek(year, week);
       case ChartPeriod.daily:
         final parts = key.split('-');
-        return DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+        return DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
       case ChartPeriod.yearly:
         return DateTime(int.parse(key), 1, 1);
     }

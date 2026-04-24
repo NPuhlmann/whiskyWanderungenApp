@@ -128,9 +128,7 @@ class _WhiskyCatalogPageState extends State<WhiskyCatalogPage>
             ),
           ),
           // Main content
-          const Expanded(
-            child: TastingSetList(),
-          ),
+          const Expanded(child: TastingSetList()),
         ],
       ),
     );
@@ -195,9 +193,7 @@ class _WhiskyCatalogPageState extends State<WhiskyCatalogPage>
             ),
           ),
           // Main content area
-          const Expanded(
-            child: TastingSetList(),
-          ),
+          const Expanded(child: TastingSetList()),
         ],
       ),
     );

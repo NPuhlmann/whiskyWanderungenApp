@@ -27,11 +27,11 @@ class OrderTrackingIntegration {
     required OrderTrackingService trackingService,
     required OrderStatusWorkflow statusWorkflow,
     required SupabaseNotificationService notificationService,
-  })  : _backendApi = backendApi,
-        _paymentRepository = paymentRepository,
-        _trackingService = trackingService,
-        _statusWorkflow = statusWorkflow,
-        _notificationService = notificationService;
+  }) : _backendApi = backendApi,
+       _paymentRepository = paymentRepository,
+       _trackingService = trackingService,
+       _statusWorkflow = statusWorkflow,
+       _notificationService = notificationService;
 
   /// Validate complete end-to-end order tracking flow
   Future<OrderFlowValidationResult> validateEndToEndFlow({
@@ -44,7 +44,7 @@ class OrderTrackingIntegration {
     bool enableNotifications = true,
   }) async {
     final result = OrderFlowValidationResult();
-    
+
     try {
       dev.log('🚀 Starting end-to-end order tracking flow validation');
 
@@ -63,44 +63,50 @@ class OrderTrackingIntegration {
       result.orderNumber = order.orderNumber;
 
       // Step 2: Process Payment
-      result.stepResults['payment_processing'] = await _validatePaymentProcessing(
-        order: order,
-      );
+      result.stepResults['payment_processing'] =
+          await _validatePaymentProcessing(order: order);
 
       // Step 3: Status Transition to Confirmed
-      result.stepResults['status_confirmation'] = await _validateStatusTransition(
-        orderId: order.id,
-        fromStatus: EnhancedOrderStatus.pending,
-        toStatus: EnhancedOrderStatus.confirmed,
-        transitionData: {
-          'payment_intent_id': (result.stepResults['payment_processing']!.data as BasicPaymentResult).paymentIntentId,
-        },
-      );
+      result.stepResults['status_confirmation'] =
+          await _validateStatusTransition(
+            orderId: order.id,
+            fromStatus: EnhancedOrderStatus.pending,
+            toStatus: EnhancedOrderStatus.confirmed,
+            transitionData: {
+              'payment_intent_id':
+                  (result.stepResults['payment_processing']!.data
+                          as BasicPaymentResult)
+                      .paymentIntentId,
+            },
+          );
 
       // Step 4: Status Transition to Processing
-      result.stepResults['processing_transition'] = await _validateStatusTransition(
-        orderId: order.id,
-        fromStatus: EnhancedOrderStatus.confirmed,
-        toStatus: EnhancedOrderStatus.processing,
-      );
+      result.stepResults['processing_transition'] =
+          await _validateStatusTransition(
+            orderId: order.id,
+            fromStatus: EnhancedOrderStatus.confirmed,
+            toStatus: EnhancedOrderStatus.processing,
+          );
 
       // Step 5: Add Tracking Information
-      result.stepResults['tracking_assignment'] = await _validateTrackingAssignment(
-        orderId: order.id,
-      );
+      result.stepResults['tracking_assignment'] =
+          await _validateTrackingAssignment(orderId: order.id);
 
       // Step 6: Status Transition to Shipped
-      result.stepResults['shipping_transition'] = await _validateStatusTransition(
-        orderId: order.id,
-        fromStatus: EnhancedOrderStatus.processing,
-        toStatus: EnhancedOrderStatus.shipped,
-        transitionData: {
-          'tracking_number': 'TN${DateTime.now().millisecondsSinceEpoch}',
-          'shipping_carrier': 'DHL_EXPRESS',
-          'shipping_service': 'Express Worldwide',
-          'estimated_delivery': DateTime.now().add(const Duration(days: 2)).toIso8601String(),
-        },
-      );
+      result.stepResults['shipping_transition'] =
+          await _validateStatusTransition(
+            orderId: order.id,
+            fromStatus: EnhancedOrderStatus.processing,
+            toStatus: EnhancedOrderStatus.shipped,
+            transitionData: {
+              'tracking_number': 'TN${DateTime.now().millisecondsSinceEpoch}',
+              'shipping_carrier': 'DHL_EXPRESS',
+              'shipping_service': 'Express Worldwide',
+              'estimated_delivery': DateTime.now()
+                  .add(const Duration(days: 2))
+                  .toIso8601String(),
+            },
+          );
 
       // Step 7: Real-time Tracking Updates
       result.stepResults['tracking_updates'] = await _validateTrackingUpdates(
@@ -113,7 +119,9 @@ class OrderTrackingIntegration {
         fromStatus: EnhancedOrderStatus.shipped,
         toStatus: EnhancedOrderStatus.outForDelivery,
         transitionData: {
-          'estimated_delivery_time': DateTime.now().add(const Duration(hours: 4)).toIso8601String(),
+          'estimated_delivery_time': DateTime.now()
+              .add(const Duration(hours: 4))
+              .toIso8601String(),
           'courier_name': 'Max Mustermann',
         },
       );
@@ -132,11 +140,12 @@ class OrderTrackingIntegration {
 
       // Step 10: Notification Flow Validation
       if (enableNotifications) {
-        result.stepResults['notification_flow'] = await _validateNotificationFlow(
-          orderId: order.id,
-          customerId: customerId,
-          orderNumber: order.orderNumber,
-        );
+        result.stepResults['notification_flow'] =
+            await _validateNotificationFlow(
+              orderId: order.id,
+              customerId: customerId,
+              orderNumber: order.orderNumber,
+            );
       }
 
       // Step 11: Order History and Analytics
@@ -146,14 +155,19 @@ class OrderTrackingIntegration {
 
       result.isSuccessful = true;
       result.completionTime = DateTime.now();
-      
-      dev.log('✅ End-to-end order tracking flow validation completed successfully');
 
+      dev.log(
+        '✅ End-to-end order tracking flow validation completed successfully',
+      );
     } catch (e, stackTrace) {
       result.isSuccessful = false;
       result.error = e.toString();
       result.stackTrace = stackTrace.toString();
-      dev.log('❌ End-to-end validation failed: $e', error: e, stackTrace: stackTrace);
+      dev.log(
+        '❌ End-to-end validation failed: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
 
     return result;
@@ -194,7 +208,9 @@ class OrderTrackingIntegration {
         'order_has_hike': order.hikeId == hikeId,
         'order_has_delivery_address': order.deliveryAddress != null,
         'order_has_shipping_cost': (order.shippingCost ?? 0) >= 0,
-        'order_total_correct': order.totalAmount == (order.baseAmount ?? 0) + (order.shippingCost ?? 0),
+        'order_total_correct':
+            order.totalAmount ==
+            (order.baseAmount ?? 0) + (order.shippingCost ?? 0),
         'order_status_pending': order.status == EnhancedOrderStatus.pending,
       };
 
@@ -205,9 +221,10 @@ class OrderTrackingIntegration {
         isSuccessful: allValid,
         data: order,
         validations: validations,
-        message: allValid ? 'Order created successfully' : 'Order validation failed',
+        message: allValid
+            ? 'Order created successfully'
+            : 'Order validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Order Creation',
@@ -225,20 +242,20 @@ class OrderTrackingIntegration {
     try {
       dev.log('💳 Validating payment processing...');
 
-      final paymentResult = await _paymentRepository.processEnhancedOrderPayment(
-        order: order,
-        paymentMethod: PaymentMethodType.card,
-        paymentMethodId: 'pm_test_card_visa',
-        metadata: {
-          'test_payment': true,
-          'validation_flow': true,
-        },
-      );
+      final paymentResult = await _paymentRepository
+          .processEnhancedOrderPayment(
+            order: order,
+            paymentMethod: PaymentMethodType.card,
+            paymentMethodId: 'pm_test_card_visa',
+            metadata: {'test_payment': true, 'validation_flow': true},
+          );
 
       final validations = <String, bool>{
         'payment_successful': paymentResult.isSuccess,
-        'payment_has_intent_id': paymentResult.paymentIntentId?.isNotEmpty == true,
-        'payment_amount_correct': true, // Would check actual amount in real implementation
+        'payment_has_intent_id':
+            paymentResult.paymentIntentId?.isNotEmpty == true,
+        'payment_amount_correct':
+            true, // Would check actual amount in real implementation
         'payment_status_valid': paymentResult.status != null,
       };
 
@@ -249,9 +266,10 @@ class OrderTrackingIntegration {
         isSuccessful: allValid,
         data: paymentResult,
         validations: validations,
-        message: allValid ? 'Payment processed successfully' : 'Payment validation failed',
+        message: allValid
+            ? 'Payment processed successfully'
+            : 'Payment validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Payment Processing',
@@ -270,12 +288,19 @@ class OrderTrackingIntegration {
     Map<String, dynamic>? transitionData,
   }) async {
     try {
-      dev.log('🔄 Validating status transition: ${fromStatus.name} -> ${toStatus.name}');
+      dev.log(
+        '🔄 Validating status transition: ${fromStatus.name} -> ${toStatus.name}',
+      );
 
       // Check if transition is allowed
-      final canTransition = _statusWorkflow.canTransitionTo(fromStatus, toStatus);
+      final canTransition = _statusWorkflow.canTransitionTo(
+        fromStatus,
+        toStatus,
+      );
       if (!canTransition) {
-        throw Exception('Transition not allowed: ${fromStatus.name} -> ${toStatus.name}');
+        throw Exception(
+          'Transition not allowed: ${fromStatus.name} -> ${toStatus.name}',
+        );
       }
 
       final updatedOrder = await _statusWorkflow.transitionOrderStatus(
@@ -290,7 +315,8 @@ class OrderTrackingIntegration {
         'transition_allowed': canTransition,
         'status_updated': updatedOrder.status == toStatus,
         'order_updated': updatedOrder.updatedAt != null,
-        'metadata_contains_transition': updatedOrder.shippingDetails?['status_transition'] != null,
+        'metadata_contains_transition':
+            updatedOrder.shippingDetails?['status_transition'] != null,
       };
 
       final allValid = validations.values.every((v) => v);
@@ -300,9 +326,10 @@ class OrderTrackingIntegration {
         isSuccessful: allValid,
         data: updatedOrder,
         validations: validations,
-        message: allValid ? 'Status transition successful' : 'Status transition validation failed',
+        message: allValid
+            ? 'Status transition successful'
+            : 'Status transition validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Status Transition (${fromStatus.name} -> ${toStatus.name})',
@@ -321,18 +348,21 @@ class OrderTrackingIntegration {
       dev.log('📦 Validating tracking assignment...');
 
       final trackingNumber = 'TN${DateTime.now().millisecondsSinceEpoch}';
-      const shippingService = 'DHL_EXPRESS';
+      const shippingCarrier = 'DHL_EXPRESS';
 
       final updatedOrder = await _trackingService.assignTrackingNumber(
         orderId: orderId,
         trackingNumber: trackingNumber,
+        shippingCarrier: shippingCarrier,
         shippingService: 'Express Worldwide',
         estimatedDelivery: DateTime.now().add(const Duration(days: 2)),
       );
 
       final validations = <String, bool>{
-        'tracking_number_assigned': updatedOrder.trackingNumber == trackingNumber,
-        'shipping_carrier_set': updatedOrder.shippingService == shippingService,
+        'tracking_number_assigned':
+            updatedOrder.trackingNumber == trackingNumber,
+        'shipping_carrier_set':
+            updatedOrder.shippingService == 'Express Worldwide',
         'tracking_url_generated': updatedOrder.trackingUrl?.isNotEmpty == true,
         'estimated_delivery_set': updatedOrder.estimatedDelivery != null,
         'status_is_shipped': updatedOrder.status == EnhancedOrderStatus.shipped,
@@ -345,9 +375,10 @@ class OrderTrackingIntegration {
         isSuccessful: allValid,
         data: updatedOrder,
         validations: validations,
-        message: allValid ? 'Tracking assigned successfully' : 'Tracking assignment validation failed',
+        message: allValid
+            ? 'Tracking assigned successfully'
+            : 'Tracking assignment validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Tracking Assignment',
@@ -366,7 +397,9 @@ class OrderTrackingIntegration {
       dev.log('📍 Validating tracking updates...');
 
       // Get tracking information
-      final trackingInfo = await _trackingService.getTrackingInformation(orderId);
+      final trackingInfo = await _trackingService.getTrackingInformation(
+        orderId,
+      );
 
       final validations = <String, bool>{
         'has_tracking': trackingInfo['hasTracking'] == true,
@@ -384,9 +417,10 @@ class OrderTrackingIntegration {
         isSuccessful: allValid,
         data: trackingInfo,
         validations: validations,
-        message: allValid ? 'Tracking updates validated' : 'Tracking updates validation failed',
+        message: allValid
+            ? 'Tracking updates validated'
+            : 'Tracking updates validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Tracking Updates',
@@ -423,7 +457,8 @@ class OrderTrackingIntegration {
 
       final validations = <String, bool>{
         'service_available': true,
-        'notifications_sent': true, // Would track actual delivery in real implementation
+        'notifications_sent':
+            true, // Would track actual delivery in real implementation
         'no_errors': true,
       };
 
@@ -433,9 +468,10 @@ class OrderTrackingIntegration {
         stepName: 'Notification Flow',
         isSuccessful: allValid,
         validations: validations,
-        message: allValid ? 'Notifications validated' : 'Notification validation failed',
+        message: allValid
+            ? 'Notifications validated'
+            : 'Notification validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Notification Flow',
@@ -459,10 +495,15 @@ class OrderTrackingIntegration {
 
       final validations = <String, bool>{
         'has_status_history': statusHistory.isNotEmpty,
-        'status_progression_valid': statusHistory.length >= 3, // At least pending -> confirmed -> delivered
+        'status_progression_valid':
+            statusHistory.length >=
+            3, // At least pending -> confirmed -> delivered
         'final_order_exists': finalOrder != null,
-        'final_status_delivered': finalOrder?.status == EnhancedOrderStatus.delivered,
-        'timestamps_valid': statusHistory.every((h) => h.changedAt.isBefore(DateTime.now())),
+        'final_status_delivered':
+            finalOrder?.status == EnhancedOrderStatus.delivered,
+        'timestamps_valid': statusHistory.every(
+          (h) => h.changedAt.isBefore(DateTime.now()),
+        ),
       };
 
       final allValid = validations.values.every((v) => v);
@@ -470,14 +511,12 @@ class OrderTrackingIntegration {
       return StepValidationResult(
         stepName: 'Order History',
         isSuccessful: allValid,
-        data: {
-          'statusHistory': statusHistory,
-          'finalOrder': finalOrder,
-        },
+        data: {'statusHistory': statusHistory, 'finalOrder': finalOrder},
         validations: validations,
-        message: allValid ? 'Order history validated' : 'Order history validation failed',
+        message: allValid
+            ? 'Order history validated'
+            : 'Order history validation failed',
       );
-
     } catch (e) {
       return StepValidationResult(
         stepName: 'Order History',
@@ -516,7 +555,6 @@ class OrderTrackingIntegration {
 
       dev.log('⚡ Quick test ${result.isSuccessful ? 'PASSED' : 'FAILED'}');
       return result.isSuccessful;
-
     } catch (e) {
       dev.log('❌ Quick integration test failed: $e');
       return false;
@@ -535,7 +573,8 @@ class OrderFlowValidationResult {
   String? stackTrace;
   Map<String, StepValidationResult> stepResults = {};
 
-  Duration get duration => (completionTime ?? DateTime.now()).difference(startTime);
+  Duration get duration =>
+      (completionTime ?? DateTime.now()).difference(startTime);
 
   Map<String, dynamic> toJson() => {
     'isSuccessful': isSuccessful,
@@ -582,7 +621,9 @@ class OrderTrackingIntegrationFactory {
   static OrderTrackingIntegration create() {
     final backendApi = BackendApiService();
     final paymentRepo = PaymentRepositoryFactory.create();
-    final notificationService = SupabaseNotificationService(Supabase.instance.client);
+    final notificationService = SupabaseNotificationService(
+      Supabase.instance.client,
+    );
     final trackingService = OrderTrackingServiceFactory.create(
       backendApi: backendApi,
       notificationService: notificationService,

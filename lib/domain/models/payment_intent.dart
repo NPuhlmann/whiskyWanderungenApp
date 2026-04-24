@@ -15,12 +15,7 @@ enum PaymentMethodType {
 }
 
 /// Payment providers supported by the app
-enum PaymentProvider {
-  stripe,
-  paypal,
-  applePay,
-  googlePay,
-}
+enum PaymentProvider { stripe, paypal, applePay, googlePay }
 
 /// Payment intent model for Stripe integration
 class PaymentIntent {
@@ -55,15 +50,24 @@ class PaymentIntent {
       amount: json['amount'] as int,
       currency: json['currency'] as String,
       status: json['status'] as String,
-      paymentMethodTypes: (json['payment_method_types'] as List<dynamic>?)
-          ?.map((e) => PaymentMethodType.values.firstWhere(
-              (type) => type.name == e.toString(),
-              orElse: () => PaymentMethodType.card))
-          .toList() ?? [],
+      paymentMethodTypes:
+          (json['payment_method_types'] as List<dynamic>?)
+              ?.map(
+                (e) => PaymentMethodType.values.firstWhere(
+                  (type) => type.name == e.toString(),
+                  orElse: () => PaymentMethodType.card,
+                ),
+              )
+              .toList() ??
+          [],
       description: json['description'] as String?,
       metadata: json['metadata'] as Map<String, dynamic>?,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
     );
   }
 
@@ -179,10 +183,7 @@ class PaymentIntentResult {
   }
 
   factory PaymentIntentResult.cancelled() {
-    return PaymentIntentResult(
-      isSuccess: false,
-      isCancelled: true,
-    );
+    return PaymentIntentResult(isSuccess: false, isCancelled: true);
   }
 }
 
@@ -264,11 +265,16 @@ class PaymentMethodParams {
   factory PaymentMethodParams.fromJson(Map<String, dynamic> json) {
     return PaymentMethodParams(
       type: PaymentMethodType.values.firstWhere(
-          (e) => e.name == json['type'] as String,
-          orElse: () => PaymentMethodType.card),
-      card: json['card'] != null ? CardDetails.fromJson(json['card'] as Map<String, dynamic>) : null,
-      billingDetails: json['billing_details'] != null 
-          ? BillingDetails.fromJson(json['billing_details'] as Map<String, dynamic>) 
+        (e) => e.name == json['type'] as String,
+        orElse: () => PaymentMethodType.card,
+      ),
+      card: json['card'] != null
+          ? CardDetails.fromJson(json['card'] as Map<String, dynamic>)
+          : null,
+      billingDetails: json['billing_details'] != null
+          ? BillingDetails.fromJson(
+              json['billing_details'] as Map<String, dynamic>,
+            )
           : null,
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
@@ -317,19 +323,16 @@ class BillingDetails {
   final String? phone;
   final Address? address;
 
-  const BillingDetails({
-    this.name,
-    this.email,
-    this.phone,
-    this.address,
-  });
+  const BillingDetails({this.name, this.email, this.phone, this.address});
 
   factory BillingDetails.fromJson(Map<String, dynamic> json) {
     return BillingDetails(
       name: json['name'] as String?,
       email: json['email'] as String?,
       phone: json['phone'] as String?,
-      address: json['address'] != null ? Address.fromJson(json['address'] as Map<String, dynamic>) : null,
+      address: json['address'] != null
+          ? Address.fromJson(json['address'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -388,25 +391,26 @@ class Address {
 extension PaymentIntentExtensions on PaymentIntent {
   /// Check if payment intent is in a succeeded state
   bool get isSucceeded => status == 'succeeded';
-  
+
   /// Check if payment intent requires action
-  bool get requiresAction => status == 'requires_action' || status == 'requires_source_action';
-  
+  bool get requiresAction =>
+      status == 'requires_action' || status == 'requires_source_action';
+
   /// Check if payment intent requires payment method
   bool get requiresPaymentMethod => status == 'requires_payment_method';
-  
+
   /// Check if payment intent requires confirmation
   bool get requiresConfirmation => status == 'requires_confirmation';
-  
+
   /// Check if payment intent is processing
   bool get isProcessing => status == 'processing';
-  
+
   /// Check if payment intent is cancelled
   bool get isCancelled => status == 'canceled';
-  
+
   /// Get amount in euros (converting from cents)
   double get amountInEuros => amount / 100.0;
-  
+
   /// Check if payment method type is supported
   bool supportsPaymentMethod(PaymentMethodType type) {
     return paymentMethodTypes.contains(type);

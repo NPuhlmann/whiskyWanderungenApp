@@ -13,12 +13,12 @@ class OfflineIndicator extends StatelessWidget {
       stream: ConnectivityService.instance.networkStatusStream,
       builder: (context, networkSnapshot) {
         final networkStatus = networkSnapshot.data ?? NetworkStatus.unknown;
-        
+
         return StreamBuilder<SyncStatus>(
           stream: DataSyncService.instance.syncStatusStream,
           builder: (context, syncSnapshot) {
             final syncStatus = syncSnapshot.data ?? SyncStatus.idle;
-            
+
             return _buildIndicator(context, networkStatus, syncStatus);
           },
         );
@@ -26,7 +26,11 @@ class OfflineIndicator extends StatelessWidget {
     );
   }
 
-  Widget _buildIndicator(BuildContext context, NetworkStatus networkStatus, SyncStatus syncStatus) {
+  Widget _buildIndicator(
+    BuildContext context,
+    NetworkStatus networkStatus,
+    SyncStatus syncStatus,
+  ) {
     // Online und synchronisiert - kein Indikator nötig
     if (networkStatus.isConnected && syncStatus != SyncStatus.syncing) {
       return const SizedBox.shrink();
@@ -80,7 +84,7 @@ class OfflineIndicator extends StatelessWidget {
 
   Widget _getIcon(NetworkStatus networkStatus, SyncStatus syncStatus) {
     IconData iconData;
-    
+
     if (syncStatus == SyncStatus.syncing) {
       iconData = Icons.sync;
     } else if (!networkStatus.isConnected) {
@@ -114,10 +118,10 @@ class OfflineIndicator extends StatelessWidget {
     switch (networkStatus) {
       case NetworkStatus.disconnected:
         return 'Offline - Gecachte Daten werden verwendet';
-      case NetworkStatus.connected_no_internet:
+      case NetworkStatus.connectedNoInternet:
         return 'Verbunden, aber kein Internet';
-      case NetworkStatus.connected_wifi_poor:
-      case NetworkStatus.connected_mobile_poor:
+      case NetworkStatus.connectedWifiPoor:
+      case NetworkStatus.connectedMobilePoor:
         return 'Schwache Verbindung - Möglicherweise langsam';
       case NetworkStatus.unknown:
         return 'Verbindungsstatus unbekannt';
@@ -126,11 +130,14 @@ class OfflineIndicator extends StatelessWidget {
     }
   }
 
-  Color _getBackgroundColor(NetworkStatus networkStatus, SyncStatus syncStatus) {
+  Color _getBackgroundColor(
+    NetworkStatus networkStatus,
+    SyncStatus syncStatus,
+  ) {
     if (syncStatus == SyncStatus.syncing) {
       return Colors.blue.shade50;
     }
-    
+
     if (syncStatus == SyncStatus.error) {
       return Colors.red.shade50;
     }
@@ -150,7 +157,7 @@ class OfflineIndicator extends StatelessWidget {
     if (syncStatus == SyncStatus.syncing) {
       return Colors.blue.shade200;
     }
-    
+
     if (syncStatus == SyncStatus.error) {
       return Colors.red.shade200;
     }
@@ -170,7 +177,7 @@ class OfflineIndicator extends StatelessWidget {
     if (syncStatus == SyncStatus.syncing) {
       return Colors.blue.shade700;
     }
-    
+
     if (syncStatus == SyncStatus.error) {
       return Colors.red.shade700;
     }
@@ -197,12 +204,12 @@ class OfflineIndicatorCompact extends StatelessWidget {
       stream: ConnectivityService.instance.networkStatusStream,
       builder: (context, networkSnapshot) {
         final networkStatus = networkSnapshot.data ?? NetworkStatus.unknown;
-        
+
         return StreamBuilder<SyncStatus>(
           stream: DataSyncService.instance.syncStatusStream,
           builder: (context, syncSnapshot) {
             final syncStatus = syncSnapshot.data ?? SyncStatus.idle;
-            
+
             // Online und synchronisiert - kein Indikator nötig
             if (networkStatus.isConnected && syncStatus != SyncStatus.syncing) {
               return const SizedBox.shrink();
@@ -262,7 +269,7 @@ class OfflineIndicatorCompact extends StatelessWidget {
     if (syncStatus == SyncStatus.error) {
       return Icons.sync_problem;
     }
-    
+
     if (!networkStatus.isConnected) {
       return Icons.cloud_off;
     }
@@ -274,7 +281,10 @@ class OfflineIndicatorCompact extends StatelessWidget {
     return Icons.cloud_done;
   }
 
-  String _getCompactMessage(NetworkStatus networkStatus, SyncStatus syncStatus) {
+  String _getCompactMessage(
+    NetworkStatus networkStatus,
+    SyncStatus syncStatus,
+  ) {
     if (syncStatus == SyncStatus.syncing) {
       return 'Sync...';
     }
@@ -294,11 +304,14 @@ class OfflineIndicatorCompact extends StatelessWidget {
     return 'Online';
   }
 
-  Color _getBackgroundColor(NetworkStatus networkStatus, SyncStatus syncStatus) {
+  Color _getBackgroundColor(
+    NetworkStatus networkStatus,
+    SyncStatus syncStatus,
+  ) {
     if (syncStatus == SyncStatus.syncing) {
       return Colors.blue.shade100;
     }
-    
+
     if (syncStatus == SyncStatus.error) {
       return Colors.red.shade100;
     }
@@ -318,7 +331,7 @@ class OfflineIndicatorCompact extends StatelessWidget {
     if (syncStatus == SyncStatus.syncing) {
       return Colors.blue.shade300;
     }
-    
+
     if (syncStatus == SyncStatus.error) {
       return Colors.red.shade300;
     }
@@ -338,7 +351,7 @@ class OfflineIndicatorCompact extends StatelessWidget {
     if (syncStatus == SyncStatus.syncing) {
       return Colors.blue.shade800;
     }
-    
+
     if (syncStatus == SyncStatus.error) {
       return Colors.red.shade800;
     }
@@ -405,7 +418,7 @@ class OfflineInfoDialog extends StatelessWidget {
       stream: ConnectivityService.instance.networkStatusStream,
       builder: (context, snapshot) {
         final status = snapshot.data ?? NetworkStatus.unknown;
-        
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -441,7 +454,7 @@ class OfflineInfoDialog extends StatelessWidget {
       stream: DataSyncService.instance.syncStatusStream,
       builder: (context, snapshot) {
         final status = snapshot.data ?? SyncStatus.idle;
-        
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -463,9 +476,13 @@ class OfflineInfoDialog extends StatelessWidget {
                       ),
                     ] else
                       Icon(
-                        status == SyncStatus.success ? Icons.check_circle : Icons.sync,
+                        status == SyncStatus.success
+                            ? Icons.check_circle
+                            : Icons.sync,
                         size: 16,
-                        color: status == SyncStatus.success ? Colors.green : Colors.grey,
+                        color: status == SyncStatus.success
+                            ? Colors.green
+                            : Colors.grey,
                       ),
                     const SizedBox(width: 8),
                     Text(status.displayName),

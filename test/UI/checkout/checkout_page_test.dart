@@ -16,7 +16,6 @@ import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 import 'checkout_page_test.mocks.dart';
 
 @GenerateMocks([CheckoutViewModel, PaymentRepository])
-
 void main() {
   group('CheckoutPage Widget Tests (TDD - Red Phase)', () {
     late MockCheckoutViewModel mockViewModel;
@@ -31,16 +30,18 @@ void main() {
       BasicOrder? order,
       CheckoutViewModel? viewModel,
     }) {
-      final testOrder = order ?? BasicOrder(
-        id: 1,
-        orderNumber: 'WH2025-TEST-001',
-        hikeId: 1,
-        userId: 'test-user',
-        totalAmount: 30.99,
-        deliveryType: DeliveryType.standardShipping,
-        status: OrderStatus.pending,
-        createdAt: DateTime.now(),
-      );
+      final testOrder =
+          order ??
+          BasicOrder(
+            id: 1,
+            orderNumber: 'WH2025-TEST-001',
+            hikeId: 1,
+            userId: 'test-user',
+            totalAmount: 30.99,
+            deliveryType: DeliveryType.standardShipping,
+            status: OrderStatus.pending,
+            createdAt: DateTime.now(),
+          );
 
       return MaterialApp(
         home: MultiProvider(
@@ -56,7 +57,9 @@ void main() {
     }
 
     group('CheckoutPage Layout', () {
-      testWidgets('should display checkout page with all main components', (tester) async {
+      testWidgets('should display checkout page with all main components', (
+        tester,
+      ) async {
         // Arrange - Mock ViewModel state
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -73,14 +76,16 @@ void main() {
         expect(find.byType(CheckoutPage), findsOneWidget);
         expect(find.byType(AppBar), findsOneWidget);
         expect(find.text('Checkout'), findsOneWidget);
-        
+
         // Should contain main components
         expect(find.byType(OrderSummary), findsOneWidget);
         expect(find.byType(MultiPaymentMethodSelector), findsOneWidget);
         expect(find.byType(CheckoutButton), findsOneWidget);
       });
 
-      testWidgets('should show delivery address form for shipping orders', (tester) async {
+      testWidgets('should show delivery address form for shipping orders', (
+        tester,
+      ) async {
         // Arrange
         final shippingOrder = BasicOrder(
           id: 1,
@@ -108,7 +113,9 @@ void main() {
         expect(find.text('Lieferadresse'), findsWidgets);
       });
 
-      testWidgets('should NOT show delivery address form for pickup orders', (tester) async {
+      testWidgets('should NOT show delivery address form for pickup orders', (
+        tester,
+      ) async {
         // Arrange
         final pickupOrder = BasicOrder(
           id: 1,
@@ -136,7 +143,9 @@ void main() {
         expect(find.text('Lieferadresse'), findsNothing);
       });
 
-      testWidgets('should display loading indicator when processing', (tester) async {
+      testWidgets('should display loading indicator when processing', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(true);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -151,10 +160,14 @@ void main() {
         expect(find.text('Zahlung wird verarbeitet...'), findsOneWidget);
       });
 
-      testWidgets('should display error message when payment fails', (tester) async {
+      testWidgets('should display error message when payment fails', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
-        when(mockViewModel.errorMessage).thenReturn('Ihre Karte wurde abgelehnt');
+        when(
+          mockViewModel.errorMessage,
+        ).thenReturn('Ihre Karte wurde abgelehnt');
 
         // Act
         await tester.pumpWidget(createCheckoutPage());
@@ -167,7 +180,9 @@ void main() {
     });
 
     group('User Interactions', () {
-      testWidgets('should call ViewModel when checkout button is tapped', (tester) async {
+      testWidgets('should call ViewModel when checkout button is tapped', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -182,7 +197,9 @@ void main() {
         verify(mockViewModel.processPayment()).called(1);
       });
 
-      testWidgets('should disable checkout button when form is invalid', (tester) async {
+      testWidgets('should disable checkout button when form is invalid', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -192,11 +209,15 @@ void main() {
         await tester.pumpWidget(createCheckoutPage());
 
         // Assert
-        final checkoutButton = tester.widget<CheckoutButton>(find.byType(CheckoutButton));
+        final checkoutButton = tester.widget<CheckoutButton>(
+          find.byType(CheckoutButton),
+        );
         expect(checkoutButton.enabled, isFalse);
       });
 
-      testWidgets('should call clear error when error dismiss is tapped', (tester) async {
+      testWidgets('should call clear error when error dismiss is tapped', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn('Payment error');
@@ -210,7 +231,9 @@ void main() {
         verify(mockViewModel.clearError()).called(1);
       });
 
-      testWidgets('should update payment method when selector changes', (tester) async {
+      testWidgets('should update payment method when selector changes', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -227,7 +250,9 @@ void main() {
     });
 
     group('Payment Processing States', () {
-      testWidgets('should show loading overlay during payment processing', (tester) async {
+      testWidgets('should show loading overlay during payment processing', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(true);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -240,7 +265,9 @@ void main() {
         expect(find.text('Zahlung wird verarbeitet...'), findsOneWidget);
       });
 
-      testWidgets('should show success dialog when payment succeeds', (tester) async {
+      testWidgets('should show success dialog when payment succeeds', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -255,10 +282,14 @@ void main() {
         expect(find.byType(CheckoutPage), findsOneWidget);
       });
 
-      testWidgets('should handle payment cancellation gracefully', (tester) async {
+      testWidgets('should handle payment cancellation gracefully', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
-        when(mockViewModel.errorMessage).thenReturn('Zahlung wurde abgebrochen');
+        when(
+          mockViewModel.errorMessage,
+        ).thenReturn('Zahlung wurde abgebrochen');
 
         // Act
         await tester.pumpWidget(createCheckoutPage());
@@ -280,7 +311,10 @@ void main() {
 
         // Assert - Check semantic labels
         expect(find.bySemanticsLabel('Bestellübersicht'), findsOneWidget);
-        expect(find.bySemanticsLabel('Zahlungsmethode auswählen'), findsOneWidget);
+        expect(
+          find.bySemanticsLabel('Zahlungsmethode auswählen'),
+          findsOneWidget,
+        );
         expect(find.bySemanticsLabel('Zahlung abschließen'), findsOneWidget);
       });
 
@@ -299,7 +333,9 @@ void main() {
     });
 
     group('Responsive Design', () {
-      testWidgets('should adapt layout for different screen sizes', (tester) async {
+      testWidgets('should adapt layout for different screen sizes', (
+        tester,
+      ) async {
         // Arrange
         when(mockViewModel.isLoading).thenReturn(false);
         when(mockViewModel.errorMessage).thenReturn(null);
@@ -310,7 +346,7 @@ void main() {
 
         // Assert - Should use scrollable layout
         expect(find.byType(SingleChildScrollView), findsOneWidget);
-        
+
         // Test with tablet size
         await tester.binding.setSurfaceSize(const Size(800, 1200));
         await tester.pumpWidget(createCheckoutPage());
@@ -327,10 +363,10 @@ void main() {
 // ❌ All tests should FAIL - CheckoutPage and components don't exist yet
 // 📝 Next: Create CheckoutPage and child widgets to make tests GREEN
 // 🎯 Test Coverage: Layout, interactions, accessibility, responsive design, loading states
-// 
+//
 // Components needed for GREEN phase:
 // - CheckoutPage (main page)
-// - CheckoutViewModel (state management)  
+// - CheckoutViewModel (state management)
 // - OrderSummary (order details display)
 // - PaymentMethodSelector (credit card input)
 // - DeliveryAddressForm (address input for shipping)

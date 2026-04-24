@@ -9,7 +9,8 @@ import 'package:whisky_hikes/data/services/database/backend_api.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/domain/models/delivery_address.dart';
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
-import 'package:whisky_hikes/domain/models/payment_intent.dart' show PaymentMethodType;
+import 'package:whisky_hikes/domain/models/payment_intent.dart'
+    show PaymentMethodType;
 
 import '../mocks/mock_repositories.mocks.dart';
 
@@ -26,7 +27,7 @@ void main() {
       mockStripeService = MockStripeService();
       mockMultiPaymentService = MockMultiPaymentService();
       mockBackendApiService = MockBackendApiService();
-      
+
       paymentRepository = PaymentRepository(
         supabaseClient: mockSupabaseClient,
         stripeService: mockStripeService,
@@ -36,64 +37,71 @@ void main() {
     });
 
     group('Hike Purchase Processing', () {
-      test('should process hike purchase successfully with pickup delivery', () async {
-        // Green Phase: Implement actual test
-        // Arrange
-        const int hikeId = 1;
-        const String userId = 'test-user-123';
-        const double hikePrice = 25.99;
-        const double expectedTotal = 25.99; // No delivery cost for pickup
+      test(
+        'should process hike purchase successfully with pickup delivery',
+        () async {
+          // Green Phase: Implement actual test
+          // Arrange
+          const int hikeId = 1;
+          const String userId = 'test-user-123';
+          const double hikePrice = 25.99;
+          const double expectedTotal = 25.99; // No delivery cost for pickup
 
-        // Mock the createOrder method
-        final mockOrder = BasicOrder(
-          id: 1,
-          orderNumber: 'ORD-123',
-          hikeId: hikeId,
-          userId: userId,
-          totalAmount: expectedTotal,
-          deliveryType: DeliveryType.pickup,
-          status: OrderStatus.pending,
-          createdAt: DateTime.now(),
-        );
+          // Mock the createOrder method
+          final mockOrder = BasicOrder(
+            id: 1,
+            orderNumber: 'ORD-123',
+            hikeId: hikeId,
+            userId: userId,
+            totalAmount: expectedTotal,
+            deliveryType: DeliveryType.pickup,
+            status: OrderStatus.pending,
+            createdAt: DateTime.now(),
+          );
 
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenAnswer((_) async => mockOrder);
+          when(
+            mockBackendApiService.createOrder(
+              hikeId: anyNamed('hikeId'),
+              userId: anyNamed('userId'),
+              amount: anyNamed('amount'),
+              deliveryType: anyNamed('deliveryType'),
+              deliveryAddress: anyNamed('deliveryAddress'),
+            ),
+          ).thenAnswer((_) async => mockOrder);
 
-        // Mock the processPayment method
-        final mockPaymentResult = BasicPaymentResult(
-          isSuccess: true,
-          order: mockOrder,
-          paymentIntentId: 'pi_test_123',
-        );
+          // Mock the processPayment method
+          final mockPaymentResult = BasicPaymentResult(
+            isSuccess: true,
+            order: mockOrder,
+            paymentIntentId: 'pi_test_123',
+          );
 
-        when(mockMultiPaymentService.processPayment(
-          amount: anyNamed('amount'),
-          currency: anyNamed('currency'),
-          paymentMethod: anyNamed('paymentMethod'),
-          orderId: anyNamed('orderId'),
-        )).thenAnswer((_) async => mockPaymentResult);
+          when(
+            mockMultiPaymentService.processPayment(
+              amount: anyNamed('amount'),
+              currency: anyNamed('currency'),
+              paymentMethod: anyNamed('paymentMethod'),
+              orderId: anyNamed('orderId'),
+            ),
+          ).thenAnswer((_) async => mockPaymentResult);
 
-        // Act
-        final result = await paymentRepository.processPayment(
-          hikeId: hikeId,
-          userId: userId,
-          deliveryType: DeliveryType.pickup,
-          deliveryAddress: null,
-          paymentMethod: PaymentMethodType.card,
-        );
+          // Act
+          final result = await paymentRepository.processPayment(
+            hikeId: hikeId,
+            userId: userId,
+            deliveryType: DeliveryType.pickup,
+            deliveryAddress: null,
+            paymentMethod: PaymentMethodType.card,
+          );
 
-        // Assert
-        expect(result.isSuccess, isTrue);
-        expect(result.order.totalAmount, equals(expectedTotal));
-        expect(result.order.deliveryType, equals(DeliveryType.pickup));
-        expect(result.order.hikeId, equals(hikeId));
-        expect(result.order.userId, equals(userId));
-      });
+          // Assert
+          expect(result.isSuccess, isTrue);
+          expect(result.order.totalAmount, equals(expectedTotal));
+          expect(result.order.deliveryType, equals(DeliveryType.pickup));
+          expect(result.order.hikeId, equals(hikeId));
+          expect(result.order.userId, equals(userId));
+        },
+      );
 
       test('should calculate delivery cost for shipping delivery', () async {
         // Green Phase: Implement actual test
@@ -108,7 +116,7 @@ void main() {
           'street': 'Teststraße 123',
           'city': 'Hamburg',
           'postalCode': '20095',
-          'country': 'DE'
+          'country': 'DE',
         };
 
         // Mock the createOrder method with shipping
@@ -123,13 +131,15 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenAnswer((_) async => mockOrder);
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenAnswer((_) async => mockOrder);
 
         // Mock the processPayment method
         final mockPaymentResult = BasicPaymentResult(
@@ -138,12 +148,14 @@ void main() {
           paymentIntentId: 'pi_test_124',
         );
 
-        when(mockMultiPaymentService.processPayment(
-          amount: anyNamed('amount'),
-          currency: anyNamed('currency'),
-          paymentMethod: anyNamed('paymentMethod'),
-          orderId: anyNamed('orderId'),
-        )).thenAnswer((_) async => mockPaymentResult);
+        when(
+          mockMultiPaymentService.processPayment(
+            amount: anyNamed('amount'),
+            currency: anyNamed('currency'),
+            paymentMethod: anyNamed('paymentMethod'),
+            orderId: anyNamed('orderId'),
+          ),
+        ).thenAnswer((_) async => mockPaymentResult);
 
         // Act
         final result = await paymentRepository.processPayment(
@@ -157,7 +169,10 @@ void main() {
         // Assert
         expect(result.isSuccess, isTrue);
         expect(result.order.totalAmount, equals(expectedTotal));
-        expect(result.order.deliveryType, equals(DeliveryType.standardShipping));
+        expect(
+          result.order.deliveryType,
+          equals(DeliveryType.standardShipping),
+        );
         expect(result.order.hikeId, equals(hikeId));
         expect(result.order.userId, equals(userId));
       });
@@ -180,21 +195,25 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenAnswer((_) async => mockOrder);
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenAnswer((_) async => mockOrder);
 
         // Mock the processPayment method to fail
-        when(mockMultiPaymentService.processPayment(
-          amount: anyNamed('amount'),
-          currency: anyNamed('currency'),
-          paymentMethod: anyNamed('paymentMethod'),
-          orderId: anyNamed('orderId'),
-        )).thenThrow(Exception('Payment declined'));
+        when(
+          mockMultiPaymentService.processPayment(
+            amount: anyNamed('amount'),
+            currency: anyNamed('currency'),
+            paymentMethod: anyNamed('paymentMethod'),
+            orderId: anyNamed('orderId'),
+          ),
+        ).thenThrow(Exception('Payment declined'));
 
         // Act & Assert
         expect(
@@ -216,13 +235,15 @@ void main() {
         const String userId = 'test-user-123';
 
         // Mock Backend API to throw error
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenThrow(Exception('Database connection failed'));
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenThrow(Exception('Database connection failed'));
 
         // Act & Assert
         expect(
@@ -243,7 +264,7 @@ void main() {
         // Green Phase: Implement actual test
         // Arrange
         const String userId = 'user_123';
-        
+
         final mockOrders = [
           BasicOrder(
             id: 1,
@@ -267,8 +288,9 @@ void main() {
           ),
         ];
 
-        when(mockBackendApiService.getUserOrders(userId))
-            .thenAnswer((_) async => mockOrders);
+        when(
+          mockBackendApiService.getUserOrders(userId),
+        ).thenAnswer((_) async => mockOrders);
 
         // Act
         final orders = await paymentRepository.getUserOrders(userId);
@@ -297,10 +319,12 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockBackendApiService.updateOrderStatus(
-          orderId: anyNamed('orderId'),
-          status: anyNamed('status'),
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApiService.updateOrderStatus(
+            orderId: anyNamed('orderId'),
+            status: anyNamed('status'),
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         // Act
         final result = await paymentRepository.updateOrderStatus(
@@ -323,13 +347,15 @@ void main() {
         const String userId = 'test-user-123';
 
         // Mock Backend API to throw error for non-existent hike
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenThrow(Exception('Hike not found'));
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenThrow(Exception('Hike not found'));
 
         // Act & Assert
         expect(
@@ -351,13 +377,15 @@ void main() {
         const String userId = 'test-user-123';
 
         // Mock Backend API to throw error for missing delivery address
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenThrow(Exception('Delivery address required for shipping'));
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenThrow(Exception('Delivery address required for shipping'));
 
         // Act & Assert
         expect(

@@ -15,7 +15,7 @@ enum EnhancedOrderStatus {
   delivered,
   cancelled,
   refunded,
-  failed
+  failed,
 }
 
 @freezed
@@ -75,45 +75,44 @@ abstract class OrderStatusChange with _$OrderStatusChange {
 /// Extension for business logic on EnhancedOrder
 extension EnhancedOrderExtensions on EnhancedOrder {
   /// Check if the order requires a delivery address
-  bool get requiresDeliveryAddress => 
-      deliveryType == DeliveryType.standardShipping || 
+  bool get requiresDeliveryAddress =>
+      deliveryType == DeliveryType.standardShipping ||
       deliveryType == DeliveryType.expressShipping;
-  
+
   /// Check if the order can be cancelled
-  bool get canBeCancelled => 
-      status == EnhancedOrderStatus.pending || 
+  bool get canBeCancelled =>
+      status == EnhancedOrderStatus.pending ||
       status == EnhancedOrderStatus.paymentPending ||
       status == EnhancedOrderStatus.confirmed;
-  
+
   /// Get the delivery cost based on delivery type
   double get deliveryCost {
     if (shippingCost != null) return shippingCost!;
-    
+
     switch (deliveryType) {
       case DeliveryType.standardShipping:
         return 5.0;
       case DeliveryType.expressShipping:
         return 10.0;
       case DeliveryType.pickup:
-      default:
         return 0.0;
     }
   }
-  
+
   /// Get base price (total minus delivery cost)
   double get basePrice {
     if (baseAmount != null) return baseAmount!;
     return totalAmount - deliveryCost;
   }
-  
+
   /// Check if the order can be tracked
   bool get isTrackable {
     return canBeTracked ?? false;
   }
-  
+
   /// Generate a formatted order number display
   String get formattedOrderNumber => '#$orderNumber';
-  
+
   /// Get status display text
   String get statusDisplayText {
     switch (status) {
@@ -139,7 +138,7 @@ extension EnhancedOrderExtensions on EnhancedOrder {
         return 'Fehlgeschlagen';
     }
   }
-  
+
   /// Get delivery type display text
   String get deliveryTypeDisplayText {
     switch (deliveryType) {
@@ -152,4 +151,3 @@ extension EnhancedOrderExtensions on EnhancedOrder {
     }
   }
 }
-

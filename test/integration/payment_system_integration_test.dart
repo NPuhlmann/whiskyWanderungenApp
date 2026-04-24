@@ -11,101 +11,118 @@ void main() {
     setUpAll(() async {
       // Initialize StripeService with test key
       stripeService = StripeService.instance;
-      await stripeService.initialize('pk_test_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef');
+      await stripeService.initialize(
+        'pk_test_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      );
     });
 
     group('Complete Payment Flow Integration', () {
-      test('should complete full payment flow from order to payment confirmation', () async {
-        print('\n🧪 Integration Test: Complete Payment Flow');
-        print('=' * 60);
+      test(
+        'should complete full payment flow from order to payment confirmation',
+        () async {
+          print('\n🧪 Integration Test: Complete Payment Flow');
+          print('=' * 60);
 
-        // Phase 1: Create Order
-        print('Phase 1: Order Creation');
-        final testOrder = BasicOrder(
-          id: 12345,
-          orderNumber: 'WH2025-INT12345',
-          hikeId: 42,
-          userId: 'integration-test-user',
-          totalAmount: 35.99,
-          deliveryType: DeliveryType.standardShipping,
-          status: OrderStatus.pending,
-          createdAt: DateTime.now(),
-          deliveryAddress: {
-            'street': 'Musterstraße 123',
-            'city': 'München',
-            'postalCode': '80331',
-            'country': 'Deutschland',
-          },
-        );
+          // Phase 1: Create Order
+          print('Phase 1: Order Creation');
+          final testOrder = BasicOrder(
+            id: 12345,
+            orderNumber: 'WH2025-INT12345',
+            hikeId: 42,
+            userId: 'integration-test-user',
+            totalAmount: 35.99,
+            deliveryType: DeliveryType.standardShipping,
+            status: OrderStatus.pending,
+            createdAt: DateTime.now(),
+            deliveryAddress: {
+              'street': 'Musterstraße 123',
+              'city': 'München',
+              'postalCode': '80331',
+              'country': 'Deutschland',
+            },
+          );
 
-        // Validate order creation
-        expect(testOrder.id, equals(12345));
-        expect(testOrder.orderNumber, equals('WH2025-INT12345'));
-        expect(testOrder.deliveryCost, equals(5.0)); // Shipping cost
-        expect(testOrder.basePrice, equals(30.99)); // Total - shipping
-        expect(testOrder.canBeCancelled, isTrue);
-        expect(testOrder.isFinalStatus, isFalse);
-        print('   ✅ Order created: ${testOrder.orderNumber}');
-        print('   ✅ Amount: €${testOrder.totalAmount} (Base: €${testOrder.basePrice} + Shipping: €${testOrder.deliveryCost})');
+          // Validate order creation
+          expect(testOrder.id, equals(12345));
+          expect(testOrder.orderNumber, equals('WH2025-INT12345'));
+          expect(testOrder.deliveryCost, equals(5.0)); // Shipping cost
+          expect(testOrder.basePrice, equals(30.99)); // Total - shipping
+          expect(testOrder.canBeCancelled, isTrue);
+          expect(testOrder.isFinalStatus, isFalse);
+          print('   ✅ Order created: ${testOrder.orderNumber}');
+          print(
+            '   ✅ Amount: €${testOrder.totalAmount} (Base: €${testOrder.basePrice} + Shipping: €${testOrder.deliveryCost})',
+          );
 
-        // Phase 2: Create Payment Intent
-        print('\nPhase 2: Payment Intent Creation');
-        final paymentIntentResult = await stripeService.createPaymentIntent(
-          amount: testOrder.totalAmount,
-          currency: 'eur',
-          metadata: {
-            'order_id': testOrder.id.toString(),
-            'hike_id': testOrder.hikeId.toString(),
-            'delivery_type': testOrder.deliveryType.name,
-            'user_id': testOrder.userId,
-          },
-        );
+          // Phase 2: Create Payment Intent
+          print('\nPhase 2: Payment Intent Creation');
+          final paymentIntentResult = await stripeService.createPaymentIntent(
+            amount: testOrder.totalAmount,
+            currency: 'eur',
+            metadata: {
+              'order_id': testOrder.id.toString(),
+              'hike_id': testOrder.hikeId.toString(),
+              'delivery_type': testOrder.deliveryType.name,
+              'user_id': testOrder.userId,
+            },
+          );
 
-        // Validate payment intent
-        expect(paymentIntentResult, isA<PaymentIntentResult>());
-        expect(paymentIntentResult.amount, equals(3599)); // 35.99 * 100 cents
-        expect(paymentIntentResult.currency, equals('eur'));
-        expect(paymentIntentResult.status, equals('requires_payment_method'));
-        expect(paymentIntentResult.clientSecret, isNotEmpty);
-        expect(paymentIntentResult.id, isNotEmpty);
-        print('   ✅ Payment Intent: ${paymentIntentResult.id}');
-        print('   ✅ Amount: ${paymentIntentResult.amount} cents (€${paymentIntentResult.amount / 100})');
-        print('   ✅ Status: ${paymentIntentResult.status}');
+          // Validate payment intent
+          expect(paymentIntentResult, isA<PaymentIntentResult>());
+          expect(paymentIntentResult.amount, equals(3599)); // 35.99 * 100 cents
+          expect(paymentIntentResult.currency, equals('eur'));
+          expect(paymentIntentResult.status, equals('requires_payment_method'));
+          expect(paymentIntentResult.clientSecret, isNotEmpty);
+          expect(paymentIntentResult.id, isNotEmpty);
+          print('   ✅ Payment Intent: ${paymentIntentResult.id}');
+          print(
+            '   ✅ Amount: ${paymentIntentResult.amount} cents (€${paymentIntentResult.amount / 100})',
+          );
+          print('   ✅ Status: ${paymentIntentResult.status}');
 
-        // Phase 3: Confirm Payment - Success Scenario
-        print('\nPhase 3: Payment Confirmation (Success)');
-        final successResult = await stripeService.confirmPayment(
-          clientSecret: paymentIntentResult.clientSecret,
-          paymentMethodId: 'pm_test_card_visa', // Test success card
-          metadata: {
-            'integration_test': 'success_flow',
-            'order_number': testOrder.orderNumber,
-          },
-        );
+          // Phase 3: Confirm Payment - Success Scenario
+          print('\nPhase 3: Payment Confirmation (Success)');
+          final successResult = await stripeService.confirmPayment(
+            clientSecret: paymentIntentResult.clientSecret,
+            paymentMethodId: 'pm_test_card_visa', // Test success card
+            metadata: {
+              'integration_test': 'success_flow',
+              'order_number': testOrder.orderNumber,
+            },
+          );
 
-        // Validate successful payment
-        expect(successResult, isA<BasicPaymentResult>());
-        expect(successResult.isSuccess, isTrue);
-        expect(successResult.status, equals(PaymentStatus.succeeded));
-        expect(successResult.paymentIntentId, isNotEmpty);
-        expect(successResult.clientSecret, equals(paymentIntentResult.clientSecret));
-        expect(successResult.errorMessage, isNull);
-        expect(successResult.requiresUserAction, isFalse);
-        expect(successResult.wasCancelled, isFalse);
-        print('   ✅ Payment Confirmed: ${successResult.paymentIntentId}');
-        print('   ✅ Status: ${successResult.status}');
+          // Validate successful payment
+          expect(successResult, isA<BasicPaymentResult>());
+          expect(successResult.isSuccess, isTrue);
+          expect(successResult.status, equals(PaymentStatus.succeeded));
+          expect(successResult.paymentIntentId, isNotEmpty);
+          expect(
+            successResult.clientSecret,
+            equals(paymentIntentResult.clientSecret),
+          );
+          expect(successResult.errorMessage, isNull);
+          expect(successResult.requiresUserAction, isFalse);
+          expect(successResult.wasCancelled, isFalse);
+          print('   ✅ Payment Confirmed: ${successResult.paymentIntentId}');
+          print('   ✅ Status: ${successResult.status}');
 
-        // Phase 4: Verify Integration
-        print('\nPhase 4: Integration Verification');
-        expect(successResult.paymentIntentId, contains('pi_test_'));
-        expect(successResult.metadata?['integration_test'], equals('success_flow'));
-        print('   ✅ All payment data linked correctly');
-        print('   ✅ Metadata preserved through flow');
+          // Phase 4: Verify Integration
+          print('\nPhase 4: Integration Verification');
+          expect(successResult.paymentIntentId, contains('pi_test_'));
+          expect(
+            successResult.metadata?['integration_test'],
+            equals('success_flow'),
+          );
+          print('   ✅ All payment data linked correctly');
+          print('   ✅ Metadata preserved through flow');
 
-        print('\n✅ INTEGRATION SUCCESS: Complete payment flow validated!');
-        print('   Order: ${testOrder.orderNumber} → Payment: ${successResult.paymentIntentId}');
-        print('=' * 60);
-      });
+          print('\n✅ INTEGRATION SUCCESS: Complete payment flow validated!');
+          print(
+            '   Order: ${testOrder.orderNumber} → Payment: ${successResult.paymentIntentId}',
+          );
+          print('=' * 60);
+        },
+      );
 
       test('should handle different delivery types correctly', () async {
         print('\n🧪 Integration Test: Delivery Types');
@@ -137,8 +154,13 @@ void main() {
         );
 
         expect(pickupPaymentIntent.amount, equals(2599)); // 25.99 * 100
-        expect(pickupPaymentIntent.metadata?['delivery_type'], equals('pickup'));
-        print('   ✅ Pickup payment intent: €${pickupPaymentIntent.amount / 100}');
+        expect(
+          pickupPaymentIntent.metadata?['delivery_type'],
+          equals('pickup'),
+        );
+        print(
+          '   ✅ Pickup payment intent: €${pickupPaymentIntent.amount / 100}',
+        );
 
         // Test Shipping Order
         print('\nTest Case: Shipping Order');
@@ -172,7 +194,9 @@ void main() {
         );
 
         expect(shippingPaymentIntent.amount, equals(3099)); // 30.99 * 100
-        print('   ✅ Shipping payment intent: €${shippingPaymentIntent.amount / 100}');
+        print(
+          '   ✅ Shipping payment intent: €${shippingPaymentIntent.amount / 100}',
+        );
 
         print('\n✅ DELIVERY TYPES: Both pickup and shipping validated!');
         print('=' * 60);
@@ -240,7 +264,9 @@ void main() {
         expect(invalidResult.isSuccess, isFalse);
         expect(invalidResult.status, equals(PaymentStatus.failed));
         expect(invalidResult.errorMessage, contains('Invalid'));
-        print('   ✅ Invalid client secret handled: ${invalidResult.errorMessage}');
+        print(
+          '   ✅ Invalid client secret handled: ${invalidResult.errorMessage}',
+        );
 
         print('\n✅ FAILURE SCENARIOS: All error cases handled gracefully!');
         print('=' * 60);
@@ -296,32 +322,54 @@ void main() {
             case OrderStatus.pending:
             case OrderStatus.confirmed:
             case OrderStatus.processing:
-              expect(order.canBeCancelled, isTrue,
-                  reason: '${status.name} orders should be cancellable');
-              expect(order.isFinalStatus, isFalse,
-                  reason: '${status.name} is not a final status');
+              expect(
+                order.canBeCancelled,
+                isTrue,
+                reason: '${status.name} orders should be cancellable',
+              );
+              expect(
+                order.isFinalStatus,
+                isFalse,
+                reason: '${status.name} is not a final status',
+              );
               break;
             case OrderStatus.shipped:
-              expect(order.canBeCancelled, isFalse,
-                  reason: '${status.name} orders cannot be cancelled');
-              expect(order.isFinalStatus, isFalse,
-                  reason: '${status.name} is not final until delivered');
+              expect(
+                order.canBeCancelled,
+                isFalse,
+                reason: '${status.name} orders cannot be cancelled',
+              );
+              expect(
+                order.isFinalStatus,
+                isFalse,
+                reason: '${status.name} is not final until delivered',
+              );
               break;
             case OrderStatus.delivered:
             case OrderStatus.cancelled:
-              expect(order.canBeCancelled, isFalse,
-                  reason: '${status.name} orders cannot be cancelled');
-              expect(order.isFinalStatus, isTrue,
-                  reason: '${status.name} is a final status');
+              expect(
+                order.canBeCancelled,
+                isFalse,
+                reason: '${status.name} orders cannot be cancelled',
+              );
+              expect(
+                order.isFinalStatus,
+                isTrue,
+                reason: '${status.name} is a final status',
+              );
               break;
           }
-          print('   ✅ ${status.name}: cancellable=${order.canBeCancelled}, final=${order.isFinalStatus}');
+          print(
+            '   ✅ ${status.name}: cancellable=${order.canBeCancelled}, final=${order.isFinalStatus}',
+          );
         }
 
         // Test Case 3: Payment Method Validation
         print('\nTest Case 3: Payment Method Validation');
 
-        final validIntent = await stripeService.createPaymentIntent(amount: 25.99);
+        final validIntent = await stripeService.createPaymentIntent(
+          amount: 25.99,
+        );
 
         try {
           await stripeService.confirmPayment(
@@ -347,10 +395,12 @@ void main() {
 
         final List<Future<PaymentIntentResult>> futures = [];
         for (int i = 1; i <= 5; i++) {
-          futures.add(stripeService.createPaymentIntent(
-            amount: 20.0 + i,
-            metadata: {'batch_test': 'concurrent_$i'},
-          ));
+          futures.add(
+            stripeService.createPaymentIntent(
+              amount: 20.0 + i,
+              metadata: {'batch_test': 'concurrent_$i'},
+            ),
+          );
         }
 
         final results = await Future.wait(futures);
@@ -358,7 +408,10 @@ void main() {
         expect(results, hasLength(5));
         for (int i = 0; i < results.length; i++) {
           expect(results[i].amount, equals((2000 + (i + 1) * 100))); // In cents
-          expect(results[i].metadata?['batch_test'], equals('concurrent_${i + 1}'));
+          expect(
+            results[i].metadata?['batch_test'],
+            equals('concurrent_${i + 1}'),
+          );
         }
         print('   ✅ 5 concurrent payment intents created successfully');
 
@@ -384,7 +437,9 @@ void main() {
           fail('Should have failed');
         } catch (e) {
           // Service should still work after error
-          final recoveryIntent = await stripeService.createPaymentIntent(amount: 30.0);
+          final recoveryIntent = await stripeService.createPaymentIntent(
+            amount: 30.0,
+          );
           expect(recoveryIntent.amount, equals(3000));
           print('   ✅ Service recovered correctly after error');
         }
@@ -408,7 +463,7 @@ void main() {
 
         final creationTime = stopwatch.elapsedMilliseconds;
         print('   ✅ Payment Intent creation: ${creationTime}ms');
-        
+
         // Should complete within reasonable time (simulated network delay is 500ms)
         expect(creationTime, lessThan(2000)); // 2 second max
 
@@ -416,7 +471,7 @@ void main() {
         print('\nTest Case: Payment Confirmation Performance');
 
         final intent = await stripeService.createPaymentIntent(amount: 50.0);
-        
+
         final confirmStopwatch = Stopwatch()..start();
         final result = await stripeService.confirmPayment(
           clientSecret: intent.clientSecret,
@@ -426,7 +481,7 @@ void main() {
 
         final confirmationTime = confirmStopwatch.elapsedMilliseconds;
         print('   ✅ Payment confirmation: ${confirmationTime}ms');
-        
+
         // Should complete within reasonable time (simulated processing is 1000ms)
         expect(confirmationTime, lessThan(3000)); // 3 second max
         expect(result.isSuccess, isTrue);
@@ -493,10 +548,10 @@ void main() {
 }
 
 // GREEN PHASE INTEGRATION TESTING COMPLETE!
-// 
+//
 // ✅ COMPREHENSIVE COVERAGE:
 // - Complete payment flow from order creation to confirmation
-// - Both delivery types (pickup/shipping) with cost calculations  
+// - Both delivery types (pickup/shipping) with cost calculations
 // - Success and failure payment scenarios (declined, 3D Secure, invalid data)
 // - Business rule validation (amounts, order statuses, constraints)
 // - Error handling and recovery mechanisms
@@ -510,7 +565,7 @@ void main() {
 // - All edge cases and error scenarios covered
 // - Service performance within acceptable limits
 //
-// ✅ REAL-WORLD READINESS:  
+// ✅ REAL-WORLD READINESS:
 // - Payment system ready for production integration
 // - Comprehensive error messages for user feedback
 // - Proper handling of 3D Secure authentication flows

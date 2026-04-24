@@ -9,7 +9,6 @@ import '../../../test_helpers.dart';
 import 'commission_chart_service_test.mocks.dart';
 
 @GenerateMocks([CommissionService])
-
 void main() {
   group('CommissionChartService', () {
     late CommissionChartService chartService;
@@ -26,12 +25,10 @@ void main() {
       test('should generate timeline chart data for monthly view', () async {
         // Arrange
         const companyId = 'test-company';
-        
-        when(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          any,
-          any,
-        )).thenAnswer((_) async => testCommissions);
+
+        when(
+          mockCommissionService.getCommissionsForDateRange(companyId, any, any),
+        ).thenAnswer((_) async => testCommissions);
 
         // Act
         final chartData = await chartService.getTimelineChartData(
@@ -45,22 +42,18 @@ void main() {
         expect(chartData.dataPoints.isNotEmpty, true);
         expect(chartData.period, equals(ChartPeriod.monthly));
         expect(chartData.totalAmount, greaterThan(0));
-        verify(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          any,
-          any,
-        )).called(1);
+        verify(
+          mockCommissionService.getCommissionsForDateRange(companyId, any, any),
+        ).called(1);
       });
 
       test('should generate timeline chart data for weekly view', () async {
         // Arrange
         const companyId = 'test-company';
-        
-        when(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          any,
-          any,
-        )).thenAnswer((_) async => testCommissions);
+
+        when(
+          mockCommissionService.getCommissionsForDateRange(companyId, any, any),
+        ).thenAnswer((_) async => testCommissions);
 
         // Act
         final chartData = await chartService.getTimelineChartData(
@@ -73,21 +66,17 @@ void main() {
         expect(chartData, isA<CommissionTimelineData>());
         expect(chartData.dataPoints.isNotEmpty, true);
         expect(chartData.period, equals(ChartPeriod.weekly));
-        verify(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          any,
-          any,
-        )).called(1);
+        verify(
+          mockCommissionService.getCommissionsForDateRange(companyId, any, any),
+        ).called(1);
       });
 
       test('should handle empty commission data', () async {
         // Arrange
         const companyId = 'empty-company';
-        when(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          any,
-          any,
-        )).thenAnswer((_) async => <Commission>[]);
+        when(
+          mockCommissionService.getCommissionsForDateRange(companyId, any, any),
+        ).thenAnswer((_) async => <Commission>[]);
 
         // Act
         final chartData = await chartService.getTimelineChartData(
@@ -127,8 +116,9 @@ void main() {
       test('should generate status distribution chart data', () async {
         // Arrange
         const companyId = 'test-company';
-        when(mockCommissionService.getCommissionsForCompany(companyId))
-            .thenAnswer((_) async => testCommissions);
+        when(
+          mockCommissionService.getCommissionsForCompany(companyId),
+        ).thenAnswer((_) async => testCommissions);
 
         // Act
         final chartData = await chartService.getStatusDistributionChartData(
@@ -139,14 +129,17 @@ void main() {
         expect(chartData, isA<CommissionStatusDistributionData>());
         expect(chartData.statusCounts.isNotEmpty, true);
         expect(chartData.totalCommissions, equals(testCommissions.length));
-        
+
         // Verify all status types are accounted for
         final totalFromCounts = chartData.statusCounts.values.fold<int>(
-          0, (sum, count) => sum + count,
+          0,
+          (sum, count) => sum + count,
         );
         expect(totalFromCounts, equals(testCommissions.length));
-        
-        verify(mockCommissionService.getCommissionsForCompany(companyId)).called(1);
+
+        verify(
+          mockCommissionService.getCommissionsForCompany(companyId),
+        ).called(1);
       });
 
       test('should filter status distribution by date range', () async {
@@ -155,12 +148,14 @@ void main() {
         final startDate = DateTime(2024, 1, 1);
         final endDate = DateTime(2024, 12, 31);
         final filteredCommissions = testCommissions.take(2).toList();
-        
-        when(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          startDate,
-          endDate,
-        )).thenAnswer((_) async => filteredCommissions);
+
+        when(
+          mockCommissionService.getCommissionsForDateRange(
+            companyId,
+            startDate,
+            endDate,
+          ),
+        ).thenAnswer((_) async => filteredCommissions);
 
         // Act
         final chartData = await chartService.getStatusDistributionChartData(
@@ -171,11 +166,13 @@ void main() {
 
         // Assert
         expect(chartData.totalCommissions, equals(filteredCommissions.length));
-        verify(mockCommissionService.getCommissionsForDateRange(
-          companyId,
-          startDate,
-          endDate,
-        )).called(1);
+        verify(
+          mockCommissionService.getCommissionsForDateRange(
+            companyId,
+            startDate,
+            endDate,
+          ),
+        ).called(1);
       });
     });
 
@@ -184,12 +181,19 @@ void main() {
         // Arrange
         const companyId = 'test-company';
         final hikeCommissions = {
-          1: {'totalAmount': 150.0, 'commissions': testCommissions.take(2).toList()},
-          2: {'totalAmount': 200.0, 'commissions': testCommissions.skip(2).take(1).toList()},
+          1: {
+            'totalAmount': 150.0,
+            'commissions': testCommissions.take(2).toList(),
+          },
+          2: {
+            'totalAmount': 200.0,
+            'commissions': testCommissions.skip(2).take(1).toList(),
+          },
         };
-        
-        when(mockCommissionService.getCommissionSummaryByHike(companyId))
-            .thenAnswer((_) async => hikeCommissions);
+
+        when(
+          mockCommissionService.getCommissionSummaryByHike(companyId),
+        ).thenAnswer((_) async => hikeCommissions);
 
         // Act
         final chartData = await chartService.getCommissionByHikeChartData(
@@ -201,7 +205,7 @@ void main() {
         expect(chartData, isA<CommissionByHikeData>());
         expect(chartData.hikeData.isNotEmpty, true);
         expect(chartData.totalAmount, greaterThan(0));
-        
+
         // Verify sorting (highest first)
         if (chartData.hikeData.length > 1) {
           expect(
@@ -209,22 +213,37 @@ void main() {
             greaterThanOrEqualTo(chartData.hikeData[1].commissionAmount),
           );
         }
-        
-        verify(mockCommissionService.getCommissionSummaryByHike(companyId)).called(1);
+
+        verify(
+          mockCommissionService.getCommissionSummaryByHike(companyId),
+        ).called(1);
       });
 
       test('should limit and sort hike data correctly', () async {
         // Arrange
         const companyId = 'test-company';
         final hikeCommissions = {
-          1: {'totalAmount': 100.0, 'commissions': testCommissions.take(1).toList()},
-          2: {'totalAmount': 300.0, 'commissions': testCommissions.take(1).toList()},
-          3: {'totalAmount': 200.0, 'commissions': testCommissions.take(1).toList()},
-          4: {'totalAmount': 150.0, 'commissions': testCommissions.take(1).toList()},
+          1: {
+            'totalAmount': 100.0,
+            'commissions': testCommissions.take(1).toList(),
+          },
+          2: {
+            'totalAmount': 300.0,
+            'commissions': testCommissions.take(1).toList(),
+          },
+          3: {
+            'totalAmount': 200.0,
+            'commissions': testCommissions.take(1).toList(),
+          },
+          4: {
+            'totalAmount': 150.0,
+            'commissions': testCommissions.take(1).toList(),
+          },
         };
-        
-        when(mockCommissionService.getCommissionSummaryByHike(companyId))
-            .thenAnswer((_) async => hikeCommissions);
+
+        when(
+          mockCommissionService.getCommissionSummaryByHike(companyId),
+        ).thenAnswer((_) async => hikeCommissions);
 
         // Act
         final chartData = await chartService.getCommissionByHikeChartData(
@@ -279,7 +298,9 @@ void main() {
         ];
 
         // Act
-        final aggregated = chartService.aggregateCommissionsByMonth(commissions);
+        final aggregated = chartService.aggregateCommissionsByMonth(
+          commissions,
+        );
 
         // Assert
         expect(aggregated.length, equals(2)); // Jan and Feb
@@ -311,12 +332,14 @@ void main() {
       test('should handle service errors gracefully', () async {
         // Arrange
         const companyId = 'error-company';
-        when(mockCommissionService.getCommissionsForCompany(companyId))
-            .thenThrow(Exception('Database error'));
+        when(
+          mockCommissionService.getCommissionsForCompany(companyId),
+        ).thenThrow(Exception('Database error'));
 
         // Act & Assert
         expect(
-          () => chartService.getStatusDistributionChartData(companyId: companyId),
+          () =>
+              chartService.getStatusDistributionChartData(companyId: companyId),
           throwsA(isA<Exception>()),
         );
       });

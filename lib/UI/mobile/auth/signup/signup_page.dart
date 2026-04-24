@@ -25,37 +25,45 @@ class _SignupPageState extends State<SignupPage> {
 
     try {
       if (password != confirmPassword) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(AppLocalizations.of(context)!.passwordNotMatch)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.passwordNotMatch),
+          ),
+        );
       } else if (!isLegalAge) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(AppLocalizations.of(context)!.legalAgeInfo)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.legalAgeInfo)),
+        );
       } else {
         final response = await widget.viewModel.signUpWithEmailPassword(
-            email, password, {"is_legal_age": isLegalAge});
-        
+          email,
+          password,
+          {"is_legal_age": isLegalAge},
+        );
+
         // Show success message with dev mode specific info
         if (mounted) {
           String message = AppLocalizations.of(context)!.signupSuccess;
-          
+
           // Add dev mode specific info
           final authService = widget.viewModel.authService;
           if (authService.isDevMode) {
-            message += '\n\nDEV MODE: Email confirmation bypassed for development.';
+            message +=
+                '\n\nDEV MODE: Email confirmation bypassed for development.';
             if (response.user?.emailConfirmedAt == null) {
               message += ' Check console for confirmation instructions.';
             }
           } else {
             message += ' Please check your email to confirm your account.';
           }
-          
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
               duration: const Duration(seconds: 3),
             ),
           );
-          
+
           // Navigate to login after successful signup
           Future.delayed(const Duration(seconds: 1), () {
             if (mounted) {
@@ -66,11 +74,9 @@ class _SignupPageState extends State<SignupPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -78,68 +84,71 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.signup),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 100),
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.email,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.signup)),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 100),
+        children: [
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.email,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
               ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.password,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _passwordController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.password,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
               ),
-              obscureText: true,
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _confirmPasswordController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.passwordConfirm,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+            obscureText: true,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _confirmPasswordController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.passwordConfirm,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
               ),
-              obscureText: true,
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(AppLocalizations.of(context)!.iAmLegalAge),
-                Checkbox(
-                    value: isLegalAge,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isLegalAge = value!;
-                      });
-                    }),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: signUp,
-              child: Text(AppLocalizations.of(context)!.signup),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextButton(
-                onPressed: () => context.go('/login'),
-                child: Text(AppLocalizations.of(context)!.login))
-          ],
-        ));
+            obscureText: true,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(AppLocalizations.of(context)!.iAmLegalAge),
+              Checkbox(
+                value: isLegalAge,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                onChanged: (bool? value) {
+                  setState(() {
+                    isLegalAge = value!;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: signUp,
+            child: Text(AppLocalizations.of(context)!.signup),
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () => context.go('/login'),
+            child: Text(AppLocalizations.of(context)!.login),
+          ),
+        ],
+      ),
+    );
   }
 }

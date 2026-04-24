@@ -12,9 +12,9 @@ void main() {
   group('OrderTrackingViewModel', () {
     late MockPaymentRepository mockPaymentRepository;
     late OrderTrackingViewModel viewModel;
-    
+
     const orderId = 123;
-    
+
     final testOrder = BasicOrder(
       id: orderId,
       orderNumber: 'WH2024-12345',
@@ -44,8 +44,9 @@ void main() {
 
       test('should load order successfully', () async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder);
+        when(
+          mockPaymentRepository.getOrderById(orderId),
+        ).thenAnswer((_) async => testOrder);
 
         // Act
         await viewModel.initialize();
@@ -60,8 +61,9 @@ void main() {
       test('should handle loading error', () async {
         // Arrange
         const errorMessage = 'Network error';
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenThrow(Exception(errorMessage));
+        when(
+          mockPaymentRepository.getOrderById(orderId),
+        ).thenThrow(Exception(errorMessage));
 
         // Act
         await viewModel.initialize();
@@ -103,12 +105,17 @@ void main() {
     group('order cancellation', () {
       test('should cancel order successfully', () async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder);
-        when(mockPaymentRepository.updateOrderStatus(
-          orderId: orderId,
-          status: OrderStatus.cancelled,
-        )).thenAnswer((_) async => testOrder.copyWith(status: OrderStatus.cancelled));
+        when(
+          mockPaymentRepository.getOrderById(orderId),
+        ).thenAnswer((_) async => testOrder);
+        when(
+          mockPaymentRepository.updateOrderStatus(
+            orderId: orderId,
+            status: OrderStatus.cancelled,
+          ),
+        ).thenAnswer(
+          (_) async => testOrder.copyWith(status: OrderStatus.cancelled),
+        );
 
         await viewModel.initialize();
 
@@ -118,20 +125,25 @@ void main() {
         // Assert
         expect(viewModel.isLoading, isFalse);
         expect(viewModel.error, isNull);
-        verify(mockPaymentRepository.updateOrderStatus(
-          orderId: orderId,
-          status: OrderStatus.cancelled,
-        )).called(1);
+        verify(
+          mockPaymentRepository.updateOrderStatus(
+            orderId: orderId,
+            status: OrderStatus.cancelled,
+          ),
+        ).called(1);
       });
 
       test('should handle cancellation error', () async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder);
-        when(mockPaymentRepository.updateOrderStatus(
-          orderId: orderId,
-          status: OrderStatus.cancelled,
-        )).thenThrow(Exception('Cancellation failed'));
+        when(
+          mockPaymentRepository.getOrderById(orderId),
+        ).thenAnswer((_) async => testOrder);
+        when(
+          mockPaymentRepository.updateOrderStatus(
+            orderId: orderId,
+            status: OrderStatus.cancelled,
+          ),
+        ).thenThrow(Exception('Cancellation failed'));
 
         await viewModel.initialize();
 
@@ -145,9 +157,12 @@ void main() {
 
       test('should not cancel order that cannot be cancelled', () async {
         // Arrange
-        final deliveredOrder = testOrder.copyWith(status: OrderStatus.delivered);
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => deliveredOrder);
+        final deliveredOrder = testOrder.copyWith(
+          status: OrderStatus.delivered,
+        );
+        when(
+          mockPaymentRepository.getOrderById(orderId),
+        ).thenAnswer((_) async => deliveredOrder);
 
         await viewModel.initialize();
 
@@ -156,10 +171,12 @@ void main() {
 
         // Assert
         expect(viewModel.error, contains('kann nicht mehr storniert werden'));
-        verifyNever(mockPaymentRepository.updateOrderStatus(
-          orderId: anyNamed('orderId'),
-          status: anyNamed('status'),
-        ));
+        verifyNever(
+          mockPaymentRepository.updateOrderStatus(
+            orderId: anyNamed('orderId'),
+            status: anyNamed('status'),
+          ),
+        );
       });
     });
 
@@ -168,7 +185,7 @@ void main() {
         // Arrange
         const newStatus = OrderStatus.shipped;
         final updatedOrder = testOrder.copyWith(status: newStatus);
-        
+
         var updateCallCount = 0;
         when(mockPaymentRepository.getOrderById(orderId)).thenAnswer((_) async {
           updateCallCount++;
@@ -177,10 +194,12 @@ void main() {
           }
           return updatedOrder;
         });
-        when(mockPaymentRepository.updateOrderStatus(
-          orderId: orderId,
-          status: newStatus,
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockPaymentRepository.updateOrderStatus(
+            orderId: orderId,
+            status: newStatus,
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         await viewModel.initialize();
 
@@ -191,35 +210,39 @@ void main() {
         expect(viewModel.isLoading, isFalse);
         expect(viewModel.error, isNull);
         expect(viewModel.order?.status, equals(newStatus));
-        verify(mockPaymentRepository.updateOrderStatus(
-          orderId: orderId,
-          status: newStatus,
-        )).called(1);
+        verify(
+          mockPaymentRepository.updateOrderStatus(
+            orderId: orderId,
+            status: newStatus,
+          ),
+        ).called(1);
       });
     });
 
     group('business logic properties', () {
       test('should determine if order can be cancelled', () async {
         // Arrange - pending order can be cancelled
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder.copyWith(status: OrderStatus.pending));
-        
+        when(mockPaymentRepository.getOrderById(orderId)).thenAnswer(
+          (_) async => testOrder.copyWith(status: OrderStatus.pending),
+        );
+
         await viewModel.initialize();
-        
+
         // Assert
         expect(viewModel.canCancelOrder, isTrue);
       });
 
       test('should determine if order can be tracked', () async {
         // Arrange - shipped order with tracking number can be tracked
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder.copyWith(
-              status: OrderStatus.shipped,
-              trackingNumber: 'TN123456789',
-            ));
-        
+        when(mockPaymentRepository.getOrderById(orderId)).thenAnswer(
+          (_) async => testOrder.copyWith(
+            status: OrderStatus.shipped,
+            trackingNumber: 'TN123456789',
+          ),
+        );
+
         await viewModel.initialize();
-        
+
         // Assert
         expect(viewModel.canTrackOrder, isTrue);
       });
@@ -227,13 +250,12 @@ void main() {
       test('should provide estimated delivery date', () async {
         // Arrange
         final estimatedDelivery = DateTime.now().add(const Duration(days: 3));
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder.copyWith(
-              estimatedDelivery: estimatedDelivery,
-            ));
-        
+        when(mockPaymentRepository.getOrderById(orderId)).thenAnswer(
+          (_) async => testOrder.copyWith(estimatedDelivery: estimatedDelivery),
+        );
+
         await viewModel.initialize();
-        
+
         // Assert
         expect(viewModel.estimatedDelivery, equals(estimatedDelivery));
       });
@@ -241,13 +263,12 @@ void main() {
       test('should provide tracking number', () async {
         // Arrange
         const trackingNumber = 'TN123456789';
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder.copyWith(
-              trackingNumber: trackingNumber,
-            ));
-        
+        when(mockPaymentRepository.getOrderById(orderId)).thenAnswer(
+          (_) async => testOrder.copyWith(trackingNumber: trackingNumber),
+        );
+
         await viewModel.initialize();
-        
+
         // Assert
         expect(viewModel.trackingNumber, equals(trackingNumber));
       });
@@ -256,14 +277,15 @@ void main() {
     group('status history', () {
       test('should provide order status history for basic orders', () async {
         // Arrange
-        when(mockPaymentRepository.getOrderById(orderId))
-            .thenAnswer((_) async => testOrder);
-        
+        when(
+          mockPaymentRepository.getOrderById(orderId),
+        ).thenAnswer((_) async => testOrder);
+
         await viewModel.initialize();
-        
+
         // Act
         final history = viewModel.getOrderStatusHistory();
-        
+
         // Assert
         expect(history, isNotEmpty);
         expect(history.first.toStatus.name, equals('confirmed'));

@@ -15,32 +15,30 @@ class MyHikesPage extends StatefulWidget {
 }
 
 class _MyHikesPageState extends State<MyHikesPage> {
-  
   @override
   void initState() {
     super.initState();
     widget.viewModel.loadUserHikes();
   }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: widget.viewModel,
       builder: (context, _) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text(AppLocalizations.of(context)!.myHikes),
-          ),
+          appBar: AppBar(title: Text(AppLocalizations.of(context)!.myHikes)),
           body: _buildBody(),
         );
       },
     );
   }
-  
+
   Widget _buildBody() {
     if (widget.viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (widget.viewModel.errorMessage != null) {
       return Center(
         child: Column(
@@ -60,7 +58,7 @@ class _MyHikesPageState extends State<MyHikesPage> {
         ),
       );
     }
-    
+
     if (widget.viewModel.userHikes.isEmpty) {
       return Center(
         child: Column(
@@ -80,7 +78,7 @@ class _MyHikesPageState extends State<MyHikesPage> {
         ),
       );
     }
-    
+
     return RefreshIndicator(
       onRefresh: () async {
         await widget.viewModel.refresh();
@@ -90,20 +88,21 @@ class _MyHikesPageState extends State<MyHikesPage> {
         itemBuilder: (context, index) {
           Hike hike = widget.viewModel.userHikes[index];
           return HikeCard(
-            id: index, 
+            id: index,
             hike: hike,
             isInGeneralList: false,
-            onFavoriteToggle: (_) {}, // Leere Funktion, da der Button nicht angezeigt wird
+            onFavoriteToggle:
+                (_) {}, // Leere Funktion, da der Button nicht angezeigt wird
           );
         },
       ),
     );
   }
-  
+
   // Hilfsmethode, um den lokalisierten Text für Fehlermeldungen zu erhalten
   String _getLocalizedErrorMessage(String errorKey) {
     final localizations = AppLocalizations.of(context)!;
-    
+
     switch (errorKey) {
       case "loginRequiredForHikes":
         return localizations.loginRequiredForHikes;

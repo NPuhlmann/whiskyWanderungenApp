@@ -7,10 +7,7 @@ import 'package:whisky_hikes/data/providers/whisky_management_provider.dart';
 class WhiskyCatalogFilters extends StatefulWidget {
   final VoidCallback? onFiltersChanged;
 
-  const WhiskyCatalogFilters({
-    super.key,
-    this.onFiltersChanged,
-  });
+  const WhiskyCatalogFilters({super.key, this.onFiltersChanged});
 
   @override
   State<WhiskyCatalogFilters> createState() => _WhiskyCatalogFiltersState();
@@ -92,9 +89,9 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
       children: [
         Text(
           AppLocalizations.of(context)!.search,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -112,9 +109,7 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
                     },
                   )
                 : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             isDense: true,
           ),
           onChanged: (value) {
@@ -134,17 +129,15 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
       children: [
         Text(
           AppLocalizations.of(context)!.region,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String?>(
-          value: provider.selectedRegion,
+          initialValue: provider.selectedRegion,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             isDense: true,
           ),
           hint: Text(AppLocalizations.of(context)!.allRegions),
@@ -153,10 +146,10 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
               value: null,
               child: Text(AppLocalizations.of(context)!.allRegions),
             ),
-            ...regions.map((region) => DropdownMenuItem<String?>(
-                  value: region,
-                  child: Text(region),
-                )),
+            ...regions.map(
+              (region) =>
+                  DropdownMenuItem<String?>(value: region, child: Text(region)),
+            ),
           ],
           onChanged: (value) {
             provider.updateRegionFilter(value);
@@ -175,17 +168,15 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
       children: [
         Text(
           AppLocalizations.of(context)!.distillery,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String?>(
-          value: provider.selectedDistillery,
+          initialValue: provider.selectedDistillery,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             isDense: true,
           ),
           hint: Text(AppLocalizations.of(context)!.allDistilleries),
@@ -194,10 +185,12 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
               value: null,
               child: Text(AppLocalizations.of(context)!.allDistilleries),
             ),
-            ...distilleries.map((distillery) => DropdownMenuItem<String?>(
-                  value: distillery,
-                  child: Text(distillery),
-                )),
+            ...distilleries.map(
+              (distillery) => DropdownMenuItem<String?>(
+                value: distillery,
+                child: Text(distillery),
+              ),
+            ),
           ],
           onChanged: (value) {
             provider.updateDistilleryFilter(value);
@@ -214,9 +207,9 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
       children: [
         Text(
           AppLocalizations.of(context)!.quickFilters,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -255,8 +248,8 @@ class _WhiskyCatalogFiltersState extends State<WhiskyCatalogFilters> {
 
   bool _hasActiveFilters(WhiskyManagementProvider provider) {
     return provider.searchQuery.isNotEmpty ||
-           provider.selectedRegion != null ||
-           provider.selectedDistillery != null;
+        provider.selectedRegion != null ||
+        provider.selectedDistillery != null;
   }
 
   void _clearAllFilters(WhiskyManagementProvider provider) {

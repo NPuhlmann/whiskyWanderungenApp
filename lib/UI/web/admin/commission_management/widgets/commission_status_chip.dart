@@ -23,11 +23,7 @@ class CommissionStatusChip extends StatelessWidget {
     return Tooltip(
       message: 'Status: $statusText',
       child: Chip(
-        avatar: Icon(
-          statusIcon,
-          size: 16,
-          color: colorScheme['textColor'],
-        ),
+        avatar: Icon(statusIcon, size: 16, color: colorScheme['textColor']),
         label: Text(
           statusText,
           style: TextStyle(
@@ -37,16 +33,9 @@ class CommissionStatusChip extends StatelessWidget {
           ),
         ),
         backgroundColor: colorScheme['backgroundColor'],
-        side: BorderSide(
-          color: colorScheme['borderColor']!,
-          width: 1,
-        ),
+        side: BorderSide(color: colorScheme['borderColor']!, width: 1),
         deleteIcon: showAction && onStatusChange != null
-            ? Icon(
-                Icons.edit,
-                size: 16,
-                color: colorScheme['textColor'],
-              )
+            ? Icon(Icons.edit, size: 16, color: colorScheme['textColor'])
             : null,
         onDeleted: showAction && onStatusChange != null ? onStatusChange : null,
       ),

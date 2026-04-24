@@ -51,10 +51,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Top Hikes',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text('Top Hikes', style: Theme.of(context).textTheme.headlineSmall),
             Text(
               'Commission-Verteilung nach Wanderrouten',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -115,7 +112,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
 
   Widget _buildBarChart(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -127,20 +124,25 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
           horizontalInterval: _calculateHorizontalInterval(),
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: colorScheme.outline.withOpacity(0.2),
+              color: colorScheme.outline.withValues(alpha: 0.2),
               strokeWidth: 1,
             );
           },
         ),
         titlesData: FlTitlesData(
           show: true,
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 60,
-              getTitlesWidget: (value, meta) => _buildBottomTitle(value.toInt(), context),
+              getTitlesWidget: (value, meta) =>
+                  _buildBottomTitle(value.toInt(), context),
             ),
           ),
           leftTitles: AxisTitles(
@@ -154,7 +156,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
         ),
         borderData: FlBorderData(
           show: true,
-          border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
         ),
         barGroups: _createBarGroups(context),
         barTouchData: BarTouchData(
@@ -190,8 +192,9 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
 
   Widget _buildSummary(BuildContext context) {
     final topHike = widget.data.hikeData.first;
-    final averageCommission = widget.data.totalAmount / widget.data.hikeData.length;
-    
+    final averageCommission =
+        widget.data.totalAmount / widget.data.hikeData.length;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -239,17 +242,13 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         Text(
@@ -270,7 +269,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
 
     final hikeData = widget.data.hikeData[index];
     final isCompact = MediaQuery.of(context).size.width < 600;
-    
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
@@ -298,7 +297,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
 
   Widget _buildLeftTitle(double value, BuildContext context) {
     if (value == 0) return const SizedBox.shrink();
-    
+
     return Text(
       '€${(value / 1000).toStringAsFixed(0)}k',
       style: Theme.of(context).textTheme.bodySmall,
@@ -308,20 +307,20 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
 
   List<BarChartGroupData> _createBarGroups(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return widget.data.hikeData.asMap().entries.map((entry) {
       final index = entry.key;
       final hikeData = entry.value;
       final isTouched = index == touchedIndex;
-      
+
       return BarChartGroupData(
         x: index,
         barRods: [
           BarChartRodData(
             toY: hikeData.commissionAmount,
-            color: isTouched 
-                ? colorScheme.primary 
-                : colorScheme.primary.withOpacity(0.8),
+            color: isTouched
+                ? colorScheme.primary
+                : colorScheme.primary.withValues(alpha: 0.8),
             width: isTouched ? 20 : 16,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(4),
@@ -330,7 +329,7 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
             gradient: LinearGradient(
               colors: [
                 colorScheme.primary,
-                colorScheme.primary.withOpacity(0.7),
+                colorScheme.primary.withValues(alpha: 0.7),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -344,11 +343,11 @@ class _CommissionByHikeChartState extends State<CommissionByHikeChart> {
 
   double _calculateMaxY() {
     if (widget.data.hikeData.isEmpty) return 100;
-    
+
     final maxAmount = widget.data.hikeData
         .map((hike) => hike.commissionAmount)
         .reduce((a, b) => a > b ? a : b);
-    
+
     // Add 20% padding at the top
     return maxAmount * 1.2;
   }

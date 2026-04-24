@@ -7,15 +7,15 @@ import 'package:whisky_hikes/data/services/auth/auth_service.dart';
 // Mock AuthService für Tests
 class MockAuthService extends ChangeNotifier implements AuthService {
   bool _isAuthenticated = false;
-  
+
   @override
   bool isUserLoggedIn() => _isAuthenticated;
-  
+
   void setAuthenticated(bool value) {
     _isAuthenticated = value;
     notifyListeners();
   }
-  
+
   // Implementiere andere Methoden als leere Stubs
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -29,16 +29,16 @@ void main() {
       mockAuthService = MockAuthService();
     });
 
-    testWidgets('AdminGuard zeigt Kind-Widget bei authentifiziertem Benutzer', (WidgetTester tester) async {
+    testWidgets('AdminGuard zeigt Kind-Widget bei authentifiziertem Benutzer', (
+      WidgetTester tester,
+    ) async {
       mockAuthService.setAuthenticated(true);
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<AuthService>.value(
           value: mockAuthService,
           child: MaterialApp(
-            home: AdminGuard(
-              child: const Text('Geschützter Inhalt'),
-            ),
+            home: AdminGuard(child: const Text('Geschützter Inhalt')),
           ),
         ),
       );
@@ -46,42 +46,43 @@ void main() {
       expect(find.text('Geschützter Inhalt'), findsOneWidget);
     });
 
-    testWidgets('AdminGuard zeigt Loading bei nicht authentifiziertem Benutzer', (WidgetTester tester) async {
-      mockAuthService.setAuthenticated(false);
-      
-      await tester.pumpWidget(
-        ChangeNotifierProvider<AuthService>.value(
-          value: mockAuthService,
-          child: MaterialApp(
-            home: AdminGuard(
-              child: const Text('Geschützter Inhalt'),
+    testWidgets(
+      'AdminGuard zeigt Loading bei nicht authentifiziertem Benutzer',
+      (WidgetTester tester) async {
+        mockAuthService.setAuthenticated(false);
+
+        await tester.pumpWidget(
+          ChangeNotifierProvider<AuthService>.value(
+            value: mockAuthService,
+            child: MaterialApp(
+              home: AdminGuard(child: const Text('Geschützter Inhalt')),
             ),
           ),
-        ),
-      );
+        );
 
-      // Sollte Loading-Indikator zeigen
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Geschützter Inhalt'), findsNothing);
-    });
+        // Sollte Loading-Indikator zeigen
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.text('Geschützter Inhalt'), findsNothing);
+      },
+    );
 
-    testWidgets('AdminGuard leitet bei Authentifizierung weiter', (WidgetTester tester) async {
+    testWidgets('AdminGuard leitet bei Authentifizierung weiter', (
+      WidgetTester tester,
+    ) async {
       mockAuthService.setAuthenticated(false);
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<AuthService>.value(
           value: mockAuthService,
           child: MaterialApp(
-            home: AdminGuard(
-              child: const Text('Geschützter Inhalt'),
-            ),
+            home: AdminGuard(child: const Text('Geschützter Inhalt')),
           ),
         ),
       );
 
       // Warte auf PostFrameCallback
       await tester.pumpAndSettle();
-      
+
       // Sollte Loading-Indikator zeigen
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
@@ -96,49 +97,55 @@ void main() {
 
     test('canAccess gibt true bei authentifiziertem Benutzer zurück', () async {
       mockAuthService.setAuthenticated(true);
-      
+
       final guard = AdminRouteGuard();
       final canAccess = await guard.canAccess(
         TestWidgetsFlutterBinding.instance.rootElement!.context!,
         const GoRouterState(),
       );
-      
+
       expect(canAccess, isTrue);
     });
 
-    test('canAccess gibt false bei nicht authentifiziertem Benutzer zurück', () async {
-      mockAuthService.setAuthenticated(false);
-      
-      final guard = AdminRouteGuard();
-      final canAccess = await guard.canAccess(
-        TestWidgetsFlutterBinding.instance.rootElement!.context!,
-        const GoRouterState(),
-      );
-      
-      expect(canAccess, isFalse);
-    });
+    test(
+      'canAccess gibt false bei nicht authentifiziertem Benutzer zurück',
+      () async {
+        mockAuthService.setAuthenticated(false);
 
-    test('redirect gibt /login bei nicht authentifiziertem Benutzer zurück', () {
-      mockAuthService.setAuthenticated(false);
-      
-      final guard = AdminRouteGuard();
-      final redirect = guard.redirect(
-        TestWidgetsFlutterBinding.instance.rootElement!.context!,
-        const GoRouterState(),
-      );
-      
-      expect(redirect, equals('/login'));
-    });
+        final guard = AdminRouteGuard();
+        final canAccess = await guard.canAccess(
+          TestWidgetsFlutterBinding.instance.rootElement!.context!,
+          const GoRouterState(),
+        );
+
+        expect(canAccess, isFalse);
+      },
+    );
+
+    test(
+      'redirect gibt /login bei nicht authentifiziertem Benutzer zurück',
+      () {
+        mockAuthService.setAuthenticated(false);
+
+        final guard = AdminRouteGuard();
+        final redirect = guard.redirect(
+          TestWidgetsFlutterBinding.instance.rootElement!.context!,
+          const GoRouterState(),
+        );
+
+        expect(redirect, equals('/login'));
+      },
+    );
 
     test('redirect gibt null bei authentifiziertem Benutzer zurück', () {
       mockAuthService.setAuthenticated(true);
-      
+
       final guard = AdminRouteGuard();
       final redirect = guard.redirect(
         TestWidgetsFlutterBinding.instance.rootElement!.context!,
         const GoRouterState(),
       );
-      
+
       expect(redirect, isNull);
     });
   });
@@ -150,16 +157,16 @@ void main() {
       mockAuthService = MockAuthService();
     });
 
-    testWidgets('AdminGuard reagiert auf Authentifizierungsänderungen', (WidgetTester tester) async {
+    testWidgets('AdminGuard reagiert auf Authentifizierungsänderungen', (
+      WidgetTester tester,
+    ) async {
       mockAuthService.setAuthenticated(false);
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<AuthService>.value(
           value: mockAuthService,
           child: MaterialApp(
-            home: AdminGuard(
-              child: const Text('Geschützter Inhalt'),
-            ),
+            home: AdminGuard(child: const Text('Geschützter Inhalt')),
           ),
         ),
       );
@@ -177,9 +184,11 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('AdminGuard funktioniert mit verschiedenen Kind-Widgets', (WidgetTester tester) async {
+    testWidgets('AdminGuard funktioniert mit verschiedenen Kind-Widgets', (
+      WidgetTester tester,
+    ) async {
       mockAuthService.setAuthenticated(true);
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<AuthService>.value(
           value: mockAuthService,
@@ -189,10 +198,7 @@ void main() {
                 children: [
                   const Text('Titel'),
                   const Text('Beschreibung'),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Aktion'),
-                  ),
+                  ElevatedButton(onPressed: () {}, child: const Text('Aktion')),
                 ],
               ),
             ),

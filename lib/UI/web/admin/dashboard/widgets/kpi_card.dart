@@ -8,25 +8,22 @@ class KpiCard extends StatelessWidget {
   final Color color;
 
   const KpiCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     this.growthPercentage,
     required this.icon,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,11 +43,7 @@ class KpiCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(
-                icon,
-                size: 16,
-                color: color,
-              ),
+              Icon(icon, size: 16, color: color),
             ],
           ),
           SizedBox(height: 8),
@@ -73,7 +66,8 @@ class KpiCard extends StatelessWidget {
 
   Widget _buildGrowthIndicator() {
     final isPositive = growthPercentage! >= 0;
-    final formattedPercentage = '${isPositive ? '+' : ''}${growthPercentage!.toStringAsFixed(1)}%';
+    final formattedPercentage =
+        '${isPositive ? '+' : ''}${growthPercentage!.toStringAsFixed(1)}%';
 
     return Row(
       children: [

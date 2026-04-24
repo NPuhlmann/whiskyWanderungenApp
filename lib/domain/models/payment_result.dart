@@ -15,7 +15,7 @@ enum PaymentStatus {
   @JsonValue('cancelled')
   cancelled,
   @JsonValue('requires_action')
-  requiresAction
+  requiresAction,
 }
 
 /// Result of a payment operation
@@ -31,8 +31,9 @@ abstract class PaymentResult with _$PaymentResult {
     Map<String, dynamic>? metadata,
   }) = _PaymentResult;
 
-  factory PaymentResult.fromJson(Map<String, dynamic> json) => _$PaymentResultFromJson(json);
-  
+  factory PaymentResult.fromJson(Map<String, dynamic> json) =>
+      _$PaymentResultFromJson(json);
+
   /// Factory constructor for successful payment
   factory PaymentResult.success({
     required Order order,
@@ -49,7 +50,7 @@ abstract class PaymentResult with _$PaymentResult {
       metadata: metadata,
     );
   }
-  
+
   /// Factory constructor for failed payment
   factory PaymentResult.failure({
     required String error,
@@ -65,12 +66,9 @@ abstract class PaymentResult with _$PaymentResult {
       metadata: metadata,
     );
   }
-  
+
   /// Factory constructor for cancelled payment
-  factory PaymentResult.cancelled({
-    String? message,
-    String? paymentIntentId,
-  }) {
+  factory PaymentResult.cancelled({String? message, String? paymentIntentId}) {
     return PaymentResult(
       isSuccess: false,
       errorMessage: message ?? 'Payment was cancelled by user',
@@ -78,7 +76,7 @@ abstract class PaymentResult with _$PaymentResult {
       paymentIntentId: paymentIntentId,
     );
   }
-  
+
   /// Factory constructor for pending payment (requires additional action)
   factory PaymentResult.requiresAction({
     required String clientSecret,
@@ -100,39 +98,39 @@ abstract class PaymentResult with _$PaymentResult {
 extension PaymentResultExtensions on PaymentResult {
   /// Check if payment requires additional user action (3D Secure, etc.)
   bool get requiresUserAction => status == PaymentStatus.requiresAction;
-  
+
   /// Check if payment was cancelled by user
   bool get wasCancelled => status == PaymentStatus.cancelled;
-  
+
   /// Check if payment is still processing
   bool get isPending => status == PaymentStatus.pending;
-  
+
   /// Get user-friendly error message
   String get friendlyErrorMessage {
     if (errorMessage == null) return 'Unknown error occurred';
-    
+
     final message = errorMessage!.toLowerCase();
-    
+
     if (message.contains('declined') || message.contains('insufficient')) {
       return 'Ihre Karte wurde abgelehnt. Bitte versuchen Sie eine andere Zahlungsmethode.';
     }
-    
+
     if (message.contains('expired')) {
       return 'Ihre Karte ist abgelaufen. Bitte verwenden Sie eine aktuelle Karte.';
     }
-    
+
     if (message.contains('network') || message.contains('connection')) {
       return 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
     }
-    
+
     if (message.contains('invalid') || message.contains('incorrect')) {
       return 'Ungültige Kartendaten. Bitte überprüfen Sie Ihre Eingaben.';
     }
-    
+
     if (message.contains('cancelled')) {
       return 'Zahlung wurde abgebrochen.';
     }
-    
+
     // Fallback für unbekannte Fehler
     return 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
   }

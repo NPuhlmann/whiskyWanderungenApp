@@ -120,7 +120,7 @@ class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // City
                   Expanded(
                     flex: 3,
@@ -178,7 +178,9 @@ class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  color: theme.colorScheme.primaryContainer.withValues(
+                    alpha: 0.3,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -215,7 +217,7 @@ class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
         'postalCode': _postalCodeController.text.trim(),
         'country': _countryController.text.trim(),
       };
-      
+
       // Only notify if all fields are filled
       if (address.values.every((value) => value.isNotEmpty)) {
         widget.onAddressChanged(address);

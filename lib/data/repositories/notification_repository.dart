@@ -21,7 +21,9 @@ class NotificationRepository {
     try {
       return await _notificationService.markNotificationAsRead(notificationId);
     } catch (e) {
-      throw Exception('Fehler beim Markieren der Benachrichtigung als gelesen: $e');
+      throw Exception(
+        'Fehler beim Markieren der Benachrichtigung als gelesen: $e',
+      );
     }
   }
 
@@ -39,7 +41,9 @@ class NotificationRepository {
     try {
       return await _notificationService.getUnreadNotificationCount(userId);
     } catch (e) {
-      throw Exception('Fehler beim Laden der ungelesenen Benachrichtigungen: $e');
+      throw Exception(
+        'Fehler beim Laden der ungelesenen Benachrichtigungen: $e',
+      );
     }
   }
 
@@ -48,7 +52,9 @@ class NotificationRepository {
     try {
       return await _notificationService.markAllNotificationsAsRead(userId);
     } catch (e) {
-      throw Exception('Fehler beim Markieren aller Benachrichtigungen als gelesen: $e');
+      throw Exception(
+        'Fehler beim Markieren aller Benachrichtigungen als gelesen: $e',
+      );
     }
   }
 
@@ -59,7 +65,9 @@ class NotificationRepository {
   ) async {
     try {
       final allNotifications = await getUserNotifications(userId);
-      return allNotifications.where((notification) => notification.type == type).toList();
+      return allNotifications
+          .where((notification) => notification.type == type)
+          .toList();
     } catch (e) {
       throw Exception('Fehler beim Laden der Benachrichtigungen nach Typ: $e');
     }
@@ -70,13 +78,17 @@ class NotificationRepository {
     try {
       final allNotifications = await getUserNotifications(userId);
       final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
-      
+
       return allNotifications
           .where((notification) => notification.createdAt.isAfter(sevenDaysAgo))
           .toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt)); // Sort by newest first
+        ..sort(
+          (a, b) => b.createdAt.compareTo(a.createdAt),
+        ); // Sort by newest first
     } catch (e) {
-      throw Exception('Fehler beim Laden der kürzlichen Benachrichtigungen: $e');
+      throw Exception(
+        'Fehler beim Laden der kürzlichen Benachrichtigungen: $e',
+      );
     }
   }
 
@@ -93,15 +105,21 @@ class NotificationRepository {
   Future<Map<String, int>> getNotificationStatistics(String userId) async {
     try {
       final allNotifications = await getUserNotifications(userId);
-      
+
       final stats = <String, int>{
         'total': allNotifications.length,
         'unread': allNotifications.where((n) => !n.isRead).length,
-        'order_updates': allNotifications.where((n) => n.type == NotificationType.orderUpdate).length,
-        'delivery_updates': allNotifications.where((n) => n.type == NotificationType.deliveryUpdate).length,
-        'general': allNotifications.where((n) => n.type == NotificationType.general).length,
+        'order_updates': allNotifications
+            .where((n) => n.type == NotificationType.orderUpdate)
+            .length,
+        'delivery_updates': allNotifications
+            .where((n) => n.type == NotificationType.deliveryUpdate)
+            .length,
+        'general': allNotifications
+            .where((n) => n.type == NotificationType.general)
+            .length,
       };
-      
+
       return stats;
     } catch (e) {
       throw Exception('Fehler beim Laden der Benachrichtigungsstatistiken: $e');

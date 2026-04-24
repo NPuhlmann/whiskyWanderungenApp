@@ -21,7 +21,7 @@ void main() {
       test('should have all required payment extension methods', () {
         // Test that methods exist by checking they can be called (will fail due to mock)
         // But the important thing is the methods exist with correct signatures
-        
+
         // Using closures to test method existence without calling them
         expect(() => apiService.fetchUserOrders, returnsNormally);
         expect(() => apiService.fetchOrderById, returnsNormally);
@@ -36,72 +36,102 @@ void main() {
     group('Input Validation Tests', () {
       test('fetchUserOrders should validate empty user ID', () async {
         // Act & Assert
-        expect(() async => await apiService.fetchUserOrders(''),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.fetchUserOrders(''),
+          throwsA(isA<ArgumentError>()),
+        );
       });
 
       test('fetchOrderById should validate invalid order ID', () async {
-        expect(() async => await apiService.fetchOrderById(0),
-               throwsA(isA<ArgumentError>()));
-        
-        expect(() async => await apiService.fetchOrderById(-1),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.fetchOrderById(0),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(
+          () async => await apiService.fetchOrderById(-1),
+          throwsA(isA<ArgumentError>()),
+        );
       });
 
       test('hasUserPurchasedHike should validate parameters', () async {
         // Empty user ID
-        expect(() async => await apiService.hasUserPurchasedHike('', 1),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.hasUserPurchasedHike('', 1),
+          throwsA(isA<ArgumentError>()),
+        );
 
         // Invalid hike ID
-        expect(() async => await apiService.hasUserPurchasedHike('user', 0),
-               throwsA(isA<ArgumentError>()));
-               
-        expect(() async => await apiService.hasUserPurchasedHike('user', -1),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.hasUserPurchasedHike('user', 0),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(
+          () async => await apiService.hasUserPurchasedHike('user', -1),
+          throwsA(isA<ArgumentError>()),
+        );
       });
 
       test('recordHikePurchase should validate all parameters', () async {
         // Empty user ID
-        expect(() async => await apiService.recordHikePurchase('', 1, 1),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.recordHikePurchase('', 1, 1),
+          throwsA(isA<ArgumentError>()),
+        );
 
         // Invalid hike ID
-        expect(() async => await apiService.recordHikePurchase('user', 0, 1),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.recordHikePurchase('user', 0, 1),
+          throwsA(isA<ArgumentError>()),
+        );
 
         // Invalid order ID
-        expect(() async => await apiService.recordHikePurchase('user', 1, 0),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.recordHikePurchase('user', 1, 0),
+          throwsA(isA<ArgumentError>()),
+        );
       });
 
       test('fetchOrderWithPaymentDetails should validate order ID', () async {
-        expect(() async => await apiService.fetchOrderWithPaymentDetails(0),
-               throwsA(isA<ArgumentError>()));
-               
-        expect(() async => await apiService.fetchOrderWithPaymentDetails(-1),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.fetchOrderWithPaymentDetails(0),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(
+          () async => await apiService.fetchOrderWithPaymentDetails(-1),
+          throwsA(isA<ArgumentError>()),
+        );
       });
 
       test('updateOrderAfterPayment should validate parameters', () async {
         // Invalid order ID
-        expect(() async => await apiService.updateOrderAfterPayment(
-          orderId: 0,
-          status: OrderStatus.confirmed,
-          paymentIntentId: 'pi_123',
-        ), throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.updateOrderAfterPayment(
+            orderId: 0,
+            status: OrderStatus.confirmed,
+            paymentIntentId: 'pi_123',
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
 
         // Empty payment intent ID
-        expect(() async => await apiService.updateOrderAfterPayment(
-          orderId: 1,
-          status: OrderStatus.confirmed,
-          paymentIntentId: '',
-        ), throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.updateOrderAfterPayment(
+            orderId: 1,
+            status: OrderStatus.confirmed,
+            paymentIntentId: '',
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
       });
 
       test('getUserPaymentHistory should validate user ID', () async {
-        expect(() async => await apiService.getUserPaymentHistory(''),
-               throwsA(isA<ArgumentError>()));
+        expect(
+          () async => await apiService.getUserPaymentHistory(''),
+          throwsA(isA<ArgumentError>()),
+        );
       });
     });
 
@@ -111,13 +141,19 @@ void main() {
         // - orders table for order operations
         // - purchased_hikes table for purchase tracking
         // - payments table for payment history
-        
+
         // This is tested indirectly through integration tests
         // Here we verify the methods exist and accept correct parameters
-        
+
         expect(() => apiService.fetchUserOrders('valid-user'), returnsNormally);
-        expect(() => apiService.hasUserPurchasedHike('valid-user', 1), returnsNormally);
-        expect(() => apiService.recordHikePurchase('valid-user', 1, 1), returnsNormally);
+        expect(
+          () => apiService.hasUserPurchasedHike('valid-user', 1),
+          returnsNormally,
+        );
+        expect(
+          () => apiService.recordHikePurchase('valid-user', 1, 1),
+          returnsNormally,
+        );
       });
 
       test('should handle different order statuses correctly', () {
@@ -132,39 +168,42 @@ void main() {
         expect(OrderStatus.values, contains(OrderStatus.cancelled));
       });
 
-      test('should provide proper error messages for validation failures', () async {
-        try {
-          await apiService.fetchUserOrders('');
-          fail('Should have thrown ArgumentError');
-        } on ArgumentError catch (e) {
-          expect(e.message, contains('cannot be empty'));
-        }
+      test(
+        'should provide proper error messages for validation failures',
+        () async {
+          try {
+            await apiService.fetchUserOrders('');
+            fail('Should have thrown ArgumentError');
+          } on ArgumentError catch (e) {
+            expect(e.message, contains('cannot be empty'));
+          }
 
-        try {
-          await apiService.fetchOrderById(0);
-          fail('Should have thrown ArgumentError');
-        } on ArgumentError catch (e) {
-          expect(e.message, contains('greater than 0'));
-        }
+          try {
+            await apiService.fetchOrderById(0);
+            fail('Should have thrown ArgumentError');
+          } on ArgumentError catch (e) {
+            expect(e.message, contains('greater than 0'));
+          }
 
-        try {
-          await apiService.hasUserPurchasedHike('user', 0);
-          fail('Should have thrown ArgumentError');
-        } on ArgumentError catch (e) {
-          expect(e.message, contains('greater than 0'));
-        }
-      });
+          try {
+            await apiService.hasUserPurchasedHike('user', 0);
+            fail('Should have thrown ArgumentError');
+          } on ArgumentError catch (e) {
+            expect(e.message, contains('greater than 0'));
+          }
+        },
+      );
     });
 
     group('API Integration Readiness Tests', () {
       test('should be ready for actual database integration', () {
         // These methods should be ready to work with real Supabase client
         // when provided with actual database connection
-        
+
         // Test that constructor accepts SupabaseClient
         final realClientMock = MockSupabaseClient();
         final serviceWithMock = BackendApiService(client: realClientMock);
-        
+
         expect(serviceWithMock, isA<BackendApiService>());
         expect(serviceWithMock.client, equals(realClientMock));
       });
@@ -175,7 +214,7 @@ void main() {
         // 2. Try database operation
         // 3. Catch PostgrestException and rethrow
         // 4. Catch other exceptions and wrap in generic Exception
-        
+
         // This is verified through the individual method tests above
         expect(true, isTrue); // Placeholder for pattern verification
       });
@@ -185,7 +224,7 @@ void main() {
         // - Operation start with parameters
         // - Success with results
         // - Errors with details
-        
+
         // This is implemented in the actual methods
         expect(true, isTrue); // Placeholder for logging verification
       });
@@ -204,7 +243,7 @@ void main() {
 //
 // METHODS IMPLEMENTED:
 // - fetchUserOrders(String userId) -> List<BasicOrder>
-// - fetchOrderById(int orderId) -> BasicOrder  
+// - fetchOrderById(int orderId) -> BasicOrder
 // - hasUserPurchasedHike(String userId, int hikeId) -> bool
 // - recordHikePurchase(String userId, int hikeId, int orderId) -> void
 // - fetchOrderWithPaymentDetails(int orderId) -> BasicOrder

@@ -1,18 +1,11 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:whisky_hikes/data/services/whisky/whisky_management_service.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Enumeration for tasting set sorting options
-enum TastingSetSortBy {
-  name,
-  sampleCount,
-  averageAge,
-  averageAbv,
-  region,
-}
+enum TastingSetSortBy { name, sampleCount, averageAge, averageAbv, region }
 
 /// Provider for managing whisky-related data and state
 class WhiskyManagementProvider with ChangeNotifier {
@@ -68,13 +61,17 @@ class WhiskyManagementProvider with ChangeNotifier {
 
       // Region filter
       if (_selectedRegion != null) {
-        final hasRegion = set.samples.any((sample) => sample.region == _selectedRegion);
+        final hasRegion = set.samples.any(
+          (sample) => sample.region == _selectedRegion,
+        );
         if (!hasRegion) return false;
       }
 
       // Distillery filter
       if (_selectedDistillery != null) {
-        final hasDistillery = set.samples.any((sample) => sample.distillery == _selectedDistillery);
+        final hasDistillery = set.samples.any(
+          (sample) => sample.distillery == _selectedDistillery,
+        );
         if (!hasDistillery) return false;
       }
 
@@ -154,7 +151,9 @@ class WhiskyManagementProvider with ChangeNotifier {
     _clearError();
 
     try {
-      _whiskySamples = await _service.getWhiskySamplesByTastingSetId(tastingSetId);
+      _whiskySamples = await _service.getWhiskySamplesByTastingSetId(
+        tastingSetId,
+      );
       notifyListeners();
     } catch (e) {
       _setError('Failed to load whisky samples: $e');
@@ -237,7 +236,10 @@ class WhiskyManagementProvider with ChangeNotifier {
   // ==================== CRUD Operations - Whisky Samples ====================
 
   /// Create a new whisky sample
-  Future<void> createWhiskySample(WhiskySample sample, {required int tastingSetId}) async {
+  Future<void> createWhiskySample(
+    WhiskySample sample, {
+    required int tastingSetId,
+  }) async {
     _setLoading(true);
     _clearError();
 
@@ -248,7 +250,9 @@ class WhiskyManagementProvider with ChangeNotifier {
       }
 
       await _service.createWhiskySample(sample);
-      await loadWhiskySamples(tastingSetId); // Reload samples for this tasting set
+      await loadWhiskySamples(
+        tastingSetId,
+      ); // Reload samples for this tasting set
     } catch (e) {
       _setError('Failed to create whisky sample: $e');
       log('Error creating whisky sample: $e');
@@ -258,7 +262,10 @@ class WhiskyManagementProvider with ChangeNotifier {
   }
 
   /// Update an existing whisky sample
-  Future<void> updateWhiskySample(WhiskySample sample, {required int tastingSetId}) async {
+  Future<void> updateWhiskySample(
+    WhiskySample sample, {
+    required int tastingSetId,
+  }) async {
     _setLoading(true);
     _clearError();
 
@@ -269,7 +276,9 @@ class WhiskyManagementProvider with ChangeNotifier {
       }
 
       await _service.updateWhiskySample(sample);
-      await loadWhiskySamples(tastingSetId); // Reload samples for this tasting set
+      await loadWhiskySamples(
+        tastingSetId,
+      ); // Reload samples for this tasting set
     } catch (e) {
       _setError('Failed to update whisky sample: $e');
       log('Error updating whisky sample: $e');
@@ -279,13 +288,18 @@ class WhiskyManagementProvider with ChangeNotifier {
   }
 
   /// Delete a whisky sample
-  Future<void> deleteWhiskySample(int sampleId, {required int tastingSetId}) async {
+  Future<void> deleteWhiskySample(
+    int sampleId, {
+    required int tastingSetId,
+  }) async {
     _setLoading(true);
     _clearError();
 
     try {
       await _service.deleteWhiskySample(sampleId);
-      await loadWhiskySamples(tastingSetId); // Reload samples for this tasting set
+      await loadWhiskySamples(
+        tastingSetId,
+      ); // Reload samples for this tasting set
     } catch (e) {
       _setError('Failed to delete whisky sample: $e');
       log('Error deleting whisky sample: $e');
@@ -295,7 +309,10 @@ class WhiskyManagementProvider with ChangeNotifier {
   }
 
   /// Reorder whisky samples
-  Future<void> reorderWhiskySamples(List<WhiskySample> reorderedSamples, {required int tastingSetId}) async {
+  Future<void> reorderWhiskySamples(
+    List<WhiskySample> reorderedSamples, {
+    required int tastingSetId,
+  }) async {
     _setLoading(true);
     _clearError();
 
@@ -372,9 +389,17 @@ class WhiskyManagementProvider with ChangeNotifier {
   // ==================== Image Management ====================
 
   /// Upload whisky image
-  Future<String> uploadWhiskyImage(int sampleId, Uint8List imageBytes, String fileExtension) async {
+  Future<String> uploadWhiskyImage(
+    int sampleId,
+    Uint8List imageBytes,
+    String fileExtension,
+  ) async {
     try {
-      return await _service.uploadWhiskyImage(sampleId, imageBytes, fileExtension);
+      return await _service.uploadWhiskyImage(
+        sampleId,
+        imageBytes,
+        fileExtension,
+      );
     } catch (e) {
       log('Error uploading whisky image: $e');
       rethrow;
@@ -382,9 +407,17 @@ class WhiskyManagementProvider with ChangeNotifier {
   }
 
   /// Upload tasting set image
-  Future<String> uploadTastingSetImage(int tastingSetId, Uint8List imageBytes, String fileExtension) async {
+  Future<String> uploadTastingSetImage(
+    int tastingSetId,
+    Uint8List imageBytes,
+    String fileExtension,
+  ) async {
     try {
-      return await _service.uploadTastingSetImage(tastingSetId, imageBytes, fileExtension);
+      return await _service.uploadTastingSetImage(
+        tastingSetId,
+        imageBytes,
+        fileExtension,
+      );
     } catch (e) {
       log('Error uploading tasting set image: $e');
       rethrow;
@@ -406,7 +439,9 @@ class WhiskyManagementProvider with ChangeNotifier {
   /// Load popular distilleries
   Future<void> loadPopularDistilleries({int limit = 10}) async {
     try {
-      _popularDistilleries = await _service.getPopularDistilleries(limit: limit);
+      _popularDistilleries = await _service.getPopularDistilleries(
+        limit: limit,
+      );
       notifyListeners();
     } catch (e) {
       log('Error loading popular distilleries: $e');

@@ -12,7 +12,7 @@ class DashboardProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _popularRoutes = [];
 
   DashboardProvider({DashboardMetricsService? metricsService})
-      : _metricsService = metricsService ?? DashboardMetricsService();
+    : _metricsService = metricsService ?? DashboardMetricsService();
 
   // Getters
   bool get isLoading => _isLoading;
@@ -22,13 +22,19 @@ class DashboardProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get popularRoutes => _popularRoutes;
 
   // Revenue Metrics
-  double get dailyRevenue => (_metrics['dailyRevenue'] as num?)?.toDouble() ?? 0.0;
-  double get weeklyRevenue => (_metrics['weeklyRevenue'] as num?)?.toDouble() ?? 0.0;
-  double get monthlyRevenue => (_metrics['monthlyRevenue'] as num?)?.toDouble() ?? 0.0;
+  double get dailyRevenue =>
+      (_metrics['dailyRevenue'] as num?)?.toDouble() ?? 0.0;
+  double get weeklyRevenue =>
+      (_metrics['weeklyRevenue'] as num?)?.toDouble() ?? 0.0;
+  double get monthlyRevenue =>
+      (_metrics['monthlyRevenue'] as num?)?.toDouble() ?? 0.0;
 
-  String get formattedDailyRevenue => _metricsService.formatCurrency(dailyRevenue);
-  String get formattedWeeklyRevenue => _metricsService.formatCurrency(weeklyRevenue);
-  String get formattedMonthlyRevenue => _metricsService.formatCurrency(monthlyRevenue);
+  String get formattedDailyRevenue =>
+      _metricsService.formatCurrency(dailyRevenue);
+  String get formattedWeeklyRevenue =>
+      _metricsService.formatCurrency(weeklyRevenue);
+  String get formattedMonthlyRevenue =>
+      _metricsService.formatCurrency(monthlyRevenue);
 
   // Order Metrics
   int get totalActiveOrders => (_metrics['totalActiveOrders'] as int?) ?? 0;
@@ -42,7 +48,8 @@ class DashboardProvider extends ChangeNotifier {
   int get soldRoutesThisMonth => (_metrics['soldRoutesThisMonth'] as int?) ?? 0;
 
   // Customer Rating
-  double get averageCustomerRating => (_metrics['avgCustomerRating'] as num?)?.toDouble() ?? 0.0;
+  double get averageCustomerRating =>
+      (_metrics['avgCustomerRating'] as num?)?.toDouble() ?? 0.0;
   String get formattedRating => averageCustomerRating.toStringAsFixed(1);
   int get ratingStars => averageCustomerRating.round();
 
@@ -62,7 +69,8 @@ class DashboardProvider extends ChangeNotifier {
   }
 
   // Data Status Checks
-  bool get hasRevenueData => dailyRevenue > 0 || weeklyRevenue > 0 || monthlyRevenue > 0;
+  bool get hasRevenueData =>
+      dailyRevenue > 0 || weeklyRevenue > 0 || monthlyRevenue > 0;
   bool get hasOrderData => totalActiveOrders > 0;
   bool get hasRecentOrders => _recentOrders.isNotEmpty;
   bool get hasPopularRoutes => _popularRoutes.isNotEmpty;
@@ -92,9 +100,12 @@ class DashboardProvider extends ChangeNotifier {
       final metricsData = await _metricsService.getDashboardMetrics();
 
       _metrics = metricsData;
-      _recentOrders = List<Map<String, dynamic>>.from(metricsData['recentOrders'] ?? []);
-      _popularRoutes = List<Map<String, dynamic>>.from(metricsData['popularRoutes'] ?? []);
-
+      _recentOrders = List<Map<String, dynamic>>.from(
+        metricsData['recentOrders'] ?? [],
+      );
+      _popularRoutes = List<Map<String, dynamic>>.from(
+        metricsData['popularRoutes'] ?? [],
+      );
     } catch (e) {
       log('Error loading dashboard data: $e');
       setError('Failed to load dashboard data. Please try again.');

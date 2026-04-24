@@ -57,9 +57,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       body: Row(
         children: [
           _buildDesktopSidebar(),
-          Expanded(
-            child: _buildDashboardContent(),
-          ),
+          Expanded(child: _buildDashboardContent()),
         ],
       ),
     );
@@ -82,21 +80,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 const SizedBox(width: 12),
                 const Text(
                   'Whisky Hikes',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
-          
+
           const Divider(),
-          
+
           // Navigation
-          Expanded(
-            child: _buildSidebarNavigation(),
-          ),
+          Expanded(child: _buildSidebarNavigation()),
         ],
       ),
     );
@@ -105,14 +98,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
   /// Sidebar Navigation
   Widget _buildSidebarNavigation() {
     final navigationItems = [
-      {'icon': Icons.dashboard, 'label': 'Dashboard', 'route': '/admin/dashboard'},
+      {
+        'icon': Icons.dashboard,
+        'label': 'Dashboard',
+        'route': '/admin/dashboard',
+      },
       {'icon': Icons.map, 'label': 'Wanderrouten', 'route': '/admin/routes'},
-                    {'icon': Icons.shopping_cart, 'label': AppLocalizations.of(context)!.orders, 'route': '/admin/orders'},
-      {'icon': Icons.local_bar, 'label': 'Whisky-Katalog', 'route': '/admin/whisky'},
-      {'icon': Icons.analytics, 'label': 'Analytics', 'route': '/admin/analytics'},
+      {
+        'icon': Icons.shopping_cart,
+        'label': AppLocalizations.of(context)!.orders,
+        'route': '/admin/orders',
+      },
+      {
+        'icon': Icons.local_bar,
+        'label': 'Whisky-Katalog',
+        'route': '/admin/whisky',
+      },
+      {
+        'icon': Icons.analytics,
+        'label': 'Analytics',
+        'route': '/admin/analytics',
+      },
       {'icon': Icons.people, 'label': 'Team', 'route': '/admin/team'},
-      {'icon': Icons.account_balance_wallet, 'label': 'Finanzen', 'route': '/admin/finances'},
-      {'icon': Icons.settings, 'label': 'Einstellungen', 'route': '/admin/settings'},
+      {
+        'icon': Icons.account_balance_wallet,
+        'label': 'Finanzen',
+        'route': '/admin/finances',
+      },
+      {
+        'icon': Icons.settings,
+        'label': 'Einstellungen',
+        'route': '/admin/settings',
+      },
     ];
 
     return ListView.builder(
@@ -120,7 +137,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       itemBuilder: (context, index) {
         final item = navigationItems[index];
         final isSelected = _selectedIndex == index;
-        
+
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
@@ -164,23 +181,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       selectedItemColor: Colors.amber[800],
       unselectedItemColor: Colors.grey[600],
-            items: [
+      items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.dashboard),
           label: 'Dashboard',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: 'Routen',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Routen'),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
           label: AppLocalizations.of(context)!.orders,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profil',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
       ],
     );
   }
@@ -194,19 +205,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           // Header
           _buildDashboardHeader(),
-          
+
           const SizedBox(height: 24),
-          
+
           // KPI Cards
           _buildKPICards(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Charts
           _buildCharts(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Recent Orders
           _buildRecentOrders(),
         ],
@@ -222,7 +233,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         // Breadcrumbs
         const AdminBreadcrumbs(currentSection: 'Dashboard'),
         const SizedBox(height: 16),
-        
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -238,41 +249,41 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 const SizedBox(height: 4),
                 Text(
                   'Hier ist eine Übersicht Ihrer Whisky Hikes Aktivitäten',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Dashboard aktualisieren
+                    context.read<AdminProvider>().loadDashboardData();
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Aktualisieren'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[600],
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Neue Route erstellen
+                    AdminRouter.navigateTo(context, AdminRouter.routesRoute);
+                  },
+                  icon: const Icon(Icons.add),
+                  label: Text(AppLocalizations.of(context)!.newRoute),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber[800],
+                    foregroundColor: Colors.white,
                   ),
                 ),
               ],
             ),
-                    Row(
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                // Dashboard aktualisieren
-                context.read<AdminProvider>().loadDashboardData();
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text('Aktualisieren'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[600],
-                foregroundColor: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 12),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Neue Route erstellen
-                AdminRouter.navigateTo(context, AdminRouter.routesRoute);
-              },
-              icon: const Icon(Icons.add),
-                                      label: Text(AppLocalizations.of(context)!.newRoute),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber[800],
-                foregroundColor: Colors.white,
-              ),
-            ),
-          ],
-        ),
           ],
         ),
       ],
@@ -288,7 +299,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         }
 
         final kpis = adminProvider.dashboardKPIs;
-        
+
         return GridView.count(
           crossAxisCount: ResponsiveLayoutUtils.isMobile(context) ? 2 : 4,
           shrinkWrap: true,
@@ -346,7 +357,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -359,16 +370,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
-              Icon(
-                Icons.trending_up,
-                color: Colors.green,
-                size: 16,
-              ),
+              Icon(icon, color: color, size: 24),
+              Icon(Icons.trending_up, color: Colors.green, size: 16),
             ],
           ),
           const SizedBox(height: 12),
@@ -382,16 +385,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
           const SizedBox(height: 4),
           Text(
             title,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 2),
           Text(
             subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
           ),
         ],
       ),
@@ -402,15 +405,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget _buildCharts() {
     return Row(
       children: [
-        Expanded(
-          flex: 2,
-          child: _buildSalesChart(),
-        ),
+        Expanded(flex: 2, child: _buildSalesChart()),
         const SizedBox(width: 16),
         if (!ResponsiveLayoutUtils.isMobile(context))
-          Expanded(
-            child: _buildTopRoutesChart(),
-          ),
+          Expanded(child: _buildTopRoutesChart()),
       ],
     );
   }
@@ -447,35 +445,41 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               Text(
                 'Umsatz-Entwicklung (30 Tage)',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
               SizedBox(
                 height: 200,
-                child: trend.isEmpty 
-                  ? Center(child: Text(AppLocalizations.of(context)!.noDataAvailable))
-                  : LineChart(
-                      LineChartData(
-                        gridData: FlGridData(show: false),
-                        titlesData: FlTitlesData(show: false),
-                        borderData: FlBorderData(show: false),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: spots,
-                            isCurved: true,
-                            color: Colors.amber[800],
-                            barWidth: 3,
-                            dotData: FlDotData(show: false),
-                            belowBarData: BarAreaData(
-                              show: true,
-                              color: Colors.amber[800]!.withValues(alpha: 0.1),
+                child: trend.isEmpty
+                    ? Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.noDataAvailable,
+                        ),
+                      )
+                    : LineChart(
+                        LineChartData(
+                          gridData: FlGridData(show: false),
+                          titlesData: FlTitlesData(show: false),
+                          borderData: FlBorderData(show: false),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: spots,
+                              isCurved: true,
+                              color: Colors.amber[800],
+                              barWidth: 3,
+                              dotData: FlDotData(show: false),
+                              belowBarData: BarAreaData(
+                                show: true,
+                                color: Colors.amber[800]!.withValues(
+                                  alpha: 0.1,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
               ),
             ],
           ),
@@ -493,7 +497,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         }
 
         final routes = adminProvider.topRoutes;
-        
+
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -513,37 +517,53 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               Text(
                 'Beliebteste Routen',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
               SizedBox(
                 height: 200,
-                child: routes.isEmpty 
-                  ? Center(child: Text(AppLocalizations.of(context)!.noDataAvailable))
-                  : BarChart(
-                      BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: routes.isNotEmpty 
-                          ? routes.map((r) => r['sales'] as int).reduce((a, b) => a > b ? a : b).toDouble() + 2
-                          : 20,
-                        barTouchData: BarTouchData(enabled: false),
-                        titlesData: FlTitlesData(show: false),
-                        borderData: FlBorderData(show: false),
-                        barGroups: routes.asMap().entries.map((entry) {
-                          final route = entry.value;
-                          final colors = [Colors.amber[800], Colors.blue[400], Colors.green[400], Colors.orange[400], Colors.purple[400]];
-                          return BarChartGroupData(
-                            x: entry.key, 
-                            barRods: [BarChartRodData(
-                              toY: (route['sales'] as int).toDouble(), 
-                              color: colors[entry.key % colors.length]
-                            )]
-                          );
-                        }).toList(),
+                child: routes.isEmpty
+                    ? Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.noDataAvailable,
+                        ),
+                      )
+                    : BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: routes.isNotEmpty
+                              ? routes
+                                        .map((r) => r['sales'] as int)
+                                        .reduce((a, b) => a > b ? a : b)
+                                        .toDouble() +
+                                    2
+                              : 20,
+                          barTouchData: BarTouchData(enabled: false),
+                          titlesData: FlTitlesData(show: false),
+                          borderData: FlBorderData(show: false),
+                          barGroups: routes.asMap().entries.map((entry) {
+                            final route = entry.value;
+                            final colors = [
+                              Colors.amber[800],
+                              Colors.blue[400],
+                              Colors.green[400],
+                              Colors.orange[400],
+                              Colors.purple[400],
+                            ];
+                            return BarChartGroupData(
+                              x: entry.key,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: (route['sales'] as int).toDouble(),
+                                  color: colors[entry.key % colors.length],
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    ),
               ),
             ],
           ),
@@ -561,7 +581,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         }
 
         final orders = adminProvider.recentOrders;
-        
+
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -590,30 +610,34 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   TextButton(
                     onPressed: () {
-                      print('View all orders');
+                      debugPrint('View all orders');
                     },
-                                            child: Text(AppLocalizations.of(context)!.showAll),
+                    child: Text(AppLocalizations.of(context)!.showAll),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               if (orders.isEmpty)
-                                Center(
+                Center(
                   child: Padding(
                     padding: EdgeInsets.all(32),
-                    child: Text(AppLocalizations.of(context)!.noOrdersAvailable),
+                    child: Text(
+                      AppLocalizations.of(context)!.noOrdersAvailable,
+                    ),
                   ),
                 )
               else
-                ...orders.map((order) => _buildOrderItem(
-                  orderNumber: order['orderNumber'] ?? 'N/A',
-                  customerName: order['customerName'] ?? 'N/A',
-                  routeName: order['routeName'] ?? 'N/A',
-                  amount: '€${(order['amount'] ?? 0.0).toStringAsFixed(2)}',
-                  status: _getStatusDisplayName(order['status'] ?? ''),
-                  statusColor: _getStatusColor(order['status'] ?? ''),
-                  onTap: () => _showOrderDetails(order),
-                )),
+                ...orders.map(
+                  (order) => _buildOrderItem(
+                    orderNumber: order['orderNumber'] ?? 'N/A',
+                    customerName: order['customerName'] ?? 'N/A',
+                    routeName: order['routeName'] ?? 'N/A',
+                    amount: '€${(order['amount'] ?? 0.0).toStringAsFixed(2)}',
+                    status: _getStatusDisplayName(order['status'] ?? ''),
+                    statusColor: _getStatusColor(order['status'] ?? ''),
+                    onTap: () => _showOrderDetails(order),
+                  ),
+                ),
             ],
           ),
         );
@@ -650,14 +674,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
-            Expanded(
-              flex: 3,
-              child: Text(customerName),
-            ),
-            Expanded(
-              flex: 4,
-              child: Text(routeName),
-            ),
+            Expanded(flex: 3, child: Text(customerName)),
+            Expanded(flex: 4, child: Text(routeName)),
             Expanded(
               flex: 2,
               child: Text(
@@ -734,16 +752,28 @@ class _AdminDashboardState extends State<AdminDashboard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${AppLocalizations.of(context)!.order} ${order['orderNumber']}'),
+        title: Text(
+          '${AppLocalizations.of(context)!.order} ${order['orderNumber']}',
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-                            Text('${AppLocalizations.of(context)!.customer}: ${order['customerName']}'),
-                          Text('${AppLocalizations.of(context)!.route}: ${order['routeName']}'),
-              Text('${AppLocalizations.of(context)!.amount}: €${(order['amount'] ?? 0.0).toStringAsFixed(2)}'),
-              Text('${AppLocalizations.of(context)!.status}: ${_getStatusDisplayName(order['status'] ?? '')}'),
-              Text('${AppLocalizations.of(context)!.date}: ${order['createdAt'] ?? 'N/A'}'),
+            Text(
+              '${AppLocalizations.of(context)!.customer}: ${order['customerName']}',
+            ),
+            Text(
+              '${AppLocalizations.of(context)!.route}: ${order['routeName']}',
+            ),
+            Text(
+              '${AppLocalizations.of(context)!.amount}: €${(order['amount'] ?? 0.0).toStringAsFixed(2)}',
+            ),
+            Text(
+              '${AppLocalizations.of(context)!.status}: ${_getStatusDisplayName(order['status'] ?? '')}',
+            ),
+            Text(
+              '${AppLocalizations.of(context)!.date}: ${order['createdAt'] ?? 'N/A'}',
+            ),
           ],
         ),
         actions: [

@@ -6,14 +6,17 @@ class DashboardMetricsService {
   final SupabaseClient _client;
 
   DashboardMetricsService({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   // Revenue Metrics
   Future<double> getDailyRevenue() async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T')[0];
-      final tomorrowStr = today.add(Duration(days: 1)).toIso8601String().split('T')[0];
+      final tomorrowStr = today
+          .add(Duration(days: 1))
+          .toIso8601String()
+          .split('T')[0];
 
       final response = await _client
           .from('orders')
@@ -96,10 +99,10 @@ class DashboardMetricsService {
 
   Future<int> getTotalActiveOrders() async {
     try {
-      final response = await _client
-          .from('orders')
-          .select('id')
-          .inFilter('status', ['pending', 'processing', 'shipped']);
+      final response = await _client.from('orders').select('id').inFilter(
+        'status',
+        ['pending', 'processing', 'shipped'],
+      );
 
       return response.length;
     } catch (e) {
@@ -143,7 +146,10 @@ class DashboardMetricsService {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T')[0];
-      final tomorrowStr = today.add(Duration(days: 1)).toIso8601String().split('T')[0];
+      final tomorrowStr = today
+          .add(Duration(days: 1))
+          .toIso8601String()
+          .split('T')[0];
 
       final response = await _client
           .from('orders')
@@ -197,10 +203,14 @@ class DashboardMetricsService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getMostPopularRoutes({int limit = 5}) async {
+  Future<List<Map<String, dynamic>>> getMostPopularRoutes({
+    int limit = 5,
+  }) async {
     try {
-      final response = await _client
-          .rpc('get_popular_routes', params: {'route_limit': limit});
+      final response = await _client.rpc(
+        'get_popular_routes',
+        params: {'route_limit': limit},
+      );
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
@@ -227,7 +237,8 @@ class DashboardMetricsService {
               'count': 0,
             };
           }
-          hikeStats[hikeId]!['count'] = (hikeStats[hikeId]!['count'] as int) + 1;
+          hikeStats[hikeId]!['count'] =
+              (hikeStats[hikeId]!['count'] as int) + 1;
         }
 
         final sortedStats = hikeStats.values.toList()
@@ -244,9 +255,7 @@ class DashboardMetricsService {
   // Customer Metrics
   Future<double> getAverageCustomerRating() async {
     try {
-      final response = await _client
-          .from('reviews')
-          .select('rating');
+      final response = await _client.from('reviews').select('rating');
 
       if (response.isEmpty) return 0.0;
 

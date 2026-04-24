@@ -15,10 +15,9 @@ class ReviewRepository {
       dev.log('📖 Loading reviews for hike $hikeId');
 
       final reviews = await _backendApi.getReviewsForHike(hikeId);
-      
+
       dev.log('✅ Loaded ${reviews.length} reviews for hike $hikeId');
       return reviews;
-
     } catch (e) {
       dev.log('❌ Error loading reviews for hike $hikeId: $e');
       throw Exception('Fehler beim Laden der Bewertungen: $e');
@@ -39,10 +38,14 @@ class ReviewRepository {
       }
 
       if (comment.isEmpty || comment.length > 1000) {
-        throw ArgumentError('Kommentar darf nicht leer sein und maximal 1000 Zeichen haben');
+        throw ArgumentError(
+          'Kommentar darf nicht leer sein und maximal 1000 Zeichen haben',
+        );
       }
 
-      dev.log('📝 Creating review for hike $hikeId by user $userId (rating: $rating)');
+      dev.log(
+        '📝 Creating review for hike $hikeId by user $userId (rating: $rating)',
+      );
 
       final review = await _backendApi.createReview(
         hikeId: hikeId,
@@ -53,7 +56,6 @@ class ReviewRepository {
 
       dev.log('✅ Review created: ${review.id}');
       return review;
-
     } catch (e) {
       dev.log('❌ Error creating review: $e');
       if (e is ArgumentError) rethrow;
@@ -75,7 +77,9 @@ class ReviewRepository {
       }
 
       if (comment != null && (comment.isEmpty || comment.length > 1000)) {
-        throw ArgumentError('Kommentar darf nicht leer sein und maximal 1000 Zeichen haben');
+        throw ArgumentError(
+          'Kommentar darf nicht leer sein und maximal 1000 Zeichen haben',
+        );
       }
 
       dev.log('📝 Updating review $reviewId by user $userId');
@@ -89,7 +93,6 @@ class ReviewRepository {
 
       dev.log('✅ Review updated: ${review.id}');
       return review;
-
     } catch (e) {
       dev.log('❌ Error updating review: $e');
       if (e is ArgumentError) rethrow;
@@ -108,7 +111,6 @@ class ReviewRepository {
       await _backendApi.deleteReview(reviewId: reviewId, userId: userId);
 
       dev.log('✅ Review deleted: $reviewId');
-
     } catch (e) {
       dev.log('❌ Error deleting review: $e');
       throw Exception('Fehler beim Löschen der Bewertung: $e');
@@ -121,10 +123,9 @@ class ReviewRepository {
       dev.log('📖 Loading reviews by user $userId');
 
       final reviews = await _backendApi.getReviewsByUser(userId);
-      
+
       dev.log('✅ Loaded ${reviews.length} reviews by user $userId');
       return reviews;
-
     } catch (e) {
       dev.log('❌ Error loading reviews by user $userId: $e');
       throw Exception('Fehler beim Laden der Bewertungen: $e');
@@ -137,10 +138,9 @@ class ReviewRepository {
       dev.log('📊 Getting average rating for hike $hikeId');
 
       final averageRating = await _backendApi.getAverageRatingForHike(hikeId);
-      
+
       dev.log('✅ Average rating for hike $hikeId: $averageRating');
       return averageRating;
-
     } catch (e) {
       dev.log('❌ Error getting average rating for hike $hikeId: $e');
       throw Exception('Fehler beim Abrufen der Durchschnittsbewertung: $e');
@@ -156,17 +156,16 @@ class ReviewRepository {
       dev.log('🔍 Checking user review for hike $hikeId by user $userId');
 
       final review = await _backendApi.getUserReviewForHike(
-        hikeId: hikeId, 
+        hikeId: hikeId,
         userId: userId,
       );
-      
+
       if (review != null) {
         dev.log('✅ Found user review: ${review.id}');
       } else {
         dev.log('ℹ️ No review found for user $userId on hike $hikeId');
       }
       return review;
-
     } catch (e) {
       dev.log('❌ Error checking user review: $e');
       throw Exception('Fehler beim Prüfen der Bewertung: $e');
@@ -179,10 +178,9 @@ class ReviewRepository {
       dev.log('📊 Getting review stats for hike $hikeId');
 
       final stats = await _backendApi.getReviewStatsForHike(hikeId);
-      
+
       dev.log('✅ Review stats for hike $hikeId: $stats');
       return stats;
-
     } catch (e) {
       dev.log('❌ Error getting review stats for hike $hikeId: $e');
       throw Exception('Fehler beim Abrufen der Bewertungsstatistiken: $e');
@@ -195,10 +193,9 @@ class ReviewRepository {
       dev.log('📖 Loading $limit recent reviews');
 
       final reviews = await _backendApi.getRecentReviews(limit: limit);
-      
+
       dev.log('✅ Loaded ${reviews.length} recent reviews');
       return reviews;
-
     } catch (e) {
       dev.log('❌ Error loading recent reviews: $e');
       throw Exception('Fehler beim Laden der neuesten Bewertungen: $e');

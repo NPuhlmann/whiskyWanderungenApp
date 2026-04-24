@@ -31,14 +31,18 @@ abstract class Order with _$Order {
 /// Extension for business logic on Order
 extension OrderExtensions on Order {
   /// Check if the order requires a delivery address
-  bool get requiresDeliveryAddress => deliveryType == DeliveryType.standardShipping || deliveryType == DeliveryType.expressShipping;
-  
+  bool get requiresDeliveryAddress =>
+      deliveryType == DeliveryType.standardShipping ||
+      deliveryType == DeliveryType.expressShipping;
+
   /// Check if the order is in a final state (completed or cancelled)
-  bool get isFinalStatus => status == OrderStatus.delivered || status == OrderStatus.cancelled;
-  
+  bool get isFinalStatus =>
+      status == OrderStatus.delivered || status == OrderStatus.cancelled;
+
   /// Check if the order can be cancelled
-  bool get canBeCancelled => status == OrderStatus.pending || status == OrderStatus.confirmed;
-  
+  bool get canBeCancelled =>
+      status == OrderStatus.pending || status == OrderStatus.confirmed;
+
   /// Get the delivery cost based on delivery type
   double get deliveryCost {
     switch (deliveryType) {
@@ -47,14 +51,13 @@ extension OrderExtensions on Order {
       case DeliveryType.expressShipping:
         return 10.0;
       case DeliveryType.pickup:
-      default:
         return 0.0;
     }
   }
-  
+
   /// Get base price (total minus delivery cost)
   double get basePrice => totalAmount - deliveryCost;
-  
+
   /// Generate a formatted order number display
   String get formattedOrderNumber => '#$orderNumber';
 }

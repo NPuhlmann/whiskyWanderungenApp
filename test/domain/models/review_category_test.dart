@@ -14,7 +14,10 @@ void main() {
 
       expect(category.id, equals(1));
       expect(category.name, equals('Whisky-Qualität'));
-      expect(category.description, equals('Bewertung der Qualität der Whisky-Proben'));
+      expect(
+        category.description,
+        equals('Bewertung der Qualität der Whisky-Proben'),
+      );
       expect(category.weight, equals(0.4));
       expect(category.isActive, isTrue);
     });
@@ -33,65 +36,89 @@ void main() {
     });
 
     test('should validate weight range (0.0 to 1.0)', () {
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'Test',
-        description: 'Test',
-        weight: -0.1, // Unter 0.0
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'Test',
+          description: 'Test',
+          weight: -0.1, // Unter 0.0
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'Test',
-        description: 'Test',
-        weight: 1.1, // Über 1.0
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'Test',
+          description: 'Test',
+          weight: 1.1, // Über 1.0
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
       // Gültige Gewichtungen
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'Test',
-        description: 'Test',
-        weight: 0.0,
-      ), returnsNormally);
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'Test',
+          description: 'Test',
+          weight: 0.0,
+        ),
+        returnsNormally,
+      );
 
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'Test',
-        description: 'Test',
-        weight: 1.0,
-      ), returnsNormally);
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'Test',
+          description: 'Test',
+          weight: 1.0,
+        ),
+        returnsNormally,
+      );
 
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'Test',
-        description: 'Test',
-        weight: 0.5,
-      ), returnsNormally);
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'Test',
+          description: 'Test',
+          weight: 0.5,
+        ),
+        returnsNormally,
+      );
     });
 
     test('should validate name length', () {
-      expect(() => ReviewCategory(
-        id: 1,
-        name: '', // Leerer Name
-        description: 'Test',
-        weight: 0.5,
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: '', // Leerer Name
+          description: 'Test',
+          weight: 0.5,
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'A' * 101, // Zu lang (über 100 Zeichen)
-        description: 'Test',
-        weight: 0.5,
-      ), throwsA(isA<AssertionError>()));
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'A' * 101, // Zu lang (über 100 Zeichen)
+          description: 'Test',
+          weight: 0.5,
+        ),
+        throwsA(isA<AssertionError>()),
+      );
 
       // Gültige Namen
-      expect(() => ReviewCategory(
-        id: 1,
-        name: 'Kategorie',
-        description: 'Test',
-        weight: 0.5,
-      ), returnsNormally);
+      expect(
+        () => ReviewCategory(
+          id: 1,
+          name: 'Kategorie',
+          description: 'Test',
+          weight: 0.5,
+        ),
+        returnsNormally,
+      );
     });
 
     test('should convert to JSON and back', () {
@@ -110,7 +137,10 @@ void main() {
 
       expect(restoredCategory.id, equals(originalCategory.id));
       expect(restoredCategory.name, equals(originalCategory.name));
-      expect(restoredCategory.description, equals(originalCategory.description));
+      expect(
+        restoredCategory.description,
+        equals(originalCategory.description),
+      );
       expect(restoredCategory.weight, equals(originalCategory.weight));
       expect(restoredCategory.isActive, equals(originalCategory.isActive));
       expect(restoredCategory.createdAt, equals(originalCategory.createdAt));
@@ -183,7 +213,7 @@ void main() {
       );
 
       final stringRepresentation = category.toString();
-      
+
       expect(stringRepresentation, contains('ReviewCategory'));
       expect(stringRepresentation, contains('id: 1'));
       expect(stringRepresentation, contains('name: Whisky-Qualität'));
@@ -222,7 +252,10 @@ void main() {
         ),
       ];
 
-      final totalWeight = categories.fold<double>(0.0, (sum, cat) => sum + cat.weight);
+      final totalWeight = categories.fold<double>(
+        0.0,
+        (sum, cat) => sum + cat.weight,
+      );
       expect(totalWeight, equals(1.0));
     });
   });

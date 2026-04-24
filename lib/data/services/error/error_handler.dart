@@ -4,14 +4,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Centralized error handling service to sanitize error messages
 /// and prevent sensitive information leakage
 class ErrorHandler {
-  static const bool _isDebugMode = bool.fromEnvironment('dart.vm.product') == false;
+  static const bool _isDebugMode =
+      bool.fromEnvironment('dart.vm.product') == false;
 
   /// Sanitize error messages by removing sensitive information
   static String sanitizeError(dynamic error) {
     if (error == null) return 'Unknown error occurred';
 
-    final errorString = error.toString().toLowerCase();
-    
     // Remove sensitive patterns
     final sensitivePatterns = [
       RegExp(r'api[_\-]key[:\s=]+[a-zA-Z0-9]+', caseSensitive: false),
@@ -36,14 +35,14 @@ class ErrorHandler {
     final errorString = error.toString().toLowerCase();
 
     // Network related errors
-    if (errorString.contains('network') || 
+    if (errorString.contains('network') ||
         errorString.contains('connection') ||
         errorString.contains('timeout')) {
       return 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.';
     }
 
     // Authentication errors
-    if (errorString.contains('permission') || 
+    if (errorString.contains('permission') ||
         errorString.contains('unauthorized') ||
         errorString.contains('access denied')) {
       return 'Keine Berechtigung für diese Aktion.';
@@ -76,7 +75,11 @@ class ErrorHandler {
   }
 
   /// Log error with appropriate level and sanitization
-  static void logError(String context, dynamic error, {StackTrace? stackTrace}) {
+  static void logError(
+    String context,
+    dynamic error, {
+    StackTrace? stackTrace,
+  }) {
     if (_isDebugMode) {
       // In debug mode, log full error for development
       dev.log(

@@ -6,11 +6,7 @@ class Breadcrumbs extends StatelessWidget {
   final List<BreadcrumbItem> items;
   final VoidCallback? onHomeTap;
 
-  const Breadcrumbs({
-    super.key,
-    required this.items,
-    this.onHomeTap,
-  });
+  const Breadcrumbs({super.key, required this.items, this.onHomeTap});
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +20,19 @@ class Breadcrumbs extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Icon(
-                Icons.home,
-                size: 20,
-                color: Colors.amber[800],
-              ),
+              child: Icon(Icons.home, size: 20, color: Colors.amber[800]),
             ),
           ),
-          
+
           // Separator
           Icon(Icons.chevron_right, color: Colors.grey[400], size: 20),
-          
+
           // Breadcrumb-Items
           ...items.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
             final isLast = index == items.length - 1;
-            
+
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -69,13 +61,13 @@ class Breadcrumbs extends StatelessWidget {
                       ),
                     ),
                   ),
-                
+
                 // Separator (außer beim letzten Item)
                 if (!isLast)
                   Icon(Icons.chevron_right, color: Colors.grey[400], size: 20),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -87,10 +79,7 @@ class BreadcrumbItem {
   final String label;
   final VoidCallback? onTap;
 
-  const BreadcrumbItem({
-    required this.label,
-    this.onTap,
-  });
+  const BreadcrumbItem({required this.label, this.onTap});
 }
 
 /// Breadcrumb-Builder für Admin-Seiten
@@ -118,10 +107,7 @@ class AdminBreadcrumbs extends StatelessWidget {
     ];
 
     if (currentSubsection != null) {
-      items.add(BreadcrumbItem(
-        label: currentSubsection!,
-        onTap: null,
-      ));
+      items.add(BreadcrumbItem(label: currentSubsection!, onTap: null));
     }
 
     return Breadcrumbs(

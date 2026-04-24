@@ -69,8 +69,8 @@ void main() {
       test('should handle mixed number types in revenue calculation', () {
         final mixedData = [
           {'total_amount': 89.99}, // double
-          {'total_amount': 80},     // int
-          {'total_amount': 79.50},  // double
+          {'total_amount': 80}, // int
+          {'total_amount': 79.50}, // double
         ];
 
         double total = 0.0;
@@ -84,7 +84,11 @@ void main() {
     group('Rating Calculation Logic', () {
       test('should calculate average rating correctly', () {
         final ratingsData = [
-          {'rating': 5}, {'rating': 4}, {'rating': 5}, {'rating': 3}, {'rating': 4}
+          {'rating': 5},
+          {'rating': 4},
+          {'rating': 5},
+          {'rating': 3},
+          {'rating': 4},
         ];
 
         if (ratingsData.isEmpty) {
@@ -110,7 +114,9 @@ void main() {
       });
 
       test('should handle single rating correctly', () {
-        final singleRating = [{'rating': 5}];
+        final singleRating = [
+          {'rating': 5},
+        ];
 
         double total = 0.0;
         for (final review in singleRating) {
@@ -130,7 +136,7 @@ void main() {
           'total_amount': 89.99,
           'status': 'pending',
           'created_at': '2024-01-15T10:00:00Z',
-          'hikes': {'name': 'Highland Adventure'}
+          'hikes': {'name': 'Highland Adventure'},
         };
 
         // Test transformation logic
@@ -153,7 +159,7 @@ void main() {
           'total_amount': 89.99,
           'status': 'pending',
           'created_at': '2024-01-15T10:00:00Z',
-          'hikes': null
+          'hikes': null,
         };
 
         final transformed = Map<String, dynamic>.from(orderDataWithoutHike);
@@ -172,7 +178,10 @@ void main() {
       test('should generate correct date strings for queries', () {
         final today = DateTime(2024, 1, 15, 14, 30, 0);
         final todayStr = today.toIso8601String().split('T')[0];
-        final tomorrowStr = today.add(Duration(days: 1)).toIso8601String().split('T')[0];
+        final tomorrowStr = today
+            .add(Duration(days: 1))
+            .toIso8601String()
+            .split('T')[0];
 
         expect(todayStr, equals('2024-01-15'));
         expect(tomorrowStr, equals('2024-01-16'));
@@ -180,7 +189,9 @@ void main() {
 
       test('should calculate week start correctly', () {
         final testDate = DateTime(2024, 1, 17); // Wednesday
-        final weekStart = testDate.subtract(Duration(days: testDate.weekday - 1));
+        final weekStart = testDate.subtract(
+          Duration(days: testDate.weekday - 1),
+        );
         final weekStartStr = weekStart.toIso8601String().split('T')[0];
 
         expect(weekStart.weekday, equals(1)); // Monday
@@ -199,11 +210,26 @@ void main() {
     group('Popular Routes Logic', () {
       test('should group and count routes correctly', () {
         final ordersData = [
-          {'hike_id': 1, 'hikes': {'name': 'Highland Adventure'}},
-          {'hike_id': 2, 'hikes': {'name': 'Speyside Journey'}},
-          {'hike_id': 1, 'hikes': {'name': 'Highland Adventure'}},
-          {'hike_id': 3, 'hikes': {'name': 'Islay Challenge'}},
-          {'hike_id': 1, 'hikes': {'name': 'Highland Adventure'}},
+          {
+            'hike_id': 1,
+            'hikes': {'name': 'Highland Adventure'},
+          },
+          {
+            'hike_id': 2,
+            'hikes': {'name': 'Speyside Journey'},
+          },
+          {
+            'hike_id': 1,
+            'hikes': {'name': 'Highland Adventure'},
+          },
+          {
+            'hike_id': 3,
+            'hikes': {'name': 'Islay Challenge'},
+          },
+          {
+            'hike_id': 1,
+            'hikes': {'name': 'Highland Adventure'},
+          },
         ];
 
         // Group by hike and count
@@ -218,7 +244,8 @@ void main() {
               'count': 0,
             };
           }
-          hikeStats[hikeId]!['count'] = (hikeStats[hikeId]!['count'] as int) + 1;
+          hikeStats[hikeId]!['count'] =
+              (hikeStats[hikeId]!['count'] as int) + 1;
         }
 
         final sortedStats = hikeStats.values.toList()
@@ -244,7 +271,8 @@ void main() {
               'count': 0,
             };
           }
-          hikeStats[hikeId]!['count'] = (hikeStats[hikeId]!['count'] as int) + 1;
+          hikeStats[hikeId]!['count'] =
+              (hikeStats[hikeId]!['count'] as int) + 1;
         }
 
         expect(hikeStats.isEmpty, isTrue);

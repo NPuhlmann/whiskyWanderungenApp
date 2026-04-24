@@ -14,7 +14,7 @@ void main() {
 
     setUp(() {
       mockProvider = MockCommissionProvider();
-      
+
       // Setup default returns
       when(mockProvider.currentFilter).thenReturn('all');
       when(mockProvider.searchTerm).thenReturn('');
@@ -43,7 +43,10 @@ void main() {
         expect(find.text('Status'), findsOneWidget);
         expect(find.text('Suchbegriff'), findsOneWidget);
         expect(find.text('Zeitraum'), findsOneWidget);
-        expect(find.byType(DropdownButton<String>), findsAtLeastNWidgets(2)); // Status + Period
+        expect(
+          find.byType(DropdownButton<String>),
+          findsAtLeastNWidgets(2),
+        ); // Status + Period
         expect(find.byType(TextField), findsOneWidget); // Search field
       });
 
@@ -52,7 +55,9 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         // Find and tap status dropdown
-        final statusDropdown = find.byKey(const Key('status_filter_dropdown')).first;
+        final statusDropdown = find
+            .byKey(const Key('status_filter_dropdown'))
+            .first;
         await tester.tap(statusDropdown);
         await tester.pumpAndSettle();
 
@@ -69,7 +74,9 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         // Find and tap period dropdown
-        final periodDropdown = find.byKey(const Key('period_filter_dropdown')).first;
+        final periodDropdown = find
+            .byKey(const Key('period_filter_dropdown'))
+            .first;
         await tester.tap(periodDropdown);
         await tester.pumpAndSettle();
 
@@ -88,19 +95,26 @@ void main() {
         // Assert
         final searchField = find.byKey(const Key('search_text_field'));
         expect(searchField, findsOneWidget);
-        
+
         final textField = tester.widget<TextField>(searchField);
-        expect(textField.decoration?.hintText, 'Nach Unternehmen oder Bestellung suchen...');
+        expect(
+          textField.decoration?.hintText,
+          'Nach Unternehmen oder Bestellung suchen...',
+        );
       });
     });
 
     group('Filter Interactions', () {
-      testWidgets('should call provider when status filter changes', (tester) async {
+      testWidgets('should call provider when status filter changes', (
+        tester,
+      ) async {
         // Act
         await tester.pumpWidget(createTestWidget());
 
         // Find and tap status dropdown
-        final statusDropdown = find.byKey(const Key('status_filter_dropdown')).first;
+        final statusDropdown = find
+            .byKey(const Key('status_filter_dropdown'))
+            .first;
         await tester.tap(statusDropdown);
         await tester.pumpAndSettle();
 
@@ -112,14 +126,18 @@ void main() {
         verify(mockProvider.setFilter('pending')).called(1);
       });
 
-      testWidgets('should call provider when search term changes', (tester) async {
+      testWidgets('should call provider when search term changes', (
+        tester,
+      ) async {
         // Act
         await tester.pumpWidget(createTestWidget());
 
         // Find search field and enter text
         final searchField = find.byKey(const Key('search_text_field'));
         await tester.enterText(searchField, 'test search');
-        await tester.pump(const Duration(milliseconds: 600)); // Wait for debounce
+        await tester.pump(
+          const Duration(milliseconds: 600),
+        ); // Wait for debounce
 
         // Assert
         verify(mockProvider.setSearchTerm('test search')).called(1);
@@ -130,7 +148,9 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         // Find and tap period dropdown
-        final periodDropdown = find.byKey(const Key('period_filter_dropdown')).first;
+        final periodDropdown = find
+            .byKey(const Key('period_filter_dropdown'))
+            .first;
         await tester.tap(periodDropdown);
         await tester.pumpAndSettle();
 
@@ -147,7 +167,9 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         // Select custom period
-        final periodDropdown = find.byKey(const Key('period_filter_dropdown')).first;
+        final periodDropdown = find
+            .byKey(const Key('period_filter_dropdown'))
+            .first;
         await tester.tap(periodDropdown);
         await tester.pumpAndSettle();
 
@@ -162,7 +184,9 @@ void main() {
     });
 
     group('Clear Filters', () {
-      testWidgets('should show clear filters button when filters are active', (tester) async {
+      testWidgets('should show clear filters button when filters are active', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.currentFilter).thenReturn('pending');
         when(mockProvider.searchTerm).thenReturn('test');
@@ -175,17 +199,22 @@ void main() {
         expect(find.byIcon(Icons.clear_all), findsOneWidget);
       });
 
-      testWidgets('should hide clear filters button when no filters are active', (tester) async {
-        // Arrange - default setup has no active filters
+      testWidgets(
+        'should hide clear filters button when no filters are active',
+        (tester) async {
+          // Arrange - default setup has no active filters
 
-        // Act
-        await tester.pumpWidget(createTestWidget());
+          // Act
+          await tester.pumpWidget(createTestWidget());
 
-        // Assert
-        expect(find.text('Filter zurücksetzen'), findsNothing);
-      });
+          // Assert
+          expect(find.text('Filter zurücksetzen'), findsNothing);
+        },
+      );
 
-      testWidgets('should clear all filters when clear button is tapped', (tester) async {
+      testWidgets('should clear all filters when clear button is tapped', (
+        tester,
+      ) async {
         // Arrange
         when(mockProvider.currentFilter).thenReturn('pending');
         when(mockProvider.searchTerm).thenReturn('test');
@@ -195,7 +224,7 @@ void main() {
 
         final clearButton = find.text('Filter zurücksetzen');
         expect(clearButton, findsOneWidget);
-        
+
         await tester.tap(clearButton);
 
         // Assert
@@ -215,7 +244,7 @@ void main() {
 
         // Assert
         expect(find.byType(Column), findsWidgets);
-        
+
         // Reset surface size
         await tester.binding.setSurfaceSize(null);
       });
@@ -229,7 +258,7 @@ void main() {
 
         // Assert
         expect(find.byType(Row), findsWidgets);
-        
+
         // Reset surface size
         await tester.binding.setSurfaceSize(null);
       });
@@ -241,14 +270,14 @@ void main() {
         await tester.pumpWidget(createTestWidget());
 
         final searchField = find.byKey(const Key('search_text_field'));
-        
+
         // Enter text multiple times quickly
         await tester.enterText(searchField, 'a');
         await tester.pump(const Duration(milliseconds: 100));
         await tester.enterText(searchField, 'ab');
         await tester.pump(const Duration(milliseconds: 100));
         await tester.enterText(searchField, 'abc');
-        
+
         // Wait for debounce period
         await tester.pump(const Duration(milliseconds: 600));
 
@@ -260,14 +289,19 @@ void main() {
     });
 
     group('Accessibility', () {
-      testWidgets('should have proper labels for screen readers', (tester) async {
+      testWidgets('should have proper labels for screen readers', (
+        tester,
+      ) async {
         // Act
         await tester.pumpWidget(createTestWidget());
 
         // Assert
         expect(find.byTooltip('Status filtern'), findsOneWidget);
         expect(find.byTooltip('Zeitraum filtern'), findsOneWidget);
-        expect(find.byTooltip('Filter zurücksetzen'), findsNothing); // Only shown when filters active
+        expect(
+          find.byTooltip('Filter zurücksetzen'),
+          findsNothing,
+        ); // Only shown when filters active
       });
     });
   });

@@ -8,7 +8,8 @@ import 'package:whisky_hikes/data/services/database/backend_api.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
 import 'package:whisky_hikes/domain/models/delivery_address.dart';
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
-import 'package:whisky_hikes/domain/models/payment_intent.dart' show PaymentMethodType;
+import 'package:whisky_hikes/domain/models/payment_intent.dart'
+    show PaymentMethodType;
 
 import '../mocks/mock_repositories.mocks.dart';
 
@@ -25,7 +26,7 @@ void main() {
       mockStripeService = MockStripeService();
       mockMultiPaymentService = MockMultiPaymentService();
       mockBackendApiService = MockBackendApiService();
-      
+
       paymentRepository = PaymentRepository(
         supabaseClient: mockSupabaseClient,
         stripeService: mockStripeService,
@@ -52,13 +53,15 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenAnswer((_) async => mockOrder);
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenAnswer((_) async => mockOrder);
 
         // Act
         final result = await paymentRepository.createOrder(
@@ -88,7 +91,7 @@ void main() {
           'street': 'Teststraße 123',
           'city': 'Hamburg',
           'postalCode': '20095',
-          'country': 'DE'
+          'country': 'DE',
         };
 
         final mockOrder = BasicOrder(
@@ -102,13 +105,15 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenAnswer((_) async => mockOrder);
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenAnswer((_) async => mockOrder);
 
         // Act
         final result = await paymentRepository.createOrder(
@@ -146,12 +151,14 @@ void main() {
           paymentIntentId: 'pi_test_123',
         );
 
-        when(mockMultiPaymentService.processPayment(
-          amount: anyNamed('amount'),
-          currency: anyNamed('currency'),
-          paymentMethod: anyNamed('paymentMethod'),
-          orderId: anyNamed('orderId'),
-        )).thenAnswer((_) async => mockPaymentResult);
+        when(
+          mockMultiPaymentService.processPayment(
+            amount: anyNamed('amount'),
+            currency: anyNamed('currency'),
+            paymentMethod: anyNamed('paymentMethod'),
+            orderId: anyNamed('orderId'),
+          ),
+        ).thenAnswer((_) async => mockPaymentResult);
 
         // Act
         final result = await paymentRepository.processPayment(
@@ -178,12 +185,14 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockMultiPaymentService.processPayment(
-          amount: anyNamed('amount'),
-          currency: anyNamed('currency'),
-          paymentMethod: anyNamed('paymentMethod'),
-          orderId: anyNamed('orderId'),
-        )).thenThrow(Exception('Payment declined'));
+        when(
+          mockMultiPaymentService.processPayment(
+            amount: anyNamed('amount'),
+            currency: anyNamed('currency'),
+            paymentMethod: anyNamed('paymentMethod'),
+            orderId: anyNamed('orderId'),
+          ),
+        ).thenThrow(Exception('Payment declined'));
 
         // Act & Assert
         expect(
@@ -200,7 +209,7 @@ void main() {
       test('should retrieve user orders successfully', () async {
         // Arrange
         const String userId = 'user_123';
-        
+
         final mockOrders = [
           BasicOrder(
             id: 1,
@@ -224,8 +233,9 @@ void main() {
           ),
         ];
 
-        when(mockBackendApiService.getUserOrders(userId))
-            .thenAnswer((_) async => mockOrders);
+        when(
+          mockBackendApiService.getUserOrders(userId),
+        ).thenAnswer((_) async => mockOrders);
 
         // Act
         final orders = await paymentRepository.getUserOrders(userId);
@@ -253,10 +263,12 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockBackendApiService.updateOrderStatus(
-          orderId: anyNamed('orderId'),
-          status: anyNamed('status'),
-        )).thenAnswer((_) async => updatedOrder);
+        when(
+          mockBackendApiService.updateOrderStatus(
+            orderId: anyNamed('orderId'),
+            status: anyNamed('status'),
+          ),
+        ).thenAnswer((_) async => updatedOrder);
 
         // Act
         final result = await paymentRepository.updateOrderStatus(
@@ -278,13 +290,15 @@ void main() {
         const String userId = 'test-user-123';
         const double amount = 25.99;
 
-        when(mockBackendApiService.createOrder(
-          hikeId: anyNamed('hikeId'),
-          userId: anyNamed('userId'),
-          amount: anyNamed('amount'),
-          deliveryType: anyNamed('deliveryType'),
-          deliveryAddress: anyNamed('deliveryAddress'),
-        )).thenThrow(Exception('Database connection failed'));
+        when(
+          mockBackendApiService.createOrder(
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            amount: anyNamed('amount'),
+            deliveryType: anyNamed('deliveryType'),
+            deliveryAddress: anyNamed('deliveryAddress'),
+          ),
+        ).thenThrow(Exception('Database connection failed'));
 
         // Act & Assert
         expect(
@@ -303,14 +317,12 @@ void main() {
         // Arrange
         const String userId = 'user_123';
 
-        when(mockBackendApiService.getUserOrders(userId))
-            .thenThrow(Exception('Database error'));
+        when(
+          mockBackendApiService.getUserOrders(userId),
+        ).thenThrow(Exception('Database error'));
 
         // Act & Assert
-        expect(
-          () => paymentRepository.getUserOrders(userId),
-          throwsException,
-        );
+        expect(() => paymentRepository.getUserOrders(userId), throwsException);
       });
     });
   });

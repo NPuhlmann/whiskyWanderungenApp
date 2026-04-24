@@ -31,8 +31,9 @@ void main() {
 
     group('getReviewsForHike', () {
       test('should return list of reviews for hike', () async {
-        when(mockBackendApi.getReviewsForHike(123))
-            .thenAnswer((_) async => [sampleReview]);
+        when(
+          mockBackendApi.getReviewsForHike(123),
+        ).thenAnswer((_) async => [sampleReview]);
 
         final result = await reviewRepository.getReviewsForHike(123);
 
@@ -43,8 +44,9 @@ void main() {
       });
 
       test('should throw exception on backend error', () async {
-        when(mockBackendApi.getReviewsForHike(123))
-            .thenThrow(Exception('Database error'));
+        when(
+          mockBackendApi.getReviewsForHike(123),
+        ).thenThrow(Exception('Database error'));
 
         expect(
           () => reviewRepository.getReviewsForHike(123),
@@ -56,12 +58,14 @@ void main() {
 
     group('createReview', () {
       test('should create review with valid parameters', () async {
-        when(mockBackendApi.createReview(
-          hikeId: 123,
-          userId: 'user-123',
-          rating: 4.5,
-          comment: 'Fantastischer Hike!',
-        )).thenAnswer((_) async => sampleReview);
+        when(
+          mockBackendApi.createReview(
+            hikeId: 123,
+            userId: 'user-123',
+            rating: 4.5,
+            comment: 'Fantastischer Hike!',
+          ),
+        ).thenAnswer((_) async => sampleReview);
 
         final result = await reviewRepository.createReview(
           hikeId: 123,
@@ -71,12 +75,14 @@ void main() {
         );
 
         expect(result, equals(sampleReview));
-        verify(mockBackendApi.createReview(
-          hikeId: 123,
-          userId: 'user-123',
-          rating: 4.5,
-          comment: 'Fantastischer Hike!',
-        )).called(1);
+        verify(
+          mockBackendApi.createReview(
+            hikeId: 123,
+            userId: 'user-123',
+            rating: 4.5,
+            comment: 'Fantastischer Hike!',
+          ),
+        ).called(1);
       });
 
       test('should throw ArgumentError for invalid rating', () async {
@@ -136,12 +142,14 @@ void main() {
       });
 
       test('should wrap other exceptions', () async {
-        when(mockBackendApi.createReview(
-          hikeId: any,
-          userId: any,
-          rating: any,
-          comment: any,
-        )).thenThrow(Exception('Database error'));
+        when(
+          mockBackendApi.createReview(
+            hikeId: any,
+            userId: any,
+            rating: any,
+            comment: any,
+          ),
+        ).thenThrow(Exception('Database error'));
 
         expect(
           () => reviewRepository.createReview(
@@ -162,12 +170,14 @@ void main() {
           comment: 'Aktualisierter Kommentar',
         );
 
-        when(mockBackendApi.updateReview(
-          reviewId: 1,
-          userId: 'user-123',
-          rating: 5.0,
-          comment: 'Aktualisierter Kommentar',
-        )).thenAnswer((_) async => updatedReview);
+        when(
+          mockBackendApi.updateReview(
+            reviewId: 1,
+            userId: 'user-123',
+            rating: 5.0,
+            comment: 'Aktualisierter Kommentar',
+          ),
+        ).thenAnswer((_) async => updatedReview);
 
         final result = await reviewRepository.updateReview(
           reviewId: 1,
@@ -178,12 +188,14 @@ void main() {
 
         expect(result.rating, equals(5.0));
         expect(result.comment, equals('Aktualisierter Kommentar'));
-        verify(mockBackendApi.updateReview(
-          reviewId: 1,
-          userId: 'user-123',
-          rating: 5.0,
-          comment: 'Aktualisierter Kommentar',
-        )).called(1);
+        verify(
+          mockBackendApi.updateReview(
+            reviewId: 1,
+            userId: 'user-123',
+            rating: 5.0,
+            comment: 'Aktualisierter Kommentar',
+          ),
+        ).called(1);
       });
 
       test('should validate rating range when provided', () async {
@@ -211,33 +223,24 @@ void main() {
 
     group('deleteReview', () {
       test('should delete review successfully', () async {
-        when(mockBackendApi.deleteReview(
-          reviewId: 1,
-          userId: 'user-123',
-        )).thenAnswer((_) async {});
+        when(
+          mockBackendApi.deleteReview(reviewId: 1, userId: 'user-123'),
+        ).thenAnswer((_) async {});
 
-        await reviewRepository.deleteReview(
-          reviewId: 1,
-          userId: 'user-123',
-        );
+        await reviewRepository.deleteReview(reviewId: 1, userId: 'user-123');
 
-        verify(mockBackendApi.deleteReview(
-          reviewId: 1,
-          userId: 'user-123',
-        )).called(1);
+        verify(
+          mockBackendApi.deleteReview(reviewId: 1, userId: 'user-123'),
+        ).called(1);
       });
 
       test('should throw exception on backend error', () async {
-        when(mockBackendApi.deleteReview(
-          reviewId: 1,
-          userId: 'user-123',
-        )).thenThrow(Exception('Delete failed'));
+        when(
+          mockBackendApi.deleteReview(reviewId: 1, userId: 'user-123'),
+        ).thenThrow(Exception('Delete failed'));
 
         expect(
-          () => reviewRepository.deleteReview(
-            reviewId: 1,
-            userId: 'user-123',
-          ),
+          () => reviewRepository.deleteReview(reviewId: 1, userId: 'user-123'),
           throwsA(isA<Exception>()),
         );
       });
@@ -245,8 +248,9 @@ void main() {
 
     group('getReviewsByUser', () {
       test('should return user reviews', () async {
-        when(mockBackendApi.getReviewsByUser('user-123'))
-            .thenAnswer((_) async => [sampleReview]);
+        when(
+          mockBackendApi.getReviewsByUser('user-123'),
+        ).thenAnswer((_) async => [sampleReview]);
 
         final result = await reviewRepository.getReviewsByUser('user-123');
 
@@ -256,8 +260,9 @@ void main() {
       });
 
       test('should handle empty result', () async {
-        when(mockBackendApi.getReviewsByUser('user-123'))
-            .thenAnswer((_) async => []);
+        when(
+          mockBackendApi.getReviewsByUser('user-123'),
+        ).thenAnswer((_) async => []);
 
         final result = await reviewRepository.getReviewsByUser('user-123');
 
@@ -268,8 +273,9 @@ void main() {
 
     group('getAverageRatingForHike', () {
       test('should return average rating', () async {
-        when(mockBackendApi.getAverageRatingForHike(123))
-            .thenAnswer((_) async => 4.2);
+        when(
+          mockBackendApi.getAverageRatingForHike(123),
+        ).thenAnswer((_) async => 4.2);
 
         final result = await reviewRepository.getAverageRatingForHike(123);
 
@@ -278,8 +284,9 @@ void main() {
       });
 
       test('should handle zero rating case', () async {
-        when(mockBackendApi.getAverageRatingForHike(123))
-            .thenAnswer((_) async => 0.0);
+        when(
+          mockBackendApi.getAverageRatingForHike(123),
+        ).thenAnswer((_) async => 0.0);
 
         final result = await reviewRepository.getAverageRatingForHike(123);
 
@@ -290,10 +297,9 @@ void main() {
 
     group('getUserReviewForHike', () {
       test('should return user review if exists', () async {
-        when(mockBackendApi.getUserReviewForHike(
-          hikeId: 123,
-          userId: 'user-123',
-        )).thenAnswer((_) async => sampleReview);
+        when(
+          mockBackendApi.getUserReviewForHike(hikeId: 123, userId: 'user-123'),
+        ).thenAnswer((_) async => sampleReview);
 
         final result = await reviewRepository.getUserReviewForHike(
           hikeId: 123,
@@ -301,17 +307,15 @@ void main() {
         );
 
         expect(result, equals(sampleReview));
-        verify(mockBackendApi.getUserReviewForHike(
-          hikeId: 123,
-          userId: 'user-123',
-        )).called(1);
+        verify(
+          mockBackendApi.getUserReviewForHike(hikeId: 123, userId: 'user-123'),
+        ).called(1);
       });
 
       test('should return null if no review exists', () async {
-        when(mockBackendApi.getUserReviewForHike(
-          hikeId: 123,
-          userId: 'user-123',
-        )).thenAnswer((_) async => null);
+        when(
+          mockBackendApi.getUserReviewForHike(hikeId: 123, userId: 'user-123'),
+        ).thenAnswer((_) async => null);
 
         final result = await reviewRepository.getUserReviewForHike(
           hikeId: 123,
@@ -319,10 +323,9 @@ void main() {
         );
 
         expect(result, isNull);
-        verify(mockBackendApi.getUserReviewForHike(
-          hikeId: 123,
-          userId: 'user-123',
-        )).called(1);
+        verify(
+          mockBackendApi.getUserReviewForHike(hikeId: 123, userId: 'user-123'),
+        ).called(1);
       });
     });
 
@@ -337,11 +340,12 @@ void main() {
             '3_stars': 2,
             '2_stars': 1,
             '1_star': 0,
-          }
+          },
         };
 
-        when(mockBackendApi.getReviewStatsForHike(123))
-            .thenAnswer((_) async => stats);
+        when(
+          mockBackendApi.getReviewStatsForHike(123),
+        ).thenAnswer((_) async => stats);
 
         final result = await reviewRepository.getReviewStatsForHike(123);
 
@@ -354,8 +358,9 @@ void main() {
 
     group('getRecentReviews', () {
       test('should return recent reviews with default limit', () async {
-        when(mockBackendApi.getRecentReviews(limit: 20))
-            .thenAnswer((_) async => [sampleReview]);
+        when(
+          mockBackendApi.getRecentReviews(limit: 20),
+        ).thenAnswer((_) async => [sampleReview]);
 
         final result = await reviewRepository.getRecentReviews();
 
@@ -365,8 +370,9 @@ void main() {
       });
 
       test('should return recent reviews with custom limit', () async {
-        when(mockBackendApi.getRecentReviews(limit: 5))
-            .thenAnswer((_) async => [sampleReview]);
+        when(
+          mockBackendApi.getRecentReviews(limit: 5),
+        ).thenAnswer((_) async => [sampleReview]);
 
         final result = await reviewRepository.getRecentReviews(limit: 5);
 

@@ -6,14 +6,17 @@ import '../../data/services/cache/local_cache_service.dart';
 /// Manages application lifecycle events and proper resource cleanup
 class AppLifecycleManager extends WidgetsBindingObserver {
   final OfflineService _offlineService;
-  final LocalCacheService _localCacheService; // Currently unused but may be needed for future cache management
+  // LocalCacheService is accepted via the constructor for future cache
+  // management hooks; retained in the public API so callers don't break.
+  // ignore: unused_field
+  final LocalCacheService _localCacheService;
   bool _disposed = false;
 
   AppLifecycleManager({
     required OfflineService offlineService,
     required LocalCacheService localCacheService,
-  })  : _offlineService = offlineService,
-        _localCacheService = localCacheService;
+  }) : _offlineService = offlineService,
+       _localCacheService = localCacheService;
 
   /// Initialize the lifecycle manager
   void initialize() {
@@ -24,7 +27,7 @@ class AppLifecycleManager extends WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    
+
     switch (state) {
       case AppLifecycleState.resumed:
         _onAppResumed();

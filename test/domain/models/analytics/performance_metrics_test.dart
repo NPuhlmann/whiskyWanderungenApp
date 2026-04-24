@@ -37,10 +37,7 @@ void main() {
           customerLifetimeValue: 300.0,
           totalViews: 500,
           totalPurchases: 50,
-          metricsByPeriod: {
-            '2025-01': 0.08,
-            '2025-02': 0.12,
-          },
+          metricsByPeriod: {'2025-01': 0.08, '2025-02': 0.12},
         );
 
         expect(metrics.metricsByPeriod.length, 2);
@@ -207,11 +204,7 @@ void main() {
           customerLifetimeValue: 300.0,
           totalViews: 1000,
           totalPurchases: 100,
-          metricsByPeriod: {
-            '2025-01': 0.08,
-            '2025-02': 0.12,
-            '2025-03': 0.10,
-          },
+          metricsByPeriod: {'2025-01': 0.08, '2025-02': 0.12, '2025-03': 0.10},
         );
 
         expect(metrics.getMetricForPeriod('2025-01'), 0.08);
@@ -226,11 +219,7 @@ void main() {
           customerLifetimeValue: 300.0,
           totalViews: 1000,
           totalPurchases: 100,
-          metricsByPeriod: {
-            '2025-03': 0.10,
-            '2025-01': 0.08,
-            '2025-02': 0.12,
-          },
+          metricsByPeriod: {'2025-03': 0.10, '2025-01': 0.08, '2025-02': 0.12},
         );
 
         final timeline = metrics.metricsTimeline;

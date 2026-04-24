@@ -16,8 +16,8 @@ class CheckoutViewModel extends ChangeNotifier {
   CheckoutViewModel({
     required PaymentRepository paymentRepository,
     required BasicOrder order,
-  })  : _paymentRepository = paymentRepository,
-        _order = order;
+  }) : _paymentRepository = paymentRepository,
+       _order = order;
 
   // State properties
   bool _isLoading = false;
@@ -36,7 +36,8 @@ class CheckoutViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   PaymentMethodType? get selectedPaymentMethod => _selectedPaymentMethod;
   String? get selectedPaymentMethodId => _selectedPaymentMethodId;
-  List<PaymentMethodType> get availablePaymentMethods => _availablePaymentMethods;
+  List<PaymentMethodType> get availablePaymentMethods =>
+      _availablePaymentMethods;
   Map<String, dynamic>? get deliveryAddress => _deliveryAddress;
   bool get paymentSuccess => _paymentSuccess;
   int? get completedOrderId => _completedOrderId;
@@ -46,27 +47,29 @@ class CheckoutViewModel extends ChangeNotifier {
   bool get canProcessPayment {
     if (_isLoading || _isInitializing) return false;
     if (_selectedPaymentMethod == null) return false;
-    
+
     // For card payments, payment method ID is required
-    if (_selectedPaymentMethod == PaymentMethodType.card && 
-        (_selectedPaymentMethodId == null || _selectedPaymentMethodId!.isEmpty)) {
+    if (_selectedPaymentMethod == PaymentMethodType.card &&
+        (_selectedPaymentMethodId == null ||
+            _selectedPaymentMethodId!.isEmpty)) {
       return false;
     }
-    
+
     // For shipping orders, delivery address is required
-    if (_order.deliveryType == DeliveryType.standardShipping || _order.deliveryType == DeliveryType.expressShipping) {
+    if (_order.deliveryType == DeliveryType.standardShipping ||
+        _order.deliveryType == DeliveryType.expressShipping) {
       if (_deliveryAddress == null) return false;
-      
+
       // Check required address fields
       final requiredFields = ['street', 'city', 'postalCode', 'country'];
       for (final field in requiredFields) {
-        if (_deliveryAddress![field] == null || 
+        if (_deliveryAddress![field] == null ||
             _deliveryAddress![field].toString().isEmpty) {
           return false;
         }
       }
     }
-    
+
     return true;
   }
 
@@ -75,8 +78,11 @@ class CheckoutViewModel extends ChangeNotifier {
     _setInitializing(true);
     try {
       dev.log('🔄 Initializing payment methods...');
-      _availablePaymentMethods = await _paymentRepository.getAvailablePaymentMethods();
-      dev.log('✅ Payment methods initialized: ${_availablePaymentMethods.map((m) => m.name).join(', ')}');
+      _availablePaymentMethods = await _paymentRepository
+          .getAvailablePaymentMethods();
+      dev.log(
+        '✅ Payment methods initialized: ${_availablePaymentMethods.map((m) => m.name).join(', ')}',
+      );
     } catch (e) {
       dev.log('❌ Failed to initialize payment methods: $e');
       _setError('Fehler beim Laden der Zahlungsmethoden');
@@ -86,10 +92,15 @@ class CheckoutViewModel extends ChangeNotifier {
   }
 
   /// Set selected payment method
-  void setPaymentMethod(PaymentMethodType paymentMethod, String? paymentMethodId) {
+  void setPaymentMethod(
+    PaymentMethodType paymentMethod,
+    String? paymentMethodId,
+  ) {
     _selectedPaymentMethod = paymentMethod;
     _selectedPaymentMethodId = paymentMethodId;
-    dev.log('💳 Payment method selected: ${paymentMethod.name} (ID: $paymentMethodId)');
+    dev.log(
+      '💳 Payment method selected: ${paymentMethod.name} (ID: $paymentMethodId)',
+    );
     notifyListeners();
   }
 
@@ -129,7 +140,9 @@ class CheckoutViewModel extends ChangeNotifier {
 
       // Update order with delivery address if shipping
       BasicOrder orderToProcess = _order;
-      if ((_order.deliveryType == DeliveryType.standardShipping || _order.deliveryType == DeliveryType.expressShipping) && _deliveryAddress != null) {
+      if ((_order.deliveryType == DeliveryType.standardShipping ||
+              _order.deliveryType == DeliveryType.expressShipping) &&
+          _deliveryAddress != null) {
         orderToProcess = _order.copyWith(deliveryAddress: _deliveryAddress);
       }
 
@@ -152,7 +165,9 @@ class CheckoutViewModel extends ChangeNotifier {
         _completedOrderId = _order.id;
         dev.log('✅ Payment successful for order ${_order.orderNumber}');
       } else if (paymentResult.requiresUserAction) {
-        _setError('Zusätzliche Authentifizierung erforderlich. Bitte versuchen Sie es erneut.');
+        _setError(
+          'Zusätzliche Authentifizierung erforderlich. Bitte versuchen Sie es erneut.',
+        );
         dev.log('🔐 Payment requires additional authentication');
       } else if (paymentResult.wasCancelled) {
         _setError('Zahlung wurde abgebrochen');
@@ -163,9 +178,10 @@ class CheckoutViewModel extends ChangeNotifier {
         _setError(friendlyError);
         dev.log('❌ Payment failed: ${paymentResult.errorMessage}');
       }
-
     } catch (e) {
-      _setError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+      _setError(
+        'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
+      );
       dev.log('❌ Payment processing error: $e');
     } finally {
       _setLoading(false);
@@ -218,7 +234,9 @@ class CheckoutViewModel extends ChangeNotifier {
       dev.log('📍 Navigating to order tracking for order $_completedOrderId');
       context.go('${Routes.orderTracking}/$_completedOrderId');
     } else {
-      dev.log('⚠️ Cannot navigate to order tracking: payment not successful or order ID missing');
+      dev.log(
+        '⚠️ Cannot navigate to order tracking: payment not successful or order ID missing',
+      );
     }
   }
 

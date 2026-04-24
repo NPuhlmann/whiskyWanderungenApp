@@ -218,7 +218,11 @@ class TestHelpers {
       createTestHike(id: 3, name: 'Mid Hike 1', difficulty: Difficulty.mid),
       createTestHike(id: 4, name: 'Mid Hike 2', difficulty: Difficulty.mid),
       createTestHike(id: 5, name: 'Hard Hike 1', difficulty: Difficulty.hard),
-      createTestHike(id: 6, name: 'Very Hard Hike 1', difficulty: Difficulty.veryHard),
+      createTestHike(
+        id: 6,
+        name: 'Very Hard Hike 1',
+        difficulty: Difficulty.veryHard,
+      ),
     ];
   }
 
@@ -339,15 +343,25 @@ class TestHelpers {
   static const String invalidEmail = 'invalid-email';
   static const String validPassword = 'TestPassword123!';
   static const String weakPassword = '123';
-  
+
   static const double validLatitude = 47.3769;
   static const double validLongitude = 8.5417;
   static const double invalidLatitude = 91.0; // Out of range
   static const double invalidLongitude = 181.0; // Out of range
-  
-  static const List<String> validImageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-  static const List<String> invalidImageExtensions = ['gif', 'bmp', 'pdf', 'txt'];
-  
+
+  static const List<String> validImageExtensions = [
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+  ];
+  static const List<String> invalidImageExtensions = [
+    'gif',
+    'bmp',
+    'pdf',
+    'txt',
+  ];
+
   static const List<String> sampleImageUrls = [
     'https://example.com/image1.jpg',
     'https://example.com/image2.png',
@@ -359,7 +373,9 @@ class TestHelpers {
     return Exception('network: $message');
   }
 
-  static Exception createPermissionError([String message = 'Permission denied']) {
+  static Exception createPermissionError([
+    String message = 'Permission denied',
+  ]) {
     return Exception('permission denied: $message');
   }
 
@@ -472,9 +488,21 @@ class TestHelpers {
         name: 'Highland Collection',
         description: 'A selection of premium Highland whiskies',
         samples: [
-          createTestWhiskySample(id: 1, name: 'Glenlivet 12', region: 'Speyside'),
-          createTestWhiskySample(id: 2, name: 'Macallan 15', region: 'Speyside'),
-          createTestWhiskySample(id: 3, name: 'Balvenie 14', region: 'Speyside'),
+          createTestWhiskySample(
+            id: 1,
+            name: 'Glenlivet 12',
+            region: 'Speyside',
+          ),
+          createTestWhiskySample(
+            id: 2,
+            name: 'Macallan 15',
+            region: 'Speyside',
+          ),
+          createTestWhiskySample(
+            id: 3,
+            name: 'Balvenie 14',
+            region: 'Speyside',
+          ),
         ],
       ),
       createTestTastingSet(
@@ -495,8 +523,16 @@ class TestHelpers {
         description: 'A diverse selection from various Scottish regions',
         samples: [
           createTestWhiskySample(id: 7, name: 'Oban 14', region: 'Highlands'),
-          createTestWhiskySample(id: 8, name: 'Springbank 12', region: 'Campbeltown'),
-          createTestWhiskySample(id: 9, name: 'Auchentoshan 12', region: 'Lowlands'),
+          createTestWhiskySample(
+            id: 8,
+            name: 'Springbank 12',
+            region: 'Campbeltown',
+          ),
+          createTestWhiskySample(
+            id: 9,
+            name: 'Auchentoshan 12',
+            region: 'Lowlands',
+          ),
         ],
       ),
     ];
@@ -515,7 +551,10 @@ class TestHelpers {
         _areWhiskySampleListsEqual(set1.samples, set2.samples);
   }
 
-  static bool areWhiskySamplesEqual(WhiskySample sample1, WhiskySample sample2) {
+  static bool areWhiskySamplesEqual(
+    WhiskySample sample1,
+    WhiskySample sample2,
+  ) {
     return sample1.id == sample2.id &&
         sample1.name == sample2.name &&
         sample1.distillery == sample2.distillery &&
@@ -529,7 +568,10 @@ class TestHelpers {
         sample1.orderIndex == sample2.orderIndex;
   }
 
-  static bool _areWhiskySampleListsEqual(List<WhiskySample> list1, List<WhiskySample> list2) {
+  static bool _areWhiskySampleListsEqual(
+    List<WhiskySample> list1,
+    List<WhiskySample> list2,
+  ) {
     if (list1.length != list2.length) return false;
     for (int i = 0; i < list1.length; i++) {
       if (!areWhiskySamplesEqual(list1[i], list2[i])) return false;
@@ -543,7 +585,7 @@ class TestHelpers {
     'Highlands',
     'Islay',
     'Lowlands',
-    'Campbeltown'
+    'Campbeltown',
   ];
 
   static const List<String> whiskyCategories = [
@@ -551,10 +593,17 @@ class TestHelpers {
     'Blended Malt',
     'Single Grain',
     'Blended Grain',
-    'Blended Scotch'
+    'Blended Scotch',
   ];
 
-  static const List<double> validAbvValues = [40.0, 43.0, 46.0, 48.0, 50.0, 57.1];
+  static const List<double> validAbvValues = [
+    40.0,
+    43.0,
+    46.0,
+    48.0,
+    50.0,
+    57.1,
+  ];
   static const List<int> validAgeValues = [3, 8, 10, 12, 15, 18, 21, 25, 30];
 
   /// Commission test helpers
@@ -654,19 +703,20 @@ class TestHelpers {
   ];
 
   /// Commission error scenarios
-  static Exception createCommissionCalculationError([String message = 'Invalid commission calculation']) {
+  static Exception createCommissionCalculationError([
+    String message = 'Invalid commission calculation',
+  ]) {
     return Exception('commission calculation: $message');
   }
 
-  static Exception createCommissionStatusError([String message = 'Invalid status transition']) {
+  static Exception createCommissionStatusError([
+    String message = 'Invalid status transition',
+  ]) {
     return Exception('commission status: $message');
   }
 
   /// Additional Commission helpers for specific test scenarios
-  static Commission createOverdueCommission({
-    int id = 99,
-    int daysAgo = 35,
-  }) {
+  static Commission createOverdueCommission({int id = 99, int daysAgo = 35}) {
     return createTestCommission(
       id: id,
       status: CommissionStatus.pending,
@@ -718,21 +768,27 @@ class TestHelpers {
     return SalesStatistics(
       totalOrders: totalOrders,
       totalRevenue: totalRevenue,
-      averageOrderValue: averageOrderValue ?? (totalOrders > 0 ? totalRevenue / totalOrders : 0.0),
+      averageOrderValue:
+          averageOrderValue ??
+          (totalOrders > 0 ? totalRevenue / totalOrders : 0.0),
       ordersByRoute: ordersByRoute ?? {'1': 40, '2': 35, '3': 25},
       revenueByRoute: revenueByRoute ?? {'1': 2000.0, '2': 1750.0, '3': 1250.0},
-      ordersByDate: ordersByDate ?? {
-        '2025-01-01': 20,
-        '2025-01-02': 30,
-        '2025-01-03': 25,
-        '2025-01-04': 25,
-      },
-      revenueByDate: revenueByDate ?? {
-        '2025-01-01': 1000.0,
-        '2025-01-02': 1500.0,
-        '2025-01-03': 1250.0,
-        '2025-01-04': 1250.0,
-      },
+      ordersByDate:
+          ordersByDate ??
+          {
+            '2025-01-01': 20,
+            '2025-01-02': 30,
+            '2025-01-03': 25,
+            '2025-01-04': 25,
+          },
+      revenueByDate:
+          revenueByDate ??
+          {
+            '2025-01-01': 1000.0,
+            '2025-01-02': 1500.0,
+            '2025-01-03': 1250.0,
+            '2025-01-04': 1250.0,
+          },
     );
   }
 
@@ -757,11 +813,8 @@ class TestHelpers {
       reviewCount: reviewCount,
       conversionRate: conversionRate,
       totalViews: totalViews,
-      salesByMonth: salesByMonth ?? {
-        '2025-01': 15,
-        '2025-02': 20,
-        '2025-03': 15,
-      },
+      salesByMonth:
+          salesByMonth ?? {'2025-01': 15, '2025-02': 20, '2025-03': 15},
     );
   }
 
@@ -781,19 +834,23 @@ class TestHelpers {
       returningCustomers: returningCustomers,
       repeatPurchaseRate: repeatPurchaseRate,
       averageLifetimeValue: averageLifetimeValue,
-      customersByLocation: customersByLocation ?? {
-        'Berlin': 150,
-        'Munich': 120,
-        'Hamburg': 100,
-        'Cologne': 80,
-        'Frankfurt': 50,
-      },
-      orderFrequencyDistribution: orderFrequencyDistribution ?? {
-        1: 200, // 200 customers with 1 order
-        2: 150, // 150 customers with 2 orders
-        3: 100, // 100 customers with 3 orders
-        4: 50,  // 50 customers with 4+ orders
-      },
+      customersByLocation:
+          customersByLocation ??
+          {
+            'Berlin': 150,
+            'Munich': 120,
+            'Hamburg': 100,
+            'Cologne': 80,
+            'Frankfurt': 50,
+          },
+      orderFrequencyDistribution:
+          orderFrequencyDistribution ??
+          {
+            1: 200, // 200 customers with 1 order
+            2: 150, // 150 customers with 2 orders
+            3: 100, // 100 customers with 3 orders
+            4: 50, // 50 customers with 4+ orders
+          },
     );
   }
 
@@ -812,11 +869,9 @@ class TestHelpers {
       customerLifetimeValue: customerLifetimeValue,
       totalViews: totalViews,
       totalPurchases: totalPurchases,
-      metricsByPeriod: metricsByPeriod ?? {
-        '2025-01': 0.06,
-        '2025-02': 0.08,
-        '2025-03': 0.10,
-      },
+      metricsByPeriod:
+          metricsByPeriod ??
+          {'2025-01': 0.06, '2025-02': 0.08, '2025-03': 0.10},
     );
   }
 
@@ -857,11 +912,15 @@ class TestHelpers {
   }
 
   /// Analytics error scenarios
-  static Exception createAnalyticsError([String message = 'Analytics calculation error']) {
+  static Exception createAnalyticsError([
+    String message = 'Analytics calculation error',
+  ]) {
     return Exception('analytics: $message');
   }
 
-  static Exception createDataAggregationError([String message = 'Data aggregation failed']) {
+  static Exception createDataAggregationError([
+    String message = 'Data aggregation failed',
+  ]) {
     return Exception('aggregation: $message');
   }
 }

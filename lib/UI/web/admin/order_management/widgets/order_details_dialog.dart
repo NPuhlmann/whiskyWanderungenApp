@@ -6,10 +6,7 @@ import 'order_status_chip.dart';
 class OrderDetailsDialog extends StatefulWidget {
   final Map<String, dynamic> order;
 
-  const OrderDetailsDialog({
-    super.key,
-    required this.order,
-  });
+  const OrderDetailsDialog({super.key, required this.order});
 
   @override
   State<OrderDetailsDialog> createState() => _OrderDetailsDialogState();
@@ -24,16 +21,11 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
       child: Container(
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.8,
-        constraints: const BoxConstraints(
-          maxWidth: 800,
-          maxHeight: 600,
-        ),
+        constraints: const BoxConstraints(maxWidth: 800, maxHeight: 600),
         child: Column(
           children: [
             _buildHeader(context),
-            Expanded(
-              child: _buildContent(context),
-            ),
+            Expanded(child: _buildContent(context)),
             _buildFooter(context),
           ],
         ),
@@ -68,7 +60,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                 Text(
                   'Erstellt am ${_formatDate(widget.order['created_at'])}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -95,14 +89,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 2,
-                child: _buildOrderInfo(context),
-              ),
+              Expanded(flex: 2, child: _buildOrderInfo(context)),
               const SizedBox(width: 24),
-              Expanded(
-                child: _buildCustomerInfo(context),
-              ),
+              Expanded(child: _buildCustomerInfo(context)),
             ],
           ),
           const SizedBox(height: 24),
@@ -129,20 +118,28 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           children: [
             Text(
               'Bestellinformationen',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('Bestellnummer', '#${widget.order['id']}'),
             _buildInfoRow('Hike ID', '${widget.order['hike_id'] ?? 'N/A'}'),
             _buildInfoRow(
               'Gesamtbetrag',
-              context.read<OrderManagementProvider>().formatOrderAmount(widget.order),
+              context.read<OrderManagementProvider>().formatOrderAmount(
+                widget.order,
+              ),
             ),
-            _buildInfoRow('Erstellt am', _formatDate(widget.order['created_at'])),
+            _buildInfoRow(
+              'Erstellt am',
+              _formatDate(widget.order['created_at']),
+            ),
             if (widget.order['updated_at'] != null)
-              _buildInfoRow('Aktualisiert am', _formatDate(widget.order['updated_at'])),
+              _buildInfoRow(
+                'Aktualisiert am',
+                _formatDate(widget.order['updated_at']),
+              ),
           ],
         ),
       ),
@@ -158,9 +155,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           children: [
             Text(
               'Kundeninformationen',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('User ID', '${widget.order['user_id'] ?? 'Unknown'}'),
@@ -169,7 +166,10 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
             if (widget.order['customer_name'] != null)
               _buildInfoRow('Name', '${widget.order['customer_name']}'),
             if (widget.order['shipping_address'] != null)
-              _buildInfoRow('Lieferadresse', '${widget.order['shipping_address']}'),
+              _buildInfoRow(
+                'Lieferadresse',
+                '${widget.order['shipping_address']}',
+              ),
           ],
         ),
       ),
@@ -187,9 +187,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           children: [
             Text(
               'Bestellpositionen',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (items.isEmpty)
@@ -222,9 +222,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           ),
           Text(
             '€${(item['price'] ?? 0.0).toStringAsFixed(2)}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -240,9 +240,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           children: [
             Text(
               'Zahlungsinformationen',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow(
@@ -256,7 +256,10 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
             if (widget.order['payment_id'] != null)
               _buildInfoRow('Payment ID', '${widget.order['payment_id']}'),
             if (widget.order['payment_date'] != null)
-              _buildInfoRow('Bezahlt am', _formatDate(widget.order['payment_date'])),
+              _buildInfoRow(
+                'Bezahlt am',
+                _formatDate(widget.order['payment_date']),
+              ),
           ],
         ),
       ),
@@ -272,9 +275,9 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
           children: [
             Text(
               'Notizen',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -326,7 +329,8 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
   }
 
   Widget _buildStatusHistoryList(BuildContext context) {
-    final statusHistory = widget.order['status_history'] as List<dynamic>? ?? [];
+    final statusHistory =
+        widget.order['status_history'] as List<dynamic>? ?? [];
 
     if (statusHistory.isEmpty) {
       return const Text('Kein Status-Verlauf verfügbar');
@@ -362,11 +366,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
-        ),
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
       ),
       child: Row(
         children: [
@@ -403,23 +403,23 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
             width: 120,
             child: Text(
               '$label:',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),
     );
   }
 
-  void _showStatusUpdateDialog(BuildContext context, OrderManagementProvider provider) {
+  void _showStatusUpdateDialog(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
@@ -432,22 +432,25 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
               Text('Aktueller Status: ${widget.order['status']}'),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: selectedStatus,
+                initialValue: selectedStatus,
                 decoration: const InputDecoration(
                   labelText: 'Neuer Status',
                   border: OutlineInputBorder(),
                 ),
-                items: provider.getValidOrderStatuses()
-                    .map((status) => DropdownMenuItem(
-                          value: status,
-                          child: Row(
-                            children: [
-                              OrderStatusChip(status: status),
-                              const SizedBox(width: 8),
-                              Text(status),
-                            ],
-                          ),
-                        ))
+                items: provider
+                    .getValidOrderStatuses()
+                    .map(
+                      (status) => DropdownMenuItem(
+                        value: status,
+                        child: Row(
+                          children: [
+                            OrderStatusChip(status: status),
+                            const SizedBox(width: 8),
+                            Text(status),
+                          ],
+                        ),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) {
@@ -466,7 +469,10 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop(); // Close details dialog too
-                await provider.updateOrderStatus(widget.order['id'], selectedStatus);
+                await provider.updateOrderStatus(
+                  widget.order['id'],
+                  selectedStatus,
+                );
               },
               child: const Text('Speichern'),
             ),

@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @GenerateMocks([
   HikeRepository,
-  ProfileRepository, 
+  ProfileRepository,
   UserRepository,
   HikeImagesRepository,
   WaypointRepository,

@@ -38,7 +38,7 @@ class WhiskyManagementService {
           .eq('hike_id', hikeId)
           .single();
 
-      return TastingSet.fromJson(response as Map<String, dynamic>);
+      return TastingSet.fromJson(response);
     } catch (e) {
       if (e is PostgrestException) {
         log('No tasting set found for hike ID $hikeId');
@@ -62,7 +62,7 @@ class WhiskyManagementService {
           .select()
           .single();
 
-      return TastingSet.fromJson(response as Map<String, dynamic>);
+      return TastingSet.fromJson(response);
     } catch (e) {
       log('Error creating tasting set: $e');
       rethrow;
@@ -82,7 +82,7 @@ class WhiskyManagementService {
           .select()
           .single();
 
-      return TastingSet.fromJson(response as Map<String, dynamic>);
+      return TastingSet.fromJson(response);
     } catch (e) {
       log('Error updating tasting set ${tastingSet.id}: $e');
       rethrow;
@@ -92,10 +92,7 @@ class WhiskyManagementService {
   /// Deletes a tasting set and all associated samples
   Future<void> deleteTastingSet(int tastingSetId) async {
     try {
-      await _client
-          .from('tasting_sets')
-          .delete()
-          .eq('id', tastingSetId);
+      await _client.from('tasting_sets').delete().eq('id', tastingSetId);
     } catch (e) {
       log('Error deleting tasting set $tastingSetId: $e');
       rethrow;
@@ -105,7 +102,9 @@ class WhiskyManagementService {
   // ==================== WhiskySample Operations ====================
 
   /// Retrieves all whisky samples for a specific tasting set
-  Future<List<WhiskySample>> getWhiskySamplesByTastingSetId(int tastingSetId) async {
+  Future<List<WhiskySample>> getWhiskySamplesByTastingSetId(
+    int tastingSetId,
+  ) async {
     try {
       final response = await _client
           .from('whisky_samples')
@@ -134,7 +133,7 @@ class WhiskyManagementService {
           .select()
           .single();
 
-      return WhiskySample.fromJson(response as Map<String, dynamic>);
+      return WhiskySample.fromJson(response);
     } catch (e) {
       log('Error creating whisky sample: $e');
       rethrow;
@@ -153,7 +152,7 @@ class WhiskyManagementService {
           .select()
           .single();
 
-      return WhiskySample.fromJson(response as Map<String, dynamic>);
+      return WhiskySample.fromJson(response);
     } catch (e) {
       log('Error updating whisky sample ${sample.id}: $e');
       rethrow;
@@ -163,10 +162,7 @@ class WhiskyManagementService {
   /// Deletes a whisky sample
   Future<void> deleteWhiskySample(int sampleId) async {
     try {
-      await _client
-          .from('whisky_samples')
-          .delete()
-          .eq('id', sampleId);
+      await _client.from('whisky_samples').delete().eq('id', sampleId);
     } catch (e) {
       log('Error deleting whisky sample $sampleId: $e');
       rethrow;
@@ -225,7 +221,9 @@ class WhiskyManagementService {
   }
 
   /// Retrieves whisky samples filtered by distillery
-  Future<List<WhiskySample>> getWhiskySamplesByDistillery(String distillery) async {
+  Future<List<WhiskySample>> getWhiskySamplesByDistillery(
+    String distillery,
+  ) async {
     try {
       final response = await _client
           .from('whisky_samples')
@@ -242,7 +240,10 @@ class WhiskyManagementService {
   }
 
   /// Retrieves whisky samples filtered by age range
-  Future<List<WhiskySample>> getWhiskySamplesByAgeRange(int minAge, int maxAge) async {
+  Future<List<WhiskySample>> getWhiskySamplesByAgeRange(
+    int minAge,
+    int maxAge,
+  ) async {
     try {
       final response = await _client
           .from('whisky_samples')
@@ -262,7 +263,11 @@ class WhiskyManagementService {
   // ==================== Image Management ====================
 
   /// Uploads a whisky image to Supabase Storage
-  Future<String> uploadWhiskyImage(int sampleId, Uint8List imageBytes, String fileExtension) async {
+  Future<String> uploadWhiskyImage(
+    int sampleId,
+    Uint8List imageBytes,
+    String fileExtension,
+  ) async {
     try {
       final fileName = 'whisky_$sampleId.$fileExtension';
 
@@ -271,15 +276,10 @@ class WhiskyManagementService {
           .uploadBinary(
             fileName,
             imageBytes,
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
-      return _client.storage
-          .from('whisky-images')
-          .getPublicUrl(fileName);
+      return _client.storage.from('whisky-images').getPublicUrl(fileName);
     } catch (e) {
       log('Error uploading whisky image for sample $sampleId: $e');
       rethrow;
@@ -287,7 +287,11 @@ class WhiskyManagementService {
   }
 
   /// Uploads a tasting set image to Supabase Storage
-  Future<String> uploadTastingSetImage(int tastingSetId, Uint8List imageBytes, String fileExtension) async {
+  Future<String> uploadTastingSetImage(
+    int tastingSetId,
+    Uint8List imageBytes,
+    String fileExtension,
+  ) async {
     try {
       final fileName = 'tasting_set_$tastingSetId.$fileExtension';
 
@@ -296,15 +300,10 @@ class WhiskyManagementService {
           .uploadBinary(
             fileName,
             imageBytes,
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
-      return _client.storage
-          .from('tasting-set-images')
-          .getPublicUrl(fileName);
+      return _client.storage.from('tasting-set-images').getPublicUrl(fileName);
     } catch (e) {
       log('Error uploading tasting set image for set $tastingSetId: $e');
       rethrow;
@@ -314,9 +313,7 @@ class WhiskyManagementService {
   /// Deletes a whisky image from Supabase Storage
   Future<void> deleteWhiskyImage(String fileName) async {
     try {
-      await _client.storage
-          .from('whisky-images')
-          .remove([fileName]);
+      await _client.storage.from('whisky-images').remove([fileName]);
     } catch (e) {
       log('Error deleting whisky image $fileName: $e');
       rethrow;
@@ -326,9 +323,7 @@ class WhiskyManagementService {
   /// Deletes a tasting set image from Supabase Storage
   Future<void> deleteTastingSetImage(String fileName) async {
     try {
-      await _client.storage
-          .from('tasting-set-images')
-          .remove([fileName]);
+      await _client.storage.from('tasting-set-images').remove([fileName]);
     } catch (e) {
       log('Error deleting tasting set image $fileName: $e');
       rethrow;
@@ -343,9 +338,16 @@ class WhiskyManagementService {
       final tastingSets = await getAllTastingSets();
 
       final totalSets = tastingSets.length;
-      final availableSets = tastingSets.where((set) => set.isCurrentlyAvailable).length;
-      final totalSamples = tastingSets.fold<int>(0, (sum, set) => sum + set.sampleCount);
-      final averageSamplesPerSet = totalSets > 0 ? totalSamples / totalSets : 0.0;
+      final availableSets = tastingSets
+          .where((set) => set.isCurrentlyAvailable)
+          .length;
+      final totalSamples = tastingSets.fold<int>(
+        0,
+        (sum, set) => sum + set.sampleCount,
+      );
+      final averageSamplesPerSet = totalSets > 0
+          ? totalSamples / totalSets
+          : 0.0;
 
       final regionCounts = <String, int>{};
       for (final set in tastingSets) {
@@ -368,14 +370,17 @@ class WhiskyManagementService {
   }
 
   /// Gets popular distilleries based on sample count
-  Future<List<Map<String, dynamic>>> getPopularDistilleries({int limit = 10}) async {
+  Future<List<Map<String, dynamic>>> getPopularDistilleries({
+    int limit = 10,
+  }) async {
     try {
       final allSets = await getAllTastingSets();
       final distilleryCounts = <String, int>{};
 
       for (final set in allSets) {
         for (final sample in set.samples) {
-          distilleryCounts[sample.distillery] = (distilleryCounts[sample.distillery] ?? 0) + 1;
+          distilleryCounts[sample.distillery] =
+              (distilleryCounts[sample.distillery] ?? 0) + 1;
         }
       }
 
@@ -384,10 +389,7 @@ class WhiskyManagementService {
 
       return sortedDistilleries
           .take(limit)
-          .map((entry) => {
-                'distillery': entry.key,
-                'sampleCount': entry.value,
-              })
+          .map((entry) => {'distillery': entry.key, 'sampleCount': entry.value})
           .toList();
     } catch (e) {
       log('Error getting popular distilleries: $e');

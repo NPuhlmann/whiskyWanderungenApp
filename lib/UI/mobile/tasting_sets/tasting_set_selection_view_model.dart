@@ -12,7 +12,8 @@ class TastingSetSelectionViewModel extends ChangeNotifier {
   TastingSetSelectionViewModel({
     required this.hike,
     TastingSetRepository? tastingSetRepository,
-  }) : _tastingSetRepository = tastingSetRepository ?? TastingSetRepository(BackendApiService()) {
+  }) : _tastingSetRepository =
+           tastingSetRepository ?? TastingSetRepository(BackendApiService()) {
     _loadTastingSet();
   }
 
@@ -35,8 +36,10 @@ class TastingSetSelectionViewModel extends ChangeNotifier {
       _clearError();
 
       // Load the single tasting set for the hike
-      final tastingSet = await _tastingSetRepository.getTastingSetForHike(hike.id);
-      
+      final tastingSet = await _tastingSetRepository.getTastingSetForHike(
+        hike.id,
+      );
+
       _tastingSet = tastingSet;
       _setLoading(false);
     } catch (e) {

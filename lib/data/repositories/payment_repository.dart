@@ -10,7 +10,6 @@ import '../../domain/models/delivery_address.dart';
 import '../../domain/models/basic_payment_result.dart';
 import '../../domain/models/payment_intent.dart' show PaymentMethodType;
 
-
 /// Repository for handling payment-related database operations
 /// Integrates with MultiPaymentService for multiple payment methods and Supabase for data persistence
 class PaymentRepository {
@@ -24,10 +23,12 @@ class PaymentRepository {
     required StripeService stripeService,
     MultiPaymentService? multiPaymentService,
     BackendApiService? backendApiService,
-  })  : _supabaseClient = supabaseClient,
-        _stripeService = stripeService,
-        _multiPaymentService = multiPaymentService ?? MultiPaymentService.instance,
-        _backendApiService = backendApiService ?? BackendApiService(client: supabaseClient);
+  }) : _supabaseClient = supabaseClient,
+       _stripeService = stripeService,
+       _multiPaymentService =
+           multiPaymentService ?? MultiPaymentService.instance,
+       _backendApiService =
+           backendApiService ?? BackendApiService(client: supabaseClient);
 
   /// Create a new order with order items
   Future<BasicOrder> createOrder({
@@ -40,12 +41,12 @@ class PaymentRepository {
     try {
       // Validate input parameters
       _validateCreateOrderParams(hikeId, userId, amount);
-      
+
       // Generate unique order number
       final orderNumber = _generateOrderNumber();
-      
+
       dev.log('🔄 Creating order $orderNumber for user $userId...');
-      
+
       // Create order record
       final orderData = {
         'order_number': orderNumber,
@@ -55,7 +56,7 @@ class PaymentRepository {
         'delivery_type': deliveryType.name,
         'status': OrderStatus.pending.name,
         'created_at': DateTime.now().toIso8601String(),
-        if (deliveryAddress != null) 'delivery_address': deliveryAddress,
+        'delivery_address': ?deliveryAddress,
       };
 
       final orderResponse = await _supabaseClient
@@ -65,8 +66,9 @@ class PaymentRepository {
           .single();
 
       // Create order item (for now, simple 1:1 mapping with hikes)
-      final basePrice = deliveryType == DeliveryType.standardShipping 
-          ? amount - 5.0  // Subtract shipping cost
+      final basePrice = deliveryType == DeliveryType.standardShipping
+          ? amount -
+                5.0 // Subtract shipping cost
           : amount;
 
       final orderItemData = {
@@ -77,14 +79,11 @@ class PaymentRepository {
         'total_price': basePrice,
       };
 
-      await _supabaseClient
-          .from('order_items')
-          .insert(orderItemData);
+      await _supabaseClient.from('order_items').insert(orderItemData);
 
       dev.log('✅ Order $orderNumber created successfully');
 
       return BasicOrder.fromJson(orderResponse);
-
     } catch (e) {
       dev.log('❌ Error creating order: $e');
       if (e is PostgrestException) rethrow;
@@ -122,7 +121,9 @@ class PaymentRepository {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      dev.log('🔄 Processing ${paymentMethod.name} payment for order ${order.orderNumber}...');
+      dev.log(
+        '🔄 Processing ${paymentMethod.name} payment for order ${order.orderNumber}...',
+      );
 
       // Use MultiPaymentService for all payment methods
       final paymentResult = await _multiPaymentService.processPayment(
@@ -152,15 +153,20 @@ class PaymentRepository {
           status: OrderStatus.confirmed,
           paymentIntentId: paymentResult.paymentIntentId,
         );
-        dev.log('✅ ${paymentMethod.name} payment successful for order ${order.orderNumber}');
+        dev.log(
+          '✅ ${paymentMethod.name} payment successful for order ${order.orderNumber}',
+        );
       } else if (paymentResult.requiresUserAction) {
-        dev.log('🔐 ${paymentMethod.name} payment requires additional authentication');
+        dev.log(
+          '🔐 ${paymentMethod.name} payment requires additional authentication',
+        );
       } else {
-        dev.log('❌ ${paymentMethod.name} payment failed for order ${order.orderNumber}');
+        dev.log(
+          '❌ ${paymentMethod.name} payment failed for order ${order.orderNumber}',
+        );
       }
 
       return paymentResult;
-
     } catch (e) {
       dev.log('❌ Error processing ${paymentMethod.name} payment: $e');
       // Return failed payment result instead of throwing
@@ -222,7 +228,6 @@ class PaymentRepository {
       }
 
       return paymentResult;
-
     } catch (e) {
       dev.log('❌ Error processing payment: $e');
       // Return failed payment result instead of throwing
@@ -243,7 +248,6 @@ class PaymentRepository {
           .single();
 
       return BasicOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error fetching order $orderId: $e');
       if (e is PostgrestException) rethrow;
@@ -263,7 +267,6 @@ class PaymentRepository {
       return response
           .map<BasicOrder>((json) => BasicOrder.fromJson(json))
           .toList();
-
     } catch (e) {
       dev.log('❌ Error fetching user orders: $e');
       if (e is PostgrestException) rethrow;
@@ -283,9 +286,10 @@ class PaymentRepository {
       final updateData = <String, dynamic>{
         'status': status.name,
         'updated_at': DateTime.now().toIso8601String(),
-        if (trackingNumber != null) 'tracking_number': trackingNumber,
-        if (estimatedDelivery != null) 'estimated_delivery': estimatedDelivery.toIso8601String(),
-        if (paymentIntentId != null) 'payment_intent_id': paymentIntentId,
+        'tracking_number': ?trackingNumber,
+        if (estimatedDelivery != null)
+          'estimated_delivery': estimatedDelivery.toIso8601String(),
+        'payment_intent_id': ?paymentIntentId,
       };
 
       final response = await _supabaseClient
@@ -297,7 +301,6 @@ class PaymentRepository {
 
       dev.log('✅ Order $orderId status updated to ${status.name}');
       return BasicOrder.fromJson(response);
-
     } catch (e) {
       dev.log('❌ Error updating order status: $e');
       if (e is PostgrestException) rethrow;
@@ -314,35 +317,38 @@ class PaymentRepository {
     try {
       final paymentData = {
         'order_id': order.id,
-        'payment_intent_id': paymentResult.paymentIntentId ?? 'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
+        'payment_intent_id':
+            paymentResult.paymentIntentId ??
+            'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
         'client_secret': paymentResult.clientSecret,
         'amount': (order.totalAmount * 100).round(), // Convert to cents
         'currency': 'eur',
         'status': paymentResult.status?.name ?? 'pending',
         'payment_method': paymentMethod.name,
-        if (paymentResult.errorMessage != null) 'failure_reason': paymentResult.errorMessage,
+        if (paymentResult.errorMessage != null)
+          'failure_reason': paymentResult.errorMessage,
         if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
         'created_at': DateTime.now().toIso8601String(),
       };
 
-      await _supabaseClient
-          .from('payments')
-          .insert(paymentData);
+      await _supabaseClient.from('payments').insert(paymentData);
 
-      dev.log('✅ Payment record created for ${paymentMethod.name} payment: ${paymentData['payment_intent_id']}');
-
+      dev.log(
+        '✅ Payment record created for ${paymentMethod.name} payment: ${paymentData['payment_intent_id']}',
+      );
     } catch (e) {
       dev.log('⚠️ Warning: Failed to create payment record: $e');
       // Don't throw here - payment may have succeeded even if record creation failed
     }
   }
 
-
   /// Generate unique order number
   String _generateOrderNumber() {
     final now = DateTime.now();
     final year = now.year;
-    final timestamp = now.millisecondsSinceEpoch.toString().substring(8); // Last 5 digits
+    final timestamp = now.millisecondsSinceEpoch.toString().substring(
+      8,
+    ); // Last 5 digits
     return 'WH$year-$timestamp';
   }
 
@@ -351,15 +357,15 @@ class PaymentRepository {
     if (hikeId <= 0) {
       throw ArgumentError('Hike ID must be greater than 0');
     }
-    
+
     if (userId.isEmpty) {
       throw ArgumentError('User ID cannot be empty');
     }
-    
+
     if (amount <= 0) {
       throw ArgumentError('Amount must be greater than 0');
     }
-    
+
     if (amount > 999999.99) {
       throw ArgumentError('Amount exceeds maximum limit');
     }
@@ -386,30 +392,32 @@ class PaymentRepository {
       if (hikeId <= 0) throw ArgumentError('Hike ID must be greater than 0');
       if (userId.isEmpty) throw ArgumentError('User ID cannot be empty');
       if (companyId.isEmpty) throw ArgumentError('Company ID cannot be empty');
-      if (baseAmount <= 0) throw ArgumentError('Base amount must be greater than 0');
-      
+      if (baseAmount <= 0) {
+        throw ArgumentError('Base amount must be greater than 0');
+      }
+
       // Generate unique order number
       final orderNumber = _generateOrderNumber();
-      
+
       dev.log('🔄 Creating enhanced order $orderNumber for user $userId...');
 
       // Create enhanced order with shipping calculation
-      final enhancedOrder = await _backendApiService.createEnhancedOrderWithShipping(
-        orderNumber: orderNumber,
-        companyId: companyId,
-        customerId: userId,
-        hikeId: hikeId,
-        baseOrderValue: baseAmount,
-        deliveryAddress: deliveryAddress,
-        deliveryType: deliveryType,
-        customerEmail: customerEmail,
-        customerPhone: customerPhone,
-        metadata: metadata,
-      );
+      final enhancedOrder = await _backendApiService
+          .createEnhancedOrderWithShipping(
+            orderNumber: orderNumber,
+            companyId: companyId,
+            customerId: userId,
+            hikeId: hikeId,
+            baseOrderValue: baseAmount,
+            deliveryAddress: deliveryAddress,
+            deliveryType: deliveryType,
+            customerEmail: customerEmail,
+            customerPhone: customerPhone,
+            metadata: metadata,
+          );
 
       dev.log('✅ Enhanced order $orderNumber created successfully');
       return enhancedOrder;
-
     } catch (e) {
       dev.log('❌ Error creating enhanced order: $e');
       if (e is PostgrestException) rethrow;
@@ -426,7 +434,9 @@ class PaymentRepository {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      dev.log('🔄 Processing ${paymentMethod.name} payment for enhanced order ${order.orderNumber}...');
+      dev.log(
+        '🔄 Processing ${paymentMethod.name} payment for enhanced order ${order.orderNumber}...',
+      );
 
       // Use MultiPaymentService for all payment methods
       final paymentResult = await _multiPaymentService.processPayment(
@@ -436,7 +446,7 @@ class PaymentRepository {
         metadata: {
           'enhanced_order_id': order.id.toString(),
           'company_id': order.companyId,
-          'hike_id': order.hikeId?.toString(),
+          'hike_id': order.hikeId.toString(),
           'delivery_type': order.deliveryType.name,
           'order_number': order.orderNumber,
           ...?metadata,
@@ -469,7 +479,9 @@ class PaymentRepository {
           newStatus: 'paymentPending',
           reason: 'Payment requires user action',
         );
-        dev.log('🔐 Enhanced order payment requires authentication: ${order.orderNumber}');
+        dev.log(
+          '🔐 Enhanced order payment requires authentication: ${order.orderNumber}',
+        );
       } else {
         await _backendApiService.updateEnhancedOrderStatus(
           orderId: order.id,
@@ -484,7 +496,6 @@ class PaymentRepository {
       }
 
       return paymentResult;
-
     } catch (e) {
       dev.log('❌ Error processing enhanced order payment: $e');
       // Return failed payment result instead of throwing
@@ -583,25 +594,27 @@ class PaymentRepository {
     try {
       final paymentData = {
         'order_id': order.id,
-        'payment_intent_id': paymentResult.paymentIntentId ?? 'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
+        'payment_intent_id':
+            paymentResult.paymentIntentId ??
+            'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
         'client_secret': paymentResult.clientSecret,
         'amount': (order.totalAmount * 100).round(), // Convert to cents
         'currency': order.currency.toLowerCase(),
         'status': paymentResult.status?.name ?? 'pending',
         'payment_method': paymentMethod.name,
-        if (paymentResult.errorMessage != null) 'failure_reason': paymentResult.errorMessage,
+        if (paymentResult.errorMessage != null)
+          'failure_reason': paymentResult.errorMessage,
         if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
         'created_at': DateTime.now().toIso8601String(),
       };
 
       // Note: This assumes we're using the same payments table for enhanced orders
       // In production, you might want a separate enhanced_payments table
-      await _supabaseClient
-          .from('payments')
-          .insert(paymentData);
+      await _supabaseClient.from('payments').insert(paymentData);
 
-      dev.log('✅ Enhanced order payment record created: ${paymentData['payment_intent_id']}');
-
+      dev.log(
+        '✅ Enhanced order payment record created: ${paymentData['payment_intent_id']}',
+      );
     } catch (e) {
       dev.log('⚠️ Warning: Failed to create enhanced order payment record: $e');
       // Don't throw here - payment may have succeeded even if record creation failed

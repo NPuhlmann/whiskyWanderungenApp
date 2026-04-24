@@ -5,7 +5,6 @@ import 'package:whisky_hikes/domain/models/hike.dart';
 import '../services/database/backend_api.dart';
 
 class HikeImagesRepository {
-
   final BackendApiService _backendApiService;
 
   HikeImagesRepository(this._backendApiService);
@@ -19,5 +18,4 @@ class HikeImagesRepository {
   Future<List<String>> getHikeImages(int hikeId) async {
     return await _backendApiService.getHikeImages(hikeId);
   }
-
 }

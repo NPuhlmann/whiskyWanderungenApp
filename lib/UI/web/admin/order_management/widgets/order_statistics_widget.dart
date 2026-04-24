@@ -10,15 +10,11 @@ class OrderStatisticsWidget extends StatelessWidget {
     return Consumer<OrderManagementProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading && provider.statistics.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (provider.statistics.isEmpty) {
-          return const Center(
-            child: Text('Keine Statistiken verfügbar'),
-          );
+          return const Center(child: Text('Keine Statistiken verfügbar'));
         }
 
         return Column(
@@ -26,9 +22,9 @@ class OrderStatisticsWidget extends StatelessWidget {
           children: [
             Text(
               'Statistiken',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
@@ -48,7 +44,10 @@ class OrderStatisticsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildSummaryCards(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     final stats = provider.statistics;
 
     return Column(
@@ -103,14 +102,10 @@ class OrderStatisticsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 20,
-              ),
+              child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -120,7 +115,9 @@ class OrderStatisticsWidget extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   Text(
@@ -138,8 +135,13 @@ class OrderStatisticsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusDistribution(BuildContext context, OrderManagementProvider provider) {
-    final statusCounts = provider.statistics['status_distribution'] as Map<String, dynamic>? ?? {};
+  Widget _buildStatusDistribution(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
+    final statusCounts =
+        provider.statistics['status_distribution'] as Map<String, dynamic>? ??
+        {};
 
     if (statusCounts.isEmpty) {
       return const SizedBox.shrink();
@@ -150,9 +152,9 @@ class OrderStatisticsWidget extends StatelessWidget {
       children: [
         Text(
           'Status Verteilung',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ...statusCounts.entries.map((entry) {
@@ -182,9 +184,9 @@ class OrderStatisticsWidget extends StatelessWidget {
                 ),
                 Text(
                   '$count ($percentage%)',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -194,31 +196,25 @@ class OrderStatisticsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTimePeriodSelector(BuildContext context, OrderManagementProvider provider) {
+  Widget _buildTimePeriodSelector(
+    BuildContext context,
+    OrderManagementProvider provider,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Zeitraum',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         SegmentedButton<String>(
           segments: const [
-            ButtonSegment(
-              value: 'today',
-              label: Text('Heute'),
-            ),
-            ButtonSegment(
-              value: 'week',
-              label: Text('Woche'),
-            ),
-            ButtonSegment(
-              value: 'month',
-              label: Text('Monat'),
-            ),
+            ButtonSegment(value: 'today', label: Text('Heute')),
+            ButtonSegment(value: 'week', label: Text('Woche')),
+            ButtonSegment(value: 'month', label: Text('Monat')),
           ],
           selected: {provider.selectedPeriod},
           onSelectionChanged: (Set<String> selection) {

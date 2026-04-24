@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:math' as math;
 
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../../../domain/models/waypoint.dart';
 
 /// Service für GPS-Tracking und Location-Management
-/// 
+///
 /// Bietet Funktionalität für:
 /// - Echtzeit GPS-Position-Streams
 /// - Distanz- und Richtungsberechnung
@@ -17,8 +14,9 @@ import '../../../domain/models/waypoint.dart';
 /// - Background Location Tracking
 class LocationService {
   static LocationService? _instance;
-  static LocationService get instance => _instance ??= LocationService._internal();
-  
+  static LocationService get instance =>
+      _instance ??= LocationService._internal();
+
   LocationService._internal();
 
   StreamController<Position>? _positionStreamController;
@@ -28,12 +26,12 @@ class LocationService {
 
   // Configuration constants
   static const double _waypointReachRadiusMeters = 10.0; // 10 Meter Radius
-  static const int _locationUpdateIntervalMs = 2000; // 2 Sekunden
   static const int _minimumDistanceFilterMeters = 5; // 5 Meter minimum bewegung
 
   /// Aktuelle GPS-Position als Stream
   Stream<Position> get positionStream {
-    if (_positionStreamController == null || _positionStreamController!.isClosed) {
+    if (_positionStreamController == null ||
+        _positionStreamController!.isClosed) {
       _positionStreamController = StreamController<Position>.broadcast();
     }
     return _positionStreamController!.stream;
@@ -66,7 +64,9 @@ class LocationService {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        log('Location permissions are permanently denied, cannot request permissions.');
+        log(
+          'Location permissions are permanently denied, cannot request permissions.',
+        );
         return false;
       }
 
@@ -107,26 +107,31 @@ class LocationService {
       );
 
       // Starte Position Stream
-      _positionStreamSubscription = Geolocator.getPositionStream(
-        locationSettings: locationSettings,
-      ).listen(
-        (Position position) {
-          _lastKnownPosition = position;
-          
-          // Broadcastе Position über unseren eigenen Stream
-          if (_positionStreamController != null && !_positionStreamController!.isClosed) {
-            _positionStreamController!.add(position);
-          }
+      _positionStreamSubscription =
+          Geolocator.getPositionStream(
+            locationSettings: locationSettings,
+          ).listen(
+            (Position position) {
+              _lastKnownPosition = position;
 
-          log('GPS position updated: ${position.latitude}, ${position.longitude} (Accuracy: ${position.accuracy}m)');
-        },
-        onError: (error) {
-          log('Error in GPS position stream: $error');
-          if (_positionStreamController != null && !_positionStreamController!.isClosed) {
-            _positionStreamController!.addError(error);
-          }
-        },
-      );
+              // Broadcastе Position über unseren eigenen Stream
+              if (_positionStreamController != null &&
+                  !_positionStreamController!.isClosed) {
+                _positionStreamController!.add(position);
+              }
+
+              log(
+                'GPS position updated: ${position.latitude}, ${position.longitude} (Accuracy: ${position.accuracy}m)',
+              );
+            },
+            onError: (error) {
+              log('Error in GPS position stream: $error');
+              if (_positionStreamController != null &&
+                  !_positionStreamController!.isClosed) {
+                _positionStreamController!.addError(error);
+              }
+            },
+          );
 
       _isTracking = true;
       log('GPS tracking started successfully');
@@ -147,7 +152,7 @@ class LocationService {
       await _positionStreamSubscription?.cancel();
       _positionStreamSubscription = null;
       _isTracking = false;
-      
+
       log('GPS tracking stopped');
     } catch (e) {
       log('Error stopping GPS tracking: $e');
@@ -231,7 +236,7 @@ class LocationService {
     // Durchschnittliche Gehgeschwindigkeit: 4 km/h = 1.11 m/s
     const double averageWalkingSpeedMs = 1.11;
     final double timeInSeconds = distance / averageWalkingSpeedMs;
-    
+
     return Duration(seconds: timeInSeconds.round());
   }
 
@@ -242,8 +247,14 @@ class LocationService {
     if (bearing < 0) bearing += 360;
 
     const List<String> directions = [
-      'Nord', 'Nordost', 'Ost', 'Südost',
-      'Süd', 'Südwest', 'West', 'Nordwest'
+      'Nord',
+      'Nordost',
+      'Ost',
+      'Südost',
+      'Süd',
+      'Südwest',
+      'West',
+      'Nordwest',
     ];
 
     final int index = ((bearing + 22.5) / 45).floor() % 8;

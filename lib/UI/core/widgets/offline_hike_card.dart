@@ -50,60 +50,52 @@ class OfflineHikeCard extends StatelessWidget {
                   _buildOfflineStatusIndicator(context),
                 ],
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Beschreibung
               if (hike.description.isNotEmpty) ...[
                 Text(
                   hike.description,
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
               ],
-              
+
               // Hike-Details
               Row(
                 children: [
-                  Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                  Icon(
+                    Icons.location_on,
+                    size: 16,
+                    color: Colors.grey.shade600,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     hike.category.isNotEmpty ? hike.category : 'Whisky Tour',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                   const SizedBox(width: 16),
                   Icon(Icons.timer, size: 16, color: Colors.grey.shade600),
                   const SizedBox(width: 4),
                   Text(
                     hike.lengthDisplayText,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                   const SizedBox(width: 16),
                   Icon(Icons.euro, size: 16, color: Colors.grey.shade600),
                   const SizedBox(width: 4),
                   Text(
                     hike.price.toStringAsFixed(2),
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Action Buttons
               _buildActionButtons(context),
             ],
@@ -118,7 +110,7 @@ class OfflineHikeCard extends StatelessWidget {
       stream: ConnectivityService.instance.networkStatusStream,
       builder: (context, snapshot) {
         final networkStatus = snapshot.data ?? NetworkStatus.unknown;
-        
+
         if (isAvailableOffline) {
           return OfflineAvailableBadge(
             isAvailableOffline: true,
@@ -135,11 +127,7 @@ class OfflineHikeCard extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.cloud_off,
-                  size: 14,
-                  color: Colors.red.shade700,
-                ),
+                Icon(Icons.cloud_off, size: 14, color: Colors.red.shade700),
                 const SizedBox(width: 4),
                 Text(
                   'Nicht verfügbar',
@@ -153,7 +141,7 @@ class OfflineHikeCard extends StatelessWidget {
             ),
           );
         }
-        
+
         return const SizedBox.shrink();
       },
     );
@@ -164,7 +152,7 @@ class OfflineHikeCard extends StatelessWidget {
       stream: ConnectivityService.instance.networkStatusStream,
       builder: (context, snapshot) {
         final networkStatus = snapshot.data ?? NetworkStatus.unknown;
-        
+
         return Row(
           children: [
             // Hauptaktion (Öffnen/Kaufen)
@@ -178,9 +166,9 @@ class OfflineHikeCard extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(width: 8),
-            
+
             // Offline-Aktionen
             if (networkStatus.isConnected) ...[
               if (isAvailableOffline) ...[
@@ -189,9 +177,7 @@ class OfflineHikeCard extends StatelessWidget {
                   onPressed: onRemoveOffline,
                   icon: const Icon(Icons.cloud_off, size: 16),
                   label: const Text('Entfernen'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                  ),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
                 ),
               ] else ...[
                 // Für Offline herunterladen
@@ -211,10 +197,10 @@ class OfflineHikeCard extends StatelessWidget {
   bool _getMainActionEnabled(NetworkStatus networkStatus) {
     // Offline verfügbar -> immer aktiviert (bedeutet bereits gekauft)
     if (isAvailableOffline) return true;
-    
+
     // Online und verfügbar -> aktiviert
     if (networkStatus.isConnected && hike.isCurrentlyAvailable) return true;
-    
+
     // Offline und nicht verfügbar -> deaktiviert
     return false;
   }
@@ -231,11 +217,11 @@ class OfflineHikeCard extends StatelessWidget {
     if (isAvailableOffline) {
       return 'Wanderung starten';
     }
-    
+
     if (!networkStatus.isConnected) {
       return 'Offline nicht verfügbar';
     }
-    
+
     if (hike.isCurrentlyAvailable) {
       return 'Kaufen';
     } else {
@@ -247,11 +233,11 @@ class OfflineHikeCard extends StatelessWidget {
     if (isAvailableOffline) {
       return Colors.green;
     }
-    
+
     if (!networkStatus.isConnected) {
       return Colors.grey;
     }
-    
+
     if (hike.isCurrentlyAvailable) {
       return Colors.blue;
     } else {
@@ -302,10 +288,7 @@ class OfflineHikeCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'Änderungen werden automatisch synchronisiert, sobald eine Internetverbindung verfügbar ist.',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
           ],
         ),
@@ -382,14 +365,16 @@ class OfflineOnlyHikeCard extends StatelessWidget {
                         stream: DataSyncService.instance.syncStatusStream,
                         builder: (context, snapshot) {
                           final syncStatus = snapshot.data ?? SyncStatus.idle;
-                          
+
                           return IconButton(
                             onPressed: syncStatus.isActive ? null : onSync,
                             icon: syncStatus.isActive
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Icon(Icons.sync),
                             tooltip: 'Synchronisieren',
@@ -398,9 +383,9 @@ class OfflineOnlyHikeCard extends StatelessWidget {
                       ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Hike-Details
                 Text(
                   hike.name,
@@ -409,25 +394,26 @@ class OfflineOnlyHikeCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 if (hike.description.isNotEmpty) ...[
                   Text(
                     hike.description,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                 ],
-                
+
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.location_on,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       hike.category.isNotEmpty ? hike.category : 'Whisky Tour',
@@ -448,9 +434,9 @@ class OfflineOnlyHikeCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Info-Text
                 Container(
                   padding: const EdgeInsets.all(12),

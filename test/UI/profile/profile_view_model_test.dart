@@ -48,11 +48,13 @@ void main() {
         const expectedImageUrl = 'https://example.com/profile.jpg';
 
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.getUserProfileById(testUserId))
-            .thenAnswer((_) async => expectedProfile);
+        when(
+          mockProfileRepository.getUserProfileById(testUserId),
+        ).thenAnswer((_) async => expectedProfile);
         when(mockUserRepository.getUserEmail()).thenReturn(testEmail);
-        when(mockProfileRepository.getProfileImageUrl(testUserId))
-            .thenAnswer((_) async => expectedImageUrl);
+        when(
+          mockProfileRepository.getProfileImageUrl(testUserId),
+        ).thenAnswer((_) async => expectedImageUrl);
 
         // Act
         final result = await viewModel.loadProfile();
@@ -77,11 +79,13 @@ void main() {
         final expectedProfile = Profile(id: testUserId, firstName: 'John');
 
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.getUserProfileById(testUserId))
-            .thenAnswer((_) async => expectedProfile);
+        when(
+          mockProfileRepository.getUserProfileById(testUserId),
+        ).thenAnswer((_) async => expectedProfile);
         when(mockUserRepository.getUserEmail()).thenReturn(null);
-        when(mockProfileRepository.getProfileImageUrl(testUserId))
-            .thenAnswer((_) async => null);
+        when(
+          mockProfileRepository.getProfileImageUrl(testUserId),
+        ).thenAnswer((_) async => null);
 
         // Act
         final result = await viewModel.loadProfile();
@@ -98,11 +102,13 @@ void main() {
         final expectedProfile = Profile(id: testUserId, firstName: 'Jane');
 
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.getUserProfileById(testUserId))
-            .thenAnswer((_) async => expectedProfile);
+        when(
+          mockProfileRepository.getUserProfileById(testUserId),
+        ).thenAnswer((_) async => expectedProfile);
         when(mockUserRepository.getUserEmail()).thenReturn(testEmail);
-        when(mockProfileRepository.getProfileImageUrl(testUserId))
-            .thenAnswer((_) async => null);
+        when(
+          mockProfileRepository.getProfileImageUrl(testUserId),
+        ).thenAnswer((_) async => null);
 
         // Act
         final result = await viewModel.loadProfile();
@@ -119,8 +125,15 @@ void main() {
         // Act & Assert
         expect(
           () => viewModel.loadProfile(),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Benutzer-ID konnte nicht ermittelt werden'))),
+          throwsA(
+            predicate(
+              (e) =>
+                  e is Exception &&
+                  e.toString().contains(
+                    'Benutzer-ID konnte nicht ermittelt werden',
+                  ),
+            ),
+          ),
         );
         expect(viewModel.isLoading, false);
       });
@@ -128,14 +141,18 @@ void main() {
       test('should handle profile repository errors', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.getUserProfileById(testUserId))
-            .thenThrow(Exception('Network error'));
+        when(
+          mockProfileRepository.getUserProfileById(testUserId),
+        ).thenThrow(Exception('Network error'));
 
         // Act & Assert
         expect(
           () => viewModel.loadProfile(),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Network error'))),
+          throwsA(
+            predicate(
+              (e) => e is Exception && e.toString().contains('Network error'),
+            ),
+          ),
         );
         expect(viewModel.isLoading, false);
       });
@@ -144,14 +161,19 @@ void main() {
         // Arrange
         final profile = Profile(id: testUserId);
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.getUserProfileById(testUserId))
-            .thenAnswer((_) async {
-              expect(viewModel.isLoading, true); // Should be loading during async call
-              return profile;
-            });
+        when(mockProfileRepository.getUserProfileById(testUserId)).thenAnswer((
+          _,
+        ) async {
+          expect(
+            viewModel.isLoading,
+            true,
+          ); // Should be loading during async call
+          return profile;
+        });
         when(mockUserRepository.getUserEmail()).thenReturn(null);
-        when(mockProfileRepository.getProfileImageUrl(testUserId))
-            .thenAnswer((_) async => null);
+        when(
+          mockProfileRepository.getProfileImageUrl(testUserId),
+        ).thenAnswer((_) async => null);
 
         expect(viewModel.isLoading, false); // Initially false
 
@@ -166,11 +188,13 @@ void main() {
         // Arrange
         final profile = Profile(id: testUserId, firstName: 'Test');
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.getUserProfileById(testUserId))
-            .thenAnswer((_) async => profile);
+        when(
+          mockProfileRepository.getUserProfileById(testUserId),
+        ).thenAnswer((_) async => profile);
         when(mockUserRepository.getUserEmail()).thenReturn(testEmail);
-        when(mockProfileRepository.getProfileImageUrl(testUserId))
-            .thenThrow(Exception('Image loading failed'));
+        when(
+          mockProfileRepository.getProfileImageUrl(testUserId),
+        ).thenThrow(Exception('Image loading failed'));
 
         // Act - should still complete successfully
         final result = await viewModel.loadProfile();
@@ -198,8 +222,9 @@ void main() {
         );
 
         when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
-        when(mockProfileRepository.updateUserProfile(updatedProfile))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.updateUserProfile(updatedProfile),
+        ).thenAnswer((_) async => {});
 
         // Act
         viewModel.updateProfile(updatedProfile);
@@ -209,7 +234,9 @@ void main() {
         expect(viewModel.isLoading, false);
 
         verify(mockUserRepository.getUserEmail()).called(1);
-        verify(mockProfileRepository.updateUserProfile(updatedProfile)).called(1);
+        verify(
+          mockProfileRepository.updateUserProfile(updatedProfile),
+        ).called(1);
         verifyNever(mockUserRepository.updateUserEmail(any));
       });
 
@@ -223,10 +250,12 @@ void main() {
         );
 
         when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
-        when(mockUserRepository.updateUserEmail(newEmail))
-            .thenAnswer((_) async => {});
-        when(mockProfileRepository.updateUserProfile(updatedProfile))
-            .thenAnswer((_) async => {});
+        when(
+          mockUserRepository.updateUserEmail(newEmail),
+        ).thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.updateUserProfile(updatedProfile),
+        ).thenAnswer((_) async => {});
 
         // Act
         viewModel.updateProfile(updatedProfile);
@@ -236,7 +265,9 @@ void main() {
 
         verify(mockUserRepository.getUserEmail()).called(1);
         verify(mockUserRepository.updateUserEmail(newEmail)).called(1);
-        verify(mockProfileRepository.updateUserProfile(updatedProfile)).called(1);
+        verify(
+          mockProfileRepository.updateUserProfile(updatedProfile),
+        ).called(1);
       });
 
       test('should not update email when new email is empty', () async {
@@ -249,28 +280,29 @@ void main() {
         );
 
         when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
-        when(mockProfileRepository.updateUserProfile(updatedProfile))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.updateUserProfile(updatedProfile),
+        ).thenAnswer((_) async => {});
 
         // Act
         viewModel.updateProfile(updatedProfile);
 
         // Assert
         verify(mockUserRepository.getUserEmail()).called(1);
-        verify(mockProfileRepository.updateUserProfile(updatedProfile)).called(1);
+        verify(
+          mockProfileRepository.updateUserProfile(updatedProfile),
+        ).called(1);
         verifyNever(mockUserRepository.updateUserEmail(any));
       });
 
       test('should handle email update errors gracefully', () async {
         // Arrange
-        final updatedProfile = Profile(
-          id: testUserId,
-          email: newEmail,
-        );
+        final updatedProfile = Profile(id: testUserId, email: newEmail);
 
         when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
-        when(mockUserRepository.updateUserEmail(newEmail))
-            .thenThrow(Exception('Email update failed'));
+        when(
+          mockUserRepository.updateUserEmail(newEmail),
+        ).thenThrow(Exception('Email update failed'));
 
         // Act - should complete without throwing
         viewModel.updateProfile(updatedProfile);
@@ -281,30 +313,37 @@ void main() {
         verifyNever(mockProfileRepository.updateUserProfile(any));
       });
 
-      test('should handle profile repository update errors gracefully', () async {
-        // Arrange
-        final updatedProfile = Profile(id: testUserId, email: currentEmail);
+      test(
+        'should handle profile repository update errors gracefully',
+        () async {
+          // Arrange
+          final updatedProfile = Profile(id: testUserId, email: currentEmail);
 
-        when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
-        when(mockProfileRepository.updateUserProfile(updatedProfile))
-            .thenThrow(Exception('Database error'));
+          when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
+          when(
+            mockProfileRepository.updateUserProfile(updatedProfile),
+          ).thenThrow(Exception('Database error'));
 
-        // Act - should complete without throwing
-        viewModel.updateProfile(updatedProfile);
+          // Act - should complete without throwing
+          viewModel.updateProfile(updatedProfile);
 
-        // Assert
-        expect(viewModel.isLoading, false);
-        verify(mockProfileRepository.updateUserProfile(updatedProfile)).called(1);
-      });
+          // Assert
+          expect(viewModel.isLoading, false);
+          verify(
+            mockProfileRepository.updateUserProfile(updatedProfile),
+          ).called(1);
+        },
+      );
 
       test('should set loading state correctly during update', () async {
         // Arrange
         final profile = Profile(id: testUserId, email: currentEmail);
         when(mockUserRepository.getUserEmail()).thenReturn(currentEmail);
-        when(mockProfileRepository.updateUserProfile(profile))
-            .thenAnswer((_) async {
-              expect(viewModel.isLoading, true);
-            });
+        when(mockProfileRepository.updateUserProfile(profile)).thenAnswer((
+          _,
+        ) async {
+          expect(viewModel.isLoading, true);
+        });
 
         expect(viewModel.isLoading, false);
 
@@ -331,10 +370,16 @@ void main() {
       test('should upload image successfully', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenAnswer((_) async => uploadedImageUrl);
-        when(mockProfileRepository.updateUserProfile(any))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).thenAnswer((_) async => uploadedImageUrl);
+        when(
+          mockProfileRepository.updateUserProfile(any),
+        ).thenAnswer((_) async => {});
 
         // Act
         await viewModel.uploadProfileImage(testImageBytes, testFileExt);
@@ -344,7 +389,13 @@ void main() {
         expect(viewModel.isLoading, false);
 
         verify(mockUserRepository.getUserId()).called(1);
-        verify(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt)).called(1);
+        verify(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).called(1);
         verify(mockProfileRepository.updateUserProfile(any)).called(1);
       });
 
@@ -355,8 +406,15 @@ void main() {
         // Act & Assert
         expect(
           () => viewModel.uploadProfileImage(testImageBytes, testFileExt),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Benutzer-ID konnte nicht ermittelt werden'))),
+          throwsA(
+            predicate(
+              (e) =>
+                  e is Exception &&
+                  e.toString().contains(
+                    'Benutzer-ID konnte nicht ermittelt werden',
+                  ),
+            ),
+          ),
         );
         expect(viewModel.isLoading, false);
       });
@@ -369,22 +427,30 @@ void main() {
         // Act & Assert
         expect(
           () => viewModel.uploadProfileImage(emptyBytes, testFileExt),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Leere Bilddaten'))),
+          throwsA(
+            predicate(
+              (e) => e is Exception && e.toString().contains('Leere Bilddaten'),
+            ),
+          ),
         );
         expect(viewModel.isLoading, false);
       });
 
       test('should throw exception for image too large', () async {
         // Arrange
-        final largeBytes = Uint8List.fromList(List.filled(11 * 1024 * 1024, 1)); // 11MB
+        final largeBytes = Uint8List.fromList(
+          List.filled(11 * 1024 * 1024, 1),
+        ); // 11MB
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
 
         // Act & Assert
         expect(
           () => viewModel.uploadProfileImage(largeBytes, testFileExt),
-          throwsA(predicate((e) => e is Exception && 
-            e.toString().contains('Bild zu groß'))),
+          throwsA(
+            predicate(
+              (e) => e is Exception && e.toString().contains('Bild zu groß'),
+            ),
+          ),
         );
         expect(viewModel.isLoading, false);
       });
@@ -392,26 +458,48 @@ void main() {
       test('should retry upload on retryable errors', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenAnswer((_) => throw Exception('Network timeout'));
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenAnswer((_) async => uploadedImageUrl);
-        when(mockProfileRepository.updateUserProfile(any))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).thenAnswer((_) => throw Exception('Network timeout'));
+        when(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).thenAnswer((_) async => uploadedImageUrl);
+        when(
+          mockProfileRepository.updateUserProfile(any),
+        ).thenAnswer((_) async => {});
 
         // Act
         await viewModel.uploadProfileImage(testImageBytes, testFileExt);
 
         // Assert
         expect(viewModel.profile.imageUrl, uploadedImageUrl);
-        verify(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt)).called(1);
+        verify(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).called(1);
       });
 
       test('should fail after max retries', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenThrow(Exception('Network timeout')); // Always fails
+        when(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).thenThrow(Exception('Network timeout')); // Always fails
 
         // Act & Assert
         await viewModel.uploadProfileImage(testImageBytes, testFileExt);
@@ -419,20 +507,37 @@ void main() {
         // Should not throw since we handle errors gracefully
         expect(viewModel.isLoading, false);
 
-        verify(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt)).called(3);
+        verify(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).called(3);
       });
 
       test('should not retry on non-retryable errors', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenThrow(Exception('Permission denied')); // Non-retryable error
+        when(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).thenThrow(Exception('Permission denied')); // Non-retryable error
 
         // Act & Assert
         await viewModel.uploadProfileImage(testImageBytes, testFileExt);
 
         // Should not throw since we handle errors gracefully
-        verify(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt)).called(1);
+        verify(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).called(1);
       });
 
       test('should identify retryable errors correctly', () async {
@@ -444,16 +549,28 @@ void main() {
           'HTTP 502',
           'HTTP 500',
         ];
-        
+
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.updateUserProfile(any)).thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.updateUserProfile(any),
+        ).thenAnswer((_) async => {});
 
         // Test each retryable error
         for (final errorMessage in retryableErrors) {
-          when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-              .thenAnswer((_) => throw Exception(errorMessage));
-          when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-              .thenAnswer((_) async => uploadedImageUrl);
+          when(
+            mockProfileRepository.uploadProfileImage(
+              testUserId,
+              testImageBytes,
+              testFileExt,
+            ),
+          ).thenAnswer((_) => throw Exception(errorMessage));
+          when(
+            mockProfileRepository.uploadProfileImage(
+              testUserId,
+              testImageBytes,
+              testFileExt,
+            ),
+          ).thenAnswer((_) async => uploadedImageUrl);
 
           // Act & Assert - should retry and eventually succeed
           await viewModel.uploadProfileImage(testImageBytes, testFileExt);
@@ -461,14 +578,16 @@ void main() {
 
           // Reset for next test
           reset(mockProfileRepository);
-          when(mockProfileRepository.updateUserProfile(any)).thenAnswer((_) async => {});
+          when(
+            mockProfileRepository.updateUserProfile(any),
+          ).thenAnswer((_) async => {});
         }
       });
 
       test('should identify non-retryable errors correctly', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        
+
         final nonRetryableErrors = [
           'PlatformException image_picker',
           'permission denied',
@@ -477,47 +596,73 @@ void main() {
 
         // Test each error type
         for (final error in nonRetryableErrors) {
-          when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-              .thenThrow(Exception(error));
+          when(
+            mockProfileRepository.uploadProfileImage(
+              testUserId,
+              testImageBytes,
+              testFileExt,
+            ),
+          ).thenThrow(Exception(error));
 
           // Act & Assert - should not retry
           await viewModel.uploadProfileImage(testImageBytes, testFileExt);
 
           // Should only be called once (no retry)
-          verify(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt)).called(1);
-          
+          verify(
+            mockProfileRepository.uploadProfileImage(
+              testUserId,
+              testImageBytes,
+              testFileExt,
+            ),
+          ).called(1);
+
           // Reset for next test
           reset(mockProfileRepository);
         }
       });
 
-      test('should handle profile update error after successful upload', () async {
-        // Arrange
-        when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenAnswer((_) async => uploadedImageUrl);
-        when(mockProfileRepository.updateUserProfile(any))
-            .thenThrow(Exception('Profile update failed'));
+      test(
+        'should handle profile update error after successful upload',
+        () async {
+          // Arrange
+          when(mockUserRepository.getUserId()).thenReturn(testUserId);
+          when(
+            mockProfileRepository.uploadProfileImage(
+              testUserId,
+              testImageBytes,
+              testFileExt,
+            ),
+          ).thenAnswer((_) async => uploadedImageUrl);
+          when(
+            mockProfileRepository.updateUserProfile(any),
+          ).thenThrow(Exception('Profile update failed'));
 
-        // Act
-        await viewModel.uploadProfileImage(testImageBytes, testFileExt);
+          // Act
+          await viewModel.uploadProfileImage(testImageBytes, testFileExt);
 
-        // Image URL should be updated in memory even if profile update failed
-        // since the upload was successful
-        expect(viewModel.profile.imageUrl, equals(uploadedImageUrl));
-        expect(viewModel.isLoading, false);
-      });
+          // Image URL should be updated in memory even if profile update failed
+          // since the upload was successful
+          expect(viewModel.profile.imageUrl, equals(uploadedImageUrl));
+          expect(viewModel.isLoading, false);
+        },
+      );
 
       test('should set loading state correctly during upload', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockProfileRepository.uploadProfileImage(testUserId, testImageBytes, testFileExt))
-            .thenAnswer((_) async {
-              expect(viewModel.isLoading, true);
-              return uploadedImageUrl;
-            });
-        when(mockProfileRepository.updateUserProfile(any))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.uploadProfileImage(
+            testUserId,
+            testImageBytes,
+            testFileExt,
+          ),
+        ).thenAnswer((_) async {
+          expect(viewModel.isLoading, true);
+          return uploadedImageUrl;
+        });
+        when(
+          mockProfileRepository.updateUserProfile(any),
+        ).thenAnswer((_) async => {});
 
         expect(viewModel.isLoading, false);
 
@@ -543,7 +688,9 @@ void main() {
 
       test('should handle signOut errors gracefully', () {
         // Arrange
-        when(mockUserRepository.signUserOut()).thenThrow(Exception('Sign out failed'));
+        when(
+          mockUserRepository.signUserOut(),
+        ).thenThrow(Exception('Sign out failed'));
 
         // Act & Assert - should throw since signOut doesn't handle errors
         expect(() => viewModel.signOut(), throwsA(isA<Exception>()));
@@ -555,7 +702,7 @@ void main() {
         // Arrange
         final testImageBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
         when(mockUserRepository.getUserId()).thenReturn('user123');
-        
+
         final errorTypes = [
           'PlatformException image_picker',
           'permission denied',
@@ -566,8 +713,9 @@ void main() {
 
         // Test each error type
         for (final error in errorTypes) {
-          when(mockProfileRepository.uploadProfileImage(any, any, any))
-              .thenThrow(Exception(error));
+          when(
+            mockProfileRepository.uploadProfileImage(any, any, any),
+          ).thenThrow(Exception(error));
 
           // Act & Assert
           await viewModel.uploadProfileImage(testImageBytes, 'jpg');
@@ -586,8 +734,9 @@ void main() {
         viewModel.profile.firstName = originalProfile.firstName;
 
         when(mockUserRepository.getUserId()).thenReturn('user123');
-        when(mockProfileRepository.uploadProfileImage(any, any, any))
-            .thenThrow(Exception('Upload failed'));
+        when(
+          mockProfileRepository.uploadProfileImage(any, any, any),
+        ).thenThrow(Exception('Upload failed'));
 
         // Act
         await viewModel.uploadProfileImage(testImageBytes, 'jpg');
@@ -605,11 +754,13 @@ void main() {
         // Arrange
         final emptyProfile = Profile(id: 'empty');
         when(mockUserRepository.getUserId()).thenReturn('empty');
-        when(mockProfileRepository.getUserProfileById('empty'))
-            .thenAnswer((_) async => emptyProfile);
+        when(
+          mockProfileRepository.getUserProfileById('empty'),
+        ).thenAnswer((_) async => emptyProfile);
         when(mockUserRepository.getUserEmail()).thenReturn(null);
-        when(mockProfileRepository.getProfileImageUrl('empty'))
-            .thenAnswer((_) async => null);
+        when(
+          mockProfileRepository.getProfileImageUrl('empty'),
+        ).thenAnswer((_) async => null);
 
         // Act
         final result = await viewModel.loadProfile();
@@ -623,29 +774,44 @@ void main() {
 
       test('should handle extremely large valid image', () async {
         // Arrange
-        final largeValidBytes = Uint8List.fromList(List.filled(9 * 1024 * 1024, 1)); // 9MB (under 10MB limit)
+        final largeValidBytes = Uint8List.fromList(
+          List.filled(9 * 1024 * 1024, 1),
+        ); // 9MB (under 10MB limit)
         when(mockUserRepository.getUserId()).thenReturn('user123');
-        when(mockProfileRepository.uploadProfileImage('user123', largeValidBytes, 'jpg'))
-            .thenAnswer((_) async => 'https://example.com/large.jpg');
-        when(mockProfileRepository.updateUserProfile(any))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.uploadProfileImage(
+            'user123',
+            largeValidBytes,
+            'jpg',
+          ),
+        ).thenAnswer((_) async => 'https://example.com/large.jpg');
+        when(
+          mockProfileRepository.updateUserProfile(any),
+        ).thenAnswer((_) async => {});
 
         // Act
         await viewModel.uploadProfileImage(largeValidBytes, 'jpg');
 
         // Assert
         expect(viewModel.profile.imageUrl, 'https://example.com/large.jpg');
-        verify(mockProfileRepository.uploadProfileImage('user123', largeValidBytes, 'jpg')).called(1);
+        verify(
+          mockProfileRepository.uploadProfileImage(
+            'user123',
+            largeValidBytes,
+            'jpg',
+          ),
+        ).called(1);
       });
 
       test('should handle concurrent operations', () async {
         // Arrange
         final profile1 = Profile(id: 'user1', firstName: 'User1');
         final profile2 = Profile(id: 'user2', firstName: 'User2');
-        
+
         when(mockUserRepository.getUserEmail()).thenReturn('test@example.com');
-        when(mockProfileRepository.updateUserProfile(any))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.updateUserProfile(any),
+        ).thenAnswer((_) async => {});
 
         // Act - start concurrent updates
         await viewModel.updateProfile(profile1);
@@ -654,7 +820,10 @@ void main() {
         // Assert - final state should be consistent
         expect(viewModel.isLoading, false);
         // Profile should be one of the updated profiles
-        expect([profile1.firstName, profile2.firstName], contains(viewModel.profile.firstName));
+        expect([
+          profile1.firstName,
+          profile2.firstName,
+        ], contains(viewModel.profile.firstName));
       });
     });
 
@@ -668,17 +837,22 @@ void main() {
 
         final profile = Profile(id: 'user123');
         when(mockUserRepository.getUserId()).thenReturn('user123');
-        when(mockProfileRepository.getUserProfileById('user123'))
-            .thenAnswer((_) async => profile);
+        when(
+          mockProfileRepository.getUserProfileById('user123'),
+        ).thenAnswer((_) async => profile);
         when(mockUserRepository.getUserEmail()).thenReturn(null);
-        when(mockProfileRepository.getProfileImageUrl('user123'))
-            .thenAnswer((_) async => null);
+        when(
+          mockProfileRepository.getProfileImageUrl('user123'),
+        ).thenAnswer((_) async => null);
 
         // Act
         await viewModel.loadProfile();
 
         // Assert
-        expect(notificationCount, greaterThanOrEqualTo(2)); // At least start and end notifications
+        expect(
+          notificationCount,
+          greaterThanOrEqualTo(2),
+        ); // At least start and end notifications
       });
 
       test('should notify listeners during updateProfile', () async {
@@ -690,14 +864,18 @@ void main() {
 
         final profile = Profile(id: 'user123');
         when(mockUserRepository.getUserEmail()).thenReturn('test@example.com');
-        when(mockProfileRepository.updateUserProfile(profile))
-            .thenAnswer((_) async => {});
+        when(
+          mockProfileRepository.updateUserProfile(profile),
+        ).thenAnswer((_) async => {});
 
         // Act
         await viewModel.updateProfile(profile);
 
         // Assert
-        expect(notificationCount, greaterThanOrEqualTo(2)); // At least start and end notifications
+        expect(
+          notificationCount,
+          greaterThanOrEqualTo(2),
+        ); // At least start and end notifications
       });
 
       test('should notify listeners on signOut', () {

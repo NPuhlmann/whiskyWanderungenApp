@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../domain/models/waypoint.dart';
@@ -45,49 +44,52 @@ enum NavigationStatus {
   started,
   navigating,
   paused,
-  waypoint_reached,
+  waypointReached,
   completed,
   error,
 }
 
 /// Service für Turn-by-Turn Navigation zu Whisky Waypoints
-/// 
+///
 /// Features:
 /// - Automatische Wegpunkt-Navigation
 /// - Turn-by-Turn Instructions
-/// - Waypoint-Erreichung-Erkennung  
+/// - Waypoint-Erreichung-Erkennung
 /// - Audio-Anweisungen Support
 /// - Navigation State Management
 class NavigationService extends ChangeNotifier {
   static NavigationService? _instance;
-  static NavigationService get instance => _instance ??= NavigationService._internal();
-  
+  static NavigationService get instance =>
+      _instance ??= NavigationService._internal();
+
   NavigationService._internal();
 
   final LocationService _locationService = LocationService.instance;
-  
+
   List<Waypoint> _waypoints = [];
   int _currentWaypointIndex = 0;
   NavigationStatus _status = NavigationStatus.idle;
   NavigationInstruction? _currentInstruction;
-  
+
   StreamSubscription<Position>? _positionSubscription;
   Timer? _navigationUpdateTimer;
-  
+
   // Configuration
   static const double _approachingDistanceMeters = 50.0; // 50m = "approaching"
   static const double _arrivedDistanceMeters = 10.0; // 10m = "arrived"
   static const Duration _navigationUpdateInterval = Duration(seconds: 2);
-  
+
   // Getters
   List<Waypoint> get waypoints => List.unmodifiable(_waypoints);
   int get currentWaypointIndex => _currentWaypointIndex;
   NavigationStatus get status => _status;
   NavigationInstruction? get currentInstruction => _currentInstruction;
-  Waypoint? get currentWaypoint => 
-    _currentWaypointIndex < _waypoints.length ? _waypoints[_currentWaypointIndex] : null;
-  Waypoint? get nextWaypoint => 
-    _currentWaypointIndex + 1 < _waypoints.length ? _waypoints[_currentWaypointIndex + 1] : null;
+  Waypoint? get currentWaypoint => _currentWaypointIndex < _waypoints.length
+      ? _waypoints[_currentWaypointIndex]
+      : null;
+  Waypoint? get nextWaypoint => _currentWaypointIndex + 1 < _waypoints.length
+      ? _waypoints[_currentWaypointIndex + 1]
+      : null;
 
   /// Startet die Navigation zu einer Liste von Waypoints
   Future<bool> startNavigation(List<Waypoint> waypoints) async {
@@ -115,7 +117,8 @@ class NavigationService extends ChangeNotifier {
       }
 
       // Sortiere Waypoints nach orderIndex
-      _waypoints = List.from(waypoints)..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+      _waypoints = List.from(waypoints)
+        ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
       _currentWaypointIndex = 0;
 
       // Starte Position Listener
@@ -164,11 +167,11 @@ class NavigationService extends ChangeNotifier {
   Future<void> stopNavigation() async {
     _navigationUpdateTimer?.cancel();
     await _positionSubscription?.cancel();
-    
+
     _waypoints.clear();
     _currentWaypointIndex = 0;
     _currentInstruction = null;
-    
+
     _setStatus(NavigationStatus.idle);
     log('Navigation stopped');
   }
@@ -193,7 +196,8 @@ class NavigationService extends ChangeNotifier {
 
   /// Position Update Handler
   void _onPositionUpdate(Position position) {
-    if (_status == NavigationStatus.idle || _status == NavigationStatus.completed) {
+    if (_status == NavigationStatus.idle ||
+        _status == NavigationStatus.completed) {
       return;
     }
 
@@ -218,8 +222,8 @@ class NavigationService extends ChangeNotifier {
   /// Handler wenn Waypoint erreicht wurde
   void _onWaypointReached(Waypoint waypoint) {
     log('Waypoint reached: ${waypoint.name}');
-    
-    _setStatus(NavigationStatus.waypoint_reached);
+
+    _setStatus(NavigationStatus.waypointReached);
     _generateArrivedInstruction(waypoint);
 
     // Automatisch zum nächsten Waypoint nach kurzer Verzögerung
@@ -277,7 +281,8 @@ class NavigationService extends ChangeNotifier {
       instructionText = 'Sie nähern sich ${currentWp.name} ($distanceText)';
     } else {
       instructionType = NavigationInstructionType.continue_;
-      instructionText = 'Gehen Sie ${directionText} zu ${currentWp.name} ($distanceText, ca. $etaText)';
+      instructionText =
+          'Gehen Sie $directionText zu ${currentWp.name} ($distanceText, ca. $etaText)';
     }
 
     _currentInstruction = NavigationInstruction(
@@ -303,7 +308,8 @@ class NavigationService extends ChangeNotifier {
       distanceToTarget: 0,
       bearingToTarget: 0,
       directionText: '',
-      instructionText: 'Navigation zu ${firstWp.name} gestartet. Folgen Sie den Anweisungen.',
+      instructionText:
+          'Navigation zu ${firstWp.name} gestartet. Folgen Sie den Anweisungen.',
       type: NavigationInstructionType.start,
     );
 
@@ -317,7 +323,8 @@ class NavigationService extends ChangeNotifier {
       distanceToTarget: 0,
       bearingToTarget: 0,
       directionText: '',
-      instructionText: 'Sie haben ${waypoint.name} erreicht! Genießen Sie Ihr Whisky-Tasting.',
+      instructionText:
+          'Sie haben ${waypoint.name} erreicht! Genießen Sie Ihr Whisky-Tasting.',
       type: NavigationInstructionType.arrived,
     );
 
@@ -327,23 +334,26 @@ class NavigationService extends ChangeNotifier {
   /// Generiert Abschluss-Instruction
   void _generateCompletedInstruction() {
     final lastWp = _waypoints.isNotEmpty ? _waypoints.last : null;
-    
+
     _currentInstruction = NavigationInstruction(
-      targetWaypoint: lastWp ?? Waypoint(
-        id: 0, 
-        hikeId: 0,
-        name: 'Ende', 
-        description: '', 
-        latitude: 0, 
-        longitude: 0, 
-        orderIndex: 0,
-        images: [],
-        isVisited: true,
-      ),
+      targetWaypoint:
+          lastWp ??
+          Waypoint(
+            id: 0,
+            hikeId: 0,
+            name: 'Ende',
+            description: '',
+            latitude: 0,
+            longitude: 0,
+            orderIndex: 0,
+            images: [],
+            isVisited: true,
+          ),
       distanceToTarget: 0,
       bearingToTarget: 0,
       directionText: '',
-      instructionText: 'Herzlichen Glückwunsch! Sie haben alle Waypoints erreicht und die Whisky-Wanderung erfolgreich abgeschlossen.',
+      instructionText:
+          'Herzlichen Glückwunsch! Sie haben alle Waypoints erreicht und die Whisky-Wanderung erfolgreich abgeschlossen.',
       type: NavigationInstructionType.finished,
     );
 
@@ -363,11 +373,13 @@ class NavigationService extends ChangeNotifier {
     final totalWaypoints = _waypoints.length;
     final completedWaypoints = _currentWaypointIndex;
     final remainingWaypoints = totalWaypoints - completedWaypoints;
-    
+
     double totalDistanceRemaining = 0;
     if (_locationService.lastKnownPosition != null) {
       for (int i = _currentWaypointIndex; i < _waypoints.length; i++) {
-        final distance = _locationService.calculateDistanceToWaypoint(_waypoints[i]);
+        final distance = _locationService.calculateDistanceToWaypoint(
+          _waypoints[i],
+        );
         if (distance != null) {
           totalDistanceRemaining += distance;
         }
@@ -378,10 +390,14 @@ class NavigationService extends ChangeNotifier {
       'totalWaypoints': totalWaypoints,
       'completedWaypoints': completedWaypoints,
       'remainingWaypoints': remainingWaypoints,
-      'progress': totalWaypoints > 0 ? completedWaypoints / totalWaypoints : 0.0,
+      'progress': totalWaypoints > 0
+          ? completedWaypoints / totalWaypoints
+          : 0.0,
       'status': _status.toString(),
       'totalDistanceRemaining': totalDistanceRemaining,
-      'formattedDistanceRemaining': _locationService.formatDistance(totalDistanceRemaining),
+      'formattedDistanceRemaining': _locationService.formatDistance(
+        totalDistanceRemaining,
+      ),
     };
   }
 

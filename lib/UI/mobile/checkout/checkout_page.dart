@@ -14,10 +14,7 @@ import '../../../config/l10n/app_localizations.dart';
 class CheckoutPage extends StatefulWidget {
   final BasicOrder order;
 
-  const CheckoutPage({
-    super.key,
-    required this.order,
-  });
+  const CheckoutPage({super.key, required this.order});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -25,20 +22,16 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   bool _hasShownSuccessDialog = false;
-  
+
   void _showPaymentSuccessDialog(CheckoutViewModel viewModel) {
     if (_hasShownSuccessDialog) return;
     _hasShownSuccessDialog = true;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        icon: const Icon(
-          Icons.check_circle,
-          color: Colors.green,
-          size: 48,
-        ),
+        icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
         title: const Text('Zahlung erfolgreich!'),
         content: Text(
           'Ihre Bestellung ${viewModel.order.formattedOrderNumber} wurde erfolgreich verarbeitet.',
@@ -90,7 +83,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 _showPaymentSuccessDialog(viewModel);
               });
             }
-            
+
             return Stack(
               children: [
                 // Main content
@@ -104,7 +97,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         label: 'Bestellübersicht',
                         child: OrderSummary(order: widget.order),
                       ),
-                      
+
                       const SizedBox(height: 24),
 
                       // Delivery Address Form (only for shipping orders)
@@ -139,9 +132,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         Semantics(
                           label: 'Zahlungsmethode auswählen',
                           child: MultiPaymentMethodSelector(
-                            selectedPaymentMethod: viewModel.selectedPaymentMethod,
-                            selectedPaymentMethodId: viewModel.selectedPaymentMethodId,
-                            availablePaymentMethods: viewModel.availablePaymentMethods,
+                            selectedPaymentMethod:
+                                viewModel.selectedPaymentMethod,
+                            selectedPaymentMethodId:
+                                viewModel.selectedPaymentMethodId,
+                            availablePaymentMethods:
+                                viewModel.availablePaymentMethods,
                             onPaymentMethodChanged: viewModel.setPaymentMethod,
                           ),
                         ),
@@ -160,14 +156,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             children: [
                               Icon(
                                 Icons.error_outline,
-                                color: Theme.of(context).colorScheme.onErrorContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   viewModel.errorMessage!,
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onErrorContainer,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onErrorContainer,
                                   ),
                                 ),
                               ),
@@ -176,7 +176,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 child: Text(
                                   'Erneut versuchen',
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onErrorContainer,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onErrorContainer,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -210,9 +212,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircularProgressIndicator(
-                            strokeWidth: 3,
-                          ),
+                          CircularProgressIndicator(strokeWidth: 3),
                           SizedBox(height: 16),
                           Text(
                             'Zahlung wird verarbeitet...',

@@ -11,15 +11,21 @@ void main() {
         // Test valid commission rates
         const validRates = [0.0, 0.10, 0.15, 0.20, 0.25, 0.50, 1.0];
         for (final rate in validRates) {
-          expect(rate >= 0 && rate <= 1.0, isTrue, 
-                 reason: 'Rate $rate should be valid (0-100%)');
+          expect(
+            rate >= 0 && rate <= 1.0,
+            isTrue,
+            reason: 'Rate $rate should be valid (0-100%)',
+          );
         }
-        
+
         // Test invalid commission rates
         const invalidRates = [-0.1, -1.0, 1.1, 1.5, 2.0];
         for (final rate in invalidRates) {
-          expect(rate >= 0 && rate <= 1.0, isFalse,
-                 reason: 'Rate $rate should be invalid');
+          expect(
+            rate >= 0 && rate <= 1.0,
+            isFalse,
+            reason: 'Rate $rate should be invalid',
+          );
         }
       });
 
@@ -35,10 +41,13 @@ void main() {
           final base = testCase['base'] as double;
           final rate = testCase['rate'] as double;
           final expected = testCase['expected'] as double;
-          
+
           final calculated = base * rate;
-          expect(calculated, equals(expected),
-                 reason: 'Commission calculation failed for base=$base, rate=$rate');
+          expect(
+            calculated,
+            equals(expected),
+            reason: 'Commission calculation failed for base=$base, rate=$rate',
+          );
         }
       });
     });
@@ -80,9 +89,10 @@ void main() {
           );
 
           expect(
-            commission.expectedCommissionAmount, 
+            commission.expectedCommissionAmount,
             closeTo(testCase['expected'] as double, 0.01),
-            reason: 'Failed for base=${testCase['base']}, rate=${testCase['rate']}',
+            reason:
+                'Failed for base=${testCase['base']}, rate=${testCase['rate']}',
           );
         }
       });
@@ -150,7 +160,7 @@ void main() {
 
         // Calculate totals
         final totalAmount = commissions.fold<double>(
-          0.0, 
+          0.0,
           (sum, commission) => sum + commission.commissionAmount,
         );
         expect(totalAmount, greaterThan(0));
@@ -162,14 +172,19 @@ void main() {
         final paidCommissions = commissions
             .where((c) => c.status == CommissionStatus.paid)
             .length;
-        
-        expect(pendingCommissions + paidCommissions, lessThanOrEqualTo(commissions.length));
+
+        expect(
+          pendingCommissions + paidCommissions,
+          lessThanOrEqualTo(commissions.length),
+        );
 
         // Average commission rate
-        final avgRate = commissions.fold<double>(
-          0.0, 
-          (sum, commission) => sum + commission.commissionRate,
-        ) / commissions.length;
+        final avgRate =
+            commissions.fold<double>(
+              0.0,
+              (sum, commission) => sum + commission.commissionRate,
+            ) /
+            commissions.length;
         expect(avgRate, greaterThan(0));
         expect(avgRate, lessThanOrEqualTo(1.0));
       });
@@ -211,7 +226,7 @@ void main() {
             createdAt: now.subtract(Duration(days: testCase['days'] as int)),
           );
           expect(
-            commission.ageInDays, 
+            commission.ageInDays,
             equals(testCase['expected']),
             reason: 'Failed for ${testCase['days']} days ago',
           );
@@ -245,7 +260,7 @@ void main() {
             status: test['status'] as CommissionStatus,
           );
           expect(
-            commission.statusDisplay, 
+            commission.statusDisplay,
             equals(test['display']),
             reason: 'Status display failed for ${test['status']}',
           );
@@ -262,7 +277,7 @@ void main() {
 
       test('should format time since creation', () {
         final now = DateTime.now();
-        
+
         // Just now
         final justNow = TestHelpers.createTestCommission(createdAt: now);
         expect(justNow.timeSinceCreation, equals('Just now'));
@@ -317,7 +332,7 @@ void main() {
           status: CommissionStatus.pending,
           createdAt: DateTime.now(),
         );
-        
+
         expect(commission, isA<Commission>());
         expect(commission.id, equals(1));
         expect(commission.hikeId, equals(100));
@@ -350,18 +365,16 @@ void main() {
     group('Commission Collection Operations', () {
       test('should group commissions by company', () {
         final commissions = TestHelpers.createSampleCommissions();
-        
+
         // All test commissions should be for the same company
-        final uniqueCompanies = commissions
-            .map((c) => c.companyId)
-            .toSet();
+        final uniqueCompanies = commissions.map((c) => c.companyId).toSet();
         expect(uniqueCompanies.length, equals(1));
         expect(uniqueCompanies.first, equals('company-123'));
       });
 
       test('should group commissions by status', () {
         final commissions = TestHelpers.createSampleCommissions();
-        
+
         final statusGroups = <CommissionStatus, List<Commission>>{};
         for (final commission in commissions) {
           if (!statusGroups.containsKey(commission.status)) {
@@ -372,11 +385,11 @@ void main() {
 
         // Should have multiple status groups
         expect(statusGroups.keys.length, greaterThan(1));
-        
+
         // Each group should contain only commissions with that status
         for (final entry in statusGroups.entries) {
           expect(
-            entry.value.every((c) => c.status == entry.key), 
+            entry.value.every((c) => c.status == entry.key),
             isTrue,
             reason: 'Status group ${entry.key} contains mixed statuses',
           );
@@ -385,19 +398,21 @@ void main() {
 
       test('should filter commissions by date range', () {
         final commissions = TestHelpers.createSampleCommissions();
-        
+
         final startDate = DateTime(2025, 1, 5);
         final endDate = DateTime(2025, 1, 15);
-        
+
         final filteredCommissions = commissions
-            .where((c) => 
-                c.createdAt.isAfter(startDate) && 
-                c.createdAt.isBefore(endDate))
+            .where(
+              (c) =>
+                  c.createdAt.isAfter(startDate) &&
+                  c.createdAt.isBefore(endDate),
+            )
             .toList();
 
         // Should have some commissions in this range
         expect(filteredCommissions.length, greaterThan(0));
-        
+
         // All filtered commissions should be within the date range
         for (final commission in filteredCommissions) {
           expect(commission.createdAt.isAfter(startDate), isTrue);
