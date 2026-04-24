@@ -6,7 +6,7 @@ on:
     types: [published]
 
 env:
-  FLUTTER_VERSION: '3.19.0'
+  FLUTTER_VERSION: '3.41.7'
 
 jobs:
   release-android:
