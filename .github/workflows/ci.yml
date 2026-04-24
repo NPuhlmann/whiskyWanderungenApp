@@ -33,9 +33,11 @@ jobs:
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Analyze code
-        # Warnings are fatal; info-level lints are tracked but do not gate CI.
-        run: flutter analyze --no-fatal-infos
+      - name: Analyze code (lib/ strict; test/ excluded in analysis_options.yaml)
+        run: flutter analyze
+
+      - name: Verify lib/ formatting
+        run: dart format --set-exit-if-changed lib/
 
       - name: Run smoke tests
         # The broader test suite is under burn-down (drifted mocks/fixtures);
@@ -219,7 +221,7 @@ jobs:
   notify:
     name: Notify Results
     runs-on: ubuntu-latest
-    needs: [test, build-android, build-ios, security-scan, dependency-check]
+    needs: [test, build-android, build-ios, build-web, security-scan, dependency-check]
     if: always()
     
     steps:
