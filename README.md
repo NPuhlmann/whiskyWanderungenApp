@@ -43,34 +43,67 @@ whisky_hikes/
 
 ### Voraussetzungen
 
-- **Flutter SDK**: Version 3.27.0 oder höher
-- **Dart SDK**: Version 3.9.0 oder höher
+- **Flutter SDK**: `3.41.7` (Pin in `.github/workflows/*.yml` via `FLUTTER_VERSION`). Mindestanforderung: `>=3.35.1` (pubspec `environment.flutter`).
+- **Dart SDK**: `3.11.5` (kommt mit Flutter 3.41.7). Mindestanforderung: `^3.9.0`.
 - **Android Studio** oder **VS Code** mit Flutter-Plugin
 - **Git**
-- **Terraform** (für Supabase-Deployment)
+- **Terraform** (nur für Supabase-Provisioning; für App-Dev nicht nötig)
 
-### Installation
+### Ein-Befehl Bootstrap
+
+Nach `git clone` reicht aus frischem Stand heraus:
+
+```bash
+cp .env.example .env \
+  && flutter pub get \
+  && dart run build_runner build --delete-conflicting-outputs \
+  && flutter run
+```
+
+`.env` ist nötig, weil `pubspec.yaml` `.env` als Flutter-Asset registriert. Die mitgelieferte `.env.example` enthält nur öffentlich sichere Platzhalter — für echte Supabase-/Stripe-Keys siehe den `🔧 Umgebungsvariablen`-Abschnitt unten.
+
+### Installationsschritte (manuell)
 
 1. **Repository klonen**
    ```bash
    git clone <repository-url>
-   cd whisky_hikes
+   cd whiskyWanderungenApp
    ```
 
-2. **Flutter-Dependencies installieren**
+2. **`.env` vorbereiten**
+   ```bash
+   cp .env.example .env
+   # danach echte Werte in .env eintragen
+   ```
+
+3. **Flutter-Dependencies installieren**
    ```bash
    flutter pub get
    ```
 
-3. **Code generieren**
+4. **Code generieren (Freezed / JSON / Mocks)**
    ```bash
-   flutter packages pub run build_runner build --delete-conflicting-outputs
+   dart run build_runner build --delete-conflicting-outputs
    ```
 
-4. **App starten**
+5. **App starten**
    ```bash
    flutter run
    ```
+
+### Häufig gebrauchte Kommandos
+
+| Befehl | Zweck |
+| --- | --- |
+| `flutter pub get` | Dependencies installieren |
+| `dart run build_runner build --delete-conflicting-outputs` | Codegen (Freezed, JSON, Mockito) einmalig ausführen |
+| `dart run build_runner watch` | Codegen im Watch-Modus |
+| `flutter analyze --no-fatal-infos` | Statische Analyse (CI-Modus — Warnings fatal, Infos informativ) |
+| `flutter test test/widget_test.dart` | Adoption-Smoke-Test (CI-Gate) |
+| `dart fix --apply` | Automatische Lint-Fixes anwenden |
+| `flutter run` | App im Dev-Modus starten |
+| `flutter build apk --debug` | Android Debug-APK bauen |
+| `flutter build ios --debug --no-codesign` | iOS Debug-Build (ohne Signing) |
 
 ### Entwicklungsumgebung einrichten
 
@@ -192,28 +225,38 @@ Alternativ kannst du Supabase über das Dashboard einrichten:
 
 ## 🧪 Testing
 
-### Tests ausführen
+### CI-Gate (aktueller Stand)
+
+CI (`.github/workflows/ci.yml`) gatet aktuell auf zwei Signale:
+
+- `flutter analyze --no-fatal-infos` (Warnings fatal, Infos nicht blockierend)
+- `flutter test test/widget_test.dart` (Adoption-Smoke-Test gegen das Freezed-`Hike`-Modell)
+
+Der breitere Testbaum (`test/UI/`, `test/data/`, `test/integration/`, `test/repositories/`, `test/services/`) ist gegen die aktuellen Produktions-Signaturen gedriftet — Mocks und Fixtures stammen aus früheren Refactors. Diese Bereiche sind aktuell aus `flutter analyze` ausgeschlossen (`analysis_options.yaml`) und werden im Follow-up-Burn-down-Ticket wieder reaktiviert.
+
+### Tests lokal ausführen
 
 ```bash
-# Alle Tests
+# Nur der CI-Smoke-Test (garantiert grün)
+flutter test test/widget_test.dart
+
+# Gesamter Baum — bricht aktuell wegen Drift in mehreren Ordnern
 flutter test
 
-# Nur Unit Tests
+# Einzelner Ordner (sobald der Burn-down die Mocks reconciled hat)
 flutter test test/domain/
 
-# Nur UI Tests
-flutter test test/UI/
-
 # Mit Coverage
-flutter test --coverage
+flutter test test/widget_test.dart --coverage
 ```
 
 ### Test-Struktur
 
-- **Unit Tests**: `test/domain/` und `test/data/`
-- **Widget Tests**: `test/UI/`
-- **Integration Tests**: `test/integration/`
-- **Mocks**: `test/mocks/`
+- **Smoke / CI-Gate**: `test/widget_test.dart`
+- **Unit Tests**: `test/domain/` und `test/data/` — *unter Burn-down, z. T. gedriftet*
+- **Widget Tests**: `test/UI/` — *unter Burn-down*
+- **Integration Tests**: `test/integration/` — *unter Burn-down*
+- **Mocks**: `test/mocks/` — per `@GenerateMocks` neu generieren nach Signatur-Angleichung
 
 ## 📱 Build & Release
 
@@ -277,14 +320,19 @@ Die CI/CD Pipeline erstellt automatisch Release-Builds:
 
 ## 🔄 CI/CD Pipeline
 
-### Automatische Tests
+### `.github/workflows/ci.yml`
 
-Bei jedem Push auf `main` oder `develop`:
-- ✅ Flutter Tests (Unit, Widget, Integration)
-- ✅ Code-Analyse und Formatierung
-- ✅ Security Scans mit Trivy
-- ✅ Multi-Platform Builds (Android, iOS, Web)
-- ✅ Dependency-Checks
+Bei jedem Push/PR auf `main` bzw. PR auf `main`:
+
+- `test` — `flutter analyze --no-fatal-infos` + `flutter test test/widget_test.dart` (Adoption-Smoke-Test).
+- `security-scan` — Trivy FS-Scan + SARIF-Upload.
+- `build-android` — `flutter build apk --debug` und `appbundle --debug` als Artifacts.
+- `build-ios` — `flutter build ios --debug --no-codesign` auf `macos-latest`.
+- `build-web` — **deaktiviert** (`if: false`), bis die Drift unter `lib/UI/web/**` im Burn-down-Ticket reconciled ist.
+- `dependency-check` — `flutter pub outdated` + `flutter pub deps --style=tree`.
+- `notify` — fasst den Gesamtstatus zusammen (`needs: test, build-android, build-ios, security-scan, dependency-check`).
+
+Flutter-Version kommt aus dem `FLUTTER_VERSION` Env im jeweiligen Workflow (`3.41.7`).
 
 ### Release-Workflow
 
