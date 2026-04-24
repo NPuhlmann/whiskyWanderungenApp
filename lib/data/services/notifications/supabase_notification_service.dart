@@ -44,7 +44,7 @@ class SupabaseNotificationService {
     );
 
     await _localNotifications.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
   }
@@ -126,10 +126,10 @@ class SupabaseNotificationService {
       );
 
       await _localNotifications.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        'Bestellstatus aktualisiert',
-        'Deine Bestellung #$orderNumber hat den Status: $newStatus',
-        details,
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        title: 'Bestellstatus aktualisiert',
+        body: 'Deine Bestellung #$orderNumber hat den Status: $newStatus',
+        notificationDetails: details,
         payload: 'order_$orderNumber',
       );
 
@@ -176,10 +176,10 @@ class SupabaseNotificationService {
       );
 
       await _localNotifications.show(
-        DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        title,
-        body,
-        details,
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        title: title,
+        body: body,
+        notificationDetails: details,
         payload: payload,
       );
 

@@ -187,7 +187,7 @@ class CommissionExportService {
       }
 
       // Convert to CSV string
-      return const ListToCsvConverter().convert(csvData);
+      return csv.encode(csvData);
     } catch (e) {
       log('Error generating commission CSV: $e');
       rethrow;
