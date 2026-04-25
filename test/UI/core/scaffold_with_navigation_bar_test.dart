@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/UI/core/scaffold_with_navigation_bar.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 
+// ignore: must_be_immutable
 class MockStatefulNavigationShell extends Mock
     implements StatefulNavigationShell {
   @override

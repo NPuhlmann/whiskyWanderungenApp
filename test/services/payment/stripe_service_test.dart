@@ -1,13 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:whisky_hikes/data/services/payment/stripe_service.dart';
 
 void main() {
   group('StripeService', () {
-    late StripeService stripeService;
-
-    setUp(() async {
-      stripeService = StripeService.instance;
-    });
+    // Real coverage requires `StripeService.instance` plus a Stripe
+    // publishable key from the test env. Reintroduce when WHI-6 wires
+    // checkout against a fixture; until then these are placeholders.
 
     group('Initialization', () {
       test('should initialize Stripe with publishable key', () async {
