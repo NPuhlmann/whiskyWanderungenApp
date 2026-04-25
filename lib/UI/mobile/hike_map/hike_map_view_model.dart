@@ -235,8 +235,9 @@ class HikeMapViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _waypoints =
-          List.from(await waypointRepository.getWaypointsForHike(hikeId));
+      _waypoints = List.from(
+        await waypointRepository.getWaypointsForHike(hikeId),
+      );
 
       if (_waypoints.isEmpty || _hasOverlappingCoordinates()) {
         _generateTestWaypoints();

@@ -131,9 +131,7 @@ class _HikeMapViewState extends State<HikeMapView> {
                     polylines: [
                       Polyline(
                         points: waypoints
-                            .map(
-                              (w) => LatLng(w.latitude, w.longitude),
-                            )
+                            .map((w) => LatLng(w.latitude, w.longitude))
                             .toList(),
                         color: Colors.blue,
                         strokeWidth: 3.0,
@@ -141,7 +139,10 @@ class _HikeMapViewState extends State<HikeMapView> {
                     ],
                   ),
                   MarkerLayer(
-                    markers: _buildMarkers(waypoints, viewModel.selectedWaypoint),
+                    markers: _buildMarkers(
+                      waypoints,
+                      viewModel.selectedWaypoint,
+                    ),
                   ),
                 ],
               ),
@@ -151,7 +152,8 @@ class _HikeMapViewState extends State<HikeMapView> {
                   viewModel.locationPermissionStatus ==
                       LocationPermissionStatus.denied)
                 _LocationPermissionBanner(
-                  isPermanentlyDenied: viewModel.locationPermissionStatus ==
+                  isPermanentlyDenied:
+                      viewModel.locationPermissionStatus ==
                       LocationPermissionStatus.deniedForever,
                 ),
               // Zoom controls
@@ -203,8 +205,9 @@ class _HikeMapViewState extends State<HikeMapView> {
                   child: _PoiPreviewCard(
                     waypoint: viewModel.selectedWaypoint!,
                     onClose: () => viewModel.selectWaypoint(null),
-                    onToggleVisited: () =>
-                        viewModel.toggleWaypointVisited(viewModel.selectedWaypoint!),
+                    onToggleVisited: () => viewModel.toggleWaypointVisited(
+                      viewModel.selectedWaypoint!,
+                    ),
                   ),
                 ),
             ],
@@ -243,7 +246,8 @@ class _HikeMapViewState extends State<HikeMapView> {
         height: size + 14,
         point: LatLng(waypoint.latitude, waypoint.longitude),
         child: GestureDetector(
-          onTap: () => context.read<HikeMapViewModel>().selectWaypoint(waypoint),
+          onTap: () =>
+              context.read<HikeMapViewModel>().selectWaypoint(waypoint),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -258,7 +262,7 @@ class _HikeMapViewState extends State<HikeMapView> {
                             color: Colors.amber.withValues(alpha: 0.6),
                             blurRadius: 8,
                             spreadRadius: 2,
-                          )
+                          ),
                         ]
                       : null,
                 ),
@@ -351,8 +355,8 @@ class _PoiPreviewCard extends StatelessWidget {
                   child: Text(
                     waypoint.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -396,7 +400,9 @@ class _PoiPreviewCard extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 icon: Icon(
-                  waypoint.isVisited ? Icons.check_circle : Icons.circle_outlined,
+                  waypoint.isVisited
+                      ? Icons.check_circle
+                      : Icons.circle_outlined,
                 ),
                 label: Text(
                   waypoint.isVisited
@@ -404,8 +410,9 @@ class _PoiPreviewCard extends StatelessWidget {
                       : 'Als besucht markieren',
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      waypoint.isVisited ? Colors.green : Colors.red,
+                  backgroundColor: waypoint.isVisited
+                      ? Colors.green
+                      : Colors.red,
                   foregroundColor: Colors.white,
                 ),
                 onPressed: onToggleVisited,

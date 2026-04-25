@@ -87,7 +87,10 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.amber700,
-          minimumSize: const Size(AppTouchTargets.minimum, AppTouchTargets.minimum),
+          minimumSize: const Size(
+            AppTouchTargets.minimum,
+            AppTouchTargets.minimum,
+          ),
           textStyle: AppTextStyles.labelLarge,
         ),
       ),
@@ -115,9 +118,7 @@ abstract final class AppTheme {
           vertical: AppSpacing.md,
         ),
         labelStyle: AppTextStyles.bodyMedium,
-        hintStyle: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.peat300,
-        ),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.peat300),
       ),
 
       // --- Bottom Navigation ---
