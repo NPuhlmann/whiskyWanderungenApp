@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:whisky_hikes/data/services/notifications/supabase_notification_service.dart';
 import 'package:whisky_hikes/domain/models/notification_model.dart';
 
 void main() {

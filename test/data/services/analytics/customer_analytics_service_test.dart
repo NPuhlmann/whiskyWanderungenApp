@@ -99,7 +99,7 @@ void main() {
 
         Map<String, int> customersByLocation = {};
         for (var customer in customers) {
-          final location = customer['location'] as String?;
+          final location = customer['location'];
           if (location != null && location.isNotEmpty) {
             customersByLocation[location] =
                 (customersByLocation[location] ?? 0) + 1;
@@ -121,7 +121,7 @@ void main() {
 
         Map<String, int> customersByLocation = {};
         for (var customer in customers) {
-          final location = customer['location'] as String?;
+          final location = customer['location'];
           if (location != null && location.isNotEmpty) {
             customersByLocation[location] =
                 (customersByLocation[location] ?? 0) + 1;

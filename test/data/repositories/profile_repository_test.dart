@@ -268,8 +268,9 @@ void main() {
         when(mockLocalCacheService.getCachedProfileData(testUserId)).thenAnswer(
           (_) async {
             callCount++;
-            if (callCount == 1)
+            if (callCount == 1) {
               return null; // First call returns null (cache miss)
+            }
             return expiredProfile; // Second call returns expired profile
           },
         );
