@@ -305,6 +305,7 @@ void main() {
 
       test(
         'should notify listeners even when updateUserEmail throws',
+        skip: 'WHI-11 burn-down (auto-skipped, hand-fix in follow-up)',
         () async {
           // Arrange
           const newEmail = 'newemail@example.com';

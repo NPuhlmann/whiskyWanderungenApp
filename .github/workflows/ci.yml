@@ -39,10 +39,11 @@ jobs:
       - name: Verify lib/ formatting
         run: dart format --set-exit-if-changed lib/
 
-      - name: Run smoke tests
-        # The broader test suite is under burn-down (drifted mocks/fixtures);
-        # CI gates on the repo-adoption smoke test for now.
-        run: flutter test test/widget_test.dart
+      - name: Run tests
+        # WHI-11 slice 4 burned the broken/drifted scaffolds down to zero.
+        # 49 still-fragile tests are skip-marked in-tree with WHI-11
+        # references; flipping a skip back on requires a real fix.
+        run: flutter test
 
   security-scan:
     name: Security Scan

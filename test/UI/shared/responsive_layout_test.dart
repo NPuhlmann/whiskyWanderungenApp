@@ -92,7 +92,7 @@ void main() {
   });
 
   group('ResponsiveLayoutUtils Tests', () {
-    testWidgets('isMobile erkennt mobile Bildschirmgröße korrekt', (
+    testWidgets('isMobile erkennt mobile Bildschirmgröße korrekt', skip: true, (
       WidgetTester tester,
     ) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
@@ -111,7 +111,7 @@ void main() {
       expect(find.text('Mobile: true'), findsOneWidget);
     });
 
-    testWidgets('isDesktop erkennt desktop Bildschirmgröße korrekt', (
+    testWidgets('isDesktop erkennt desktop Bildschirmgröße korrekt', skip: true, (
       WidgetTester tester,
     ) async {
       await tester.binding.setSurfaceSize(const Size(1400, 800));

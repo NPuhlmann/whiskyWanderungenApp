@@ -16,9 +16,6 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/*.mocks.dart"
     - "lib/config/l10n/app_localizations*.dart"
-    # Test suite remains excluded under the WHI-11 burn-down ticket — mocks
-    # and fixtures drifted against current production models (~500 errors).
-    - "test/**"
   errors:
     # .env is created locally from .env.example (flutter_dotenv). assets/icons/
     # is a placeholder; reintroduce files before re-tightening this to warning.
