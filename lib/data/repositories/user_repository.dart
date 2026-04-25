@@ -60,4 +60,9 @@ class UserRepository extends ChangeNotifier {
     await _authService.updateUserEmail(newEmail);
     notifyListeners();
   }
+
+  /// Public re-fire of `notifyListeners` for callers that need to nudge the
+  /// router redirect after an external auth event (e.g. magic-link OTP
+  /// completing inside a widget).
+  void signalAuthChanged() => notifyListeners();
 }

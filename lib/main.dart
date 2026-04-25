@@ -8,6 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:async';
 import 'config/dependencies.dart';
 import 'config/lifecycle/app_lifecycle_manager.dart';
+import 'config/theme/app_theme.dart';
+import 'data/services/cache/age_gate_service.dart';
 import 'data/services/payment/multi_payment_service.dart';
 import 'data/services/offline/offline_service.dart';
 import 'data/services/cache/local_cache_service.dart';
@@ -34,7 +36,16 @@ void main() async {
     // Continue app startup even if payment initialization fails
   }
 
-  runApp(MultiProvider(providers: providers, child: const MyApp()));
+  // Initialize age gate before runApp so router redirect can read it synchronously
+  final ageGateService = AgeGateService();
+  await ageGateService.init();
+
+  runApp(
+    MultiProvider(
+      providers: buildProviders(ageGateService),
+      child: const MyApp(),
+    ),
+  );
 }
 
 /// Ensures HTTPS is used for Supabase URL
@@ -137,7 +148,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: router(context.read()),
+      routerConfig: router(context.read(), context.read()),
       title: 'Whisky Hikes',
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -146,14 +157,8 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
     );
   }

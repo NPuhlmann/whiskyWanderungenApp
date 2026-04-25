@@ -617,6 +617,7 @@ class OrderTrackingPage extends StatelessWidget {
   Color _getBasicStatusColor(BuildContext context, basic.OrderStatus status) {
     switch (status) {
       case basic.OrderStatus.pending:
+      case basic.OrderStatus.pendingManual:
         return Theme.of(context).colorScheme.tertiary;
       case basic.OrderStatus.confirmed:
       case basic.OrderStatus.processing:
@@ -635,6 +636,8 @@ class OrderTrackingPage extends StatelessWidget {
     switch (status) {
       case basic.OrderStatus.pending:
         return 'Ausstehend';
+      case basic.OrderStatus.pendingManual:
+        return 'Manuelle Bearbeitung';
       case basic.OrderStatus.confirmed:
         return 'Bestätigt';
       case basic.OrderStatus.processing:

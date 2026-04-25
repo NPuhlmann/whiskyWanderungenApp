@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
+import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'login_page_view_model.dart';
 
@@ -83,6 +84,16 @@ class _LoginPageState extends State<LoginPage> {
                 context.go("/signUp");
               },
               child: Text(AppLocalizations.of(context)!.signup),
+            ),
+          ),
+
+          const Divider(height: 32),
+
+          Center(
+            child: TextButton.icon(
+              onPressed: () => context.push(Routes.magicLink),
+              icon: const Icon(Icons.link),
+              label: const Text('Sign in with Magic Link'),
             ),
           ),
         ],
