@@ -15,7 +15,9 @@ abstract final class Routes {
   static const magicLink = '/magic-link';
   static const magicLinkVerify = '/magic-link-verify';
 
-  // Payment routes
+  // Cart + payment routes
+  static const cart = '/cart';
+  static const stubCheckout = '/stub-checkout';
   static const checkout = '/checkout';
   static const paymentSuccess = '/payment-success';
   static const paymentFailed = '/payment-failed';

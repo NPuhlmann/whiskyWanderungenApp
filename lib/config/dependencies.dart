@@ -8,6 +8,7 @@ import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 import 'package:whisky_hikes/data/repositories/hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/waypoint_repository.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
+import 'package:whisky_hikes/data/providers/cart_provider.dart';
 
 import '../UI/mobile/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
@@ -71,6 +72,9 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
         supabaseClient: null, // Will use default Supabase.instance.client
         stripeService: null, // Will use StripeService.instance
       ),
+    ),
+    ChangeNotifierProvider<CartProvider>(
+      create: (_) => CartProvider(),
     ),
 
     // Dann alle ViewModels

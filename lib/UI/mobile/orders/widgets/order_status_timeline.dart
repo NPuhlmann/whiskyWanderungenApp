@@ -334,6 +334,8 @@ class OrderStatusTimeline extends StatelessWidget {
     switch (status) {
       case OrderStatus.pending:
         return 'Bestellung eingegangen';
+      case OrderStatus.pendingManual:
+        return 'Manuelle Bearbeitung';
       case OrderStatus.confirmed:
         return 'Bestellung bestätigt';
       case OrderStatus.processing:
@@ -378,6 +380,8 @@ class OrderStatusTimeline extends StatelessWidget {
     switch (status) {
       case OrderStatus.pending:
         return 'Deine Bestellung wurde erfolgreich aufgegeben';
+      case OrderStatus.pendingManual:
+        return 'Deine Bestellung wird manuell bearbeitet';
       case OrderStatus.confirmed:
         return 'Zahlung bestätigt, Bestellung wird vorbereitet';
       case OrderStatus.processing:

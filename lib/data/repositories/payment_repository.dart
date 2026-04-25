@@ -342,6 +342,47 @@ class PaymentRepository {
     }
   }
 
+  /// Create a stub order with status pendingManual — no payment processing.
+  Future<BasicOrder> createStubOrder({
+    required int hikeId,
+    required String userId,
+    required double amount,
+    required DeliveryType deliveryType,
+    Map<String, dynamic>? deliveryAddress,
+  }) async {
+    try {
+      _validateCreateOrderParams(hikeId, userId, amount);
+      final orderNumber = _generateOrderNumber();
+
+      dev.log('🔄 Creating stub order $orderNumber...');
+
+      final orderData = {
+        'order_number': orderNumber,
+        'hike_id': hikeId,
+        'user_id': userId,
+        'total_amount': amount,
+        'delivery_type': deliveryType.name,
+        'status': OrderStatus.pendingManual.name,
+        'created_at': DateTime.now().toIso8601String(),
+        'delivery_address': ?deliveryAddress,
+      };
+
+      final response = await _supabaseClient
+          .from('orders')
+          .insert(orderData)
+          .select()
+          .single();
+
+      dev.log('✅ Stub order $orderNumber created');
+      return BasicOrder.fromJson(response);
+    } catch (e) {
+      dev.log('❌ Error creating stub order: $e');
+      if (e is PostgrestException) rethrow;
+      if (e is ArgumentError) rethrow;
+      throw Exception('Failed to create stub order: $e');
+    }
+  }
+
   /// Generate unique order number
   String _generateOrderNumber() {
     final now = DateTime.now();

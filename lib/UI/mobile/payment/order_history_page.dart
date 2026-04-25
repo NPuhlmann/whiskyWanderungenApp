@@ -282,6 +282,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         textColor = Colors.orange.shade700;
         text = 'Ausstehend';
         break;
+      case OrderStatus.pendingManual:
+        backgroundColor = Colors.amber.withValues(alpha: 0.2);
+        textColor = Colors.amber.shade800;
+        text = 'Manuelle Bearbeitung';
+        break;
       case OrderStatus.confirmed:
         backgroundColor = Colors.blue.withValues(alpha: 0.2);
         textColor = Colors.blue.shade700;

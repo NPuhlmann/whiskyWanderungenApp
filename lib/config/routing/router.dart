@@ -14,7 +14,9 @@ import 'package:whisky_hikes/UI/mobile/home/home_page.dart';
 import 'package:whisky_hikes/UI/mobile/my_hikes/my_hikes_page.dart';
 import 'package:whisky_hikes/UI/mobile/profile/profile_page.dart';
 import 'package:whisky_hikes/UI/mobile/profile/profile_view_model.dart';
+import 'package:whisky_hikes/UI/mobile/cart/cart_page.dart';
 import 'package:whisky_hikes/UI/mobile/checkout/checkout_page.dart';
+import 'package:whisky_hikes/UI/mobile/checkout/stub_checkout_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/payment_success_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/payment_failed_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/order_history_page.dart';
@@ -194,7 +196,28 @@ GoRouter router(
           ],
         ),
 
-        // Payment routes - outside of the shell navigation
+        // Cart + payment routes — outside of the shell navigation
+        GoRoute(
+          path: Routes.cart,
+          name: 'cart',
+          builder: (context, state) => const CartPage(),
+        ),
+        GoRoute(
+          path: Routes.stubCheckout,
+          name: 'stub-checkout',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>? ?? {};
+            final deliveryType =
+                extra['deliveryType'] as DeliveryType? ??
+                DeliveryType.standardShipping;
+            final totalAmount =
+                (extra['totalAmount'] as num?)?.toDouble() ?? 0.0;
+            return StubCheckoutPage(
+              deliveryType: deliveryType,
+              totalAmount: totalAmount,
+            );
+          },
+        ),
         GoRoute(
           path: Routes.checkout,
           name: 'checkout',
