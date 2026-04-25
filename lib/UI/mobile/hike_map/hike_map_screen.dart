@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../domain/models/waypoint.dart';
 import '../../../data/repositories/waypoint_repository.dart';
+import '../poi_details/poi_details_page.dart';
 import 'hike_map_view_model.dart';
 
 class HikeMapScreen extends StatelessWidget {
@@ -204,7 +205,16 @@ class _HikeMapViewState extends State<HikeMapView> {
                     waypoint: viewModel.selectedWaypoint!,
                     onClose: () => viewModel.selectWaypoint(null),
                     onToggleVisited: () =>
-                        viewModel.toggleWaypointVisited(viewModel.selectedWaypoint!),
+                        viewModel.toggleWaypointVisited(
+                          viewModel.selectedWaypoint!,
+                        ),
+                    onViewDetails: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PoiDetailsPage(
+                          waypoint: viewModel.selectedWaypoint!,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
             ],
@@ -309,11 +319,13 @@ class _PoiPreviewCard extends StatelessWidget {
   final Waypoint waypoint;
   final VoidCallback onClose;
   final VoidCallback onToggleVisited;
+  final VoidCallback onViewDetails;
 
   const _PoiPreviewCard({
     required this.waypoint,
     required this.onClose,
     required this.onToggleVisited,
+    required this.onViewDetails,
   });
 
   @override
@@ -392,24 +404,42 @@ class _PoiPreviewCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: Icon(
-                  waypoint.isVisited ? Icons.check_circle : Icons.circle_outlined,
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: Icon(
+                      waypoint.isVisited
+                          ? Icons.check_circle
+                          : Icons.circle_outlined,
+                    ),
+                    label: Text(
+                      waypoint.isVisited
+                          ? 'Besucht'
+                          : 'Markieren',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          waypoint.isVisited ? Colors.green : Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: onToggleVisited,
+                  ),
                 ),
-                label: Text(
-                  waypoint.isVisited
-                      ? 'Als unbesucht markieren'
-                      : 'Als besucht markieren',
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.local_bar),
+                    label: const Text('Whisky Details'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFC8860A),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: onViewDetails,
+                  ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      waypoint.isVisited ? Colors.green : Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: onToggleVisited,
-              ),
+              ],
             ),
           ],
         ),
