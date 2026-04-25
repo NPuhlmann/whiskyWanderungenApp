@@ -7,6 +7,14 @@ abstract final class Routes {
   static const hikeDetails = '/hikeDetails';
   static const hikeMap = '/hikeMap';
 
+  // Age gate routes
+  static const ageGate = '/age-gate';
+  static const ageBlocked = '/age-blocked';
+
+  // Magic link auth routes
+  static const magicLink = '/magic-link';
+  static const magicLinkVerify = '/magic-link-verify';
+
   // Payment routes
   static const checkout = '/checkout';
   static const paymentSuccess = '/payment-success';

@@ -13,6 +13,7 @@ import '../UI/mobile/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
+import '../data/services/cache/age_gate_service.dart';
 import '../data/services/cache/local_cache_service.dart';
 import '../data/services/offline/offline_service.dart';
 import '../data/services/database/backend_api.dart';
@@ -24,8 +25,11 @@ import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-List<SingleChildWidget> get providers {
+List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
   return [
+    // Age gate — pre-initialized before runApp
+    ChangeNotifierProvider<AgeGateService>.value(value: ageGateService),
+
     // Services zuerst bereitstellen
     Provider<AuthService>(create: (_) => AuthService()),
     Provider<BackendApiService>(create: (_) => BackendApiService()),
