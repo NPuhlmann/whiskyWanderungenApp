@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
@@ -42,7 +43,6 @@ class _HikeMapViewState extends State<HikeMapView> {
     super.initState();
     _mapController = MapController();
 
-    // Wegpunkte beim Start laden
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HikeMapViewModel>().loadWaypoints();
     });
@@ -52,12 +52,6 @@ class _HikeMapViewState extends State<HikeMapView> {
   void dispose() {
     _mapController.dispose();
     super.dispose();
-  }
-
-  // Hilfsmethode zum Aktualisieren der Karte
-  void _updateMapView() {
-    if (!mounted) return;
-    setState(() {});
   }
 
   @override
@@ -88,14 +82,12 @@ class _HikeMapViewState extends State<HikeMapView> {
 
           final waypoints = viewModel.waypoints;
 
-          // Wenn keine Wegpunkte vorhanden sind
           if (waypoints.isEmpty) {
             return const Center(
               child: Text('Keine Wegpunkte für diese Wanderung vorhanden.'),
             );
           }
 
-          // Berechne den Mittelpunkt aller Wegpunkte für die initiale Kartenansicht
           LatLng centerPoint;
           try {
             final centerLat =
@@ -106,7 +98,6 @@ class _HikeMapViewState extends State<HikeMapView> {
                 waypoints.length;
             centerPoint = LatLng(centerLat, centerLng);
           } catch (e) {
-            // Fallback für Deutschland, falls ein Fehler auftritt
             centerPoint = const LatLng(51.1657, 10.4515);
           }
 
@@ -123,14 +114,8 @@ class _HikeMapViewState extends State<HikeMapView> {
                     enableMultiFingerGestureRace: true,
                     flags: InteractiveFlag.all,
                   ),
-                  onMapEvent: (event) {
-                    // Aktualisiere die Ansicht bei Zoom-Änderungen
-                    if (event is MapEventMoveEnd) {
-                      _updateMapView();
-                    }
-                  },
-                  onTap: (_, point) {
-                    // Schließe offene Popups, wenn auf die Karte getippt wird
+                  onTap: (tap, point) {
+                    viewModel.selectWaypoint(null);
                   },
                 ),
                 children: [
@@ -142,14 +127,12 @@ class _HikeMapViewState extends State<HikeMapView> {
                     maxZoom: 19,
                     tileProvider: NetworkTileProvider(),
                   ),
-                  MarkerLayer(markers: _buildMarkers(waypoints)),
                   PolylineLayer(
                     polylines: [
                       Polyline(
                         points: waypoints
                             .map(
-                              (waypoint) =>
-                                  LatLng(waypoint.latitude, waypoint.longitude),
+                              (w) => LatLng(w.latitude, w.longitude),
                             )
                             .toList(),
                         color: Colors.blue,
@@ -157,24 +140,36 @@ class _HikeMapViewState extends State<HikeMapView> {
                       ),
                     ],
                   ),
+                  MarkerLayer(
+                    markers: _buildMarkers(waypoints, viewModel.selectedWaypoint),
+                  ),
                 ],
               ),
-              // Zoom-Steuerelemente
+              // Permission denied banner
+              if (viewModel.locationPermissionStatus ==
+                      LocationPermissionStatus.deniedForever ||
+                  viewModel.locationPermissionStatus ==
+                      LocationPermissionStatus.denied)
+                _LocationPermissionBanner(
+                  isPermanentlyDenied: viewModel.locationPermissionStatus ==
+                      LocationPermissionStatus.deniedForever,
+                ),
+              // Zoom controls
               Positioned(
                 right: 16,
-                bottom: 100,
+                bottom: viewModel.selectedWaypoint != null ? 220 : 100,
                 child: Column(
                   children: [
                     FloatingActionButton.small(
                       heroTag: 'zoomIn',
-                      backgroundColor: Colors.white.withValues(alpha: 0.8),
+                      backgroundColor: Colors.white.withValues(alpha: 0.9),
                       foregroundColor: Colors.black,
                       onPressed: () {
-                        final currentZoom = _mapController.camera.zoom;
-                        if (currentZoom < 18.0) {
+                        final zoom = _mapController.camera.zoom;
+                        if (zoom < 18.0) {
                           _mapController.move(
                             _mapController.camera.center,
-                            currentZoom + 1.0,
+                            zoom + 1.0,
                           );
                         }
                       },
@@ -183,14 +178,14 @@ class _HikeMapViewState extends State<HikeMapView> {
                     const SizedBox(height: 8),
                     FloatingActionButton.small(
                       heroTag: 'zoomOut',
-                      backgroundColor: Colors.white.withValues(alpha: 0.8),
+                      backgroundColor: Colors.white.withValues(alpha: 0.9),
                       foregroundColor: Colors.black,
                       onPressed: () {
-                        final currentZoom = _mapController.camera.zoom;
-                        if (currentZoom > 3.0) {
+                        final zoom = _mapController.camera.zoom;
+                        if (zoom > 3.0) {
                           _mapController.move(
                             _mapController.camera.center,
-                            currentZoom - 1.0,
+                            zoom - 1.0,
                           );
                         }
                       },
@@ -199,139 +194,274 @@ class _HikeMapViewState extends State<HikeMapView> {
                   ],
                 ),
               ),
+              // POI preview card
+              if (viewModel.selectedWaypoint != null)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: _PoiPreviewCard(
+                    waypoint: viewModel.selectedWaypoint!,
+                    onClose: () => viewModel.selectWaypoint(null),
+                    onToggleVisited: () =>
+                        viewModel.toggleWaypointVisited(viewModel.selectedWaypoint!),
+                  ),
+                ),
             ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white.withValues(alpha: 0.8),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          // Hier könnte man einen neuen Wegpunkt hinzufügen
-          // oder die aktuelle Position anzeigen
-          _mapController.moveAndRotate(
-            context.read<HikeMapViewModel>().getCurrentCenter(),
-            13.0,
-            0.0,
-          );
-        },
-        child: const Icon(Icons.my_location),
+      floatingActionButton: Consumer<HikeMapViewModel>(
+        builder: (context, viewModel, _) => FloatingActionButton(
+          backgroundColor: Colors.white.withValues(alpha: 0.9),
+          foregroundColor: Colors.black,
+          onPressed: () {
+            _mapController.moveAndRotate(
+              viewModel.getCurrentCenter(),
+              13.0,
+              0.0,
+            );
+          },
+          child: const Icon(Icons.my_location),
+        ),
       ),
     );
   }
 
-  List<Marker> _buildMarkers(List<Waypoint> waypoints) {
+  List<Marker> _buildMarkers(
+    List<Waypoint> waypoints,
+    Waypoint? selectedWaypoint,
+  ) {
     return waypoints.map((waypoint) {
+      final isSelected = selectedWaypoint?.id == waypoint.id;
+      final color = waypoint.isVisited ? Colors.green : Colors.red;
+      final size = isSelected ? 52.0 : 40.0;
+      final iconSize = isSelected ? 32.0 : 25.0;
+
       return Marker(
-        width: 40.0,
-        height: 40.0,
+        width: size,
+        height: size + 14,
         point: LatLng(waypoint.latitude, waypoint.longitude),
         child: GestureDetector(
-          onTap: () => _showWaypointDetails(waypoint),
+          onTap: () => context.read<HikeMapViewModel>().selectWaypoint(waypoint),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: waypoint.isVisited ? Colors.green : Colors.red,
+                  color: isSelected ? Colors.amber : color,
                   shape: BoxShape.circle,
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Colors.amber.withValues(alpha: 0.6),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          )
+                        ]
+                      : null,
                 ),
-                child: const Icon(
-                  Icons.location_on,
+                child: Icon(
+                  Icons.local_bar,
                   color: Colors.white,
-                  size: 25.0,
+                  size: iconSize,
                 ),
               ),
-              Text(
-                waypoint.name,
-                style: const TextStyle(
-                  fontSize: 9.0,
-                  fontWeight: FontWeight.bold,
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    waypoint.name,
+                    style: const TextStyle(
+                      fontSize: 8.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              else
+                Text(
+                  waypoint.name,
+                  style: const TextStyle(
+                    fontSize: 9.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
-              ),
             ],
           ),
         ),
       );
     }).toList();
   }
+}
 
-  void _showWaypointDetails(Waypoint waypoint) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                waypoint.name,
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(waypoint.description),
-              const SizedBox(height: 16.0),
-              if (waypoint.images.isNotEmpty) ...[
-                const Text(
-                  'Bilder:',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8.0),
-                SizedBox(
-                  height: 100.0,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: waypoint.images.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Image.network(
-                          waypoint.images[index],
-                          height: 100.0,
-                          width: 100.0,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    },
+class _PoiPreviewCard extends StatelessWidget {
+  final Waypoint waypoint;
+  final VoidCallback onClose;
+  final VoidCallback onToggleVisited;
+
+  const _PoiPreviewCard({
+    required this.waypoint,
+    required this.onClose,
+    required this.onToggleVisited,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 8,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: waypoint.isVisited
+                        ? Colors.green.shade50
+                        : Colors.red.shade50,
+                    shape: BoxShape.circle,
                   ),
+                  child: Icon(
+                    Icons.local_bar,
+                    color: waypoint.isVisited ? Colors.green : Colors.red,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    waypoint.name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: onClose,
+                  visualDensity: VisualDensity.compact,
                 ),
               ],
-              const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Besucht: ${waypoint.isVisited ? 'Ja' : 'Nein'}',
-                    style: TextStyle(
-                      color: waypoint.isVisited ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<HikeMapViewModel>().toggleWaypointVisited(
-                        waypoint,
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      waypoint.isVisited
-                          ? 'Als unbesucht markieren'
-                          : 'Als besucht markieren',
-                    ),
-                  ),
-                ],
+            ),
+            if (waypoint.description.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                waypoint.description,
+                style: Theme.of(context).textTheme.bodyMedium,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
+            if (waypoint.images.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 72,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: waypoint.images.length,
+                  separatorBuilder: (ctx, idx) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) => ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      waypoint.images[index],
+                      height: 72,
+                      width: 72,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: Icon(
+                  waypoint.isVisited ? Icons.check_circle : Icons.circle_outlined,
+                ),
+                label: Text(
+                  waypoint.isVisited
+                      ? 'Als unbesucht markieren'
+                      : 'Als besucht markieren',
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      waypoint.isVisited ? Colors.green : Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: onToggleVisited,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocationPermissionBanner extends StatelessWidget {
+  final bool isPermanentlyDenied;
+
+  const _LocationPermissionBanner({required this.isPermanentlyDenied});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          color: Colors.orange.shade700,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              const Icon(Icons.location_off, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  isPermanentlyDenied
+                      ? 'Standortzugriff dauerhaft verweigert. Bitte in den Einstellungen aktivieren.'
+                      : 'Kein Standortzugriff. GPS-Funktionen nicht verfügbar.',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ),
+              if (isPermanentlyDenied)
+                TextButton(
+                  onPressed: () => Geolocator.openAppSettings(),
+                  child: const Text(
+                    'Einstellungen',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
