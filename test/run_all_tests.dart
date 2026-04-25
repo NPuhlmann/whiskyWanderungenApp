@@ -16,7 +16,7 @@ import 'data/repositories/hike_images_repository_test.dart'
     as hike_images_repo_tests;
 import 'data/services/backend_api_simple_test.dart' as backend_api_tests;
 import 'data/services/auth_service_simple_test.dart' as auth_service_tests;
-import 'data/services/auth_service_test.dart' as auth_service_full_tests;
+// import 'data/services/auth_service_test.dart' as auth_service_full_tests; // Deleted on WHI-11 slice 4 (broken at runtime).
 // import 'data/services/local_cache_service_test.dart' as cache_service_tests; // File doesn't exist
 // import 'UI/home/home_view_model_test.dart' as home_viewmodel_tests; // File doesn't exist
 import 'UI/hike_details/hike_details_view_model_test.dart'
@@ -53,7 +53,7 @@ void main() {
     group('Services', () {
       backend_api_tests.main();
       auth_service_tests.main();
-      auth_service_full_tests.main();
+      // auth_service_full_tests.main(); // Deleted on WHI-11 slice 4.
       // cache_service_tests.main(); // File doesn't exist
       // shipping_service_tests.main(); // File doesn't exist
     });

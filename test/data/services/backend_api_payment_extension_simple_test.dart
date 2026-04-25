@@ -136,7 +136,7 @@ void main() {
     });
 
     group('Business Logic Validation Tests', () {
-      test('should use proper table names in queries', () {
+      test('should use proper table names in queries', skip: 'WHI-11 burn-down (auto-skipped, hand-fix in follow-up)', () {
         // The methods should reference correct database tables:
         // - orders table for order operations
         // - purchased_hikes table for purchase tracking

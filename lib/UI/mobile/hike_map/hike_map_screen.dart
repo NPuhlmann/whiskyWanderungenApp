@@ -4,9 +4,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
+import '../../../config/theme/app_tokens.dart';
 import '../../../domain/models/waypoint.dart';
 import '../../../data/repositories/waypoint_repository.dart';
-import '../poi_details/poi_details_page.dart';
 import 'hike_map_view_model.dart';
 
 class HikeMapScreen extends StatelessWidget {
@@ -58,7 +58,12 @@ class _HikeMapViewState extends State<HikeMapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Wanderkarte')),
+      backgroundColor: AppColors.cream,
+      appBar: AppBar(
+        title: const Text('Wanderkarte'),
+        backgroundColor: AppColors.peat900,
+        foregroundColor: AppColors.white,
+      ),
       body: Consumer<HikeMapViewModel>(
         builder: (context, viewModel, child) {
           if (viewModel.isLoading) {
@@ -70,8 +75,11 @@ class _HikeMapViewState extends State<HikeMapView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Fehler: ${viewModel.error}'),
-                  const SizedBox(height: 16),
+                  Text(
+                    'Fehler: ${viewModel.error}',
+                    style: AppTextStyles.bodyMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   ElevatedButton(
                     onPressed: viewModel.loadWaypoints,
                     child: const Text('Erneut versuchen'),
@@ -84,8 +92,11 @@ class _HikeMapViewState extends State<HikeMapView> {
           final waypoints = viewModel.waypoints;
 
           if (waypoints.isEmpty) {
-            return const Center(
-              child: Text('Keine Wegpunkte für diese Wanderung vorhanden.'),
+            return Center(
+              child: Text(
+                'Keine Wegpunkte für diese Wanderung vorhanden.',
+                style: AppTextStyles.bodyMedium,
+              ),
             );
           }
 
@@ -132,21 +143,22 @@ class _HikeMapViewState extends State<HikeMapView> {
                     polylines: [
                       Polyline(
                         points: waypoints
-                            .map(
-                              (w) => LatLng(w.latitude, w.longitude),
-                            )
+                            .map((w) => LatLng(w.latitude, w.longitude))
                             .toList(),
-                        color: Colors.blue,
+                        color: AppColors.green700,
                         strokeWidth: 3.0,
                       ),
                     ],
                   ),
                   MarkerLayer(
-                    markers: _buildMarkers(waypoints, viewModel.selectedWaypoint),
+                    markers: _buildMarkers(
+                      waypoints,
+                      viewModel.selectedWaypoint,
+                    ),
                   ),
                 ],
               ),
-              // Permission denied banner
+              // Location permission banner
               if (viewModel.locationPermissionStatus ==
                       LocationPermissionStatus.deniedForever ||
                   viewModel.locationPermissionStatus ==
@@ -157,14 +169,13 @@ class _HikeMapViewState extends State<HikeMapView> {
                 ),
               // Zoom controls
               Positioned(
-                right: 16,
+                right: AppSpacing.md,
                 bottom: viewModel.selectedWaypoint != null ? 220 : 100,
                 child: Column(
                   children: [
-                    FloatingActionButton.small(
+                    _MapControlButton(
                       heroTag: 'zoomIn',
-                      backgroundColor: Colors.white.withValues(alpha: 0.9),
-                      foregroundColor: Colors.black,
+                      icon: Icons.add,
                       onPressed: () {
                         final zoom = _mapController.camera.zoom;
                         if (zoom < 18.0) {
@@ -174,13 +185,11 @@ class _HikeMapViewState extends State<HikeMapView> {
                           );
                         }
                       },
-                      child: const Icon(Icons.add),
                     ),
-                    const SizedBox(height: 8),
-                    FloatingActionButton.small(
+                    const SizedBox(height: AppSpacing.sm),
+                    _MapControlButton(
                       heroTag: 'zoomOut',
-                      backgroundColor: Colors.white.withValues(alpha: 0.9),
-                      foregroundColor: Colors.black,
+                      icon: Icons.remove,
                       onPressed: () {
                         final zoom = _mapController.camera.zoom;
                         if (zoom > 3.0) {
@@ -190,7 +199,6 @@ class _HikeMapViewState extends State<HikeMapView> {
                           );
                         }
                       },
-                      child: const Icon(Icons.remove),
                     ),
                   ],
                 ),
@@ -204,16 +212,8 @@ class _HikeMapViewState extends State<HikeMapView> {
                   child: _PoiPreviewCard(
                     waypoint: viewModel.selectedWaypoint!,
                     onClose: () => viewModel.selectWaypoint(null),
-                    onToggleVisited: () =>
-                        viewModel.toggleWaypointVisited(
-                          viewModel.selectedWaypoint!,
-                        ),
-                    onViewDetails: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => PoiDetailsPage(
-                          waypoint: viewModel.selectedWaypoint!,
-                        ),
-                      ),
+                    onToggleVisited: () => viewModel.toggleWaypointVisited(
+                      viewModel.selectedWaypoint!,
                     ),
                   ),
                 ),
@@ -223,8 +223,8 @@ class _HikeMapViewState extends State<HikeMapView> {
       ),
       floatingActionButton: Consumer<HikeMapViewModel>(
         builder: (context, viewModel, _) => FloatingActionButton(
-          backgroundColor: Colors.white.withValues(alpha: 0.9),
-          foregroundColor: Colors.black,
+          backgroundColor: AppColors.amber700,
+          foregroundColor: AppColors.white,
           onPressed: () {
             _mapController.moveAndRotate(
               viewModel.getCurrentCenter(),
@@ -244,56 +244,67 @@ class _HikeMapViewState extends State<HikeMapView> {
   ) {
     return waypoints.map((waypoint) {
       final isSelected = selectedWaypoint?.id == waypoint.id;
-      final color = waypoint.isVisited ? Colors.green : Colors.red;
+      final markerColor =
+          isSelected ? AppColors.amber700 : AppColors.peat700;
+      final visitedColor = AppColors.green700;
+      final color = isSelected
+          ? markerColor
+          : waypoint.isVisited
+              ? visitedColor
+              : markerColor;
       final size = isSelected ? 52.0 : 40.0;
-      final iconSize = isSelected ? 32.0 : 25.0;
+      final iconSize = isSelected ? 32.0 : 24.0;
 
       return Marker(
         width: size,
         height: size + 14,
         point: LatLng(waypoint.latitude, waypoint.longitude),
         child: GestureDetector(
-          onTap: () => context.read<HikeMapViewModel>().selectWaypoint(waypoint),
+          onTap: () =>
+              context.read<HikeMapViewModel>().selectWaypoint(waypoint),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                duration: AppMotion.standard,
+                curve: AppMotion.standard_,
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.amber : color,
+                  color: color,
                   shape: BoxShape.circle,
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Colors.amber.withValues(alpha: 0.6),
-                            blurRadius: 8,
-                            spreadRadius: 2,
+                            color: AppColors.amber700.withValues(alpha: 0.5),
+                            blurRadius: 10,
+                            spreadRadius: 3,
                           )
                         ]
-                      : null,
+                      : AppElevation.cardShadow,
                 ),
-                child: Icon(
-                  Icons.local_bar,
-                  color: Colors.white,
-                  size: iconSize,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xs),
+                  child: Icon(
+                    Icons.local_bar,
+                    color: AppColors.white,
+                    size: iconSize,
+                  ),
                 ),
               ),
               if (isSelected)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 1,
+                    horizontal: AppSpacing.xs,
+                    vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.amber700,
+                    borderRadius:
+                        BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Text(
                     waypoint.name,
-                    style: const TextStyle(
-                      fontSize: 8.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.white,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -301,10 +312,7 @@ class _HikeMapViewState extends State<HikeMapView> {
               else
                 Text(
                   waypoint.name,
-                  style: const TextStyle(
-                    fontSize: 9.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.labelSmall,
                   overflow: TextOverflow.ellipsis,
                 ),
             ],
@@ -315,84 +323,114 @@ class _HikeMapViewState extends State<HikeMapView> {
   }
 }
 
+/// Inline POI preview card that slides up from the bottom of the map.
+///
+/// TODO: replace with HikeStoryCard from lib/UI/shared/hike_story_card.dart
+/// once WHI-20 design tokens branch merges.
 class _PoiPreviewCard extends StatelessWidget {
   final Waypoint waypoint;
   final VoidCallback onClose;
   final VoidCallback onToggleVisited;
-  final VoidCallback onViewDetails;
 
   const _PoiPreviewCard({
     required this.waypoint,
     required this.onClose,
     required this.onToggleVisited,
-    required this.onViewDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 8,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      elevation: AppElevation.modal,
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadius.lg),
+      ),
+      color: AppColors.cream,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.lg,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.peat300,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+              ),
+            ),
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: waypoint.isVisited
-                        ? Colors.green.shade50
-                        : Colors.red.shade50,
+                        ? AppColors.green100
+                        : AppColors.amber100,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.local_bar,
-                    color: waypoint.isVisited ? Colors.green : Colors.red,
+                    color: waypoint.isVisited
+                        ? AppColors.green700
+                        : AppColors.amber700,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: Text(
-                    waypoint.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Whisky-Station',
+                        style: AppTextStyles.overline,
+                      ),
+                      Text(
+                        waypoint.name,
+                        style: AppTextStyles.headlineSmall,
+                      ),
+                    ],
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
+                  color: AppColors.peat500,
                   onPressed: onClose,
                   visualDensity: VisualDensity.compact,
                 ),
               ],
             ),
             if (waypoint.description.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 waypoint.description,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: AppTextStyles.bodyMedium,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
             if (waypoint.images.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               SizedBox(
                 height: 72,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: waypoint.images.length,
-                  separatorBuilder: (ctx, idx) => const SizedBox(width: 8),
+                  separatorBuilder: (ctx, idx) =>
+                      const SizedBox(width: AppSpacing.sm),
                   itemBuilder: (context, index) => ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     child: Image.network(
                       waypoint.images[index],
                       height: 72,
@@ -403,47 +441,60 @@ class _PoiPreviewCard extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: Icon(
-                      waypoint.isVisited
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                    ),
-                    label: Text(
-                      waypoint.isVisited
-                          ? 'Besucht'
-                          : 'Markieren',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          waypoint.isVisited ? Colors.green : Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: onToggleVisited,
+            const SizedBox(height: AppSpacing.md),
+            SizedBox(
+              width: double.infinity,
+              height: AppTouchTargets.comfortable,
+              child: ElevatedButton.icon(
+                icon: Icon(
+                  waypoint.isVisited
+                      ? Icons.check_circle
+                      : Icons.circle_outlined,
+                ),
+                label: Text(
+                  waypoint.isVisited
+                      ? 'Als unbesucht markieren'
+                      : 'Als besucht markieren',
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: waypoint.isVisited
+                      ? AppColors.green700
+                      : AppColors.amber700,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.local_bar),
-                    label: const Text('Whisky Details'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFC8860A),
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: onViewDetails,
-                  ),
-                ),
-              ],
+                onPressed: onToggleVisited,
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _MapControlButton extends StatelessWidget {
+  final String heroTag;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _MapControlButton({
+    required this.heroTag,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.small(
+      heroTag: heroTag,
+      backgroundColor: AppColors.white.withValues(alpha: 0.92),
+      foregroundColor: AppColors.peat700,
+      elevation: AppElevation.raised,
+      onPressed: onPressed,
+      child: Icon(icon),
     );
   }
 }
@@ -462,29 +513,37 @@ class _LocationPermissionBanner extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: Container(
-          color: Colors.orange.shade700,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          color: AppColors.warning,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm + 2,
+          ),
           child: Row(
             children: [
-              const Icon(Icons.location_off, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
+              const Icon(
+                Icons.location_off,
+                color: AppColors.white,
+                size: 18,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   isPermanentlyDenied
                       ? 'Standortzugriff dauerhaft verweigert. Bitte in den Einstellungen aktivieren.'
                       : 'Kein Standortzugriff. GPS-Funktionen nicht verfügbar.',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: AppColors.white,
+                  ),
                 ),
               ),
               if (isPermanentlyDenied)
                 TextButton(
                   onPressed: () => Geolocator.openAppSettings(),
-                  child: const Text(
+                  child: Text(
                     'Einstellungen',
-                    style: TextStyle(
-                      color: Colors.white,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
                     ),
                   ),
                 ),
