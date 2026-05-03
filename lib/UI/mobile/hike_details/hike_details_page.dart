@@ -346,8 +346,12 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                         ),
                                       );
                                     } else {
-                                      dev.log("Wanderung kaufen: ${widget.hikeData.name}");
-                                      context.read<CartProvider>().addHike(widget.hikeData);
+                                      dev.log(
+                                        "Wanderung kaufen: ${widget.hikeData.name}",
+                                      );
+                                      context.read<CartProvider>().addHike(
+                                        widget.hikeData,
+                                      );
                                       context.push(Routes.cart);
                                     }
                                   },

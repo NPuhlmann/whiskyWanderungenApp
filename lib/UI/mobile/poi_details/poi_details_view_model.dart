@@ -14,9 +14,7 @@ class PoiDetailsViewModel extends ChangeNotifier {
   void addToOrder() {
     if (_isAddedToOrder) return;
     _isAddedToOrder = true;
-    log(
-      'Stub order_item queued: waypoint ${waypoint.id} (${waypoint.name})',
-    );
+    log('Stub order_item queued: waypoint ${waypoint.id} (${waypoint.name})');
     notifyListeners();
   }
 }

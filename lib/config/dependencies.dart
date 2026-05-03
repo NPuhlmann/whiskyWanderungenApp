@@ -73,9 +73,7 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
         stripeService: null, // Will use StripeService.instance
       ),
     ),
-    ChangeNotifierProvider<CartProvider>(
-      create: (_) => CartProvider(),
-    ),
+    ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
 
     // Dann alle ViewModels
     ChangeNotifierProvider<HomePageViewModel>(

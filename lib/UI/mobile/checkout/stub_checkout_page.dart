@@ -171,9 +171,7 @@ class _StubCheckoutViewState extends State<_StubCheckoutView> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.errorContainer,
+                            color: Theme.of(context).colorScheme.errorContainer,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -196,8 +194,14 @@ class _StubCheckoutViewState extends State<_StubCheckoutView> {
                                         false)) {
                                   return;
                                 }
-                                final userId = Supabase
-                                    .instance.client.auth.currentUser?.id ?? '';
+                                final userId =
+                                    Supabase
+                                        .instance
+                                        .client
+                                        .auth
+                                        .currentUser
+                                        ?.id ??
+                                    '';
                                 vm.placeOrder(userId);
                               }
                             : null,

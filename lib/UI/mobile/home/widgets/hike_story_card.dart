@@ -118,10 +118,7 @@ class _ThumbnailSection extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          _ThumbnailImage(
-            url: hike.thumbnailImageUrl,
-            alt: hike.name,
-          ),
+          _ThumbnailImage(url: hike.thumbnailImageUrl, alt: hike.name),
           // Top-right difficulty badge
           Positioned(
             top: AppSpacing.md,
@@ -236,10 +233,7 @@ class _ContentSection extends StatelessWidget {
         children: [
           // Region overline
           if (hike.tags.isNotEmpty)
-            Text(
-              hike.tags.first.toUpperCase(),
-              style: AppTextStyles.overline,
-            ),
+            Text(hike.tags.first.toUpperCase(), style: AppTextStyles.overline),
           const SizedBox(height: AppSpacing.xs),
           // Hike name headline
           Text(
@@ -294,10 +288,7 @@ class _StatsRow extends StatelessWidget {
           label: '${hike.length.toStringAsFixed(1)} km',
         ),
         const SizedBox(width: AppSpacing.md),
-        _StatChip(
-          icon: Icons.terrain,
-          label: '↑ ${hike.elevation} m',
-        ),
+        _StatChip(icon: Icons.terrain, label: '↑ ${hike.elevation} m'),
         const SizedBox(width: AppSpacing.md),
         _StatChip(
           icon: Icons.local_bar,
@@ -328,11 +319,7 @@ class _StatChip extends StatelessWidget {
 }
 
 class _PriceRow extends StatelessWidget {
-  const _PriceRow({
-    required this.hike,
-    required this.bookCta,
-    this.onBook,
-  });
+  const _PriceRow({required this.hike, required this.bookCta, this.onBook});
 
   final Hike hike;
   final String bookCta;

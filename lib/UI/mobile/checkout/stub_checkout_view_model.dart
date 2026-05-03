@@ -69,7 +69,8 @@ class StubCheckoutViewModel extends ChangeNotifier {
       _cartProvider.clear();
       dev.log('✅ Stub order placed: ${order.orderNumber}');
     } catch (e) {
-      _errorMessage = 'Bestellung konnte nicht abgegeben werden. Bitte erneut versuchen.';
+      _errorMessage =
+          'Bestellung konnte nicht abgegeben werden. Bitte erneut versuchen.';
       dev.log('❌ Stub order failed: $e');
     } finally {
       _isLoading = false;

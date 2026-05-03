@@ -26,7 +26,11 @@ class CartPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey),
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
                   SizedBox(height: 16),
                   Text(
                     'Dein Warenkorb ist leer',
@@ -247,9 +251,7 @@ class _CartSummaryState extends State<_CartSummary> {
               selected: {_deliveryType},
               onSelectionChanged: (selection) =>
                   setState(() => _deliveryType = selection.first),
-              style: const ButtonStyle(
-                visualDensity: VisualDensity.compact,
-              ),
+              style: const ButtonStyle(visualDensity: VisualDensity.compact),
             ),
             const SizedBox(height: 12),
             // Price breakdown
@@ -293,10 +295,7 @@ class _CartSummaryState extends State<_CartSummary> {
             ElevatedButton(
               onPressed: () => context.push(
                 Routes.stubCheckout,
-                extra: {
-                  'deliveryType': _deliveryType,
-                  'totalAmount': _total,
-                },
+                extra: {'deliveryType': _deliveryType, 'totalAmount': _total},
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),

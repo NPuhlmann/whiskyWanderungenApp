@@ -84,10 +84,8 @@ class _PoiWhiskyCardState extends State<PoiWhiskyCard>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: AppMotion.dramatic,
-    )..forward();
+    _controller = AnimationController(vsync: this, duration: AppMotion.dramatic)
+      ..forward();
     _fadeIn = CurvedAnimation(parent: _controller, curve: AppMotion.enter);
   }
 
@@ -119,8 +117,7 @@ class _PoiWhiskyCardState extends State<PoiWhiskyCard>
             ),
             if (widget.tastingNotes.isNotEmpty)
               _TastingNotesGrid(notes: widget.tastingNotes),
-            if (widget.storyText != null)
-              _StoryBody(text: widget.storyText!),
+            if (widget.storyText != null) _StoryBody(text: widget.storyText!),
             _ActionRow(
               whiskyCta: widget.whiskyCta,
               skipCta: widget.skipCta,
@@ -140,10 +137,7 @@ class _PoiWhiskyCardState extends State<PoiWhiskyCard>
 // ---------------------------------------------------------------------------
 
 class _HeroImageSection extends StatelessWidget {
-  const _HeroImageSection({
-    required this.imageUrl,
-    required this.waypoint,
-  });
+  const _HeroImageSection({required this.imageUrl, required this.waypoint});
 
   final String? imageUrl;
   final Waypoint waypoint;
@@ -277,9 +271,7 @@ class _HeroTextOverlay extends StatelessWidget {
         if (waypoint.description.isNotEmpty)
           Text(
             waypoint.description.toUpperCase(),
-            style: AppTextStyles.overline.copyWith(
-              color: AppColors.amber100,
-            ),
+            style: AppTextStyles.overline.copyWith(color: AppColors.amber100),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -410,18 +402,12 @@ class _ActionRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: OutlinedButton(
-              onPressed: onSkip,
-              child: Text(skipCta),
-            ),
+            child: OutlinedButton(onPressed: onSkip, child: Text(skipCta)),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             flex: 2,
-            child: ElevatedButton(
-              onPressed: onTaste,
-              child: Text(whiskyCta),
-            ),
+            child: ElevatedButton(onPressed: onTaste, child: Text(whiskyCta)),
           ),
         ],
       ),
@@ -441,7 +427,10 @@ class TastingNote {
 
   // Common whisky tasting notes factory
   static const TastingNote honey = TastingNote(emoji: '🍯', label: 'Honey');
-  static const TastingNote chocolate = TastingNote(emoji: '🍫', label: 'Chocolate');
+  static const TastingNote chocolate = TastingNote(
+    emoji: '🍫',
+    label: 'Chocolate',
+  );
   static const TastingNote peat = TastingNote(emoji: '🌿', label: 'Peat');
   static const TastingNote vanilla = TastingNote(emoji: '🍦', label: 'Vanilla');
   static const TastingNote fruit = TastingNote(emoji: '🍎', label: 'Fruit');
