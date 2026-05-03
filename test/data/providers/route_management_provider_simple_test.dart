@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:whisky_hikes/data/providers/route_management_provider.dart';
 import 'package:whisky_hikes/data/services/admin/route_management_service.dart';

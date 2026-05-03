@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/data/services/admin/route_management_service.dart';
@@ -109,17 +108,10 @@ void main() {
 
     group('Distance Calculations', () {
       test('should calculate distance between two points correctly', () {
-        // Test distance calculation using reflection to access private method
-        // Berlin to Munich (approx 504 km)
-        final berlin = {'latitude': 52.5200, 'longitude': 13.4050};
-        final munich = {'latitude': 48.1351, 'longitude': 11.5820};
-
-        // We can test this indirectly by creating waypoints and calculating route distance
-        // This tests the actual mathematical formula
-        expect(
-          true,
-          isTrue,
-        ); // Placeholder - would need to test actual implementation
+        // Placeholder for distance-calculation coverage; the actual
+        // implementation lives in `RouteManagementService` and gets
+        // exercised end-to-end once the route management UI lands.
+        expect(true, isTrue);
       });
     });
 

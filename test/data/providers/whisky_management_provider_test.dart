@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/data/providers/whisky_management_provider.dart';
-import 'package:whisky_hikes/data/services/whisky/whisky_management_service.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 import '../../test_helpers.dart';

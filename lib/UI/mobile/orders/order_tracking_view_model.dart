@@ -194,6 +194,7 @@ class OrderTrackingViewModel extends ChangeNotifier {
   EnhancedOrderStatus _mapBasicToEnhancedStatus(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
+      case OrderStatus.pendingManual:
         return EnhancedOrderStatus.pending;
       case OrderStatus.confirmed:
         return EnhancedOrderStatus.confirmed;

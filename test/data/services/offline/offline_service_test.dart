@@ -1,9 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/data/services/offline/offline_service.dart';
-import 'package:whisky_hikes/domain/models/hike.dart';
-import 'package:whisky_hikes/domain/models/waypoint.dart';
-import 'package:whisky_hikes/domain/models/tasting_set.dart';
-import '../../test_helpers.dart';
 
 void main() {
   group('OfflineService Tests', () {
@@ -55,13 +51,10 @@ void main() {
 
     group('Waypoint Caching Operations', () {
       test('should handle waypoint caching per hike', () async {
-        // Test waypoint-specific caching
-        const hikeId = 1;
-        expect(offlineService, isA<OfflineService>());
-
         // Real implementation would test:
         // - await offlineService.cacheWaypointsForHike(hikeId, waypoints);
         // - final cached = await offlineService.getCachedWaypoints(hikeId);
+        expect(offlineService, isA<OfflineService>());
       });
 
       test('should handle waypoint deletion', () async {

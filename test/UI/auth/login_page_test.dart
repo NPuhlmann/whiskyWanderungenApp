@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/UI/mobile/auth/login/login_page.dart';
 import 'package:whisky_hikes/UI/mobile/auth/login/login_page_view_model.dart';
-import 'package:whisky_hikes/UI/mobile/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 

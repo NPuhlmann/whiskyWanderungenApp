@@ -40,5 +40,14 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    # connectivity_plus 7.x uses NWPath.isUltraConstrained which is iOS 16+.
+    # Bump per-pod deployment target so the pod compiles; the Runner target
+    # stays at platform :ios, '13.0' above. Revisit if the pod is downgraded.
+    target.build_configurations.each do |config|
+      current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if current.nil? || current.to_f < 16.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+      end
+    end
   end
 end

@@ -170,4 +170,21 @@ class AuthService {
       throw Exception('Error confirming email: $e');
     }
   }
+
+  // Send a magic link / OTP to the given email address
+  Future<void> signInWithMagicLink(String email) async {
+    await client.auth.signInWithOtp(
+      email: email,
+      emailRedirectTo: isDevMode ? null : 'whiskyhikes://magic-link-confirm',
+    );
+  }
+
+  // Verify the 6-digit OTP received via magic link email
+  Future<AuthResponse> verifyMagicLinkOtp(String email, String token) async {
+    return await client.auth.verifyOTP(
+      email: email,
+      token: token,
+      type: OtpType.magiclink,
+    );
+  }
 }

@@ -25,7 +25,7 @@ void main() {
         double totalRevenue = 0.0;
 
         for (var order in orders) {
-          final amount = (order['total_amount'] as num?)?.toDouble() ?? 0.0;
+          final amount = (order['total_amount'])?.toDouble() ?? 0.0;
           totalRevenue += amount;
 
           final routeId = order['hike_id'].toString();
@@ -91,7 +91,7 @@ void main() {
 
         double totalRevenue = 0.0;
         for (var order in orders) {
-          final amount = (order['total_amount'] as num?)?.toDouble() ?? 0.0;
+          final amount = (order['total_amount'])?.toDouble() ?? 0.0;
           totalRevenue += amount;
         }
 

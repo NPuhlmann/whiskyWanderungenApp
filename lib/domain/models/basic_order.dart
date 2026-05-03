@@ -6,6 +6,7 @@ part 'basic_order.g.dart';
 /// Order status enum for tracking order progression
 enum OrderStatus {
   pending,
+  pendingManual,
   confirmed,
   processing,
   shipped,

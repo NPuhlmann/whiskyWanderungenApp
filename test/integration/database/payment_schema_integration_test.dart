@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:whisky_hikes/domain/models/basic_order.dart';
 
 void main() {
   group('Payment Database Schema Integration Tests (TDD - GREEN Phase)', () {

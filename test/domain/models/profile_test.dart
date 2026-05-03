@@ -262,12 +262,12 @@ void main() {
         final profile = Profile(
           firstName: longString,
           lastName: longString,
-          email: '${longString}@example.com',
+          email: '$longString@example.com',
         );
 
         expect(profile.firstName, longString);
         expect(profile.lastName, longString);
-        expect(profile.email, '${longString}@example.com');
+        expect(profile.email, '$longString@example.com');
       });
 
       test('should handle special characters', () {
