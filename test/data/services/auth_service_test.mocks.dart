@@ -120,13 +120,19 @@ class _FakeObject_16 extends _i1.SmartFake implements Object {
     : super(parent, parentInvocation);
 }
 
-class _FakeUser_17 extends _i1.SmartFake implements _i2.User {
-  _FakeUser_17(Object parent, Invocation parentInvocation)
+class _FakeGetClaimsResponse_17 extends _i1.SmartFake
+    implements _i2.GetClaimsResponse {
+  _FakeGetClaimsResponse_17(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSession_18 extends _i1.SmartFake implements _i2.Session {
-  _FakeSession_18(Object parent, Invocation parentInvocation)
+class _FakeUser_18 extends _i1.SmartFake implements _i2.User {
+  _FakeUser_18(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSession_19 extends _i1.SmartFake implements _i2.Session {
+  _FakeSession_19(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -714,13 +720,24 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
           as _i3.Future<_i2.UserResponse>);
 
   @override
-  _i3.Future<_i2.AuthResponse> setSession(String? refreshToken) =>
+  _i3.Future<_i2.AuthResponse> setSession(
+    String? refreshToken, {
+    String? accessToken,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#setSession, [refreshToken]),
+            Invocation.method(
+              #setSession,
+              [refreshToken],
+              {#accessToken: accessToken},
+            ),
             returnValue: _i3.Future<_i2.AuthResponse>.value(
               _FakeAuthResponse_11(
                 this,
-                Invocation.method(#setSession, [refreshToken]),
+                Invocation.method(
+                  #setSession,
+                  [refreshToken],
+                  {#accessToken: accessToken},
+                ),
               ),
             ),
           )
@@ -787,6 +804,37 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
             ),
           )
           as _i3.Future<List<_i2.UserIdentity>>);
+
+  @override
+  _i3.Future<_i2.AuthResponse> linkIdentityWithIdToken({
+    required _i2.OAuthProvider? provider,
+    required String? idToken,
+    String? accessToken,
+    String? nonce,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#linkIdentityWithIdToken, [], {
+              #provider: provider,
+              #idToken: idToken,
+              #accessToken: accessToken,
+              #nonce: nonce,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i3.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_11(
+                this,
+                Invocation.method(#linkIdentityWithIdToken, [], {
+                  #provider: provider,
+                  #idToken: idToken,
+                  #accessToken: accessToken,
+                  #nonce: nonce,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i2.AuthResponse>);
 
   @override
   _i3.Future<_i2.OAuthResponse> getLinkIdentityUrl(
@@ -895,6 +943,22 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
             ),
           )
           as Object);
+
+  @override
+  _i3.Future<_i2.GetClaimsResponse> getClaims([
+    String? jwt,
+    _i2.GetClaimsOptions? options,
+  ]) =>
+      (super.noSuchMethod(
+            Invocation.method(#getClaims, [jwt, options]),
+            returnValue: _i3.Future<_i2.GetClaimsResponse>.value(
+              _FakeGetClaimsResponse_17(
+                this,
+                Invocation.method(#getClaims, [jwt, options]),
+              ),
+            ),
+          )
+          as _i3.Future<_i2.GetClaimsResponse>);
 }
 
 /// A class which mocks [User].
@@ -988,7 +1052,7 @@ class MockSession extends _i1.Mock implements _i2.Session {
   _i2.User get user =>
       (super.noSuchMethod(
             Invocation.getter(#user),
-            returnValue: _FakeUser_17(this, Invocation.getter(#user)),
+            returnValue: _FakeUser_18(this, Invocation.getter(#user)),
           )
           as _i2.User);
 
@@ -1031,7 +1095,7 @@ class MockSession extends _i1.Mock implements _i2.Session {
               #providerRefreshToken: providerRefreshToken,
               #user: user,
             }),
-            returnValue: _FakeSession_18(
+            returnValue: _FakeSession_19(
               this,
               Invocation.method(#copyWith, [], {
                 #accessToken: accessToken,
