@@ -24,6 +24,9 @@ import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
 import '../data/services/team/team_management_service.dart';
 import '../data/providers/team_provider.dart';
+import '../data/services/analytics/sales_analytics_service.dart';
+import '../data/services/analytics/customer_analytics_service.dart';
+import '../data/providers/analytics_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 List<SingleChildWidget> get providers {
@@ -42,6 +45,13 @@ List<SingleChildWidget> get providers {
     ),
     Provider<TeamManagementService>(
       create: (_) => TeamManagementService(),
+    ),
+    Provider<SalesAnalyticsService>(
+      create: (_) => SalesAnalyticsService(client: Supabase.instance.client),
+    ),
+    Provider<CustomerAnalyticsService>(
+      create: (_) =>
+          CustomerAnalyticsService(client: Supabase.instance.client),
     ),
 
     // Dann alle Repositories
@@ -113,6 +123,12 @@ List<SingleChildWidget> get providers {
     ChangeNotifierProvider<TeamProvider>(
       create: (context) =>
           TeamProvider(service: context.read<TeamManagementService>()),
+    ),
+    ChangeNotifierProvider<AnalyticsProvider>(
+      create: (context) => AnalyticsProvider(
+        salesService: context.read<SalesAnalyticsService>(),
+        customerService: context.read<CustomerAnalyticsService>(),
+      ),
     ),
 
     // HikeMapViewModel wird in HikeMapScreen erstellt

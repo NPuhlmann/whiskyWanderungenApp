@@ -7,6 +7,7 @@ import 'order_management/order_management_page.dart';
 import 'whisky_catalog/whisky_catalog_page.dart';
 import 'commission_management/commission_management_page.dart';
 import 'team_management/team_management_page.dart';
+import 'analytics/analytics_page.dart';
 
 /// Admin-Router für die Navigation zwischen Admin-Seiten
 class AdminRouter {
@@ -49,7 +50,7 @@ class AdminRouter {
         path: analyticsRoute,
         name: 'AdminAnalytics',
         builder: (context, state) =>
-            const AdminGuard(child: _AdminAnalyticsPage()),
+            const AdminGuard(child: AnalyticsPage()),
       ),
       GoRoute(
         path: teamRoute,
@@ -120,38 +121,6 @@ class _AdminRoutesPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(AppLocalizations.of(context)!.manageHikingRoutesDescription),
-            SizedBox(height: 32),
-            Text('🚧 In Entwicklung 🚧'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AdminAnalyticsPage extends StatelessWidget {
-  const _AdminAnalyticsPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Analytics & Berichte'),
-        backgroundColor: Colors.amber[800],
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.analytics, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Analytics & Berichte',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Hier finden Sie detaillierte Analysen und Berichte'),
             SizedBox(height: 32),
             Text('🚧 In Entwicklung 🚧'),
           ],
