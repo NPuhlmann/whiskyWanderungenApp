@@ -54,7 +54,7 @@ flutter create --platforms web .
 - ✅ `/admin/whisky` - Whisky-Katalog verwalten
 - ✅ `/admin/analytics` - Verkaufs- und Nutzungsstatistiken
 
-## ✅ Phase 2: Admin-Dashboard & Übersicht
+## ✅ Phase 2: Admin-Dashboard & Übersicht (RBAC abgeschlossen Mai 2026)
 
 ### 2.1 Dashboard-Übersicht implementieren
 
@@ -79,16 +79,22 @@ flutter create --platforms web .
 
 ### 2.2 Admin-Berechtigungssystem
 
-#### 🔄 Schritt 7: Role-based Access Control implementieren (NOCH AUSSTEHEND)
-- **Status**: Nur Basic AdminGuard vorhanden (`/lib/UI/shared/guards/admin_guard.dart`)
-- **Fehlend**: Merchant Role, Admin Role, Staff Role System
-- **Fehlend**: Rollen-basierte UI-Beschränkungen
-- **Fehlend**: Backend-Rollen-Validierung
+#### ✅ Schritt 7: Role-based Access Control implementiert (Mai 2026)
+- ✅ **`profiles.role` Spalte** (`'user' | 'admin'`, Default `'user'`) mit CHECK-Constraint
+- ✅ **`handle_new_user`-Trigger** setzt Default-Rolle für neue Profile
+- ✅ **`public.is_admin(uid)`** als SECURITY-DEFINER-Helper für RLS-Policies
+- ✅ **RLS-Policies** auf `hikes`, `waypoints`, `hikes_waypoints`, `hike_images`,
+  `tasting_sets`, `whisky_samples`, `companies`, `*_shipping_rules` sowie
+  Storage-Bucket `hike-images` auf `is_admin()` umgestellt
+- ✅ **`enforce_profile_role_change` Trigger** verhindert Self-Promotion
+- ✅ **`public.set_user_role(uuid, text)` RPC** (SECURITY DEFINER) für Admin-UI
+- 🔄 **Manager/Staff/Viewer-Rollen** noch ausstehend (Schritt 27)
 
-#### 🔄 Schritt 8: Admin-Guard erweitern (GRUNDLAGEN VORHANDEN)
-- ✅ **Basic Guard**: AdminGuard existiert für Route-Protection
-- 🔄 **Rollen-Prüfung**: Benutzerrolle-Validierung fehlt noch
-- 🔄 **Automatische Weiterleitung**: Nur für nicht-authentifizierte User
+#### ✅ Schritt 8: Admin-Guard erweitert (Mai 2026)
+- ✅ **`AuthService.isCurrentUserAdmin()`** liest `profiles.role`
+- ✅ **`AdminGuard` (Stateful)** prüft Login + Admin-Rolle, redirected
+  Non-Admins nach `/`, Nicht-Eingeloggte nach `/login`
+- ✅ **`AdminRouteGuard`** Async-Redirect-Helper für GoRouter
 
 ## 🚀 Phase 3: Wanderrouten-Verwaltung
 
@@ -301,21 +307,28 @@ flutter create --platforms web .
 - **Kundenbewertungen** Analyse
 - **Wiederholungskäufe** Tracking
 
-## 🚀 Phase 8: Benutzer-Management & Team
+## 🔄 Phase 8: Benutzer-Management & Team (IN PROGRESS - Mai 2026)
 
 ### 8.1 Team-Verwaltung
 
-#### Schritt 26: Mitarbeiter verwalten
-- **Mitarbeiter hinzufügen** mit verschiedenen Rollen
-- **Berechtigungen** pro Rolle definieren
-- **Aktivitäts-Logs** für Audit-Zwecke
-- **Passwort-Policies** und Sicherheit
+#### 🔄 Schritt 26: Mitarbeiter verwalten (Iteration 1 abgeschlossen Mai 2026)
+- ✅ **Profil-Liste** unter `/admin/team` mit Suche (E-Mail/Name) und
+  Rollen-Filter (`admin`/`user`)
+- ✅ **Promote/Demote**-Button mit Confirmation-Dialog; ruft RPC
+  `set_user_role` auf, Self-Demotion serverseitig blockiert
+- ✅ **Responsive UI** (DataTable ab 900px, Karten-Liste darunter)
+- ✅ **TeamManagementService + TeamProvider** (7 Unit-Tests, 100% ✅)
+- 🔄 **Mitarbeiter hinzufügen** per Invite-Flow (Email + Initial-Rolle)
+- 🔄 **Aktivitäts-Logs** (siehe Schritt 28)
+- 🔄 **Passwort-Policies** (Supabase Auth Settings + UI-Hint)
 
-#### Schritt 27: Rollen und Berechtigungen
-- **Admin**: Vollzugriff auf alle Funktionen
-- **Manager**: Kann Routen und Bestellungen verwalten
-- **Staff**: Kann Bestellungen bearbeiten
-- **Viewer**: Nur Leserechte auf Dashboard
+#### 🔄 Schritt 27: Rollen und Berechtigungen
+- ✅ **Admin**: Vollzugriff (RLS via `is_admin()`)
+- 🔄 **Manager**: Routen + Bestellungen, keine Provisionen/Team
+- 🔄 **Staff**: Nur Bestellungen bearbeiten
+- 🔄 **Viewer**: Read-only Dashboard
+  → DB: `profiles.role` CHECK-Constraint erweitern + neue
+  `has_role(text)`-Helper, RLS pro Tabelle differenzieren
 
 ### 8.2 Audit & Compliance
 
@@ -483,10 +496,11 @@ flutter create --platforms web .
 
 ### ✅ **Abgeschlossene Phasen:**
 - **Phase 1**: Flutter Web Setup & Responsive Design (100% ✅)
-- **Phase 2**: Admin-Dashboard & Übersicht (95% ✅, Charts ausstehend)
+- **Phase 2**: Admin-Dashboard & Übersicht (100% ✅, RBAC Mai 2026 abgeschlossen)
 - **Phase 3**: Wanderrouten-Verwaltung (85% ✅, erweiterte Features ausstehend)
 - **Phase 4**: Order Management & Fulfillment System (100% ✅)
 - **Phase 5**: Whisky-Katalog-Verwaltung (100% ✅, TDD)
+- **Phase 8**: Team-Management Iteration 1 (✅ Liste + Rollen, 🔄 Feinrollen + Audit)
 
 ### 🛠️ **Test-Infrastruktur (Neu - Januar 2025):**
 - ✅ **Testfehler behoben**: Alle Kompilierungsfehler in Test-Suite behoben
@@ -524,9 +538,9 @@ flutter create --platforms web .
 1. ✅ **Phase 4**: Order Management & Fulfillment System (**ABGESCHLOSSEN!**)
 2. ✅ **Phase 5**: Whisky-Katalog-Verwaltung (**ABGESCHLOSSEN!**)
 3. ✅ **Phase 6**: Commission & Billing System (**ABGESCHLOSSEN!**)
-4. **🔥 AKTUELLE PRIORITÄT**: **Phase 7: Analytics & Reporting** (IN PROGRESS - Januar 2025)
-5. **Phase 8**: Benutzer-Management & Team (Schritt 26-28)
-6. **Phase 2 Vervollständigung**: Role-based Access Control
+4. ✅ **Phase 2 RBAC + Phase 8 Team-UI Iteration 1** (**Mai 2026 abgeschlossen!**)
+5. **🔥 AKTUELLE PRIORITÄT**: **Phase 7: Analytics & Reporting** (IN PROGRESS, Provider + UI offen)
+6. **Phase 8 Iteration 2**: Feinrollen (Manager/Staff/Viewer) + Audit-Logs
 7. **Phase 3 Vervollständigung**: Erweiterte Karten-Integration
 
 ### 📈 **Neue Erkenntnisse (Januar 2025):**
@@ -753,8 +767,35 @@ TDD-Ansatz: Tests zuerst, dann Implementierung für maximale Code-Qualität
 5. ✅ **End-to-End Integration Tests** (14 Tests) mit vollständiger Workflow-Abdeckung
 
 ### **3. 🔄 Admin-Features Realitäts-Abgleich**
-**Status**: Teilweise behoben durch Commission System Implementation
+**Status**: Weiter abgebaut durch RBAC + Team-Management (Mai 2026)
 **Noch ausstehende Platzhalter:**
 - Analytics Page: "🚧 In Entwicklung 🚧" (Phase 7)
-- Team Page: "🚧 In Entwicklung 🚧" (Phase 8)
-- **Finances Page**: 🔄 Wird durch Phase 6 Commission System ersetzt
+- ✅ Team Page: ersetzt durch echte `TeamManagementPage` (Mai 2026)
+- **Finances Page**: ersetzt durch Phase 6 Commission System
+
+---
+
+## 🆕 **RBAC & Team-Management (Mai 2026)**
+
+### DB-Migrationen
+- `20260518120000_admin_role.sql`: `profiles.role`, `is_admin()`,
+  `enforce_profile_role_change`-Trigger, `set_user_role(uuid, text)`-RPC,
+  is_admin()-basierte RLS für hikes/waypoints/tasting_sets/companies/storage.
+- `20260518120100_seed_admin.sql`: setzt `nico@nico-puhlmann.de` idempotent
+  auf `role='admin'`.
+
+### Flutter-Komponenten
+- **`Profile.role`** (`@Default('user')`) + Freezed/JSON-Regen.
+- **`AuthService.isCurrentUserAdmin()`** liest die Rolle aus Supabase.
+- **`AdminGuard` (Stateful)**: Login- + Rollen-Check, async, mit Spinner und
+  Redirect-Logik.
+- **`TeamManagementService`** (`lib/data/services/team/`): `listProfiles`
+  (Filter nach Rolle/Suche), `setUserRole` ruft RPC auf.
+- **`TeamProvider`** (`lib/data/providers/team_provider.dart`): State mit
+  Filter/Suche, Counts, Promote/Demote.
+- **`TeamManagementPage`** (`/admin/team`): responsive UI mit Suche,
+  Rollen-Filter, Promote/Demote inkl. Bestätigungsdialog und
+  Self-Demotion-Sperre.
+
+### Tests
+- **TeamProvider**: 7 Unit-Tests, 100% Pass-Rate (Fake-Service ohne Supabase).

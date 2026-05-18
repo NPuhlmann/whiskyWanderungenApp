@@ -14,6 +14,7 @@ _Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
       ? null
       : DateTime.parse(json['date_of_birth'] as String),
   email: json['email'] as String? ?? '',
+  role: json['role'] as String? ?? 'user',
   imageUrl: json['image_url'] as String? ?? '',
 );
 
@@ -23,5 +24,6 @@ Map<String, dynamic> _$ProfileToJson(_Profile instance) => <String, dynamic>{
   'last_name': instance.lastName,
   'date_of_birth': instance.dateOfBirth?.toIso8601String(),
   'email': instance.email,
+  'role': instance.role,
   'image_url': instance.imageUrl,
 };

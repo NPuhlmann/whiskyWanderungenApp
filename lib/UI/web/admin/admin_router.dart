@@ -6,6 +6,7 @@ import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'order_management/order_management_page.dart';
 import 'whisky_catalog/whisky_catalog_page.dart';
 import 'commission_management/commission_management_page.dart';
+import 'team_management/team_management_page.dart';
 
 /// Admin-Router für die Navigation zwischen Admin-Seiten
 class AdminRouter {
@@ -53,7 +54,8 @@ class AdminRouter {
       GoRoute(
         path: teamRoute,
         name: 'AdminTeam',
-        builder: (context, state) => const AdminGuard(child: _AdminTeamPage()),
+        builder: (context, state) =>
+            const AdminGuard(child: TeamManagementPage()),
       ),
       GoRoute(
         path: financesRoute,
@@ -150,38 +152,6 @@ class _AdminAnalyticsPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text('Hier finden Sie detaillierte Analysen und Berichte'),
-            SizedBox(height: 32),
-            Text('🚧 In Entwicklung 🚧'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AdminTeamPage extends StatelessWidget {
-  const _AdminTeamPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Team verwalten'),
-        backgroundColor: Colors.amber[800],
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.people, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Team-Verwaltung',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Hier können Sie Ihr Team und Berechtigungen verwalten'),
             SizedBox(height: 32),
             Text('🚧 In Entwicklung 🚧'),
           ],

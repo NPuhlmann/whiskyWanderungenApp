@@ -22,6 +22,8 @@ import '../data/services/whisky/whisky_management_service.dart';
 import '../data/providers/whisky_management_provider.dart';
 import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
+import '../data/services/team/team_management_service.dart';
+import '../data/providers/team_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 List<SingleChildWidget> get providers {
@@ -37,6 +39,9 @@ List<SingleChildWidget> get providers {
     ),
     Provider<CommissionService>(
       create: (_) => CommissionService(Supabase.instance.client),
+    ),
+    Provider<TeamManagementService>(
+      create: (_) => TeamManagementService(),
     ),
 
     // Dann alle Repositories
@@ -104,6 +109,10 @@ List<SingleChildWidget> get providers {
       create: (context) => CommissionProvider(
         commissionService: context.read<CommissionService>(),
       ),
+    ),
+    ChangeNotifierProvider<TeamProvider>(
+      create: (context) =>
+          TeamProvider(service: context.read<TeamManagementService>()),
     ),
 
     // HikeMapViewModel wird in HikeMapScreen erstellt

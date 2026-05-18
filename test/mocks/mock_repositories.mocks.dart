@@ -804,6 +804,14 @@ class MockAuthService extends _i1.Mock implements _i24.AuthService {
           as bool);
 
   @override
+  _i13.Future<bool> isCurrentUserAdmin() =>
+      (super.noSuchMethod(
+            Invocation.method(#isCurrentUserAdmin, []),
+            returnValue: _i13.Future<bool>.value(false),
+          )
+          as _i13.Future<bool>);
+
+  @override
   _i13.Future<void> updateUserEmail(String? newEmail) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserEmail, [newEmail]),

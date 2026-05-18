@@ -119,6 +119,26 @@ class AuthService {
     return user == null ? false : true;
   }
 
+  /// Prüft, ob der aktuell eingeloggte User die Admin-Rolle hat.
+  /// Liest dafür `profiles.role` aus Supabase. Liefert `false`, wenn niemand
+  /// eingeloggt ist oder die Abfrage fehlschlägt.
+  Future<bool> isCurrentUserAdmin() async {
+    final userId = getCurrentUserId();
+    if (userId == null) return false;
+    try {
+      final dynamic response = await client
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
+      if (response == null) return false;
+      return (response['role'] as String?) == 'admin';
+    } catch (e) {
+      debugPrint('isCurrentUserAdmin failed: $e');
+      return false;
+    }
+  }
+
   // E-Mail-Adresse des Benutzers aktualisieren
   Future<void> updateUserEmail(String newEmail) async {
     try {
