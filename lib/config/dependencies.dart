@@ -27,6 +27,9 @@ import '../data/providers/team_provider.dart';
 import '../data/services/analytics/sales_analytics_service.dart';
 import '../data/services/analytics/customer_analytics_service.dart';
 import '../data/providers/analytics_provider.dart';
+import '../data/providers/admin_provider.dart';
+import '../data/providers/dashboard_provider.dart';
+import '../data/providers/route_management_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 List<SingleChildWidget> get providers {
@@ -129,6 +132,14 @@ List<SingleChildWidget> get providers {
         salesService: context.read<SalesAnalyticsService>(),
         customerService: context.read<CustomerAnalyticsService>(),
       ),
+    ),
+    // Admin-Dashboard & Route-Management
+    ChangeNotifierProvider<AdminProvider>(create: (_) => AdminProvider()),
+    ChangeNotifierProvider<DashboardProvider>(
+      create: (_) => DashboardProvider(),
+    ),
+    ChangeNotifierProvider<RouteManagementProvider>(
+      create: (_) => RouteManagementProvider(),
     ),
 
     // HikeMapViewModel wird in HikeMapScreen erstellt

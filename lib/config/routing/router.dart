@@ -25,6 +25,7 @@ import '../../UI/core/scaffold_with_navigation_bar.dart';
 import '../../UI/mobile/hike_details/hike_details_view_model.dart';
 import '../../UI/mobile/home/home_view_model.dart';
 import '../../UI/mobile/my_hikes/my_hikes_view_model.dart';
+import '../../UI/web/admin/admin_router.dart';
 
 GoRouter router(UserRepository authRepository) => GoRouter(
   initialLocation: Routes.home,
@@ -218,6 +219,9 @@ GoRouter router(UserRepository authRepository) => GoRouter(
         return OrderTrackingPage(orderId: orderId);
       },
     ),
+
+    // Admin routes (/admin/*) — guarded per-page by AdminGuard.
+    ...AdminRouter.getAdminRoutes(),
   ],
 );
 
