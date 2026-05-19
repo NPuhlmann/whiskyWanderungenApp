@@ -7,6 +7,7 @@ import '../../../../data/providers/analytics_provider.dart';
 import '../../../../domain/models/analytics/customer_insights.dart';
 import '../../../../domain/models/analytics/route_performance.dart';
 import '../../../../domain/models/analytics/sales_statistics.dart';
+import 'analytics_export_button.dart';
 
 /// Admin-Seite `/admin/analytics`. Bündelt Sales- und Customer-Analytics
 /// mit Date-Range-Filter, KPI-Karten, Top-Routes-Liste und einer
@@ -34,12 +35,11 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         title: const Text('Analytics & Berichte'),
         backgroundColor: Colors.amber[800],
         foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            tooltip: 'Aktualisieren',
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<AnalyticsProvider>().load(),
-          ),
+        actions: const [
+          AnalyticsExportButton(),
+          SizedBox(width: 8),
+          _RefreshButton(),
+          SizedBox(width: 8),
         ],
       ),
       body: Consumer<AnalyticsProvider>(
@@ -176,6 +176,16 @@ class _Body extends StatelessWidget {
         const SizedBox(height: 24),
         _RevenueTimelineCard(sales: provider.sales),
         const SizedBox(height: 24),
+        _RouteRevenueChartCard(
+          sales: provider.sales,
+          performances: provider.topRoutes,
+        ),
+        const SizedBox(height: 24),
+        _SegmentationChartCard(
+          segmentation: provider.segmentation,
+          churnRisk: provider.churnRisk,
+        ),
+        const SizedBox(height: 24),
         _CustomerCard(
           insights: provider.customerInsights,
           segmentation: provider.segmentation,
@@ -184,6 +194,19 @@ class _Body extends StatelessWidget {
         const SizedBox(height: 24),
         _TopRoutesCard(topRoutes: provider.topRoutes),
       ],
+    );
+  }
+}
+
+class _RefreshButton extends StatelessWidget {
+  const _RefreshButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Aktualisieren',
+      icon: const Icon(Icons.refresh),
+      onPressed: () => context.read<AnalyticsProvider>().load(),
     );
   }
 }
@@ -556,6 +579,271 @@ class _TopRouteTile extends StatelessWidget {
         fmt.format(performance.totalRevenue),
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
+    );
+  }
+}
+
+class _RouteRevenueChartCard extends StatelessWidget {
+  final SalesStatistics sales;
+  final List<RoutePerformance> performances;
+  const _RouteRevenueChartCard({
+    required this.sales,
+    required this.performances,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = sales.getTopRoutesByRevenue(6);
+    final nameById = {
+      for (final p in performances) p.routeId.toString(): p.routeName,
+    };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Umsatz je Route',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 260,
+              child: entries.isEmpty
+                  ? const Center(
+                      child: Text('Keine Umsätze im gewählten Zeitraum.'),
+                    )
+                  : _RouteRevenueBarChart(
+                      entries: entries,
+                      nameById: nameById,
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RouteRevenueBarChart extends StatelessWidget {
+  final List<MapEntry<String, double>> entries;
+  final Map<String, String> nameById;
+  const _RouteRevenueBarChart({
+    required this.entries,
+    required this.nameById,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final maxRevenue = entries
+        .map((e) => e.value)
+        .fold<double>(0, (a, b) => a > b ? a : b);
+    return BarChart(
+      BarChartData(
+        maxY: maxRevenue == 0 ? 1 : maxRevenue * 1.15,
+        alignment: BarChartAlignment.spaceAround,
+        gridData: const FlGridData(show: true, drawVerticalLine: false),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 56,
+              getTitlesWidget: (value, _) {
+                final idx = value.toInt();
+                if (idx < 0 || idx >= entries.length) {
+                  return const SizedBox.shrink();
+                }
+                final routeId = entries[idx].key;
+                final label = nameById[routeId] ?? '#$routeId';
+                final short = label.length > 14
+                    ? '${label.substring(0, 12)}…'
+                    : label;
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    short,
+                    style: const TextStyle(fontSize: 10),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 48,
+              getTitlesWidget: (value, _) => Text(
+                NumberFormat.compactCurrency(locale: 'de_DE', symbol: '€')
+                    .format(value),
+                style: const TextStyle(fontSize: 10),
+              ),
+            ),
+          ),
+        ),
+        barGroups: [
+          for (var i = 0; i < entries.length; i++)
+            BarChartGroupData(
+              x: i,
+              barRods: [
+                BarChartRodData(
+                  toY: entries[i].value,
+                  color: Colors.amber.shade700,
+                  width: 18,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SegmentationChartCard extends StatelessWidget {
+  final Map<String, int> segmentation;
+  final int churnRisk;
+  const _SegmentationChartCard({
+    required this.segmentation,
+    required this.churnRisk,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final high = segmentation['high'] ?? 0;
+    final medium = segmentation['medium'] ?? 0;
+    final low = segmentation['low'] ?? 0;
+    final total = high + medium + low;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Kundensegmentierung',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Churn-Risiko: $churnRisk',
+                  style: TextStyle(
+                    color: churnRisk > 0
+                        ? Colors.red.shade700
+                        : Colors.grey.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 220,
+              child: total == 0
+                  ? const Center(
+                      child: Text(
+                        'Noch keine Kundensegmente vorhanden.',
+                      ),
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 36,
+                              sections: [
+                                _section(
+                                  value: high.toDouble(),
+                                  color: Colors.green,
+                                  label: 'High',
+                                ),
+                                _section(
+                                  value: medium.toDouble(),
+                                  color: Colors.amber,
+                                  label: 'Med',
+                                ),
+                                _section(
+                                  value: low.toDouble(),
+                                  color: Colors.blueGrey,
+                                  label: 'Low',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _legendDot('High-Value', high, Colors.green),
+                            const SizedBox(height: 6),
+                            _legendDot(
+                              'Medium-Value',
+                              medium,
+                              Colors.amber.shade700,
+                            ),
+                            const SizedBox(height: 6),
+                            _legendDot(
+                              'Low-Value',
+                              low,
+                              Colors.blueGrey,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                      ],
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PieChartSectionData _section({
+    required double value,
+    required Color color,
+    required String label,
+  }) {
+    return PieChartSectionData(
+      value: value,
+      color: color,
+      radius: 56,
+      title: value == 0 ? '' : label,
+      titleStyle: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+    );
+  }
+
+  Widget _legendDot(String label, int value, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Text('$label: $value'),
+      ],
     );
   }
 }
