@@ -18,6 +18,15 @@ nav:
   - Daten und Infrastruktur: backend.md
   - Entwicklung: development.md
   - Betrieb und Sicherheit: operations.md
+  - Architekturentscheidungen:
+      - Uebersicht: adr/index.md
+      - '0001 Supabase als Backend-Plattform': adr/0001-supabase-as-backend-platform.md
+      - '0002 RLS und Profilrollen': adr/0002-rls-and-profile-roles-for-authorization.md
+      - '0003 Schemaautoritaet': adr/0003-supabase-cli-migrations-as-schema-authority.md
+      - '0004 App-Architektur': adr/0004-provider-repository-service-architecture.md
+      - '0005 Tasting-Set und Hike': adr/0005-tasting-set-included-with-hike.md
+      - '0006 Serverseitige Zahlungen': adr/0006-server-side-stripe-payment-intents.md
+      - '0007 Befristetes CI-Smoke-Gate': adr/0007-ci-smoke-gate-during-test-suite-recovery.md
 
 markdown_extensions:
   - admonition

@@ -20,6 +20,7 @@ den Betrieb gedacht.
 | Supabase, Schema und Edge Functions | [Daten und Infrastruktur](backend.md) |
 | Codegen, Tests und CI | [Entwicklung](development.md) |
 | Secrets, RLS und produktiver Betrieb | [Betrieb und Sicherheit](operations.md) |
+| Dauerhafte Architekturentscheidungen | [Architekturentscheidungen](adr/index.md) |
 
 ## Systemueberblick
 

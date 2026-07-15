@@ -1,7 +1,3 @@
-// Web-only export menu: renders a PopupMenuButton and triggers a browser
-// download via dart:html. Mirrors `CommissionExportWidget`.
-// ignore_for_file: deprecated_member_use, avoid_web_libraries_in_flutter
-import 'dart:html' as html show AnchorElement, Blob, Url, document;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -10,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../data/providers/analytics_provider.dart';
 import '../../../../data/services/analytics/analytics_export_service.dart';
+import '../shared/browser_download.dart';
 
 /// Renders an export icon with menu (PDF / Revenue CSV / Routes CSV).
 ///
@@ -122,7 +119,8 @@ class _AnalyticsExportButtonState extends State<AnalyticsExportButton> {
     );
     final filename = _service.generateExportFilename(
       type: 'pdf',
-      slug: 'report_${df.format(provider.startDate)}_${df.format(provider.endDate)}',
+      slug:
+          'report_${df.format(provider.startDate)}_${df.format(provider.endDate)}',
     );
     _download(bytes, filename, 'application/pdf');
   }
@@ -151,15 +149,6 @@ class _AnalyticsExportButtonState extends State<AnalyticsExportButton> {
   }
 
   void _download(Uint8List bytes, String filename, String mimeType) {
-    final blob = html.Blob([bytes], mimeType);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.document.createElement('a') as html.AnchorElement
-      ..href = url
-      ..style.display = 'none'
-      ..download = filename;
-    html.document.body!.children.add(anchor);
-    anchor.click();
-    html.document.body!.children.remove(anchor);
-    html.Url.revokeObjectUrl(url);
+    downloadFile(bytes, filename, mimeType);
   }
 }

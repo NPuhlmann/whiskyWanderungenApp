@@ -1,14 +1,11 @@
-// Web-only export helper: uses dart:html to trigger a browser download.
-// Migration to package:web + dart:js_interop is tracked separately.
-// ignore_for_file: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
 import 'package:whisky_hikes/data/services/commission/commission_export_service.dart';
 import 'package:whisky_hikes/data/services/commission/commission_service.dart';
+import 'package:whisky_hikes/UI/web/admin/shared/browser_download.dart';
 import 'dart:typed_data';
-import 'dart:html' as html show Blob, Url, AnchorElement, document;
 
 /// Widget für den Export von Commission-Daten (PDF/CSV)
 class CommissionExportWidget extends StatefulWidget {
@@ -209,20 +206,7 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
     String filename,
     String mimeType,
   ) async {
-    final blob = html.Blob([bytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.document.createElement('a') as html.AnchorElement
-      ..href = url
-      ..style.display = 'none'
-      ..download = filename;
-    html.document.body!.children.add(anchor);
-
-    // trigger download
-    anchor.click();
-
-    // cleanup
-    html.document.body!.children.remove(anchor);
-    html.Url.revokeObjectUrl(url);
+    downloadFile(bytes, filename, mimeType);
   }
 }
 
