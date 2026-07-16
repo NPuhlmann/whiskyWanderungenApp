@@ -401,9 +401,24 @@ class _ProfilePageState extends State<ProfilePage> {
                                 backgroundColor: Colors.grey[300],
                                 backgroundImage:
                                     widget.viewModel.profile.imageUrl.isNotEmpty
-                                    ? NetworkImage(
-                                        widget.viewModel.profile.imageUrl,
-                                      )
+                                    ? (widget
+                                              .viewModel
+                                              .profile
+                                              .imageUrl
+                                              .startsWith('file://')
+                                        ? FileImage(
+                                            File(
+                                              Uri.parse(
+                                                widget
+                                                    .viewModel
+                                                    .profile
+                                                    .imageUrl,
+                                              ).path,
+                                            ),
+                                          )
+                                        : NetworkImage(
+                                            widget.viewModel.profile.imageUrl,
+                                          ))
                                     : null,
                                 child: widget.viewModel.profile.imageUrl.isEmpty
                                     ? const Icon(

@@ -18,8 +18,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    widget.viewModel.loadHikes();
-    widget.viewModel.getUserFirstName();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.viewModel.loadHikes();
+      widget.viewModel.getUserFirstName();
+    });
   }
 
   @override
