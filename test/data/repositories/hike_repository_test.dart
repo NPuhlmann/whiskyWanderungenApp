@@ -237,6 +237,81 @@ void main() {
       });
     });
 
+    group('deleteHike', () {
+      test(
+        'should call deleteHike on backend service with correct id',
+        () async {
+          // Arrange
+          const hikeId = 42;
+          when(
+            mockBackendApiService.deleteHike(hikeId),
+          ).thenAnswer((_) async {});
+
+          // Act
+          await hikeRepository.deleteHike(hikeId);
+
+          // Assert
+          verify(mockBackendApiService.deleteHike(hikeId)).called(1);
+        },
+      );
+
+      test('should throw when backend service fails', () async {
+        // Arrange
+        const hikeId = 1;
+        when(
+          mockBackendApiService.deleteHike(hikeId),
+        ).thenThrow(Exception('Delete failed'));
+
+        // Act & Assert
+        expect(
+          () => hikeRepository.deleteHike(hikeId),
+          throwsA(isA<Exception>()),
+        );
+        verify(mockBackendApiService.deleteHike(hikeId)).called(1);
+      });
+
+      test('should propagate error for invalid hike id (0)', () async {
+        // Arrange
+        when(
+          mockBackendApiService.deleteHike(0),
+        ).thenThrow(ArgumentError('Hike ID must be greater than 0'));
+
+        // Act & Assert
+        expect(
+          () => hikeRepository.deleteHike(0),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('should propagate error for negative hike id', () async {
+        // Arrange
+        when(
+          mockBackendApiService.deleteHike(-5),
+        ).thenThrow(ArgumentError('Hike ID must be greater than 0'));
+
+        // Act & Assert
+        expect(
+          () => hikeRepository.deleteHike(-5),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('should handle multiple sequential deletes', () async {
+        // Arrange
+        when(mockBackendApiService.deleteHike(any)).thenAnswer((_) async {});
+
+        // Act
+        await hikeRepository.deleteHike(1);
+        await hikeRepository.deleteHike(2);
+        await hikeRepository.deleteHike(3);
+
+        // Assert
+        verify(mockBackendApiService.deleteHike(1)).called(1);
+        verify(mockBackendApiService.deleteHike(2)).called(1);
+        verify(mockBackendApiService.deleteHike(3)).called(1);
+      });
+    });
+
     group('Error Handling', () {
       test(
         'should propagate specific exceptions from backend service',

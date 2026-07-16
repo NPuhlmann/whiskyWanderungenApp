@@ -204,6 +204,15 @@ class MockHikeRepository extends _i1.Mock implements _i12.HikeRepository {
             returnValue: _i13.Future<List<_i14.Hike>>.value(<_i14.Hike>[]),
           )
           as _i13.Future<List<_i14.Hike>>);
+
+  @override
+  _i13.Future<void> deleteHike(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteHike, [hikeId]),
+            returnValue: _i13.Future<void>.value(),
+            returnValueForMissingStub: _i13.Future<void>.value(),
+          )
+          as _i13.Future<void>);
 }
 
 /// A class which mocks [ProfileRepository].
@@ -1228,6 +1237,15 @@ class MockBackendApiService extends _i1.Mock implements _i28.BackendApiService {
             returnValue: _i13.Future<List<_i14.Hike>>.value(<_i14.Hike>[]),
           )
           as _i13.Future<List<_i14.Hike>>);
+
+  @override
+  _i13.Future<void> deleteHike(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteHike, [hikeId]),
+            returnValue: _i13.Future<void>.value(),
+            returnValueForMissingStub: _i13.Future<void>.value(),
+          )
+          as _i13.Future<void>);
 
   @override
   _i13.Future<List<String>> getHikeImages(int? hikeId) =>

@@ -200,4 +200,61 @@ class HikeService {
     }
     return userHikes;
   }
+
+  /// Permanently delete a hike and all its dependent records.
+  ///
+  /// Deletes in dependency order to avoid violating foreign-key
+  /// constraints on tables that lack ON DELETE CASCADE:
+  ///   1. hike_images        (images for the hike)
+  ///   2. whisky_samples     (samples of the hike's tasting set)
+  ///   3. tasting_sets       (the hike's tasting set, 1:1)
+  ///   4. hikes_waypoints    (junction linking hike -> waypoints)
+  ///   5. purchased_hikes    (user purchase records)
+  ///   6. hikes              (the hike itself)
+  ///
+  /// Waypoints themselves are NOT deleted because they may be shared
+  /// between multiple hikes.
+  Future<void> deleteHike(int hikeId) async {
+    if (hikeId <= 0) {
+      throw ArgumentError('Hike ID must be greater than 0');
+    }
+
+    try {
+      dev.log('🗑️ Deleting hike $hikeId and dependent records');
+
+      // 1. hike_images
+      await client.from('hike_images').delete().eq('hike_id', hikeId);
+
+      // 2. whisky_samples belonging to this hike's tasting set
+      final tastingSetResponse = await client
+          .from('tasting_sets')
+          .select('id')
+          .eq('hike_id', hikeId);
+
+      for (final row in tastingSetResponse as List<dynamic>) {
+        final int setId = int.parse(row['id'].toString());
+        await client
+            .from('whisky_samples')
+            .delete()
+            .eq('tasting_set_id', setId);
+      }
+
+      // 3. tasting_sets
+      await client.from('tasting_sets').delete().eq('hike_id', hikeId);
+
+      // 4. hikes_waypoints junction (keeps the waypoints themselves)
+      await client.from('hikes_waypoints').delete().eq('hike_id', hikeId);
+
+      // 5. purchased_hikes
+      await client.from('purchased_hikes').delete().eq('hike_id', hikeId);
+
+      // 6. the hike itself
+      await client.from('hikes').delete().eq('id', hikeId);
+
+      dev.log('✅ Hike $hikeId deleted successfully');
+    } catch (e) {
+      dev.log('❌ Error deleting hike $hikeId: $e', error: e);
+      throw ErrorHandler.createSafeException('Delete hike', e);
+    }
+  }
 }

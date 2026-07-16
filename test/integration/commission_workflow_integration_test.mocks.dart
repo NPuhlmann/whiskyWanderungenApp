@@ -418,6 +418,15 @@ class MockBackendApiService extends _i1.Mock implements _i13.BackendApiService {
           as _i12.Future<List<_i15.Hike>>);
 
   @override
+  _i12.Future<void> deleteHike(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteHike, [hikeId]),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
   _i12.Future<List<String>> getHikeImages(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getHikeImages, [hikeId]),

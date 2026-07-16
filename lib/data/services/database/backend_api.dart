@@ -57,6 +57,18 @@ class BackendApiService {
     return await _hikeService.fetchUserHikes(userId);
   }
 
+  /// Permanently delete a hike and all its dependent records.
+  ///
+  /// This is a destructive operation. It removes the hike together with its
+  /// images, tasting set (+ whisky samples), waypoint junction links and
+  /// purchase records. Waypoints themselves are kept because they may be
+  /// shared with other hikes.
+  ///
+  /// See [HikeService.deleteHike] for the deletion order.
+  Future<void> deleteHike(int hikeId) async {
+    return await _hikeService.deleteHike(hikeId);
+  }
+
   // Section for Hike Images
   // Table Structure: hike_images
   // id: int

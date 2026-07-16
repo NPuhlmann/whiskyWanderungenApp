@@ -21,4 +21,9 @@ class HikeRepository {
   Future<List<Hike>> getUserHikes(String userId) async {
     return await _backendApiService.fetchUserHikes(userId);
   }
+
+  /// Permanently delete a hike including its dependent records.
+  Future<void> deleteHike(int hikeId) async {
+    return await _backendApiService.deleteHike(hikeId);
+  }
 }
