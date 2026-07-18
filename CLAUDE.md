@@ -537,3 +537,17 @@ Future<String> uploadProfileImage(String userId, Uint8List fileBytes, String fil
   return client.storage.from('avatars').getPublicUrl(path);
 }
 ```
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub Issues on `github.com/NPuhlmann/whiskyWanderungenApp` using the `gh` CLI. External PRs are not a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five default labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo. `CONTEXT.md` at root (created lazily), ADRs in `docs/adr/`. See `docs/agents/domain.md`.

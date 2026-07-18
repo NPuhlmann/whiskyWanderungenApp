@@ -14,6 +14,9 @@ Bestand stehen jeweils bei den Konsequenzen.
 | [0005](0005-tasting-set-included-with-hike.md) | Tasting-Set ist Bestandteil eines Hikes | Akzeptiert |
 | [0006](0006-server-side-stripe-payment-intents.md) | Stripe Payment Intents ausschliesslich serverseitig erzeugen | Akzeptiert |
 | [0007](0007-ci-smoke-gate-during-test-suite-recovery.md) | CI-Smoke-Gate waehrend der Test-Bereinigung | Akzeptiert, befristet |
+| [0008](0008-offline-first-hike-caching.md) | Offline-First-Hike-Caching | Akzeptiert |
+| [0009](0009-split-profile-avatar-account-concepts.md) | Profile, Avatar und Account als getrennte Domaenenkonzepte | Akzeptiert |
+| [0010](0010-profiles-email-as-denormalized-projection.md) | `profiles.email` als denormalisierte Projektion per Trigger synchronisiert | Akzeptiert |
 
 Neue ADRs erhalten fortlaufende vierstellige Nummern. Sie werden nur fuer
 schwer rueckgaengig zu machende Entscheidungen mit relevanten Alternativen

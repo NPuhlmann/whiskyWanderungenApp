@@ -18,3 +18,11 @@ Konsequenz: Der bestehende `StripeBackendService` liest
 `STRIPE_SECRET_KEY_TEST` und ruft Stripe direkt aus Flutter auf. Er widerspricht
 dieser Entscheidung und darf nicht in produktive Zahlungsablaeufe eingebunden
 werden; er ist auf den serverseitigen Pfad umzustellen oder zu entfernen.
+
+**Status (2026-07-17):** Issue #32 schliesst diese Abweichung. `StripeBackendService`
+und `StripeService` werden geloescht; ein neues `PurchaseIntakeRepository`
+ruft die Edge Function ueber `SupabaseClient.functions.invoke` auf und bestaetigt
+den Payment Intent ueber einen `StripeConfirmAdapter` (Production:
+`FlutterStripeConfirmAdapter`, Tests: In-Memory-Fake). `STRIPE_SECRET_KEY_TEST`
+wird aus `.env.example` entfernt. Die Client-Bundle enthaelt danach nur noch
+den Stripe Publishable Key (`pk_*`), wie vom ADR gefordert.
