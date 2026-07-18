@@ -28,6 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   SupabaseClient,
   SharedPreferences,
 ])
+// ignore: unused_import
 import 'mock_repositories.mocks.dart';
 
 export 'mock_repositories.mocks.dart';

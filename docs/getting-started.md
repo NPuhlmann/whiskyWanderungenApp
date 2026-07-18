@@ -24,7 +24,7 @@ Die Datei `.env` ist ein Flutter-Asset und muss deshalb bereits vor
 ```bash
 cp .env.example .env
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 flutter run
 ```
 
@@ -87,7 +87,7 @@ muessen die sensiblen Variablen lokal gesetzt sein; sie duerfen nicht in
 | Befehl | Zweck |
 | --- | --- |
 | `flutter pub get` | Paketabhaengigkeiten laden |
-| `dart run build_runner build --delete-conflicting-outputs` | Freezed-, JSON- und Mockito-Code generieren |
+| `dart run build_runner build` | Freezed-, JSON- und Mockito-Code generieren |
 | `dart run build_runner watch` | Codegen im Watch-Modus |
 | `flutter analyze` | statische Analyse |
 | `dart format lib/` | Produktivcode formatieren |

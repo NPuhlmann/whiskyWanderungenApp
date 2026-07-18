@@ -32,7 +32,7 @@ abstract class Example with _$Example {
 Nach jeder Modell-Aenderung ausfuehren:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 ```
 
 Die erzeugten Dateien `*.freezed.dart`, `*.g.dart` und Test-Mocks werden nicht
@@ -110,7 +110,7 @@ bei Pull Requests nach `main`. Die CI setzt Flutter `3.41.7` ein und kopiert
 Lokal vor einem Pull Request mindestens ausfuehren:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 flutter analyze
 dart format --set-exit-if-changed lib/
 flutter test test/widget_test.dart

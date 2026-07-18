@@ -13,6 +13,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
   Bucket,
   FileObject,
 ])
+// ignore: unused_import
 import 'mock_supabase.mocks.dart';
 
 export 'mock_supabase.mocks.dart';

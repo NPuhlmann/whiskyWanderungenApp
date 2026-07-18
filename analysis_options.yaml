@@ -18,7 +18,46 @@ analyzer:
     - "lib/config/l10n/app_localizations*.dart"
     # Test suite remains excluded under the WHI-11 burn-down ticket — mocks
     # and fixtures drifted against current production models (~500 errors).
-    - "test/**"
+    # Only the CI-critical test files (see ci.yml) plus their shared mocks
+    # and helpers are analyzed. Fix a file, drop its exclude here and add it
+    # to the CI include list, to grow coverage incrementally.
+    - "test/config/**"
+    - "test/data/providers/**"
+    - "test/data/repositories/hike_images_repository_test.dart"
+    - "test/data/repositories/hike_repository_test.dart"
+    - "test/data/repositories/notification_repository_test.dart"
+    - "test/data/repositories/review_repository_test.dart"
+    - "test/data/repositories/user_repository_test.dart"
+    - "test/data/repositories/waypoint_repository_test.dart"
+    - "test/data/services/admin/**"
+    - "test/data/services/analytics/**"
+    - "test/data/services/auth_service_simple_test.dart"
+    - "test/data/services/backend_api_payment_extension_simple_test.dart"
+    - "test/data/services/backend_api_simple_test.dart"
+    - "test/data/services/commission/**"
+    - "test/data/services/hike_service_test.dart"
+    - "test/data/services/location/**"
+    - "test/data/services/multi_payment_service_test.dart"
+    - "test/data/services/multi_payment_simple_test.dart"
+    - "test/data/services/notifications/**"
+    - "test/data/services/offline/**"
+    - "test/data/services/workflow/**"
+    - "test/domain/**"
+    - "test/integration/**"
+    - "test/repositories/**"
+    - "test/run_all_tests.dart"
+    - "test/services/**"
+    - "test/UI/auth/**"
+    - "test/UI/checkout/checkout_page_test.dart"
+    - "test/UI/core/**"
+    - "test/UI/mobile/**"
+    - "test/UI/my_hikes/**"
+    - "test/UI/navigation/**"
+    - "test/UI/orders/**"
+    - "test/UI/profile/**"
+    - "test/UI/shared/**"
+    - "test/UI/tasting_sets/**"
+    - "test/UI/web/**"
   errors:
     # .env is created locally from .env.example (flutter_dotenv). assets/icons/
     # is a placeholder; reintroduce files before re-tightening this to warning.

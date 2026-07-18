@@ -21,7 +21,7 @@ void main() async {
   // supabase setup
   await Supabase.initialize(
     url: _ensureHttps(dotenv.env['SUPABASE_URL']!),
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    publishableKey: dotenv.env['SUPABASE_ANON_KEY']!,
     debug: _isDebugMode(),
   );
 

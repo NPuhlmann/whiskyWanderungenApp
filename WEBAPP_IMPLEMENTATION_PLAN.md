@@ -273,7 +273,7 @@ abgeschlossenen Phasen.
 ## 6. Wichtige Konventionen
 
 - **Freezed 3.x**: Modelle sind `abstract class`, generiert via
-  `flutter pub run build_runner build --delete-conflicting-outputs`.
+  `flutter pub run build_runner build`.
 - **TDD**: Tests werden vor der Implementierung geschrieben; Tests laufen
   schnell, weil Services nach Möglichkeit ohne Supabase-Mocks geprüft
   werden (Business-Logik wird direkt getestet).

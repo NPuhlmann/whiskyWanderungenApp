@@ -19,3 +19,14 @@ Funktionen erhalten fokussierte Tests; der ausgeschlossene Testbaum wird in
 abgrenzbaren Schritten reaktiviert. Sobald der Gesamttestbaum wieder stabil ist,
 wird dieses ADR durch eine Entscheidung fuer den vollstaendigen Test-Gate
 ersetzt.
+
+**Status (2026-07-18):** Issue #7 erweitert das Gate von einem einzelnen
+Smoke-Test auf eine explizite Include-Liste: `widget_test.dart` plus
+`auth_service_test.dart`, `profile_repository_test.dart`,
+`hike_details_view_model_test.dart` und `checkout_view_model_test.dart`
+(Auth, Nutzerdaten, Hike-Buchung, Payment-Flow). Die Analyzer-Exclude-Liste
+in `analysis_options.yaml` wurde von einem pauschalen `test/**` auf gezielte
+Excludes pro verbleibender Testdatei umgestellt, sodass die vier Testdateien
+plus `test/mocks/`, `test/test_helpers.dart` und `test/data/test_helpers.dart`
+wieder analysiert werden. Weitere Dateien werden nach demselben Muster
+schrittweise reaktiviert.

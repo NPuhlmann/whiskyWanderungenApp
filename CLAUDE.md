@@ -14,7 +14,7 @@ This is "Whisky Hikes" - a Flutter mobile application for discovering and tracki
 - `flutter build ios` - Build for iOS
 
 ### Code Generation
-- `flutter pub run build_runner build --delete-conflicting-outputs` - Generate Freezed models and JSON serialization
+- `flutter pub run build_runner build` - Generate Freezed models and JSON serialization
 - `flutter pub run flutter_launcher_icons:main` - Generate app icons
 - `flutter gen-l10n` - Generate localizations
 
@@ -124,7 +124,7 @@ Provides transparent caching for profile data and images:
 ### When Working with Models
 Always run code generation after modifying Freezed models:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+flutter pub run build_runner build
 ```
 
 ### Database Schema
@@ -275,7 +275,7 @@ abstract class TastingSet with _$TastingSet {
 ### Code Generation Workflow
 ```bash
 # After Freezed model changes
-flutter pub run build_runner build --delete-conflicting-outputs
+flutter pub run build_runner build
 
 # Continuous generation during development
 flutter pub run build_runner watch

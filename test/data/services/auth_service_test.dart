@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -664,6 +663,10 @@ void main() {
         const email = 'test@example.com';
         const password = 'TestPassword123!';
         final expectedResponse = AuthResponse();
+        final prodAuthService = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: false,
+        );
 
         when(
           mockAuthClient.signUp(
@@ -675,7 +678,7 @@ void main() {
         ).thenAnswer((_) async => expectedResponse);
 
         // Act
-        final result = await authService.signUpWithEmailPassword(
+        final result = await prodAuthService.signUpWithEmailPassword(
           email,
           password,
           null,

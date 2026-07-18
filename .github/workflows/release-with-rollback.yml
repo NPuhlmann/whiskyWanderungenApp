@@ -75,7 +75,7 @@ jobs:
         run: flutter pub get
         
       - name: Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: flutter packages pub run build_runner build
         
       - name: Run all tests
         run: flutter test --coverage
@@ -130,7 +130,7 @@ jobs:
         run: flutter pub get
         
       - name: Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: flutter packages pub run build_runner build
         
       - name: Setup Android Keystore
         uses: r0adkll/sign-android-release@v1
@@ -179,7 +179,7 @@ jobs:
         run: flutter pub get
         
       - name: Generate code
-        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+        run: flutter packages pub run build_runner build
         
       - name: Setup iOS Code Signing
         uses: apple-actions/import-codesigning-certs@v1

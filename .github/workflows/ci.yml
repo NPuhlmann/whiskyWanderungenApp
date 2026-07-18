@@ -27,22 +27,39 @@ jobs:
       - name: Prepare dotenv (CI uses .env.example template)
         run: cp .env.example .env
 
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Install dependencies
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
-      - name: Analyze code (lib/ strict; test/ excluded in analysis_options.yaml)
+      - name: Analyze code (lib/ strict; test/ scope in analysis_options.yaml)
         run: flutter analyze
 
       - name: Verify lib/ formatting
         run: dart format --set-exit-if-changed lib/
 
-      - name: Run smoke tests
-        # The broader test suite is under burn-down (drifted mocks/fixtures);
-        # CI gates on the repo-adoption smoke test for now.
-        run: flutter test test/widget_test.dart
+      - name: Run critical tests
+        # Explicit include list, not the full suite (drifted mocks/fixtures
+        # under WHI-11 burn-down). Fix a file, add it here and drop its
+        # exclude in analysis_options.yaml, to grow coverage incrementally.
+        run: >
+          flutter test
+          test/widget_test.dart
+          test/data/services/auth_service_test.dart
+          test/data/repositories/profile_repository_test.dart
+          test/UI/hike_details/hike_details_view_model_test.dart
+          test/UI/checkout/checkout_view_model_test.dart
 
   security-scan:
     name: Security Scan
@@ -103,11 +120,21 @@ jobs:
       - name: Prepare dotenv
         run: cp .env.example .env
 
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Install dependencies
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Build Android APK
         run: flutter build apk --debug
@@ -145,11 +172,21 @@ jobs:
       - name: Prepare dotenv
         run: cp .env.example .env
 
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Install dependencies
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Build iOS
         run: flutter build ios --debug --no-codesign
@@ -178,11 +215,21 @@ jobs:
       - name: Prepare dotenv
         run: cp .env.example .env
 
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Install dependencies
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Build Web (admin entry)
         # lib/main.dart is the mobile entry; lib/main_web.dart is the admin

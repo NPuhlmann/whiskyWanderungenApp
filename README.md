@@ -56,7 +56,7 @@ Nach `git clone` reicht aus frischem Stand heraus:
 ```bash
 cp .env.example .env \
   && flutter pub get \
-  && dart run build_runner build --delete-conflicting-outputs \
+  && dart run build_runner build \
   && flutter run
 ```
 
@@ -83,7 +83,7 @@ cp .env.example .env \
 
 4. **Code generieren (Freezed / JSON / Mocks)**
    ```bash
-   dart run build_runner build --delete-conflicting-outputs
+   dart run build_runner build
    ```
 
 5. **App starten**
@@ -96,7 +96,7 @@ cp .env.example .env \
 | Befehl | Zweck |
 | --- | --- |
 | `flutter pub get` | Dependencies installieren |
-| `dart run build_runner build --delete-conflicting-outputs` | Codegen (Freezed, JSON, Mockito) einmalig ausführen |
+| `dart run build_runner build` | Codegen (Freezed, JSON, Mockito) einmalig ausführen |
 | `dart run build_runner watch` | Codegen im Watch-Modus |
 | `flutter analyze --no-fatal-infos` | Statische Analyse (CI-Modus — Warnings fatal, Infos informativ) |
 | `flutter test test/widget_test.dart` | Adoption-Smoke-Test (CI-Gate) |
@@ -182,7 +182,7 @@ Das Projekt enthält bereits die vollständige Supabase-Konfiguration. Vor dem P
 - `terraform-supabase/supabase/config.toml` — lokale Supabase-CLI-Konfiguration.
 - `terraform-supabase/supabase/migrations/20250821151237_initial_schema.sql` — initiales DB-Schema.
 - `supabase_trigger_profile_creation.sql`, `migration_existing_users.sql` — zusätzliche SQL, die nach der Schema-Migration eingespielt wird.
-- `lib/main.dart` — Laufzeit-Initialisierung via `Supabase.initialize(url: dotenv.env['SUPABASE_URL'], anonKey: dotenv.env['SUPABASE_ANON_KEY'])`.
+- `lib/main.dart` — Laufzeit-Initialisierung via `Supabase.initialize(url: dotenv.env['SUPABASE_URL'], publishableKey: dotenv.env['SUPABASE_ANON_KEY'])`.
 - `lib/data/services/database/backend_api.dart` — zentraler Zugriffspunkt für Supabase-Aufrufe aus dem App-Code.
 
 Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANON_KEY` aus dem Supabase-Dashboard (Settings → API) in die lokale `.env` eintragen — kein Re-Provisioning nötig. Für ein neues Projekt siehe den Abschnitt **Automatisches Deployment** unten.
@@ -368,7 +368,7 @@ flutter doctor -v
 flutter pub deps --style=tree
 
 # Build Runner
-flutter packages pub run build_runner build --delete-conflicting-outputs
+flutter packages pub run build_runner build
 ```
 
 ## 📚 Nützliche Befehle

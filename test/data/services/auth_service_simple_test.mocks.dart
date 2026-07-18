@@ -167,8 +167,8 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   );
 
   @override
-  set headers(Map<String, String>? headers) => super.noSuchMethod(
-    Invocation.setter(#headers, headers),
+  set headers(Map<String, String>? newHeaders) => super.noSuchMethod(
+    Invocation.setter(#headers, newHeaders),
     returnValueForMissingStub: null,
   );
 

@@ -101,22 +101,27 @@ class AuthService {
 
   // get current user mail
   String? getCurrentUserEmail() {
-    final session = client.auth.currentSession;
-    final user = session?.user;
-    return user?.email;
+    return _currentUser()?.email;
   }
 
   String? getCurrentUserId() {
-    final session = client.auth.currentSession;
-    final user = session?.user;
-    return user?.id;
+    return _currentUser()?.id;
   }
 
   bool isUserLoggedIn() {
-    final session = client.auth.currentSession;
-    final user = session?.user;
+    return _currentUser() != null;
+  }
 
-    return user == null ? false : true;
+  // Session.user is non-nullable in the SDK, but a stale/corrupted session
+  // can still throw when accessed — treat that the same as "no user".
+  User? _currentUser() {
+    final session = client.auth.currentSession;
+    if (session == null) return null;
+    try {
+      return session.user;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Prüft, ob der aktuell eingeloggte User die Admin-Rolle hat.

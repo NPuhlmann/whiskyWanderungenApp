@@ -15,8 +15,14 @@ class ProfileRepository {
   Future<Profile> getUserProfileById(String id) async {
     log("🔍 Lade Profil für Benutzer: $id");
 
-    // 1. Prüfe lokalen Cache zuerst
-    final cachedProfile = await _cacheService.getCachedProfileData(id);
+    // 1. Prüfe lokalen Cache zuerst (ein defekter Cache darf das Laden
+    // des Profils vom Backend nicht verhindern)
+    Profile? cachedProfile;
+    try {
+      cachedProfile = await _cacheService.getCachedProfileData(id);
+    } catch (e) {
+      log("⚠️ Cache-Lesefehler, fahre mit Backend-Abruf fort: $e");
+    }
     if (cachedProfile != null) {
       log("✅ Profil aus lokalem Cache geladen: $id");
       return cachedProfile;
@@ -80,9 +86,14 @@ class ProfileRepository {
         fileExt,
       );
 
-      // Cache das Bild lokal
-      await _cacheService.cacheProfileImage(userId, imageBytes, fileExt);
-      log("💾 Profilbild lokal gecacht für Benutzer: $userId");
+      // Cache das Bild lokal (ein Cache-Schreibfehler darf den bereits
+      // erfolgreichen Upload nicht als fehlgeschlagen melden)
+      try {
+        await _cacheService.cacheProfileImage(userId, imageBytes, fileExt);
+        log("💾 Profilbild lokal gecacht für Benutzer: $userId");
+      } catch (e) {
+        log("⚠️ Cache-Schreibfehler nach erfolgreichem Upload: $e");
+      }
 
       return imageUrl;
     } catch (e) {

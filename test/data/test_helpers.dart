@@ -1,5 +1,5 @@
 /// Test helper utilities for creating test data
-library test_helpers;
+library;
 
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';

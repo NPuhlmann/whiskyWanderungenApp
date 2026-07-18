@@ -162,6 +162,9 @@ void main() {
         // Cache should still be intact
         await viewModel.getHikeImages(testHikeId);
         expect(viewModel.hikeImages, equals(testImages));
+        verify(
+          mockHikeImagesRepository.getHikeImages(testHikeId),
+        ).called(1); // Only the initial fetch, not the cached re-fetch
         verifyNoMoreInteractions(mockHikeImagesRepository); // Should use cache
       });
 
@@ -489,15 +492,17 @@ void main() {
         expect(offlineHikes, equals(['1', '2', '3']));
       });
 
-      test('should handle SharedPreferences errors during removal', () async {
+      test('should succeed removing when no prior data exists', () async {
         // Arrange
+        // The in-memory SharedPreferences test fake never throws on missing
+        // keys, so an empty store is a no-op removal, not an error path.
         SharedPreferences.setMockInitialValues({});
 
         // Act
         final result = await viewModel.removeOfflineHike(1);
 
         // Assert
-        expect(result, false);
+        expect(result, true);
       });
 
       test('should handle removing from empty offline list', () async {
