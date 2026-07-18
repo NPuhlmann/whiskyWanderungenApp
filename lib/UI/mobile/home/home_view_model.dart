@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:whisky_hikes/data/repositories/hike_repository.dart';
+import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 
 import '../../../data/repositories/user_repository.dart';
@@ -11,14 +11,14 @@ import '../../../domain/models/profile.dart';
 
 class HomePageViewModel extends ChangeNotifier {
   HomePageViewModel({
-    required HikeRepository hikeRepository,
+    required OfflineFirstHikeRepository hikeRepository,
     required ProfileRepository profileRepository,
     required UserRepository userRepository,
   }) : _hikeRepository = hikeRepository,
        _profileRepository = profileRepository,
        _userRepository = userRepository;
 
-  final HikeRepository _hikeRepository;
+  final OfflineFirstHikeRepository _hikeRepository;
   final ProfileRepository _profileRepository;
   final UserRepository _userRepository;
 
@@ -36,14 +36,14 @@ class HomePageViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> loadHikes() async {
+  Future<void> loadHikes({bool forceRefresh = false}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       // Load hikes and favorites concurrently
       final results = await Future.wait([
-        _hikeRepository.getAllAvailableHikes(),
+        _hikeRepository.getAllAvailableHikes(forceRefresh: forceRefresh),
         _loadFavoriteIds(),
       ]);
 
@@ -59,6 +59,9 @@ class HomePageViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Called from pull-to-refresh: bypasses the cache for a fresh catalog.
+  Future<void> refresh() => loadHikes(forceRefresh: true);
 
   Future<void> getUserFirstName() async {
     try {

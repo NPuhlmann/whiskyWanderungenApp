@@ -26,6 +26,8 @@ void main() async {
     debug: _isDebugMode(),
   );
 
+  await ConnectivityService.instance.initialize();
+
   // Initialize payment services
   try {
     await MultiPaymentService.instance.initialize();
@@ -34,10 +36,6 @@ void main() async {
     debugPrint('⚠️ Payment services initialization failed: $e');
     // Continue app startup even if payment initialization fails
   }
-
-  // Initialize connectivity service
-  ConnectivityService.instance.initialize();
-  debugPrint('✅ ConnectivityService initialized');
 
   runApp(MultiProvider(providers: providers, child: const MyApp()));
 }
