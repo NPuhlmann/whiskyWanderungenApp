@@ -51,15 +51,11 @@ class _AdminGuardState extends State<AdminGuard> {
   @override
   Widget build(BuildContext context) {
     if (_isAdmin == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (_isAdmin == false) {
       // Redirect wurde in _check() bereits geplant — bis er greift, Spinner.
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return widget.child;
   }

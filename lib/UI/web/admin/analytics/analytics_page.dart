@@ -102,10 +102,7 @@ class _Toolbar extends StatelessWidget {
       ),
     );
     if (picked != null) {
-      await provider.setDateRange(
-        startDate: picked.start,
-        endDate: picked.end,
-      );
+      await provider.setDateRange(startDate: picked.start, endDate: picked.end);
     }
   }
 }
@@ -248,7 +245,10 @@ class _KpiRow extends StatelessWidget {
     if (wide) {
       return Row(
         children: [
-          for (final t in tiles) ...[Expanded(child: t), const SizedBox(width: 12)],
+          for (final t in tiles) ...[
+            Expanded(child: t),
+            const SizedBox(width: 12),
+          ],
         ]..removeLast(),
       );
     }
@@ -469,10 +469,7 @@ class _CustomerCard extends StatelessWidget {
                     symbol: '€',
                   ).format(insights.averageLifetimeValue),
                 ),
-                _MiniStat(
-                  label: 'Churn-Risiko',
-                  value: '$churnRisk',
-                ),
+                _MiniStat(label: 'Churn-Risiko', value: '$churnRisk'),
                 _MiniStat(
                   label: 'High-Value',
                   value: '${segmentation['high'] ?? 0}',
@@ -511,7 +508,10 @@ class _MiniStat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+          Text(
+            label,
+            style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
+          ),
           const SizedBox(height: 4),
           Text(
             value,
@@ -544,10 +544,8 @@ class _TopRoutesCard extends StatelessWidget {
               const Text('Keine Routen im gewählten Zeitraum.')
             else
               ...topRoutes.asMap().entries.map(
-                (entry) => _TopRouteTile(
-                  index: entry.key,
-                  performance: entry.value,
-                ),
+                (entry) =>
+                    _TopRouteTile(index: entry.key, performance: entry.value),
               ),
           ],
         ),
@@ -614,10 +612,7 @@ class _RouteRevenueChartCard extends StatelessWidget {
                   ? const Center(
                       child: Text('Keine Umsätze im gewählten Zeitraum.'),
                     )
-                  : _RouteRevenueBarChart(
-                      entries: entries,
-                      nameById: nameById,
-                    ),
+                  : _RouteRevenueBarChart(entries: entries, nameById: nameById),
             ),
           ],
         ),
@@ -629,10 +624,7 @@ class _RouteRevenueChartCard extends StatelessWidget {
 class _RouteRevenueBarChart extends StatelessWidget {
   final List<MapEntry<String, double>> entries;
   final Map<String, String> nameById;
-  const _RouteRevenueBarChart({
-    required this.entries,
-    required this.nameById,
-  });
+  const _RouteRevenueBarChart({required this.entries, required this.nameById});
 
   @override
   Widget build(BuildContext context) {
@@ -682,8 +674,10 @@ class _RouteRevenueBarChart extends StatelessWidget {
               showTitles: true,
               reservedSize: 48,
               getTitlesWidget: (value, _) => Text(
-                NumberFormat.compactCurrency(locale: 'de_DE', symbol: '€')
-                    .format(value),
+                NumberFormat.compactCurrency(
+                  locale: 'de_DE',
+                  symbol: '€',
+                ).format(value),
                 style: const TextStyle(fontSize: 10),
               ),
             ),
@@ -753,9 +747,7 @@ class _SegmentationChartCard extends StatelessWidget {
               height: 220,
               child: total == 0
                   ? const Center(
-                      child: Text(
-                        'Noch keine Kundensegmente vorhanden.',
-                      ),
+                      child: Text('Noch keine Kundensegmente vorhanden.'),
                     )
                   : Row(
                       children: [
@@ -797,11 +789,7 @@ class _SegmentationChartCard extends StatelessWidget {
                               Colors.amber.shade700,
                             ),
                             const SizedBox(height: 6),
-                            _legendDot(
-                              'Low-Value',
-                              low,
-                              Colors.blueGrey,
-                            ),
+                            _legendDot('Low-Value', low, Colors.blueGrey),
                           ],
                         ),
                         const SizedBox(width: 16),

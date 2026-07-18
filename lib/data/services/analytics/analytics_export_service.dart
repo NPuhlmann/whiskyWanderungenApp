@@ -114,15 +114,15 @@ class AnalyticsExportService {
     final rows = <List<String>>[
       ['Route ID', 'Route Name', 'Umsatz (EUR)', 'Bestellungen'],
     ];
-    final routeIds = <String>{
-      ...sales.revenueByRoute.keys,
-      ...sales.ordersByRoute.keys,
-    }.toList()
-      ..sort((a, b) {
-        final revA = sales.revenueByRoute[a] ?? 0;
-        final revB = sales.revenueByRoute[b] ?? 0;
-        return revB.compareTo(revA);
-      });
+    final routeIds =
+        <String>{
+          ...sales.revenueByRoute.keys,
+          ...sales.ordersByRoute.keys,
+        }.toList()..sort((a, b) {
+          final revA = sales.revenueByRoute[a] ?? 0;
+          final revB = sales.revenueByRoute[b] ?? 0;
+          return revB.compareTo(revA);
+        });
     for (final id in routeIds) {
       rows.add([
         id,
@@ -135,10 +135,7 @@ class AnalyticsExportService {
   }
 
   /// Compose a filename like `analytics_revenue_20260518_1330.csv`.
-  String generateExportFilename({
-    required String type,
-    required String slug,
-  }) {
+  String generateExportFilename({required String type, required String slug}) {
     final now = DateTime.now();
     final date =
         '${now.year}${_pad(now.month)}${_pad(now.day)}_${_pad(now.hour)}${_pad(now.minute)}';
@@ -174,7 +171,11 @@ class AnalyticsExportService {
     return pw.Table(
       border: pw.TableBorder.all(),
       children: [
-        _kvRow('Kunden gesamt', insights.totalCustomers.toString(), header: true),
+        _kvRow(
+          'Kunden gesamt',
+          insights.totalCustomers.toString(),
+          header: true,
+        ),
         _kvRow('Neukunden', insights.newCustomers.toString()),
         _kvRow('Wiederkehrend', insights.returningCustomers.toString()),
         _kvRow('Repeat-Rate', insights.formattedRepeatPurchaseRate),
@@ -268,20 +269,19 @@ class AnalyticsExportService {
   }
 
   pw.Widget _th(String text) => pw.Padding(
-        padding: const pw.EdgeInsets.all(6),
-        child: pw.Text(
-          text,
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
-        ),
-      );
+    padding: const pw.EdgeInsets.all(6),
+    child: pw.Text(
+      text,
+      style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
+    ),
+  );
 
   pw.Widget _td(String text) => pw.Padding(
-        padding: const pw.EdgeInsets.all(6),
-        child: pw.Text(text, style: const pw.TextStyle(fontSize: 10)),
-      );
+    padding: const pw.EdgeInsets.all(6),
+    child: pw.Text(text, style: const pw.TextStyle(fontSize: 10)),
+  );
 
-  String _formatDate(DateTime d) =>
-      '${_pad(d.day)}.${_pad(d.month)}.${d.year}';
+  String _formatDate(DateTime d) => '${_pad(d.day)}.${_pad(d.month)}.${d.year}';
 
   String _formatDateTime(DateTime d) =>
       '${_formatDate(d)} ${_pad(d.hour)}:${_pad(d.minute)}';

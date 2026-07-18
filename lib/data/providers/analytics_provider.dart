@@ -20,8 +20,8 @@ class AnalyticsProvider extends ChangeNotifier {
     required CustomerAnalyticsService customerService,
     DateTime? initialStart,
     DateTime? initialEnd,
-  })  : _sales = salesService,
-        _customer = customerService {
+  }) : _sales = salesService,
+       _customer = customerService {
     final now = DateTime.now();
     _endDate = initialEnd ?? DateTime(now.year, now.month, now.day, 23, 59, 59);
     _startDate = initialStart ?? _endDate.subtract(const Duration(days: 30));

@@ -49,8 +49,7 @@ class AdminRouter {
       GoRoute(
         path: analyticsRoute,
         name: 'AdminAnalytics',
-        builder: (context, state) =>
-            const AdminGuard(child: AnalyticsPage()),
+        builder: (context, state) => const AdminGuard(child: AnalyticsPage()),
       ),
       GoRoute(
         path: teamRoute,
