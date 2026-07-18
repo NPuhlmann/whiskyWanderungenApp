@@ -581,26 +581,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Rolle (nur lesend, aus Account)
-                    InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)!.role,
-                        floatingLabelBehavior: FloatingLabelBehavior.auto,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                      ),
-                      child: Text(
-                        widget.viewModel.account.role == 'admin'
-                            ? AppLocalizations.of(context)!.roleAdmin
-                            : AppLocalizations.of(context)!.roleUser,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     // Geburtsdatum-Feld
                     InkWell(
                       onTap: () => _showDatePicker(context),

@@ -30,15 +30,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get email => 'Email';
 
   @override
-  String get role => 'Role';
-
-  @override
-  String get roleUser => 'User';
-
-  @override
-  String get roleAdmin => 'Admin';
-
-  @override
   String get passwordNotMatch => 'Passwords do not match';
 
   @override
