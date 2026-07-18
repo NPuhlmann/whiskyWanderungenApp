@@ -1,512 +1,94 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
 
 import 'package:whisky_hikes/UI/mobile/checkout/checkout_view_model.dart';
-import 'package:whisky_hikes/data/repositories/payment_repository.dart';
+import 'package:whisky_hikes/data/repositories/purchase_intake_repository.dart';
+import 'package:whisky_hikes/data/services/payment/stripe_confirm_adapter.dart';
 import 'package:whisky_hikes/domain/models/basic_order.dart';
-import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
+import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/payment_intent.dart'
     show PaymentMethodType;
 
-import 'checkout_view_model_test.mocks.dart';
+import '../../data/repositories/purchase_intake_repository_test.dart'
+    show FakeConfirmAdapter;
 
-@GenerateMocks([PaymentRepository])
+const _validAddress = {
+  'firstName': 'Nico',
+  'lastName': 'Puhlmann',
+  'street': 'Musterstraße 12',
+  'city': 'Berlin',
+  'postalCode': '10115',
+  'country': 'Deutschland',
+};
+
+Hike _testHike({String? companyId = 'company-1'}) => Hike(
+  id: 1,
+  name: 'Islay Trail',
+  length: 12.0,
+  steep: 3.0,
+  elevation: 200,
+  description: 'A trail',
+  difficulty: Difficulty.mid,
+  price: 30.99,
+  companyId: companyId,
+);
+
 void main() {
-  group('CheckoutViewModel Tests (TDD - Red Phase)', () {
+  group('CheckoutViewModel', () {
     late CheckoutViewModel viewModel;
-    late MockPaymentRepository mockPaymentRepository;
-    late BasicOrder testOrder;
+    late FakeConfirmAdapter confirmAdapter;
+    late Hike testHike;
+    late int invokeCount;
 
-    setUp(() {
-      mockPaymentRepository = MockPaymentRepository();
-      testOrder = BasicOrder(
-        id: 1,
-        orderNumber: 'WH2025-TEST-001',
-        hikeId: 1,
-        userId: 'test-user',
-        totalAmount: 30.99,
-        deliveryType: DeliveryType.standardShipping,
-        status: OrderStatus.pending,
-        createdAt: DateTime.now(),
-      );
-
-      viewModel = CheckoutViewModel(
-        paymentRepository: mockPaymentRepository,
-        order: testOrder,
-      );
-    });
-
-    tearDown(() {
-      viewModel.dispose();
-    });
-
-    group('Initialization', () {
-      test('should initialize with order data and default values', () {
-        // Act & Assert
-        expect(viewModel.order.orderNumber, equals('WH2025-TEST-001'));
-        expect(viewModel.order.totalAmount, equals(30.99));
-        expect(
-          viewModel.order.deliveryType,
-          equals(DeliveryType.standardShipping),
-        );
-        expect(viewModel.isLoading, isFalse);
-        expect(viewModel.errorMessage, isNull);
-        expect(viewModel.selectedPaymentMethod, isNull);
-        expect(viewModel.deliveryAddress, isNull);
-        expect(viewModel.paymentSuccess, isFalse);
-        expect(viewModel.completedOrderId, isNull);
-      });
-
-      test('should correctly determine canProcessPayment state', () {
-        // Act & Assert - Initially should be false (no payment method)
-        expect(viewModel.canProcessPayment, isFalse);
-
-        // Set payment method
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        expect(
-          viewModel.canProcessPayment,
-          isFalse,
-        ); // Still false - shipping order needs address
-
-        // Set delivery address
-        viewModel.setDeliveryAddress({
-          'street': 'Teststraße 123',
-          'city': 'Hamburg',
-          'postalCode': '20095',
-          'country': 'Deutschland',
-        });
-        expect(viewModel.canProcessPayment, isTrue); // Now should be true
-      });
-
-      test('should handle pickup orders without address requirement', () {
-        // Arrange - Create pickup order
-        final pickupOrder = BasicOrder(
-          id: 2,
-          orderNumber: 'WH2025-PICKUP-001',
-          hikeId: 1,
-          userId: 'test-user',
-          totalAmount: 25.99,
-          deliveryType: DeliveryType.pickup,
-          status: OrderStatus.pending,
-          createdAt: DateTime.now(),
-        );
-
-        final pickupViewModel = CheckoutViewModel(
-          paymentRepository: mockPaymentRepository,
-          order: pickupOrder,
-        );
-
-        // Act & Assert
-        expect(
-          pickupViewModel.canProcessPayment,
-          isFalse,
-        ); // No payment method yet
-        pickupViewModel.setPaymentMethod(
-          PaymentMethodType.card,
-          'pm_test_card_123',
-        );
-        expect(
-          pickupViewModel.canProcessPayment,
-          isTrue,
-        ); // Should be true - no address needed
-
-        pickupViewModel.dispose();
-      });
-    });
-
-    group('Payment Method Management', () {
-      test('should set and update payment method', () {
-        // Arrange
-        expect(viewModel.selectedPaymentMethod, isNull);
-
-        // Act
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-
-        // Assert
-        expect(viewModel.selectedPaymentMethod, equals(PaymentMethodType.card));
-      });
-
-      test('should notify listeners when payment method changes', () {
-        // Arrange
-        int notificationCount = 0;
-        viewModel.addListener(() => notificationCount++);
-
-        // Act
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_456');
-
-        // Assert
-        expect(notificationCount, equals(2));
-      });
-
-      test('should update canProcessPayment when payment method changes', () {
-        // Arrange
-        expect(viewModel.canProcessPayment, isFalse);
-
-        // Act - Set payment method for shipping order (still needs address)
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-
-        // Assert - Still false because shipping order needs address
-        expect(viewModel.canProcessPayment, isFalse);
-
-        // Act - Set address
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street 123',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
-
-        // Assert - Now should be true
-        expect(viewModel.canProcessPayment, isTrue);
-      });
-    });
-
-    group('Address Management', () {
-      test('should update delivery address and store fields', () {
-        // Act
-        viewModel.setDeliveryAddress({
-          'street': 'Teststraße 123',
-          'city': 'Hamburg',
-          'postalCode': '20095',
-          'country': 'Deutschland',
-        });
-
-        // Assert
-        expect(viewModel.deliveryAddress?['street'], equals('Teststraße 123'));
-        expect(viewModel.deliveryAddress?['city'], equals('Hamburg'));
-        expect(viewModel.deliveryAddress?['postalCode'], equals('20095'));
-        expect(viewModel.deliveryAddress?['country'], equals('Deutschland'));
-      });
-
-      test('should update individual address fields', () {
-        // Act
-        viewModel.updateAddressField('street', 'Updated Street 456');
-        viewModel.updateAddressField('city', 'Berlin');
-        viewModel.updateAddressField('postalCode', '10115');
-
-        // Assert
-        expect(
-          viewModel.deliveryAddress?['street'],
-          equals('Updated Street 456'),
-        );
-        expect(viewModel.deliveryAddress?['city'], equals('Berlin'));
-        expect(viewModel.deliveryAddress?['postalCode'], equals('10115'));
-      });
-
-      test('should validate address fields correctly', () {
-        // Test empty field validation
-        expect(viewModel.validateAddressField('street', ''), isNotNull);
-        expect(viewModel.validateAddressField('city', ''), isNotNull);
-        expect(viewModel.validateAddressField('postalCode', ''), isNotNull);
-
-        // Test valid fields
-        expect(
-          viewModel.validateAddressField('street', 'Valid Street 123'),
-          isNull,
-        );
-        expect(viewModel.validateAddressField('city', 'Valid City'), isNull);
-        expect(viewModel.validateAddressField('postalCode', '12345'), isNull);
-
-        // Test invalid postal code
-        expect(viewModel.validateAddressField('postalCode', '123'), isNotNull);
-        expect(
-          viewModel.validateAddressField('postalCode', 'abcde'),
-          isNotNull,
-        );
-
-        // Test short street name
-        expect(viewModel.validateAddressField('street', 'St'), isNotNull);
-        expect(viewModel.validateAddressField('city', 'A'), isNotNull);
-      });
-
-      test('should notify listeners when address changes', () {
-        // Arrange
-        int notificationCount = 0;
-        viewModel.addListener(() => notificationCount++);
-
-        // Act
-        viewModel.setDeliveryAddress({'street': 'Test Street'});
-        viewModel.updateAddressField('city', 'Test City');
-
-        // Assert
-        expect(notificationCount, equals(2));
-      });
-    });
-
-    group('Payment Processing', () {
-      test('should process payment successfully with valid data', () async {
-        // Arrange
-        final successfulResult = BasicPaymentResult(
-          isSuccess: true,
-          status: PaymentStatus.succeeded,
-          paymentIntentId: 'pi_test_123',
-          clientSecret: 'pi_test_123_secret_abc',
-        );
-
-        when(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: anyNamed('paymentMethod'),
-            paymentMethodId: anyNamed('paymentMethodId'),
-            metadata: anyNamed('metadata'),
-          ),
-        ).thenAnswer((_) async => successfulResult);
-
-        // Setup valid state
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street 123',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
-
-        // Act
-        await viewModel.processPayment();
-
-        // Assert
-        expect(viewModel.paymentSuccess, isTrue);
-        expect(viewModel.completedOrderId, equals(1));
-        expect(viewModel.isLoading, isFalse);
-        expect(viewModel.errorMessage, isNull);
-
-        // Verify repository was called
-        verify(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: PaymentMethodType.card,
-            paymentMethodId: 'pm_test_card_123',
-            metadata: anyNamed('metadata'),
-          ),
-        ).called(1);
-      });
-
-      test(
-        'should handle payment failures with friendly error message',
-        () async {
-          // Arrange
-          final failedResult = BasicPaymentResult.failure(
-            error: 'Your card was declined',
-            status: PaymentStatus.failed,
-          );
-
-          when(
-            mockPaymentRepository.processPayment(
-              order: anyNamed('order'),
-              paymentMethod: anyNamed('paymentMethod'),
-              paymentMethodId: anyNamed('paymentMethodId'),
-              metadata: anyNamed('metadata'),
-            ),
-          ).thenAnswer((_) async => failedResult);
-
-          // Setup valid state
-          viewModel.setPaymentMethod(
-            PaymentMethodType.card,
-            'pm_test_card_declined',
-          );
-          viewModel.setDeliveryAddress({
-            'street': 'Test Street 123',
-            'city': 'Test City',
-            'postalCode': '12345',
-            'country': 'Deutschland',
-          });
-
-          // Act
-          await viewModel.processPayment();
-
-          // Assert
-          expect(viewModel.paymentSuccess, isFalse);
-          expect(viewModel.isLoading, isFalse);
-          expect(viewModel.errorMessage, contains('Karte wurde abgelehnt'));
+    /// Builds the ViewModel over a real repository whose Edge Function call
+    /// and Stripe confirm are both faked — no Supabase, no network.
+    CheckoutViewModel buildViewModel({
+      Hike? hike,
+      Map<String, dynamic>? response,
+      String? userId = 'user-1',
+      Object? throws,
+    }) {
+      final repository = PurchaseIntakeRepository(
+        confirmAdapter: confirmAdapter,
+        currentUserId: () => userId,
+        invoker: (name, body) async {
+          invokeCount++;
+          if (throws != null) throw throws;
+          return response ??
+              {
+                'success': true,
+                'clientSecret': 'pi_123_secret_abc',
+                'paymentIntentId': 'pi_123',
+                'orderId': 42,
+                'orderNumber': 'WH2025-TEST-001',
+              };
         },
       );
+      return CheckoutViewModel(
+        purchaseIntakeRepository: repository,
+        hike: hike ?? testHike,
+      );
+    }
 
-      test('should handle 3D Secure authentication required', () async {
-        // Arrange
-        final authRequiredResult = BasicPaymentResult.requiresAction(
-          clientSecret: 'pi_test_auth_secret_abc',
-          paymentIntentId: 'pi_test_auth',
-        );
+    /// Fills in everything [CheckoutViewModel.canProcessPayment] demands.
+    void completeForm(CheckoutViewModel vm) {
+      vm.setPaymentMethod(PaymentMethodType.card, 'pm_test_123');
+      vm.setDeliveryAddress(Map<String, dynamic>.from(_validAddress));
+    }
 
-        when(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: anyNamed('paymentMethod'),
-            paymentMethodId: anyNamed('paymentMethodId'),
-            metadata: anyNamed('metadata'),
-          ),
-        ).thenAnswer((_) async => authRequiredResult);
-
-        // Setup valid state
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_auth');
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street 123',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
-
-        // Act
-        await viewModel.processPayment();
-
-        // Assert
-        expect(viewModel.paymentSuccess, isFalse);
-        expect(viewModel.isLoading, isFalse);
-        expect(
-          viewModel.errorMessage,
-          contains('Zusätzliche Authentifizierung erforderlich'),
-        );
-      });
-
-      test('should show loading state during payment processing', () async {
-        // Arrange
-        final successfulResult = BasicPaymentResult(
-          isSuccess: true,
-          status: PaymentStatus.succeeded,
-          paymentIntentId: 'pi_test_123',
-        );
-
-        when(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: anyNamed('paymentMethod'),
-            paymentMethodId: anyNamed('paymentMethodId'),
-            metadata: anyNamed('metadata'),
-          ),
-        ).thenAnswer(
-          (_) => Future.delayed(
-            const Duration(milliseconds: 100),
-            () => successfulResult,
-          ),
-        );
-
-        // Setup valid state
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street 123',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
-
-        // Act
-        final paymentFuture = viewModel.processPayment();
-
-        // Assert - during processing
-        expect(viewModel.isLoading, isTrue);
-
-        // Wait for completion
-        await paymentFuture;
-
-        // Assert - after processing
-        expect(viewModel.isLoading, isFalse);
-        expect(viewModel.paymentSuccess, isTrue);
-      });
-
-      test('should not process payment when form is invalid', () async {
-        // Arrange - No payment method set
-        expect(viewModel.canProcessPayment, isFalse);
-
-        // Act
-        await viewModel.processPayment();
-
-        // Assert
-        expect(viewModel.errorMessage, isNotNull);
-        expect(
-          viewModel.errorMessage,
-          contains('Bitte füllen Sie alle erforderlichen Felder aus'),
-        );
-        expect(viewModel.paymentSuccess, isFalse);
-
-        // Verify repository was not called
-        verifyNever(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: anyNamed('paymentMethod'),
-            paymentMethodId: anyNamed('paymentMethodId'),
-            metadata: anyNamed('metadata'),
-          ),
-        );
-      });
-
-      test('should handle repository exceptions gracefully', () async {
-        // Arrange
-        when(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: anyNamed('paymentMethod'),
-            paymentMethodId: anyNamed('paymentMethodId'),
-            metadata: anyNamed('metadata'),
-          ),
-        ).thenThrow(Exception('Network error'));
-
-        // Setup valid state
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street 123',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
-
-        // Act
-        await viewModel.processPayment();
-
-        // Assert
-        expect(viewModel.paymentSuccess, isFalse);
-        expect(viewModel.isLoading, isFalse);
-        expect(
-          viewModel.errorMessage,
-          contains('Ein unerwarteter Fehler ist aufgetreten'),
-        );
-      });
+    setUp(() {
+      invokeCount = 0;
+      confirmAdapter = FakeConfirmAdapter();
+      testHike = _testHike();
+      viewModel = buildViewModel();
     });
 
-    group('Error Management', () {
-      test('should clear errors when requested', () {
-        // Arrange - Set error state
-        viewModel.processPayment(); // Will trigger error due to invalid form
-        expect(viewModel.errorMessage, isNotNull);
+    tearDown(() => viewModel.dispose());
 
-        // Act
-        viewModel.clearError();
-
-        // Assert
-        expect(viewModel.errorMessage, isNull);
-      });
-
-      test('should notify listeners when error is cleared', () {
-        // Arrange - Set error and add listener
-        viewModel.processPayment(); // Will trigger error
-        int notificationCount = 0;
-        viewModel.addListener(() => notificationCount++);
-
-        // Act
-        viewModel.clearError();
-
-        // Assert
-        expect(notificationCount, equals(1));
-      });
-    });
-
-    group('State Management', () {
-      test('should reset all state correctly', () {
-        // Arrange - Set various state
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
-        viewModel.processPayment(); // May set error
-
-        // Act
-        viewModel.reset();
-
-        // Assert
+    group('Initialization', () {
+      test('starts from the hike with empty payment state', () {
+        expect(viewModel.hike.name, equals('Islay Trail'));
+        expect(viewModel.hike.price, equals(30.99));
+        expect(viewModel.deliveryType, equals(DeliveryType.standardShipping));
         expect(viewModel.isLoading, isFalse);
         expect(viewModel.errorMessage, isNull);
         expect(viewModel.selectedPaymentMethod, isNull);
@@ -515,105 +97,199 @@ void main() {
         expect(viewModel.completedOrderId, isNull);
       });
 
-      test('should notify listeners when state is reset', () {
-        // Arrange
-        int notificationCount = 0;
-        viewModel.addListener(() => notificationCount++);
-
-        // Act
-        viewModel.reset();
-
-        // Assert
-        expect(notificationCount, equals(1));
-      });
-
-      test('should maintain order reference after reset', () {
-        // Act
-        viewModel.reset();
-
-        // Assert - Order should remain unchanged
-        expect(viewModel.order.orderNumber, equals('WH2025-TEST-001'));
-        expect(viewModel.order.totalAmount, equals(30.99));
+      test('requires a delivery address for a shipped tasting set', () {
+        expect(viewModel.requiresDeliveryAddress, isTrue);
       });
     });
 
-    group('Edge Cases', () {
-      test('should handle null/empty payment method gracefully', () {
-        // Act & Assert
-        viewModel.setPaymentMethod(PaymentMethodType.card, '');
+    group('canProcessPayment', () {
+      test('is false until a payment method and address are supplied', () {
         expect(viewModel.canProcessPayment, isFalse);
 
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'valid_method');
-        expect(viewModel.selectedPaymentMethod, equals(PaymentMethodType.card));
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_123');
+        expect(viewModel.canProcessPayment, isFalse);
+
+        viewModel.setDeliveryAddress(Map<String, dynamic>.from(_validAddress));
+        expect(viewModel.canProcessPayment, isTrue);
       });
 
-      test('should handle partial address data correctly', () {
-        // Act
-        viewModel.setDeliveryAddress({'street': 'Partial Street'});
+      test('is false for a card without a payment method id', () {
+        viewModel.setPaymentMethod(PaymentMethodType.card, null);
+        viewModel.setDeliveryAddress(Map<String, dynamic>.from(_validAddress));
 
-        // Assert - Should not be valid for processing (missing required fields)
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card');
         expect(viewModel.canProcessPayment, isFalse);
       });
 
-      test('should handle concurrent payment processing attempts', () async {
-        // Arrange
-        final delayedResult = BasicPaymentResult(
-          isSuccess: true,
-          status: PaymentStatus.succeeded,
-          paymentIntentId: 'pi_test_123',
+      test('is false when the recipient name is missing', () {
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_123');
+        final address = Map<String, dynamic>.from(_validAddress)
+          ..remove('firstName');
+        viewModel.setDeliveryAddress(address);
+
+        expect(viewModel.canProcessPayment, isFalse);
+      });
+    });
+
+    group('Payment method and address', () {
+      test('stores the selected payment method', () {
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_123');
+
+        expect(viewModel.selectedPaymentMethod, PaymentMethodType.card);
+        expect(viewModel.selectedPaymentMethodId, 'pm_test_123');
+      });
+
+      test('notifies listeners when the payment method changes', () {
+        var notified = 0;
+        viewModel.addListener(() => notified++);
+
+        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_123');
+
+        expect(notified, 1);
+      });
+
+      test('updates individual address fields', () {
+        viewModel.updateAddressField('city', 'Hamburg');
+        viewModel.updateAddressField('postalCode', '20095');
+
+        expect(viewModel.deliveryAddress!['city'], 'Hamburg');
+        expect(viewModel.deliveryAddress!['postalCode'], '20095');
+      });
+
+      test('validates address fields', () {
+        expect(viewModel.validateAddressField('street', ''), isNotNull);
+        expect(viewModel.validateAddressField('street', 'ab'), isNotNull);
+        expect(
+          viewModel.validateAddressField('street', 'Musterstraße 12'),
+          isNull,
         );
 
-        when(
-          mockPaymentRepository.processPayment(
-            order: anyNamed('order'),
-            paymentMethod: anyNamed('paymentMethod'),
-            paymentMethodId: anyNamed('paymentMethodId'),
-            metadata: anyNamed('metadata'),
-          ),
-        ).thenAnswer(
-          (_) => Future.delayed(
-            const Duration(milliseconds: 100),
-            () => delayedResult,
-          ),
-        );
+        expect(viewModel.validateAddressField('postalCode', '123'), isNotNull);
+        expect(viewModel.validateAddressField('postalCode', '10115'), isNull);
 
-        // Setup valid state
-        viewModel.setPaymentMethod(PaymentMethodType.card, 'pm_test_card_123');
-        viewModel.setDeliveryAddress({
-          'street': 'Test Street 123',
-          'city': 'Test City',
-          'postalCode': '12345',
-          'country': 'Deutschland',
-        });
+        expect(viewModel.validateAddressField('firstName', ''), isNotNull);
+        expect(viewModel.validateAddressField('firstName', 'Nico'), isNull);
+      });
+    });
 
-        // Act - Start two concurrent payment processes
-        final future1 = viewModel.processPayment();
-        final future2 = viewModel.processPayment();
+    group('processPayment', () {
+      test('completes the purchase and records the created order', () async {
+        completeForm(viewModel);
 
-        await Future.wait([future1, future2]);
+        await viewModel.processPayment();
 
-        // Assert - Should handle gracefully (second call should be ignored due to loading state)
         expect(viewModel.paymentSuccess, isTrue);
+        expect(viewModel.completedOrderId, 42);
+        expect(viewModel.completedOrderNumber, 'WH2025-TEST-001');
+        expect(viewModel.errorMessage, isNull);
         expect(viewModel.isLoading, isFalse);
+        expect(confirmAdapter.seenClientSecret, 'pi_123_secret_abc');
+      });
+
+      test('reports a declined card without marking success', () async {
+        confirmAdapter.result = const ConfirmResult(
+          isSuccess: false,
+          errorMessage: 'Ihre Karte wurde abgelehnt',
+        );
+        completeForm(viewModel);
+
+        await viewModel.processPayment();
+
+        expect(viewModel.paymentSuccess, isFalse);
+        expect(viewModel.errorMessage, contains('abgelehnt'));
+        expect(viewModel.isLoading, isFalse);
+      });
+
+      test('reports a cancelled payment', () async {
+        confirmAdapter.result = const ConfirmResult(
+          isSuccess: false,
+          wasCancelled: true,
+        );
+        completeForm(viewModel);
+
+        await viewModel.processPayment();
+
+        expect(viewModel.paymentSuccess, isFalse);
+        expect(viewModel.errorMessage, contains('abgebrochen'));
+      });
+
+      test('reports when 3D Secure is required', () async {
+        confirmAdapter.result = const ConfirmResult(
+          isSuccess: false,
+          requiresAction: true,
+        );
+        completeForm(viewModel);
+
+        await viewModel.processPayment();
+
+        expect(viewModel.paymentSuccess, isFalse);
+        expect(viewModel.errorMessage, contains('Authentifizierung'));
+      });
+
+      test('refuses to pay a hike with no company', () async {
+        viewModel.dispose();
+        viewModel = buildViewModel(hike: _testHike(companyId: null));
+        completeForm(viewModel);
+
+        await viewModel.processPayment();
+
+        expect(viewModel.paymentSuccess, isFalse);
+        expect(viewModel.errorMessage, isNotNull);
+        // Never reached the Edge Function.
+        expect(invokeCount, 0);
+      });
+
+      test('does nothing while the form is incomplete', () async {
+        await viewModel.processPayment();
+
+        expect(invokeCount, 0);
+        expect(viewModel.errorMessage, isNotNull);
+        expect(viewModel.paymentSuccess, isFalse);
+      });
+
+      test('survives a thrown error from the backend', () async {
+        viewModel.dispose();
+        viewModel = buildViewModel(throws: Exception('network down'));
+        completeForm(viewModel);
+
+        await viewModel.processPayment();
+
+        expect(viewModel.paymentSuccess, isFalse);
+        expect(viewModel.errorMessage, isNotNull);
+        expect(viewModel.isLoading, isFalse);
+      });
+
+      test('shows a loading state while the payment is in flight', () async {
+        completeForm(viewModel);
+
+        final pending = viewModel.processPayment();
+        expect(viewModel.isLoading, isTrue);
+
+        await pending;
+        expect(viewModel.isLoading, isFalse);
+      });
+    });
+
+    group('Error and state management', () {
+      test('clears the error message', () async {
+        await viewModel.processPayment(); // fails validation
+        expect(viewModel.errorMessage, isNotNull);
+
+        viewModel.clearError();
+
+        expect(viewModel.errorMessage, isNull);
+      });
+
+      test('resets payment state but keeps the hike', () {
+        completeForm(viewModel);
+
+        viewModel.reset();
+
+        expect(viewModel.selectedPaymentMethod, isNull);
+        expect(viewModel.deliveryAddress, isNull);
+        expect(viewModel.paymentSuccess, isFalse);
+        expect(viewModel.completedOrderId, isNull);
+        expect(viewModel.hike.id, 1);
       });
     });
   });
 }
-
-// GREEN PHASE COMPLETE: Comprehensive CheckoutViewModel state tests
-// ✅ All ViewModel functionality implemented and tested
-// 🎯 Test Coverage: Initialization, payment methods, address management,
-//    payment processing, validation, error handling, state management, edge cases
-//
-// Test Areas Covered:
-// - Initialization and default values
-// - Payment method selection and validation
-// - Delivery address management for shipping orders
-// - Comprehensive payment processing (success, failure, 3D Secure, loading states)
-// - Form validation logic for pickup vs shipping orders
-// - Error management and recovery
-// - State management (reset, notifications)
-// - Edge cases and concurrent operations
-//
-// Total: 20+ comprehensive tests covering all ViewModel state scenarios

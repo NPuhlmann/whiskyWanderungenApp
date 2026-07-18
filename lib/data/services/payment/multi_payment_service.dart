@@ -1,11 +1,9 @@
 import 'dart:developer' as dev;
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pay/pay.dart';
 
-import '../../../domain/models/basic_payment_result.dart';
 import '../../../domain/models/payment_intent.dart';
-import 'stripe_service.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' hide PaymentMethodType;
 
 /// Enhanced payment service supporting multiple payment methods
 /// Includes Apple Pay, Google Pay, PayPal, and Card payments
@@ -17,7 +15,6 @@ class MultiPaymentService {
   MultiPaymentService._internal();
 
   bool _isInitialized = false;
-  final StripeService _stripeService = StripeService.instance;
 
   // Apple Pay & Google Pay configurations
   PaymentConfiguration? _applePayConfig;
@@ -28,8 +25,8 @@ class MultiPaymentService {
     try {
       dev.log('🔄 Initializing MultiPaymentService...');
 
-      // Initialize Stripe (existing)
-      await _stripeService.initialize();
+      // Publishable key only — intents are created by the Edge Function
+      _initializeStripe();
 
       // Initialize Apple Pay configuration
       await _initializeApplePay();
@@ -45,6 +42,24 @@ class MultiPaymentService {
       dev.log('❌ Error initializing MultiPaymentService: $e');
       throw Exception('MultiPaymentService initialization failed: $e');
     }
+  }
+
+  /// Hand the Stripe SDK its publishable key so it can confirm intents.
+  ///
+  /// Only the publishable key ever reaches the client (ADR-0006) — payment
+  /// intents are created server-side by the `create-payment-intent` Edge
+  /// Function.
+  void _initializeStripe() {
+    final key = dotenv.env['STRIPE_PUBLISHABLE_KEY_TEST'];
+
+    if (key == null || key.isEmpty || !key.startsWith('pk_')) {
+      throw ArgumentError(
+        'A valid Stripe publishable key (pk_...) is required',
+      );
+    }
+
+    Stripe.publishableKey = key;
+    dev.log('✅ Stripe publishable key configured');
   }
 
   /// Initialize Apple Pay configuration
@@ -192,160 +207,6 @@ class MultiPaymentService {
       '✅ Available payment methods: ${availableMethods.map((m) => m.name).join(', ')}',
     );
     return availableMethods;
-  }
-
-  /// Process payment with the specified method
-  Future<BasicPaymentResult> processPayment({
-    required PaymentMethodType paymentMethod,
-    required double amount,
-    String currency = 'eur',
-    Map<String, dynamic>? metadata,
-  }) async {
-    _ensureInitialized();
-
-    dev.log(
-      '🔄 Processing payment: ${paymentMethod.name}, amount: $amount $currency',
-    );
-
-    try {
-      switch (paymentMethod) {
-        case PaymentMethodType.card:
-          return await _processCardPayment(
-            amount: amount,
-            currency: currency,
-            metadata: metadata,
-          );
-
-        case PaymentMethodType.applePay:
-          return await _processApplePayPayment(
-            amount: amount,
-            currency: currency,
-            metadata: metadata,
-          );
-
-        case PaymentMethodType.googlePay:
-          return await _processGooglePayPayment(
-            amount: amount,
-            currency: currency,
-            metadata: metadata,
-          );
-
-        default:
-          throw ArgumentError(
-            'Payment method ${paymentMethod.name} not implemented',
-          );
-      }
-    } catch (e) {
-      dev.log('❌ Payment processing failed: $e');
-      return BasicPaymentResult.failure(
-        error: 'Payment failed: ${e.toString()}',
-        status: PaymentStatus.failed,
-        metadata: metadata,
-      );
-    }
-  }
-
-  /// Process card payment via Stripe
-  Future<BasicPaymentResult> _processCardPayment({
-    required double amount,
-    required String currency,
-    Map<String, dynamic>? metadata,
-  }) async {
-    try {
-      // Create payment intent
-      final paymentIntent = await _stripeService.createPaymentIntent(
-        amount: amount,
-        currency: currency,
-        metadata: metadata,
-      );
-
-      // Simulate payment method ID for testing
-      final paymentMethodId =
-          'pm_card_visa_test_${DateTime.now().millisecondsSinceEpoch}';
-
-      // Confirm payment
-      return await _stripeService.confirmPayment(
-        clientSecret: paymentIntent.clientSecret,
-        paymentMethodId: paymentMethodId,
-        metadata: metadata,
-      );
-    } catch (e) {
-      throw Exception('Card payment failed: $e');
-    }
-  }
-
-  /// Process Apple Pay payment
-  Future<BasicPaymentResult> _processApplePayPayment({
-    required double amount,
-    required String currency,
-    Map<String, dynamic>? metadata,
-  }) async {
-    if (_applePayConfig == null) {
-      throw Exception('Apple Pay not configured');
-    }
-
-    try {
-      dev.log('🍎 Processing Apple Pay payment (simulated for development)...');
-
-      // Simulate Apple Pay processing delay
-      await Future.delayed(const Duration(milliseconds: 1500));
-
-      // For development, simulate successful Apple Pay payment
-      dev.log('✅ Apple Pay payment successful (simulated)');
-      return BasicPaymentResult(
-        isSuccess: true,
-        status: PaymentStatus.succeeded,
-        paymentIntentId:
-            'pi_apple_pay_${DateTime.now().millisecondsSinceEpoch}',
-        metadata: {...?metadata, 'payment_method': 'apple_pay'},
-      );
-    } catch (e) {
-      dev.log('❌ Apple Pay payment failed: $e');
-      if (e is PlatformException && e.code == 'UserCancel') {
-        return BasicPaymentResult.cancelled(
-          message: 'Apple Pay was cancelled by user',
-        );
-      }
-      throw Exception('Apple Pay payment failed: $e');
-    }
-  }
-
-  /// Process Google Pay payment
-  Future<BasicPaymentResult> _processGooglePayPayment({
-    required double amount,
-    required String currency,
-    Map<String, dynamic>? metadata,
-  }) async {
-    if (_googlePayConfig == null) {
-      throw Exception('Google Pay not configured');
-    }
-
-    try {
-      dev.log(
-        '🤖 Processing Google Pay payment (simulated for development)...',
-      );
-
-      // Simulate Google Pay processing delay
-      await Future.delayed(const Duration(milliseconds: 1200));
-
-      // For development, simulate successful Google Pay payment
-      dev.log('✅ Google Pay payment successful (simulated)');
-      return BasicPaymentResult(
-        isSuccess: true,
-        status: PaymentStatus.succeeded,
-        paymentIntentId:
-            'pi_google_pay_${DateTime.now().millisecondsSinceEpoch}',
-        metadata: {...?metadata, 'payment_method': 'google_pay'},
-      );
-    } catch (e) {
-      dev.log('❌ Google Pay payment failed: $e');
-      if (e is PlatformException && e.code == 'UserCancel') {
-        return BasicPaymentResult.cancelled(
-          message: 'Google Pay was cancelled by user',
-        );
-      }
-      throw Exception('Google Pay payment failed: $e');
-    }
   }
 
   /// Get display name for payment method

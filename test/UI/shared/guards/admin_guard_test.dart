@@ -37,9 +37,7 @@ void main() {
       await tester.pumpWidget(
         Provider<AuthService>.value(
           value: auth,
-          child: const MaterialApp(
-            home: AdminGuard(child: Text('geheim')),
-          ),
+          child: const MaterialApp(home: AdminGuard(child: Text('geheim'))),
         ),
       );
 
@@ -53,9 +51,7 @@ void main() {
       await tester.pumpWidget(
         Provider<AuthService>.value(
           value: auth,
-          child: const MaterialApp(
-            home: AdminGuard(child: Text('Dashboard')),
-          ),
+          child: const MaterialApp(home: AdminGuard(child: Text('Dashboard'))),
         ),
       );
       await tester.pumpAndSettle();

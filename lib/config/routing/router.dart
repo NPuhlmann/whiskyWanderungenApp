@@ -18,7 +18,6 @@ import 'package:whisky_hikes/UI/mobile/orders/order_tracking_page.dart';
 import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
-import 'package:whisky_hikes/domain/models/basic_order.dart';
 
 import '../../UI/mobile/auth/signup/sign_up_page_view_model.dart';
 import '../../UI/core/scaffold_with_navigation_bar.dart';
@@ -166,14 +165,14 @@ GoRouter router(UserRepository authRepository) => GoRouter(
       path: Routes.checkout,
       name: 'checkout',
       builder: (context, state) {
-        final order = state.extra as BasicOrder?;
-        if (order == null) {
+        final hike = state.extra as Hike?;
+        if (hike == null) {
           return const Scaffold(
-            body: Center(child: Text('Bestellung nicht gefunden')),
+            body: Center(child: Text('Wanderung nicht gefunden')),
           );
         }
 
-        return CheckoutPage(order: order);
+        return CheckoutPage(hike: hike);
       },
     ),
 

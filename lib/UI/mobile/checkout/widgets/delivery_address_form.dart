@@ -17,6 +17,8 @@ class DeliveryAddressForm extends StatefulWidget {
 
 class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
   final _formKey = GlobalKey<FormState>();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _streetController = TextEditingController();
   final _cityController = TextEditingController();
   final _postalCodeController = TextEditingController();
@@ -24,6 +26,8 @@ class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
 
   @override
   void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _streetController.dispose();
     _cityController.dispose();
     _postalCodeController.dispose();
@@ -56,6 +60,42 @@ class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
                     'Lieferadresse',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Recipient name — the payment backend requires it
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _firstNameController,
+                      key: const Key('first_name_field'),
+                      decoration: const InputDecoration(
+                        labelText: 'Vorname',
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      validator: (value) =>
+                          _validate('firstName', value ?? '', 'Vorname'),
+                      onChanged: _updateAddress,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _lastNameController,
+                      key: const Key('last_name_field'),
+                      decoration: const InputDecoration(
+                        labelText: 'Nachname',
+                        prefixIcon: Icon(Icons.badge_outlined),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      validator: (value) =>
+                          _validate('lastName', value ?? '', 'Nachname'),
+                      onChanged: _updateAddress,
                     ),
                   ),
                 ],
@@ -209,9 +249,18 @@ class _DeliveryAddressFormState extends State<DeliveryAddressForm> {
     );
   }
 
+  String? _validate(String field, String value, String label) {
+    if (widget.validator != null) return widget.validator!(field, value);
+    if (value.isEmpty) return '$label ist erforderlich';
+    if (value.length < 2) return 'Mindestens 2 Zeichen';
+    return null;
+  }
+
   void _updateAddress([String? _]) {
     if (_formKey.currentState?.validate() == true) {
       final address = {
+        'firstName': _firstNameController.text.trim(),
+        'lastName': _lastNameController.text.trim(),
         'street': _streetController.text.trim(),
         'city': _cityController.text.trim(),
         'postalCode': _postalCodeController.text.trim(),
