@@ -21,11 +21,7 @@ mixin _$Profile implements DiagnosticableTreeMixin {
 @JsonKey(name: 'last_name') String get lastName;// Standardwert: leerer String
 @JsonKey(name: 'last_name') set lastName(String value);// Standardwert: leerer String
 @JsonKey(name: 'date_of_birth') DateTime? get dateOfBirth;// Standardwert: leerer String
-@JsonKey(name: 'date_of_birth') set dateOfBirth(DateTime? value); String get email; set email(String value);// Standardwert: leerer String
- String get role;// Standardwert: leerer String
- set role(String value);// 'user' | 'admin' (Default: 'user')
-@JsonKey(name: 'image_url') String get imageUrl;// 'user' | 'admin' (Default: 'user')
-@JsonKey(name: 'image_url') set imageUrl(String value);
+@JsonKey(name: 'date_of_birth') set dateOfBirth(DateTime? value);@JsonKey(name: 'image_url') String get imageUrl;@JsonKey(name: 'image_url') set imageUrl(String value);
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -39,14 +35,14 @@ $ProfileCopyWith<Profile> get copyWith => _$ProfileCopyWithImpl<Profile>(this as
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Profile'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('firstName', firstName))..add(DiagnosticsProperty('lastName', lastName))..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))..add(DiagnosticsProperty('email', email))..add(DiagnosticsProperty('role', role))..add(DiagnosticsProperty('imageUrl', imageUrl));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('firstName', firstName))..add(DiagnosticsProperty('lastName', lastName))..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))..add(DiagnosticsProperty('imageUrl', imageUrl));
 }
 
 
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Profile(id: $id, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, email: $email, role: $role, imageUrl: $imageUrl)';
+  return 'Profile(id: $id, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, imageUrl: $imageUrl)';
 }
 
 
@@ -57,7 +53,7 @@ abstract mixin class $ProfileCopyWith<$Res>  {
   factory $ProfileCopyWith(Profile value, $Res Function(Profile) _then) = _$ProfileCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth, String email, String role,@JsonKey(name: 'image_url') String imageUrl
+ String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth,@JsonKey(name: 'image_url') String imageUrl
 });
 
 
@@ -74,15 +70,13 @@ class _$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? email = null,Object? role = null,Object? imageUrl = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? imageUrl = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as DateTime?,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as DateTime?,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -168,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email,  String role, @JsonKey(name: 'image_url')  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth, @JsonKey(name: 'image_url')  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.role,_that.imageUrl);case _:
+return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.imageUrl);case _:
   return orElse();
 
 }
@@ -189,10 +183,10 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email,  String role, @JsonKey(name: 'image_url')  String imageUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth, @JsonKey(name: 'image_url')  String imageUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Profile():
-return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.role,_that.imageUrl);case _:
+return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.imageUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +203,10 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth,  String email,  String role, @JsonKey(name: 'image_url')  String imageUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth, @JsonKey(name: 'image_url')  String imageUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.email,_that.role,_that.imageUrl);case _:
+return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.imageUrl);case _:
   return null;
 
 }
@@ -224,7 +218,7 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.dateOfBirth,_that.
 @JsonSerializable()
 
 class _Profile with DiagnosticableTreeMixin implements Profile {
-   _Profile({this.id = '', @JsonKey(name: 'first_name') this.firstName = '', @JsonKey(name: 'last_name') this.lastName = '', @JsonKey(name: 'date_of_birth') this.dateOfBirth = null, this.email = '', this.role = 'user', @JsonKey(name: 'image_url') this.imageUrl = ''});
+   _Profile({this.id = '', @JsonKey(name: 'first_name') this.firstName = '', @JsonKey(name: 'last_name') this.lastName = '', @JsonKey(name: 'date_of_birth') this.dateOfBirth = null, @JsonKey(name: 'image_url') this.imageUrl = ''});
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
 @override@JsonKey()  String id;
@@ -234,10 +228,6 @@ class _Profile with DiagnosticableTreeMixin implements Profile {
 @override@JsonKey(name: 'last_name')  String lastName;
 // Standardwert: leerer String
 @override@JsonKey(name: 'date_of_birth')  DateTime? dateOfBirth;
-@override@JsonKey()  String email;
-// Standardwert: leerer String
-@override@JsonKey()  String role;
-// 'user' | 'admin' (Default: 'user')
 @override@JsonKey(name: 'image_url')  String imageUrl;
 
 /// Create a copy of Profile
@@ -254,14 +244,14 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Profile'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('firstName', firstName))..add(DiagnosticsProperty('lastName', lastName))..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))..add(DiagnosticsProperty('email', email))..add(DiagnosticsProperty('role', role))..add(DiagnosticsProperty('imageUrl', imageUrl));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('firstName', firstName))..add(DiagnosticsProperty('lastName', lastName))..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))..add(DiagnosticsProperty('imageUrl', imageUrl));
 }
 
 
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Profile(id: $id, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, email: $email, role: $role, imageUrl: $imageUrl)';
+  return 'Profile(id: $id, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, imageUrl: $imageUrl)';
 }
 
 
@@ -272,7 +262,7 @@ abstract mixin class _$ProfileCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   factory _$ProfileCopyWith(_Profile value, $Res Function(_Profile) _then) = __$ProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth, String email, String role,@JsonKey(name: 'image_url') String imageUrl
+ String id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'date_of_birth') DateTime? dateOfBirth,@JsonKey(name: 'image_url') String imageUrl
 });
 
 
@@ -289,15 +279,13 @@ class __$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? email = null,Object? role = null,Object? imageUrl = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? imageUrl = null,}) {
   return _then(_Profile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as DateTime?,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as DateTime?,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

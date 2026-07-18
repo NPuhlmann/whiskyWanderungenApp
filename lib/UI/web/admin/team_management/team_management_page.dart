@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../data/providers/team_provider.dart';
 import '../../../../data/services/auth/auth_service.dart';
-import '../../../../domain/models/profile.dart';
+import '../../../../domain/models/account.dart';
 
 /// Admin-Seite zur Verwaltung der Team-Rollen (`/admin/team`).
 ///
@@ -66,7 +66,8 @@ class _TeamManagementPageState extends State<TeamManagementPage> {
                 adminCount: provider.adminCount,
                 userCount: provider.userCount,
               ),
-              if (provider.error != null) _ErrorBanner(message: provider.error!),
+              if (provider.error != null)
+                _ErrorBanner(message: provider.error!),
               Expanded(child: _Body(provider: provider)),
             ],
           );
@@ -119,8 +120,14 @@ class _Toolbar extends StatelessWidget {
             value: selectedRole,
             hint: const Text('Alle Rollen'),
             items: const [
-              DropdownMenuItem<String?>(value: null, child: Text('Alle Rollen')),
-              DropdownMenuItem<String?>(value: 'admin', child: Text('Nur Admins')),
+              DropdownMenuItem<String?>(
+                value: null,
+                child: Text('Alle Rollen'),
+              ),
+              DropdownMenuItem<String?>(
+                value: 'admin',
+                child: Text('Nur Admins'),
+              ),
               DropdownMenuItem<String?>(value: 'user', child: Text('Nur User')),
             ],
             onChanged: onRoleChanged,
@@ -194,24 +201,22 @@ class _Body extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
     if (provider.profiles.isEmpty) {
-      return const Center(
-        child: Text('Keine User gefunden.'),
-      );
+      return const Center(child: Text('Keine User gefunden.'));
     }
 
     final currentUserId = context.read<AuthService>().getCurrentUserId();
     final isWide = MediaQuery.of(context).size.width >= 900;
     return isWide
-        ? _TeamTable(profiles: provider.profiles, currentUserId: currentUserId)
-        : _TeamList(profiles: provider.profiles, currentUserId: currentUserId);
+        ? _TeamTable(accounts: provider.profiles, currentUserId: currentUserId)
+        : _TeamList(accounts: provider.profiles, currentUserId: currentUserId);
   }
 }
 
 class _TeamTable extends StatelessWidget {
-  final List<Profile> profiles;
+  final List<Account> accounts;
   final String? currentUserId;
 
-  const _TeamTable({required this.profiles, required this.currentUserId});
+  const _TeamTable({required this.accounts, required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
@@ -220,21 +225,17 @@ class _TeamTable extends StatelessWidget {
       child: DataTable(
         columns: const [
           DataColumn(label: Text('E-Mail')),
-          DataColumn(label: Text('Name')),
           DataColumn(label: Text('Rolle')),
           DataColumn(label: Text('Aktion')),
         ],
-        rows: profiles.map((p) {
-          final name = _formatName(p);
+        rows: accounts.map((a) {
           return DataRow(
             cells: [
-              DataCell(Text(p.email)),
-              DataCell(Text(name)),
-              DataCell(_RoleChip(role: p.role)),
-              DataCell(_RoleActionButton(
-                profile: p,
-                isSelf: p.id == currentUserId,
-              )),
+              DataCell(Text(a.email)),
+              DataCell(_RoleChip(role: a.role)),
+              DataCell(
+                _RoleActionButton(account: a, isSelf: a.id == currentUserId),
+              ),
             ],
           );
         }).toList(),
@@ -244,35 +245,29 @@ class _TeamTable extends StatelessWidget {
 }
 
 class _TeamList extends StatelessWidget {
-  final List<Profile> profiles;
+  final List<Account> accounts;
   final String? currentUserId;
 
-  const _TeamList({required this.profiles, required this.currentUserId});
+  const _TeamList({required this.accounts, required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: profiles.length,
+      itemCount: accounts.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, i) {
-        final p = profiles[i];
+        final a = accounts[i];
         return Card(
           child: ListTile(
-            leading: CircleAvatar(
-              child: Text(_initials(p)),
-            ),
-            title: Text(p.email),
-            subtitle: Text(_formatName(p)),
+            leading: CircleAvatar(child: Text(_initials(a))),
+            title: Text(a.email),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _RoleChip(role: p.role),
+                _RoleChip(role: a.role),
                 const SizedBox(width: 8),
-                _RoleActionButton(
-                  profile: p,
-                  isSelf: p.id == currentUserId,
-                ),
+                _RoleActionButton(account: a, isSelf: a.id == currentUserId),
               ],
             ),
           ),
@@ -301,14 +296,14 @@ class _RoleChip extends StatelessWidget {
 }
 
 class _RoleActionButton extends StatelessWidget {
-  final Profile profile;
+  final Account account;
   final bool isSelf;
 
-  const _RoleActionButton({required this.profile, required this.isSelf});
+  const _RoleActionButton({required this.account, required this.isSelf});
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = profile.role == 'admin';
+    final isAdmin = account.role == 'admin';
     final tooltip = isSelf && isAdmin
         ? 'Admins können sich nicht selbst herabstufen'
         : null;
@@ -341,11 +336,11 @@ class _RoleActionButton extends StatelessWidget {
         title: Text(isAdmin ? 'Admin-Rolle entziehen?' : 'Zu Admin machen?'),
         content: Text(
           isAdmin
-              ? '${profile.email} wird zu einem normalen User. '
-                  'Admin-Zugriff auf /admin/* geht verloren.'
-              : '${profile.email} erhält Vollzugriff auf das '
-                  'Admin-Dashboard und kann Wanderungen, Bestellungen '
-                  'und weitere Admins verwalten.',
+              ? '${account.email} wird zu einem normalen User. '
+                    'Admin-Zugriff auf /admin/* geht verloren.'
+              : '${account.email} erhält Vollzugriff auf das '
+                    'Admin-Dashboard und kann Wanderungen, Bestellungen '
+                    'und weitere Admins verwalten.',
         ),
         actions: [
           TextButton(
@@ -364,13 +359,13 @@ class _RoleActionButton extends StatelessWidget {
     final provider = context.read<TeamProvider>();
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await provider.setUserRole(userId: profile.id, newRole: newRole);
+      await provider.setUserRole(userId: account.id, newRole: newRole);
       messenger.showSnackBar(
         SnackBar(
           content: Text(
             isAdmin
-                ? '${profile.email} ist jetzt User.'
-                : '${profile.email} ist jetzt Admin.',
+                ? '${account.email} ist jetzt User.'
+                : '${account.email} ist jetzt Admin.',
           ),
         ),
       );
@@ -380,15 +375,5 @@ class _RoleActionButton extends StatelessWidget {
   }
 }
 
-String _formatName(Profile p) {
-  final n = '${p.firstName} ${p.lastName}'.trim();
-  return n.isEmpty ? '–' : n;
-}
-
-String _initials(Profile p) {
-  final first = p.firstName.isNotEmpty ? p.firstName[0] : '';
-  final last = p.lastName.isNotEmpty ? p.lastName[0] : '';
-  final initials = (first + last).toUpperCase();
-  if (initials.isNotEmpty) return initials;
-  return p.email.isNotEmpty ? p.email[0].toUpperCase() : '?';
-}
+String _initials(Account a) =>
+    a.email.isNotEmpty ? a.email[0].toUpperCase() : '?';

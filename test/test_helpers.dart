@@ -114,7 +114,6 @@ class TestHelpers {
         firstName: 'John',
         lastName: 'Doe',
         dateOfBirth: DateTime(1990, 5, 15),
-        email: 'john.doe@example.com',
         imageUrl: 'https://example.com/john.jpg',
       ),
       Profile(
@@ -122,7 +121,6 @@ class TestHelpers {
         firstName: 'Jane',
         lastName: 'Smith',
         dateOfBirth: DateTime(1985, 12, 20),
-        email: 'jane.smith@example.com',
         imageUrl: 'https://example.com/jane.jpg',
       ),
       Profile(
@@ -130,7 +128,6 @@ class TestHelpers {
         firstName: 'Bob',
         lastName: 'Wilson',
         dateOfBirth: DateTime(1992, 8, 10),
-        email: 'bob.wilson@example.com',
         imageUrl: '',
       ),
       Profile(
@@ -138,7 +135,6 @@ class TestHelpers {
         firstName: '',
         lastName: '',
         dateOfBirth: null,
-        email: 'empty@example.com',
         imageUrl: '',
       ),
     ];
@@ -149,7 +145,6 @@ class TestHelpers {
     String firstName = 'Test',
     String lastName = 'User',
     DateTime? dateOfBirth,
-    String email = 'test@example.com',
     String imageUrl = '',
   }) {
     return Profile(
@@ -157,7 +152,6 @@ class TestHelpers {
       firstName: firstName,
       lastName: lastName,
       dateOfBirth: dateOfBirth,
-      email: email,
       imageUrl: imageUrl,
     );
   }
@@ -275,7 +269,6 @@ class TestHelpers {
         firstName: 'Complete',
         lastName: 'User',
         dateOfBirth: birthDates[0],
-        email: 'complete@example.com',
         imageUrl: 'https://example.com/complete.jpg',
       ),
       createTestProfile(
@@ -283,7 +276,6 @@ class TestHelpers {
         firstName: 'Partial',
         lastName: '',
         dateOfBirth: birthDates[1],
-        email: 'partial@example.com',
         imageUrl: '',
       ),
       createTestProfile(
@@ -291,7 +283,6 @@ class TestHelpers {
         firstName: '',
         lastName: '',
         dateOfBirth: null,
-        email: 'minimal@example.com',
         imageUrl: '',
       ),
       createTestProfile(
@@ -299,7 +290,6 @@ class TestHelpers {
         firstName: 'José',
         lastName: 'Müller-Özkaya',
         dateOfBirth: birthDates[2],
-        email: 'josé.müller@exämple.com',
         imageUrl: 'https://example.com/josé.jpg',
       ),
     ];

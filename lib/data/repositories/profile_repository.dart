@@ -11,8 +11,10 @@ class ProfileRepository {
 
   ProfileRepository(this._backendApiService, this._cacheService);
 
-  /// Lade Benutzerprofil mit Cache-First-Strategie
-  Future<Profile> getUserProfileById(String id) async {
+  /// Lade Benutzerprofil mit Cache-First-Strategie. Liefert null, wenn
+  /// weder ein Cache-Eintrag noch eine `profiles`-Zeile existiert (z.B.
+  /// wenn der Signup-Trigger noch nicht gelaufen ist).
+  Future<Profile?> getUserProfileById(String id) async {
     log("🔍 Lade Profil für Benutzer: $id");
 
     // 1. Prüfe lokalen Cache zuerst (ein defekter Cache darf das Laden
@@ -32,6 +34,10 @@ class ProfileRepository {
     log("🌐 Lade Profil von Supabase für Benutzer: $id");
     try {
       final profile = await _backendApiService.getUserProfileById(id);
+      if (profile == null) {
+        log("📭 Keine Profil-Zeile für Benutzer: $id");
+        return null;
+      }
 
       // 3. Cache das frische Profil
       await _cacheService.cacheProfileData(profile, id);
@@ -48,13 +54,15 @@ class ProfileRepository {
         return expiredProfile;
       }
 
-      // 5. Letzter Fallback: Leeres Profil
-      log("⚠️ Returne leeres Profil als letzter Fallback");
       rethrow;
     }
   }
 
-  /// Aktualisiere Benutzerprofil und invalidiere Cache
+  /// Aktualisiere Benutzerprofil und invalidiere Cache. Schlägt der
+  /// Backend-Write fehl, wird der Cache für diesen Benutzer gelöscht statt
+  /// den veralteten Vor-Edit-Stand weiter auszuliefern - sonst sieht der
+  /// User beim nächsten Laden fälschlich seine (nicht gespeicherten) Edits
+  /// verschwinden, obwohl der Cache technisch korrekt ist.
   Future<void> updateUserProfile(Profile profile) async {
     log("📝 Aktualisiere Profil: ${profile.id}");
 
@@ -66,6 +74,7 @@ class ProfileRepository {
       log("💾 Aktualisiertes Profil im Cache gespeichert: ${profile.id}");
     } catch (e) {
       log("❌ Fehler beim Aktualisieren des Profils: $e");
+      await _cacheService.clearUserCache(profile.id);
       rethrow;
     }
   }

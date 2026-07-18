@@ -128,8 +128,10 @@ List<SingleChildWidget> get providers {
       ),
     ),
     ChangeNotifierProvider<TeamProvider>(
-      create: (context) =>
-          TeamProvider(service: context.read<TeamManagementService>()),
+      create: (context) => TeamProvider(
+        userRepository: context.read<UserRepository>(),
+        service: context.read<TeamManagementService>(),
+      ),
     ),
     ChangeNotifierProvider<AnalyticsProvider>(
       create: (context) => AnalyticsProvider(

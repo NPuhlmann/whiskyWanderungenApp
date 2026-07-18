@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../domain/models/account.dart';
 import '../services/auth/auth_service.dart';
 
 class UserRepository extends ChangeNotifier {
@@ -59,5 +62,50 @@ class UserRepository extends ChangeNotifier {
   Future<void> updateUserEmail(String newEmail) async {
     await _authService.updateUserEmail(newEmail);
     notifyListeners();
+  }
+
+  /// Lädt das [Account] (E-Mail, Rolle) des aktuell eingeloggten Benutzers.
+  /// E-Mail kommt aus der Auth-Session, Rolle aus `profiles.role`. Existiert
+  /// noch keine Profil-Zeile, ist die Rolle standardmäßig 'user'.
+  Future<Account> getAccount() async {
+    final String? userId = getUserId();
+    if (userId == null) {
+      throw Exception('Benutzer-ID konnte nicht ermittelt werden');
+    }
+    try {
+      final String role = await _fetchRole(userId);
+      return Account(id: userId, email: getUserEmail() ?? '', role: role);
+    } catch (e) {
+      log("Error getting account for user $userId: $e");
+      rethrow;
+    }
+  }
+
+  /// Lädt alle [Account]s (E-Mail, Rolle) für die Admin-Team-Verwaltung.
+  /// [limit] schützt die UI vor Endlos-Listen, wie zuvor bei
+  /// `TeamManagementService.listProfiles`.
+  Future<List<Account>> listAccounts({int limit = 500}) async {
+    try {
+      final response = await _authService.client
+          .from('profiles')
+          .select('id, email, role')
+          .order('email')
+          .limit(limit);
+      return (response as List<dynamic>)
+          .map((row) => Account.fromJson(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      log("Error listing accounts: $e");
+      rethrow;
+    }
+  }
+
+  Future<String> _fetchRole(String userId) async {
+    final response = await _authService.client
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+    return (response?['role'] as String?) ?? 'user';
   }
 }

@@ -1,63 +1,86 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/models/profile.dart';
+import '../../domain/models/account.dart';
+import '../repositories/user_repository.dart';
 import '../services/team/team_management_service.dart';
 
 /// State-Management für die Team-Verwaltung (`/admin/team`).
+///
+/// Lädt Accounts (E-Mail, Rolle) über [UserRepository.listAccounts]. Die
+/// Team-Verwaltung ist konzeptuell eine Account-Liste, keine Profile-Liste
+/// (siehe ADR-0009) — Filter/Suche laufen deshalb client-seitig über die
+/// bereits geladene Liste statt über eine erneute DB-Query.
 class TeamProvider extends ChangeNotifier {
+  final UserRepository _userRepository;
   final TeamManagementService _service;
 
-  TeamProvider({TeamManagementService? service})
-      : _service = service ?? TeamManagementService();
+  TeamProvider({
+    required UserRepository userRepository,
+    TeamManagementService? service,
+  }) : _userRepository = userRepository,
+       _service = service ?? TeamManagementService();
 
-  List<Profile> _profiles = const [];
+  List<Account> _allAccounts = const [];
+  List<Account> _accounts = const [];
   bool _isLoading = false;
   String? _error;
 
   String? _roleFilter;
   String _searchQuery = '';
 
-  List<Profile> get profiles => _profiles;
+  List<Account> get profiles => _accounts;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get roleFilter => _roleFilter;
   String get searchQuery => _searchQuery;
 
-  int get adminCount =>
-      _profiles.where((p) => p.role == 'admin').length;
-  int get userCount => _profiles.length - adminCount;
+  int get adminCount => _allAccounts.where((a) => a.role == 'admin').length;
+  int get userCount => _allAccounts.length - adminCount;
 
   Future<void> load() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
     try {
-      _profiles = await _service.listProfiles(
-        roleFilter: _roleFilter,
-        searchQuery: _searchQuery,
-      );
+      _allAccounts = await _userRepository.listAccounts();
+      _applyFilters();
     } catch (e) {
       _error = 'Konnte Team-Mitglieder nicht laden: $e';
-      _profiles = const [];
+      _allAccounts = const [];
+      _accounts = const [];
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
+  void _applyFilters() {
+    Iterable<Account> result = _allAccounts;
+    if (_roleFilter != null && _roleFilter!.isNotEmpty) {
+      result = result.where((a) => a.role == _roleFilter);
+    }
+    final q = _searchQuery.trim().toLowerCase();
+    if (q.isNotEmpty) {
+      result = result.where((a) => a.email.toLowerCase().contains(q));
+    }
+    _accounts = result.toList();
+  }
+
   Future<void> setRoleFilter(String? role) async {
     if (_roleFilter == role) return;
     _roleFilter = role;
-    await load();
+    _applyFilters();
+    notifyListeners();
   }
 
   Future<void> setSearchQuery(String query) async {
     if (_searchQuery == query) return;
     _searchQuery = query;
-    await load();
+    _applyFilters();
+    notifyListeners();
   }
 
-  /// Setzt die Rolle eines Users. Bei Erfolg wird das lokale Profil ersetzt,
+  /// Setzt die Rolle eines Users. Bei Erfolg wird der lokale Account ersetzt,
   /// damit die UI sofort den neuen Zustand zeigt. Wirft die ursprüngliche
   /// Exception erneut, damit der Aufrufer eine Fehler-Snackbar zeigen kann.
   Future<void> setUserRole({
@@ -69,11 +92,12 @@ class TeamProvider extends ChangeNotifier {
         userId: userId,
         newRole: newRole,
       );
-      final idx = _profiles.indexWhere((p) => p.id == userId);
+      final idx = _allAccounts.indexWhere((a) => a.id == userId);
       if (idx >= 0) {
-        final next = List<Profile>.from(_profiles);
+        final next = List<Account>.from(_allAccounts);
         next[idx] = updated;
-        _profiles = next;
+        _allAccounts = next;
+        _applyFilters();
       }
       notifyListeners();
     } catch (e) {

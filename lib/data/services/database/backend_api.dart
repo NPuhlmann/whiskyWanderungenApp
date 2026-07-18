@@ -12,7 +12,6 @@ import '../../../domain/models/delivery_address.dart';
 import '../../../domain/models/tasting_set.dart';
 import '../../../domain/models/review.dart';
 import '../shipping/shipping_calculation_service.dart';
-import '../error/error_handler.dart';
 import 'profile_service.dart';
 import 'hike_service.dart';
 import '../../models/pagination_result.dart';
@@ -35,8 +34,8 @@ class BackendApiService {
   String get supabaseUrl => dotenv.env['SUPABASE_URL']!;
   String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY']!;
 
-  // get User Profile by id
-  Future<Profile> getUserProfileById(String id) async {
+  // get User Profile by id; null when no `profiles` row exists yet
+  Future<Profile?> getUserProfileById(String id) async {
     return await _profileService.getUserProfileById(id);
   }
 
@@ -100,28 +99,7 @@ class BackendApiService {
 
   // update user profile
   Future<void> updateUserProfile(Profile profile) async {
-    // Konvertiere das Profil in JSON und entferne Felder, die in der Datenbank nicht existieren
-    final Map<String, dynamic> profileJson = profile.toJson();
-    profileJson.remove(
-      'email',
-    ); // Email-Feld entfernen, da es in der auth.users Tabelle gespeichert wird
-    profileJson.remove(
-      'imageUrl',
-    ); // imageUrl-Feld entfernen, da es in der Datenbank nicht existiert
-
-    // Stelle sicher, dass die ID gesetzt ist
-    if (profileJson['id'] == null || profileJson['id'].isEmpty) {
-      final String? userId = client.auth.currentUser?.id;
-      if (userId != null) {
-        profileJson['id'] = userId;
-      } else {
-        throw Exception('Benutzer-ID konnte nicht ermittelt werden');
-      }
-    }
-
-    // Verwende update statt upsert, um die RLS-Policy zu respektieren
-    final String userId = profileJson['id'];
-    await client.from('profiles').update(profileJson).eq('id', userId);
+    await _profileService.updateUserProfile(profile);
   }
 
   // Methode zum Hochladen eines Profilbilds
@@ -130,104 +108,12 @@ class BackendApiService {
     Uint8List fileBytes,
     String fileExt,
   ) async {
-    final String path = '$userId/profile.$fileExt';
-
-    dev.log("Beginne Upload nach $path mit ${fileBytes.length} Bytes");
-
-    try {
-      // Prüfen, ob der Bucket existiert, bevor wir hochladen
-      try {
-        final List<Bucket> buckets = await client.storage.listBuckets();
-        final bool bucketExists = buckets.any(
-          (bucket) => bucket.name == 'avatars',
-        );
-        if (!bucketExists) {
-          dev.log("Der Bucket 'avatars' existiert nicht!");
-          throw Exception(
-            "Der Storage-Bucket 'avatars' existiert nicht. Bitte erstellen Sie ihn in Supabase.",
-          );
-        }
-        dev.log("Bucket 'avatars' gefunden, fahre mit Upload fort");
-      } catch (bucketError) {
-        dev.log(
-          "Fehler beim Prüfen der Buckets: $bucketError",
-          error: bucketError,
-        );
-        // Wir versuchen trotzdem hochzuladen, falls es nur ein Berechtigungsproblem war
-      }
-
-      // Bild in den Storage hochladen
-      await client.storage
-          .from('avatars')
-          .uploadBinary(
-            path,
-            fileBytes,
-            fileOptions: FileOptions(cacheControl: '3600', upsert: true),
-          );
-
-      dev.log("Upload erfolgreich abgeschlossen");
-
-      // Öffentliche URL des Bildes zurückgeben
-      final String imageUrl = client.storage.from('avatars').getPublicUrl(path);
-      dev.log("Generierte öffentliche URL: $imageUrl");
-      return imageUrl;
-    } catch (e) {
-      throw ErrorHandler.createSafeException('Profile image upload', e);
-    }
+    return await _profileService.uploadProfileImage(userId, fileBytes, fileExt);
   }
 
   // Methode zum Abrufen der Profilbild-URL
   Future<String?> getProfileImageUrl(String userId) async {
-    try {
-      dev.log("🔍 Suche Profilbild für User: $userId");
-
-      // Suche nach Dateien im Benutzer-spezifischen Ordner
-      final List<FileObject> files = await client.storage
-          .from('avatars')
-          .list(path: userId);
-
-      dev.log("📁 Gefundene Dateien in $userId/: ${files.length}");
-
-      if (files.isNotEmpty) {
-        for (var file in files) {
-          dev.log(
-            "📄 Datei: ${file.name}, Größe: ${file.metadata?['size']}, Typ: ${file.metadata?['mimetype']}",
-          );
-        }
-      }
-
-      // Filtere die Dateien nach "profile.*" Dateien
-      final List<FileObject> userFiles = files
-          .where((file) => file.name.startsWith('profile.'))
-          .toList();
-
-      if (userFiles.isNotEmpty) {
-        final String filePath = '$userId/${userFiles.first.name}';
-        final String publicUrl = client.storage
-            .from('avatars')
-            .getPublicUrl(filePath);
-
-        dev.log("✅ Profilbild-URL gefunden: $publicUrl");
-        return publicUrl;
-      } else {
-        dev.log("❌ Kein Profilbild für User $userId gefunden");
-        return null;
-      }
-    } catch (e) {
-      dev.log(
-        "💥 Fehler beim Abrufen des Profilbilds für $userId: $e",
-        error: e,
-      );
-
-      // Spezifische Fehlerbehandlung
-      if (e.toString().contains('permission')) {
-        dev.log("🔐 Storage Permission Problem");
-      } else if (e.toString().contains('network')) {
-        dev.log("🌐 Network Problem beim Storage-Zugriff");
-      }
-
-      return null;
-    }
+    return await _profileService.getProfileImageUrl(userId);
   }
 
   // get waypoints for a hike by hike.id from the 'hikes_waypoints' table

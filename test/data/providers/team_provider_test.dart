@@ -1,82 +1,56 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/data/providers/team_provider.dart';
 import 'package:whisky_hikes/data/services/team/team_management_service.dart';
-import 'package:whisky_hikes/domain/models/profile.dart';
+import 'package:whisky_hikes/domain/models/account.dart';
+
+import '../../mocks/mock_repositories.dart';
 
 /// Test-Double für [TeamManagementService] ohne Supabase-Abhängigkeit.
+/// Deckt nur `setUserRole` ab - das Laden der Liste läuft über
+/// [MockUserRepository.listAccounts].
 class _FakeTeamService implements TeamManagementService {
-  List<Profile> profiles;
-  String? lastRoleFilter;
-  String? lastSearchQuery;
-  Object? listError;
   Object? setRoleError;
-  Profile Function(String userId, String newRole)? roleUpdater;
-
-  _FakeTeamService(this.profiles);
+  Account Function(String userId, String newRole)? roleUpdater;
 
   @override
-  Future<List<Profile>> listProfiles({
-    String? roleFilter,
-    String? searchQuery,
-    int limit = 200,
-  }) async {
-    lastRoleFilter = roleFilter;
-    lastSearchQuery = searchQuery;
-    if (listError != null) throw listError!;
-    Iterable<Profile> result = profiles;
-    if (roleFilter != null && roleFilter.isNotEmpty) {
-      result = result.where((p) => p.role == roleFilter);
-    }
-    final q = searchQuery?.trim().toLowerCase();
-    if (q != null && q.isNotEmpty) {
-      result = result.where(
-        (p) =>
-            p.email.toLowerCase().contains(q) ||
-            p.firstName.toLowerCase().contains(q) ||
-            p.lastName.toLowerCase().contains(q),
-      );
-    }
-    return result.toList();
-  }
-
-  @override
-  Future<Profile> setUserRole({
+  Future<Account> setUserRole({
     required String userId,
     required String newRole,
   }) async {
     if (setRoleError != null) throw setRoleError!;
-    final updater = roleUpdater ??
-        (id, role) {
-          final idx = profiles.indexWhere((p) => p.id == id);
-          if (idx < 0) {
-            throw StateError('No profile with id $id');
-          }
-          return profiles[idx].copyWith(role: role);
-        };
-    final updated = updater(userId, newRole);
-    final idx = profiles.indexWhere((p) => p.id == userId);
-    if (idx >= 0) profiles[idx] = updated;
-    return updated;
+    final updater =
+        roleUpdater ??
+        (id, role) => Account(id: id, email: '$id@x', role: role);
+    return updater(userId, newRole);
   }
 }
 
-Profile _profile(String id, String email, {String role = 'user'}) => Profile(
-      id: id,
-      email: email,
-      firstName: '',
-      lastName: '',
-      role: role,
-    );
+Account _account(String id, String email, {String role = 'user'}) =>
+    Account(id: id, email: email, role: role);
 
 void main() {
   group('TeamProvider', () {
+    late MockUserRepository mockUserRepository;
+    late _FakeTeamService fakeService;
+
+    setUp(() {
+      mockUserRepository = MockUserRepository();
+      fakeService = _FakeTeamService();
+    });
+
+    TeamProvider buildProvider() =>
+        TeamProvider(userRepository: mockUserRepository, service: fakeService);
+
     test('load() füllt profiles und berechnet Counts', () async {
-      final fake = _FakeTeamService([
-        _profile('a', 'a@x', role: 'admin'),
-        _profile('b', 'b@x'),
-        _profile('c', 'c@x'),
-      ]);
-      final provider = TeamProvider(service: fake);
+      when(mockUserRepository.listAccounts()).thenAnswer(
+        (_) async => [
+          _account('a', 'a@x', role: 'admin'),
+          _account('b', 'b@x'),
+          _account('c', 'c@x'),
+        ],
+      );
+      final provider = buildProvider();
 
       await provider.load();
 
@@ -88,9 +62,8 @@ void main() {
     });
 
     test('load() setzt error und leert profiles bei Service-Fehler', () async {
-      final fake = _FakeTeamService([_profile('a', 'a@x')]);
-      fake.listError = Exception('boom');
-      final provider = TeamProvider(service: fake);
+      when(mockUserRepository.listAccounts()).thenThrow(Exception('boom'));
+      final provider = buildProvider();
 
       await provider.load();
 
@@ -99,52 +72,54 @@ void main() {
       expect(provider.isLoading, isFalse);
     });
 
-    test('setRoleFilter triggert neuen Load mit Filter', () async {
-      final fake = _FakeTeamService([
-        _profile('a', 'a@x', role: 'admin'),
-        _profile('b', 'b@x'),
-      ]);
-      final provider = TeamProvider(service: fake);
+    test('setRoleFilter filtert die geladene Liste', () async {
+      when(mockUserRepository.listAccounts()).thenAnswer(
+        (_) async => [
+          _account('a', 'a@x', role: 'admin'),
+          _account('b', 'b@x'),
+        ],
+      );
+      final provider = buildProvider();
+      await provider.load();
 
       await provider.setRoleFilter('admin');
 
-      expect(fake.lastRoleFilter, 'admin');
-      expect(provider.profiles.map((p) => p.id), ['a']);
+      expect(provider.profiles.map((a) => a.id), ['a']);
     });
 
-    test('setSearchQuery triggert neuen Load mit Query', () async {
-      final fake = _FakeTeamService([
-        _profile('a', 'alice@x'),
-        _profile('b', 'bob@x'),
-      ]);
-      final provider = TeamProvider(service: fake);
+    test('setSearchQuery filtert die geladene Liste', () async {
+      when(mockUserRepository.listAccounts()).thenAnswer(
+        (_) async => [_account('a', 'alice@x'), _account('b', 'bob@x')],
+      );
+      final provider = buildProvider();
+      await provider.load();
 
       await provider.setSearchQuery('bob');
 
-      expect(fake.lastSearchQuery, 'bob');
-      expect(provider.profiles.map((p) => p.id), ['b']);
+      expect(provider.profiles.map((a) => a.id), ['b']);
     });
 
-    test('setUserRole tauscht das Profil und passt Counts an', () async {
-      final fake = _FakeTeamService([
-        _profile('a', 'a@x'),
-        _profile('b', 'b@x'),
-      ]);
-      final provider = TeamProvider(service: fake);
+    test('setUserRole tauscht den Account und passt Counts an', () async {
+      when(
+        mockUserRepository.listAccounts(),
+      ).thenAnswer((_) async => [_account('a', 'a@x'), _account('b', 'b@x')]);
+      final provider = buildProvider();
       await provider.load();
       expect(provider.adminCount, 0);
 
       await provider.setUserRole(userId: 'a', newRole: 'admin');
 
-      expect(provider.profiles.firstWhere((p) => p.id == 'a').role, 'admin');
+      expect(provider.profiles.firstWhere((a) => a.id == 'a').role, 'admin');
       expect(provider.adminCount, 1);
       expect(provider.userCount, 1);
     });
 
     test('setUserRole setzt error und wirft Fehler weiter', () async {
-      final fake = _FakeTeamService([_profile('a', 'a@x')]);
-      fake.setRoleError = Exception('forbidden');
-      final provider = TeamProvider(service: fake);
+      when(
+        mockUserRepository.listAccounts(),
+      ).thenAnswer((_) async => [_account('a', 'a@x')]);
+      fakeService.setRoleError = Exception('forbidden');
+      final provider = buildProvider();
       await provider.load();
 
       await expectLater(
@@ -155,9 +130,8 @@ void main() {
     });
 
     test('clearError löscht den Fehlerzustand', () async {
-      final fake = _FakeTeamService([]);
-      fake.listError = Exception('boom');
-      final provider = TeamProvider(service: fake);
+      when(mockUserRepository.listAccounts()).thenThrow(Exception('boom'));
+      final provider = buildProvider();
       await provider.load();
       expect(provider.error, isNotNull);
 

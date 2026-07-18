@@ -11,7 +11,6 @@ void main() {
         expect(profile.firstName, '');
         expect(profile.lastName, '');
         expect(profile.dateOfBirth, null);
-        expect(profile.email, '');
         expect(profile.imageUrl, '');
       });
 
@@ -22,7 +21,6 @@ void main() {
           firstName: 'John',
           lastName: 'Doe',
           dateOfBirth: birthDate,
-          email: 'john.doe@example.com',
           imageUrl: 'https://example.com/avatar.jpg',
         );
 
@@ -30,7 +28,6 @@ void main() {
         expect(profile.firstName, 'John');
         expect(profile.lastName, 'Doe');
         expect(profile.dateOfBirth, birthDate);
-        expect(profile.email, 'john.doe@example.com');
         expect(profile.imageUrl, 'https://example.com/avatar.jpg');
       });
     });
@@ -52,12 +49,10 @@ void main() {
         profile.id = 'new_id';
         profile.firstName = 'Jane';
         profile.lastName = 'Smith';
-        profile.email = 'jane.smith@example.com';
 
         expect(profile.id, 'new_id');
         expect(profile.firstName, 'Jane');
         expect(profile.lastName, 'Smith');
-        expect(profile.email, 'jane.smith@example.com');
       });
 
       test('should allow setting null date of birth', () {
@@ -99,24 +94,18 @@ void main() {
       });
 
       test('should copy with multiple changes', () {
-        final original = Profile(
-          id: 'old_id',
-          firstName: 'Old',
-          email: 'old@example.com',
-        );
+        final original = Profile(id: 'old_id', firstName: 'Old');
 
         final copied = original.copyWith(
           id: 'new_id',
           firstName: 'New',
           lastName: 'LastName',
-          email: 'new@example.com',
           imageUrl: 'https://new.com/image.jpg',
         );
 
         expect(copied.id, 'new_id');
         expect(copied.firstName, 'New');
         expect(copied.lastName, 'LastName');
-        expect(copied.email, 'new@example.com');
         expect(copied.imageUrl, 'https://new.com/image.jpg');
       });
     });
@@ -129,7 +118,6 @@ void main() {
           firstName: 'John',
           lastName: 'Doe',
           dateOfBirth: birthDate,
-          email: 'john.doe@example.com',
           imageUrl: 'https://example.com/avatar.jpg',
         );
 
@@ -139,7 +127,6 @@ void main() {
         expect(json['first_name'], 'John');
         expect(json['last_name'], 'Doe');
         expect(json['date_of_birth'], birthDate.toIso8601String());
-        expect(json['email'], 'john.doe@example.com');
         expect(json['image_url'], 'https://example.com/avatar.jpg');
       });
 
@@ -163,7 +150,6 @@ void main() {
           'first_name': 'Alice',
           'last_name': 'Johnson',
           'date_of_birth': '1985-12-25T00:00:00.000Z',
-          'email': 'alice.johnson@example.com',
           'image_url': 'https://example.com/alice.jpg',
         };
 
@@ -173,7 +159,6 @@ void main() {
         expect(profile.firstName, 'Alice');
         expect(profile.lastName, 'Johnson');
         expect(profile.dateOfBirth, DateTime.parse('1985-12-25T00:00:00.000Z'));
-        expect(profile.email, 'alice.johnson@example.com');
         expect(profile.imageUrl, 'https://example.com/alice.jpg');
       });
 
@@ -183,7 +168,6 @@ void main() {
           'first_name': 'Bob',
           'last_name': 'Smith',
           'date_of_birth': null,
-          'email': 'bob.smith@example.com',
           'image_url': '',
         };
 
@@ -193,7 +177,6 @@ void main() {
         expect(profile.firstName, 'Bob');
         expect(profile.lastName, 'Smith');
         expect(profile.dateOfBirth, null);
-        expect(profile.email, 'bob.smith@example.com');
         expect(profile.imageUrl, '');
       });
 
@@ -206,7 +189,6 @@ void main() {
         expect(profile.firstName, '');
         expect(profile.lastName, '');
         expect(profile.dateOfBirth, null);
-        expect(profile.email, '');
         expect(profile.imageUrl, '');
       });
     });
@@ -246,40 +228,28 @@ void main() {
           id: '',
           firstName: '',
           lastName: '',
-          email: '',
           imageUrl: '',
         );
 
         expect(profile.id, '');
         expect(profile.firstName, '');
         expect(profile.lastName, '');
-        expect(profile.email, '');
         expect(profile.imageUrl, '');
       });
 
       test('should handle very long strings', () {
         final longString = 'a' * 1000;
-        final profile = Profile(
-          firstName: longString,
-          lastName: longString,
-          email: '${longString}@example.com',
-        );
+        final profile = Profile(firstName: longString, lastName: longString);
 
         expect(profile.firstName, longString);
         expect(profile.lastName, longString);
-        expect(profile.email, '${longString}@example.com');
       });
 
       test('should handle special characters', () {
-        final profile = Profile(
-          firstName: 'José',
-          lastName: 'Müller-Özkaya',
-          email: 'josé.müller@exämple.com',
-        );
+        final profile = Profile(firstName: 'José', lastName: 'Müller-Özkaya');
 
         expect(profile.firstName, 'José');
         expect(profile.lastName, 'Müller-Özkaya');
-        expect(profile.email, 'josé.müller@exämple.com');
 
         // Test serialization round trip with special characters
         final json = profile.toJson();
@@ -287,7 +257,6 @@ void main() {
 
         expect(deserialized.firstName, 'José');
         expect(deserialized.lastName, 'Müller-Özkaya');
-        expect(deserialized.email, 'josé.müller@exämple.com');
       });
     });
 
@@ -299,7 +268,6 @@ void main() {
           firstName: 'Same',
           lastName: 'Name',
           dateOfBirth: birthDate,
-          email: 'same@example.com',
           imageUrl: 'https://example.com/same.jpg',
         );
         final profile2 = Profile(
@@ -307,7 +275,6 @@ void main() {
           firstName: 'Same',
           lastName: 'Name',
           dateOfBirth: birthDate,
-          email: 'same@example.com',
           imageUrl: 'https://example.com/same.jpg',
         );
 
@@ -316,7 +283,6 @@ void main() {
         expect(profile1.firstName, equals(profile2.firstName));
         expect(profile1.lastName, equals(profile2.lastName));
         expect(profile1.dateOfBirth, equals(profile2.dateOfBirth));
-        expect(profile1.email, equals(profile2.email));
         expect(profile1.imageUrl, equals(profile2.imageUrl));
       });
 

@@ -16,8 +16,6 @@ abstract class Profile with _$Profile {
     @Default('')
     String lastName, // Standardwert: leerer String
     @JsonKey(name: 'date_of_birth') @Default(null) DateTime? dateOfBirth,
-    @Default('') String email, // Standardwert: leerer String
-    @Default('user') String role, // 'user' | 'admin' (Default: 'user')
     @JsonKey(name: 'image_url')
     @Default('')
     String imageUrl, // Standardwert: leerer String

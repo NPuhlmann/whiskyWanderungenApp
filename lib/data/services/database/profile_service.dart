@@ -12,13 +12,15 @@ class ProfileService {
   ProfileService({SupabaseClient? client})
     : client = client ?? Supabase.instance.client;
 
-  /// Get user profile by ID
-  Future<Profile> getUserProfileById(String id) async {
+  /// Get user profile by ID. Returns null when no `profiles` row exists
+  /// (e.g. the signup trigger hasn't run yet) so callers can distinguish
+  /// "no data yet" from "empty profile".
+  Future<Profile?> getUserProfileById(String id) async {
     try {
       final response = await client.from('profiles').select().eq('id', id);
       if ((response as List<dynamic>).isEmpty) {
-        dev.log('Profile not found for user ID: $id. Creating empty profile.');
-        return Profile(id: id);
+        dev.log('Profile not found for user ID: $id.');
+        return null;
       }
 
       final Map<String, dynamic> profileData = response.first;
@@ -28,14 +30,12 @@ class ProfileService {
     }
   }
 
-  /// Update user profile
+  /// Update user profile. Uses upsert so a missing row (e.g. the signup
+  /// trigger never fired) is created instead of silently affecting zero
+  /// rows, which is what a plain `.update().eq('id', ...)` would do.
   Future<void> updateUserProfile(Profile profile) async {
     try {
       final Map<String, dynamic> profileJson = profile.toJson();
-      profileJson.remove('email'); // Email is stored in auth.users table
-      profileJson.remove(
-        'imageUrl',
-      ); // imageUrl field doesn't exist in database
 
       if (profileJson['id'] == null || profileJson['id'].isEmpty) {
         final String? userId = client.auth.currentUser?.id;
@@ -46,8 +46,7 @@ class ProfileService {
         }
       }
 
-      final String userId = profileJson['id'];
-      await client.from('profiles').update(profileJson).eq('id', userId);
+      await client.from('profiles').upsert(profileJson, onConflict: 'id');
     } catch (e) {
       throw ErrorHandler.createSafeException('Update user profile', e);
     }

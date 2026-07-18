@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 
 import '../../../data/repositories/user_repository.dart';
+import '../../../domain/models/account.dart';
 import '../../../domain/models/profile.dart';
 
 class ProfilePageViewModel extends ChangeNotifier {
@@ -20,9 +21,16 @@ class ProfilePageViewModel extends ChangeNotifier {
   Profile _profile = Profile();
   Profile get profile => _profile;
 
+  Account _account = const Account();
+  Account get account => _account;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  /// Lädt Profile (Identität) und Account (E-Mail, Rolle) getrennt.
+  /// Existiert noch keine `profiles`-Zeile (z.B. Signup-Trigger noch nicht
+  /// gelaufen), zeigt der Screen ein leeres, editierbares Profil statt eines
+  /// Fehlers.
   Future<Profile> loadProfile() async {
     _isLoading = true;
     notifyListeners();
@@ -34,32 +42,16 @@ class ProfilePageViewModel extends ChangeNotifier {
         throw Exception('Benutzer-ID konnte nicht ermittelt werden');
       }
 
-      final Profile profile = await _profileRepository.getUserProfileById(
-        userId,
+      final Profile? loadedProfile = await _profileRepository
+          .getUserProfileById(userId);
+      final Profile profile = loadedProfile ?? Profile(id: userId);
+      log(
+        "📝 LoadProfile: Profil geladen (existierte: ${loadedProfile != null})",
       );
-      log("📝 LoadProfile: Basis-Profil geladen");
 
-      // E-Mail-Adresse aus dem UserRepository laden
-      final String? email = _userRepository.getUserEmail();
-      if (email != null) {
-        profile.email = email;
-      }
-
-      // Profilbild-URL laden
-      log("🖼️ LoadProfile: Lade Profilbild-URL...");
-      final String? imageUrl = await _profileRepository.getProfileImageUrl(
-        userId,
-      );
-      log("🖼️ LoadProfile: Geladene Profilbild-URL: $imageUrl");
-      if (imageUrl != null) {
-        profile.imageUrl = imageUrl;
-        log("✅ LoadProfile: Setze imageUrl im Profil: ${profile.imageUrl}");
-      } else {
-        log("❌ LoadProfile: Keine Profilbild-URL gefunden");
-      }
+      _account = await _userRepository.getAccount();
 
       _profile = profile;
-      log("🎯 LoadProfile: Finales Profil imageUrl: ${_profile.imageUrl}");
       return profile;
     } finally {
       _isLoading = false;
@@ -67,18 +59,19 @@ class ProfilePageViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateProfile(Profile profile) async {
+  /// Speichert Identität ([profile]) über [ProfileRepository] und E-Mail
+  /// (falls geändert) über [UserRepository]. E-Mail wird nie über das
+  /// Profile geschrieben.
+  Future<void> updateProfile(Profile profile, {required String email}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Wenn sich die E-Mail-Adresse geändert hat, aktualisiere sie im Auth-System
-      final String? currentEmail = _userRepository.getUserEmail();
-      if (currentEmail != profile.email && profile.email.isNotEmpty) {
-        await _userRepository.updateUserEmail(profile.email);
+      if (email != _account.email && email.isNotEmpty) {
+        await _userRepository.updateUserEmail(email);
+        _account = _account.copyWith(email: email);
       }
 
-      // Profil in der Datenbank aktualisieren
       await _profileRepository.updateUserProfile(profile);
       _profile = profile;
     } catch (e) {

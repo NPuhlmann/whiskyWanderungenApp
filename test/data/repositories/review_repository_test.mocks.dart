@@ -3,23 +3,22 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i12;
-import 'dart:typed_data' as _i14;
+import 'dart:async' as _i10;
+import 'dart:typed_data' as _i13;
 
-import 'package:flutter/src/foundation/diagnostics.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i11;
+import 'package:mockito/src/dummies.dart' as _i9;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i2;
-import 'package:whisky_hikes/data/models/pagination_result.dart' as _i5;
-import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i10;
-import 'package:whisky_hikes/domain/models/basic_order.dart' as _i6;
-import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i16;
-import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i8;
-import 'package:whisky_hikes/domain/models/hike.dart' as _i13;
-import 'package:whisky_hikes/domain/models/profile.dart' as _i3;
-import 'package:whisky_hikes/domain/models/review.dart' as _i9;
-import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i7;
-import 'package:whisky_hikes/domain/models/waypoint.dart' as _i15;
+import 'package:whisky_hikes/data/models/pagination_result.dart' as _i3;
+import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i8;
+import 'package:whisky_hikes/domain/models/basic_order.dart' as _i4;
+import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i15;
+import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i6;
+import 'package:whisky_hikes/domain/models/hike.dart' as _i12;
+import 'package:whisky_hikes/domain/models/profile.dart' as _i11;
+import 'package:whisky_hikes/domain/models/review.dart' as _i7;
+import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i5;
+import 'package:whisky_hikes/domain/models/waypoint.dart' as _i14;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -42,45 +41,36 @@ class _FakeSupabaseClient_0 extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
-class _FakeProfile_1 extends _i1.SmartFake implements _i3.Profile {
-  _FakeProfile_1(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-
-  @override
-  String toString({_i4.DiagnosticLevel? minLevel = _i4.DiagnosticLevel.info}) =>
-      super.toString();
-}
-
-class _FakePaginationResult_2<T> extends _i1.SmartFake
-    implements _i5.PaginationResult<T> {
-  _FakePaginationResult_2(Object parent, Invocation parentInvocation)
+class _FakePaginationResult_1<T> extends _i1.SmartFake
+    implements _i3.PaginationResult<T> {
+  _FakePaginationResult_1(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeBasicOrder_3 extends _i1.SmartFake implements _i6.BasicOrder {
-  _FakeBasicOrder_3(Object parent, Invocation parentInvocation)
+class _FakeBasicOrder_2 extends _i1.SmartFake implements _i4.BasicOrder {
+  _FakeBasicOrder_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeTastingSet_4 extends _i1.SmartFake implements _i7.TastingSet {
-  _FakeTastingSet_4(Object parent, Invocation parentInvocation)
+class _FakeTastingSet_3 extends _i1.SmartFake implements _i5.TastingSet {
+  _FakeTastingSet_3(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeEnhancedOrder_5 extends _i1.SmartFake implements _i8.EnhancedOrder {
-  _FakeEnhancedOrder_5(Object parent, Invocation parentInvocation)
+class _FakeEnhancedOrder_4 extends _i1.SmartFake implements _i6.EnhancedOrder {
+  _FakeEnhancedOrder_4(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeReview_6 extends _i1.SmartFake implements _i9.Review {
-  _FakeReview_6(Object parent, Invocation parentInvocation)
+class _FakeReview_5 extends _i1.SmartFake implements _i7.Review {
+  _FakeReview_5(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 /// A class which mocks [BackendApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
+class MockBackendApiService extends _i1.Mock implements _i8.BackendApiService {
   MockBackendApiService() {
     _i1.throwOnMissingStub(this);
   }
@@ -100,7 +90,7 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
   String get supabaseUrl =>
       (super.noSuchMethod(
             Invocation.getter(#supabaseUrl),
-            returnValue: _i11.dummyValue<String>(
+            returnValue: _i9.dummyValue<String>(
               this,
               Invocation.getter(#supabaseUrl),
             ),
@@ -111,7 +101,7 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
   String get supabaseAnonKey =>
       (super.noSuchMethod(
             Invocation.getter(#supabaseAnonKey),
-            returnValue: _i11.dummyValue<String>(
+            returnValue: _i9.dummyValue<String>(
               this,
               Invocation.getter(#supabaseAnonKey),
             ),
@@ -119,88 +109,83 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
           as String);
 
   @override
-  _i12.Future<_i3.Profile> getUserProfileById(String? id) =>
+  _i10.Future<_i11.Profile?> getUserProfileById(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#getUserProfileById, [id]),
-            returnValue: _i12.Future<_i3.Profile>.value(
-              _FakeProfile_1(
-                this,
-                Invocation.method(#getUserProfileById, [id]),
-              ),
-            ),
+            returnValue: _i10.Future<_i11.Profile?>.value(),
           )
-          as _i12.Future<_i3.Profile>);
+          as _i10.Future<_i11.Profile?>);
 
   @override
-  _i12.Future<List<_i13.Hike>> fetchHikes() =>
+  _i10.Future<List<_i12.Hike>> fetchHikes() =>
       (super.noSuchMethod(
             Invocation.method(#fetchHikes, []),
-            returnValue: _i12.Future<List<_i13.Hike>>.value(<_i13.Hike>[]),
+            returnValue: _i10.Future<List<_i12.Hike>>.value(<_i12.Hike>[]),
           )
-          as _i12.Future<List<_i13.Hike>>);
+          as _i10.Future<List<_i12.Hike>>);
 
   @override
-  _i12.Future<_i5.PaginationResult<_i13.Hike>> fetchHikesPaginated(
-    _i5.PaginationParams? params,
+  _i10.Future<_i3.PaginationResult<_i12.Hike>> fetchHikesPaginated(
+    _i3.PaginationParams? params,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#fetchHikesPaginated, [params]),
-            returnValue: _i12.Future<_i5.PaginationResult<_i13.Hike>>.value(
-              _FakePaginationResult_2<_i13.Hike>(
+            returnValue: _i10.Future<_i3.PaginationResult<_i12.Hike>>.value(
+              _FakePaginationResult_1<_i12.Hike>(
                 this,
                 Invocation.method(#fetchHikesPaginated, [params]),
               ),
             ),
           )
-          as _i12.Future<_i5.PaginationResult<_i13.Hike>>);
+          as _i10.Future<_i3.PaginationResult<_i12.Hike>>);
 
   @override
-  _i12.Future<List<_i13.Hike>> fetchUserHikes(String? userId) =>
+  _i10.Future<List<_i12.Hike>> fetchUserHikes(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchUserHikes, [userId]),
-            returnValue: _i12.Future<List<_i13.Hike>>.value(<_i13.Hike>[]),
+            returnValue: _i10.Future<List<_i12.Hike>>.value(<_i12.Hike>[]),
           )
-          as _i12.Future<List<_i13.Hike>>);
+          as _i10.Future<List<_i12.Hike>>);
 
   @override
-  _i12.Future<void> deleteHike(int? hikeId) =>
+  _i10.Future<void> deleteHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteHike, [hikeId]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<List<String>> getHikeImages(int? hikeId) =>
+  _i10.Future<List<String>> getHikeImages(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getHikeImages, [hikeId]),
-            returnValue: _i12.Future<List<String>>.value(<String>[]),
+            returnValue: _i10.Future<List<String>>.value(<String>[]),
           )
-          as _i12.Future<List<String>>);
+          as _i10.Future<List<String>>);
 
   @override
-  _i12.Future<void> uploadHikeImages(int? hikeId, List<String>? imageUrls) =>
+  _i10.Future<void> uploadHikeImages(int? hikeId, List<String>? imageUrls) =>
       (super.noSuchMethod(
             Invocation.method(#uploadHikeImages, [hikeId, imageUrls]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<void> updateUserProfile(_i3.Profile? profile) =>
+  _i10.Future<void> updateUserProfile(_i11.Profile? profile) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserProfile, [profile]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<String> uploadProfileImage(
+  _i10.Future<String> uploadProfileImage(
     String? userId,
-    _i14.Uint8List? fileBytes,
+    _i13.Uint8List? fileBytes,
     String? fileExt,
   ) =>
       (super.noSuchMethod(
@@ -209,8 +194,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               fileBytes,
               fileExt,
             ]),
-            returnValue: _i12.Future<String>.value(
-              _i11.dummyValue<String>(
+            returnValue: _i10.Future<String>.value(
+              _i9.dummyValue<String>(
                 this,
                 Invocation.method(#uploadProfileImage, [
                   userId,
@@ -220,29 +205,29 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<String>);
+          as _i10.Future<String>);
 
   @override
-  _i12.Future<String?> getProfileImageUrl(String? userId) =>
+  _i10.Future<String?> getProfileImageUrl(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getProfileImageUrl, [userId]),
-            returnValue: _i12.Future<String?>.value(),
+            returnValue: _i10.Future<String?>.value(),
           )
-          as _i12.Future<String?>);
+          as _i10.Future<String?>);
 
   @override
-  _i12.Future<List<_i15.Waypoint>> getWaypointsForHike(int? hikeId) =>
+  _i10.Future<List<_i14.Waypoint>> getWaypointsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getWaypointsForHike, [hikeId]),
-            returnValue: _i12.Future<List<_i15.Waypoint>>.value(
-              <_i15.Waypoint>[],
+            returnValue: _i10.Future<List<_i14.Waypoint>>.value(
+              <_i14.Waypoint>[],
             ),
           )
-          as _i12.Future<List<_i15.Waypoint>>);
+          as _i10.Future<List<_i14.Waypoint>>);
 
   @override
-  _i12.Future<void> addWaypoint(
-    _i15.Waypoint? waypoint,
+  _i10.Future<void> addWaypoint(
+    _i14.Waypoint? waypoint,
     int? hikeId, {
     int? orderIndex,
   }) =>
@@ -252,31 +237,31 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               [waypoint, hikeId],
               {#orderIndex: orderIndex},
             ),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<void> updateWaypoint(_i15.Waypoint? waypoint) =>
+  _i10.Future<void> updateWaypoint(_i14.Waypoint? waypoint) =>
       (super.noSuchMethod(
             Invocation.method(#updateWaypoint, [waypoint]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
+  _i10.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<void> updateWaypointOrder(
+  _i10.Future<void> updateWaypointOrder(
     int? hikeId,
     int? waypointId,
     int? newOrderIndex,
@@ -287,72 +272,72 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               waypointId,
               newOrderIndex,
             ]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<List<_i6.BasicOrder>> fetchUserOrders(String? userId) =>
+  _i10.Future<List<_i4.BasicOrder>> fetchUserOrders(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchUserOrders, [userId]),
-            returnValue: _i12.Future<List<_i6.BasicOrder>>.value(
-              <_i6.BasicOrder>[],
+            returnValue: _i10.Future<List<_i4.BasicOrder>>.value(
+              <_i4.BasicOrder>[],
             ),
           )
-          as _i12.Future<List<_i6.BasicOrder>>);
+          as _i10.Future<List<_i4.BasicOrder>>);
 
   @override
-  _i12.Future<_i6.BasicOrder> fetchOrderById(int? orderId) =>
+  _i10.Future<_i4.BasicOrder> fetchOrderById(int? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchOrderById, [orderId]),
-            returnValue: _i12.Future<_i6.BasicOrder>.value(
-              _FakeBasicOrder_3(
+            returnValue: _i10.Future<_i4.BasicOrder>.value(
+              _FakeBasicOrder_2(
                 this,
                 Invocation.method(#fetchOrderById, [orderId]),
               ),
             ),
           )
-          as _i12.Future<_i6.BasicOrder>);
+          as _i10.Future<_i4.BasicOrder>);
 
   @override
-  _i12.Future<bool> hasUserPurchasedHike(String? userId, int? hikeId) =>
+  _i10.Future<bool> hasUserPurchasedHike(String? userId, int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#hasUserPurchasedHike, [userId, hikeId]),
-            returnValue: _i12.Future<bool>.value(false),
+            returnValue: _i10.Future<bool>.value(false),
           )
-          as _i12.Future<bool>);
+          as _i10.Future<bool>);
 
   @override
-  _i12.Future<void> recordHikePurchase(
+  _i10.Future<void> recordHikePurchase(
     String? userId,
     int? hikeId,
     int? orderId,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#recordHikePurchase, [userId, hikeId, orderId]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<_i6.BasicOrder> fetchOrderWithPaymentDetails(int? orderId) =>
+  _i10.Future<_i4.BasicOrder> fetchOrderWithPaymentDetails(int? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchOrderWithPaymentDetails, [orderId]),
-            returnValue: _i12.Future<_i6.BasicOrder>.value(
-              _FakeBasicOrder_3(
+            returnValue: _i10.Future<_i4.BasicOrder>.value(
+              _FakeBasicOrder_2(
                 this,
                 Invocation.method(#fetchOrderWithPaymentDetails, [orderId]),
               ),
             ),
           )
-          as _i12.Future<_i6.BasicOrder>);
+          as _i10.Future<_i4.BasicOrder>);
 
   @override
-  _i12.Future<_i6.BasicOrder> updateOrderAfterPayment({
+  _i10.Future<_i4.BasicOrder> updateOrderAfterPayment({
     required int? orderId,
-    required _i6.OrderStatus? status,
+    required _i4.OrderStatus? status,
     required String? paymentIntentId,
   }) =>
       (super.noSuchMethod(
@@ -361,8 +346,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #status: status,
               #paymentIntentId: paymentIntentId,
             }),
-            returnValue: _i12.Future<_i6.BasicOrder>.value(
-              _FakeBasicOrder_3(
+            returnValue: _i10.Future<_i4.BasicOrder>.value(
+              _FakeBasicOrder_2(
                 this,
                 Invocation.method(#updateOrderAfterPayment, [], {
                   #orderId: orderId,
@@ -372,90 +357,90 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i6.BasicOrder>);
+          as _i10.Future<_i4.BasicOrder>);
 
   @override
-  _i12.Future<List<Map<String, dynamic>>> getUserPaymentHistory(
+  _i10.Future<List<Map<String, dynamic>>> getUserPaymentHistory(
     String? userId,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getUserPaymentHistory, [userId]),
-            returnValue: _i12.Future<List<Map<String, dynamic>>>.value(
+            returnValue: _i10.Future<List<Map<String, dynamic>>>.value(
               <Map<String, dynamic>>[],
             ),
           )
-          as _i12.Future<List<Map<String, dynamic>>>);
+          as _i10.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i12.Future<_i7.TastingSet?> getTastingSetForHike(int? hikeId) =>
+  _i10.Future<_i5.TastingSet?> getTastingSetForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getTastingSetForHike, [hikeId]),
-            returnValue: _i12.Future<_i7.TastingSet?>.value(),
+            returnValue: _i10.Future<_i5.TastingSet?>.value(),
           )
-          as _i12.Future<_i7.TastingSet?>);
+          as _i10.Future<_i5.TastingSet?>);
 
   @override
-  _i12.Future<_i7.TastingSet?> getTastingSetById(int? tastingSetId) =>
+  _i10.Future<_i5.TastingSet?> getTastingSetById(int? tastingSetId) =>
       (super.noSuchMethod(
             Invocation.method(#getTastingSetById, [tastingSetId]),
-            returnValue: _i12.Future<_i7.TastingSet?>.value(),
+            returnValue: _i10.Future<_i5.TastingSet?>.value(),
           )
-          as _i12.Future<_i7.TastingSet?>);
+          as _i10.Future<_i5.TastingSet?>);
 
   @override
-  _i12.Future<List<_i7.TastingSet>> getAllTastingSets() =>
+  _i10.Future<List<_i5.TastingSet>> getAllTastingSets() =>
       (super.noSuchMethod(
             Invocation.method(#getAllTastingSets, []),
-            returnValue: _i12.Future<List<_i7.TastingSet>>.value(
-              <_i7.TastingSet>[],
+            returnValue: _i10.Future<List<_i5.TastingSet>>.value(
+              <_i5.TastingSet>[],
             ),
           )
-          as _i12.Future<List<_i7.TastingSet>>);
+          as _i10.Future<List<_i5.TastingSet>>);
 
   @override
-  _i12.Future<List<_i7.WhiskySample>> getWhiskySamplesForTastingSet(
+  _i10.Future<List<_i5.WhiskySample>> getWhiskySamplesForTastingSet(
     int? tastingSetId,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getWhiskySamplesForTastingSet, [tastingSetId]),
-            returnValue: _i12.Future<List<_i7.WhiskySample>>.value(
-              <_i7.WhiskySample>[],
+            returnValue: _i10.Future<List<_i5.WhiskySample>>.value(
+              <_i5.WhiskySample>[],
             ),
           )
-          as _i12.Future<List<_i7.WhiskySample>>);
+          as _i10.Future<List<_i5.WhiskySample>>);
 
   @override
-  _i12.Future<List<_i7.TastingSet>> searchTastingSets(String? query) =>
+  _i10.Future<List<_i5.TastingSet>> searchTastingSets(String? query) =>
       (super.noSuchMethod(
             Invocation.method(#searchTastingSets, [query]),
-            returnValue: _i12.Future<List<_i7.TastingSet>>.value(
-              <_i7.TastingSet>[],
+            returnValue: _i10.Future<List<_i5.TastingSet>>.value(
+              <_i5.TastingSet>[],
             ),
           )
-          as _i12.Future<List<_i7.TastingSet>>);
+          as _i10.Future<List<_i5.TastingSet>>);
 
   @override
-  _i12.Future<List<_i7.TastingSet>> getTastingSetsByRegion(String? region) =>
+  _i10.Future<List<_i5.TastingSet>> getTastingSetsByRegion(String? region) =>
       (super.noSuchMethod(
             Invocation.method(#getTastingSetsByRegion, [region]),
-            returnValue: _i12.Future<List<_i7.TastingSet>>.value(
-              <_i7.TastingSet>[],
+            returnValue: _i10.Future<List<_i5.TastingSet>>.value(
+              <_i5.TastingSet>[],
             ),
           )
-          as _i12.Future<List<_i7.TastingSet>>);
+          as _i10.Future<List<_i5.TastingSet>>);
 
   @override
-  _i12.Future<List<_i7.TastingSet>> getCurrentlyAvailableTastingSets() =>
+  _i10.Future<List<_i5.TastingSet>> getCurrentlyAvailableTastingSets() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentlyAvailableTastingSets, []),
-            returnValue: _i12.Future<List<_i7.TastingSet>>.value(
-              <_i7.TastingSet>[],
+            returnValue: _i10.Future<List<_i5.TastingSet>>.value(
+              <_i5.TastingSet>[],
             ),
           )
-          as _i12.Future<List<_i7.TastingSet>>);
+          as _i10.Future<List<_i5.TastingSet>>);
 
   @override
-  _i12.Future<void> updateTastingSetAvailability(
+  _i10.Future<void> updateTastingSetAvailability(
     int? tastingSetId,
     bool? isAvailable,
   ) =>
@@ -464,13 +449,13 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               tastingSetId,
               isAvailable,
             ]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<List<_i7.TastingSet>> getTastingSetsWithPagination({
+  _i10.Future<List<_i5.TastingSet>> getTastingSetsWithPagination({
     int? limit = 10,
     int? offset = 0,
     String? orderBy = 'created_at',
@@ -483,14 +468,14 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #orderBy: orderBy,
               #ascending: ascending,
             }),
-            returnValue: _i12.Future<List<_i7.TastingSet>>.value(
-              <_i7.TastingSet>[],
+            returnValue: _i10.Future<List<_i5.TastingSet>>.value(
+              <_i5.TastingSet>[],
             ),
           )
-          as _i12.Future<List<_i7.TastingSet>>);
+          as _i10.Future<List<_i5.TastingSet>>);
 
   @override
-  _i12.Future<_i7.TastingSet> createTastingSet({
+  _i10.Future<_i5.TastingSet> createTastingSet({
     required int? hikeId,
     required String? name,
     required String? description,
@@ -511,8 +496,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #availableFrom: availableFrom,
               #availableUntil: availableUntil,
             }),
-            returnValue: _i12.Future<_i7.TastingSet>.value(
-              _FakeTastingSet_4(
+            returnValue: _i10.Future<_i5.TastingSet>.value(
+              _FakeTastingSet_3(
                 this,
                 Invocation.method(#createTastingSet, [], {
                   #hikeId: hikeId,
@@ -527,10 +512,10 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i7.TastingSet>);
+          as _i10.Future<_i5.TastingSet>);
 
   @override
-  _i12.Future<_i7.TastingSet> updateTastingSet({
+  _i10.Future<_i5.TastingSet> updateTastingSet({
     required int? tastingSetId,
     String? name,
     String? description,
@@ -551,8 +536,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #availableFrom: availableFrom,
               #availableUntil: availableUntil,
             }),
-            returnValue: _i12.Future<_i7.TastingSet>.value(
-              _FakeTastingSet_4(
+            returnValue: _i10.Future<_i5.TastingSet>.value(
+              _FakeTastingSet_3(
                 this,
                 Invocation.method(#updateTastingSet, [], {
                   #tastingSetId: tastingSetId,
@@ -567,19 +552,19 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i7.TastingSet>);
+          as _i10.Future<_i5.TastingSet>);
 
   @override
-  _i12.Future<void> deleteTastingSet(int? tastingSetId) =>
+  _i10.Future<void> deleteTastingSet(int? tastingSetId) =>
       (super.noSuchMethod(
             Invocation.method(#deleteTastingSet, [tastingSetId]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder> createEnhancedOrderWithShipping({
+  _i10.Future<_i6.EnhancedOrder> createEnhancedOrderWithShipping({
     required String? orderNumber,
     required String? companyId,
     required String? customerId,
@@ -587,8 +572,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
     required double? baseOrderValue,
     double? taxAmount = 0.0,
     String? currency = 'EUR',
-    required _i16.DeliveryAddress? deliveryAddress,
-    _i6.DeliveryType? deliveryType = _i6.DeliveryType.standardShipping,
+    required _i15.DeliveryAddress? deliveryAddress,
+    _i4.DeliveryType? deliveryType = _i4.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
     String? notes,
@@ -612,8 +597,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #metadata: metadata,
               #tags: tags,
             }),
-            returnValue: _i12.Future<_i8.EnhancedOrder>.value(
-              _FakeEnhancedOrder_5(
+            returnValue: _i10.Future<_i6.EnhancedOrder>.value(
+              _FakeEnhancedOrder_4(
                 this,
                 Invocation.method(#createEnhancedOrderWithShipping, [], {
                   #orderNumber: orderNumber,
@@ -634,10 +619,10 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i8.EnhancedOrder>);
+          as _i10.Future<_i6.EnhancedOrder>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder> createEnhancedOrder({
+  _i10.Future<_i6.EnhancedOrder> createEnhancedOrder({
     required String? orderNumber,
     required String? companyId,
     required String? customerId,
@@ -648,8 +633,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
     required double? totalAmount,
     String? currency = 'EUR',
     double? baseAmount = 0.0,
-    required _i16.DeliveryAddress? deliveryAddress,
-    _i6.DeliveryType? deliveryType = _i6.DeliveryType.standardShipping,
+    required _i15.DeliveryAddress? deliveryAddress,
+    _i4.DeliveryType? deliveryType = _i4.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
     String? notes,
@@ -676,8 +661,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #metadata: metadata,
               #tags: tags,
             }),
-            returnValue: _i12.Future<_i8.EnhancedOrder>.value(
-              _FakeEnhancedOrder_5(
+            returnValue: _i10.Future<_i6.EnhancedOrder>.value(
+              _FakeEnhancedOrder_4(
                 this,
                 Invocation.method(#createEnhancedOrder, [], {
                   #orderNumber: orderNumber,
@@ -701,28 +686,28 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i8.EnhancedOrder>);
+          as _i10.Future<_i6.EnhancedOrder>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder?> getEnhancedOrderById(int? orderId) =>
+  _i10.Future<_i6.EnhancedOrder?> getEnhancedOrderById(int? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#getEnhancedOrderById, [orderId]),
-            returnValue: _i12.Future<_i8.EnhancedOrder?>.value(),
+            returnValue: _i10.Future<_i6.EnhancedOrder?>.value(),
           )
-          as _i12.Future<_i8.EnhancedOrder?>);
+          as _i10.Future<_i6.EnhancedOrder?>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder?> getEnhancedOrderByNumber(
+  _i10.Future<_i6.EnhancedOrder?> getEnhancedOrderByNumber(
     String? orderNumber,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getEnhancedOrderByNumber, [orderNumber]),
-            returnValue: _i12.Future<_i8.EnhancedOrder?>.value(),
+            returnValue: _i10.Future<_i6.EnhancedOrder?>.value(),
           )
-          as _i12.Future<_i8.EnhancedOrder?>);
+          as _i10.Future<_i6.EnhancedOrder?>);
 
   @override
-  _i12.Future<List<_i8.EnhancedOrder>> getCustomerEnhancedOrders({
+  _i10.Future<List<_i6.EnhancedOrder>> getCustomerEnhancedOrders({
     required String? customerId,
     int? limit = 50,
     int? offset = 0,
@@ -735,14 +720,14 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #offset: offset,
               #statuses: statuses,
             }),
-            returnValue: _i12.Future<List<_i8.EnhancedOrder>>.value(
-              <_i8.EnhancedOrder>[],
+            returnValue: _i10.Future<List<_i6.EnhancedOrder>>.value(
+              <_i6.EnhancedOrder>[],
             ),
           )
-          as _i12.Future<List<_i8.EnhancedOrder>>);
+          as _i10.Future<List<_i6.EnhancedOrder>>);
 
   @override
-  _i12.Future<List<_i8.EnhancedOrder>> getCompanyEnhancedOrders({
+  _i10.Future<List<_i6.EnhancedOrder>> getCompanyEnhancedOrders({
     required String? companyId,
     int? limit = 100,
     int? offset = 0,
@@ -759,14 +744,14 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #dateFrom: dateFrom,
               #dateTo: dateTo,
             }),
-            returnValue: _i12.Future<List<_i8.EnhancedOrder>>.value(
-              <_i8.EnhancedOrder>[],
+            returnValue: _i10.Future<List<_i6.EnhancedOrder>>.value(
+              <_i6.EnhancedOrder>[],
             ),
           )
-          as _i12.Future<List<_i8.EnhancedOrder>>);
+          as _i10.Future<List<_i6.EnhancedOrder>>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder> updateEnhancedOrderStatus({
+  _i10.Future<_i6.EnhancedOrder> updateEnhancedOrderStatus({
     required int? orderId,
     required String? newStatus,
     String? reason,
@@ -789,8 +774,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #estimatedDelivery: estimatedDelivery,
               #metadata: metadata,
             }),
-            returnValue: _i12.Future<_i8.EnhancedOrder>.value(
-              _FakeEnhancedOrder_5(
+            returnValue: _i10.Future<_i6.EnhancedOrder>.value(
+              _FakeEnhancedOrder_4(
                 this,
                 Invocation.method(#updateEnhancedOrderStatus, [], {
                   #orderId: orderId,
@@ -806,10 +791,10 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i8.EnhancedOrder>);
+          as _i10.Future<_i6.EnhancedOrder>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder> addTrackingToEnhancedOrder({
+  _i10.Future<_i6.EnhancedOrder> addTrackingToEnhancedOrder({
     required int? orderId,
     required String? trackingNumber,
     String? shippingCarrier,
@@ -826,8 +811,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #estimatedDelivery: estimatedDelivery,
               #trackingUrl: trackingUrl,
             }),
-            returnValue: _i12.Future<_i8.EnhancedOrder>.value(
-              _FakeEnhancedOrder_5(
+            returnValue: _i10.Future<_i6.EnhancedOrder>.value(
+              _FakeEnhancedOrder_4(
                 this,
                 Invocation.method(#addTrackingToEnhancedOrder, [], {
                   #orderId: orderId,
@@ -840,47 +825,47 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i8.EnhancedOrder>);
+          as _i10.Future<_i6.EnhancedOrder>);
 
   @override
-  _i12.Future<List<_i8.OrderStatusChange>> getOrderStatusHistory(
+  _i10.Future<List<_i6.OrderStatusChange>> getOrderStatusHistory(
     int? orderId,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getOrderStatusHistory, [orderId]),
-            returnValue: _i12.Future<List<_i8.OrderStatusChange>>.value(
-              <_i8.OrderStatusChange>[],
+            returnValue: _i10.Future<List<_i6.OrderStatusChange>>.value(
+              <_i6.OrderStatusChange>[],
             ),
           )
-          as _i12.Future<List<_i8.OrderStatusChange>>);
+          as _i10.Future<List<_i6.OrderStatusChange>>);
 
   @override
-  _i12.Future<List<Map<String, dynamic>>> getShippingCarriers() =>
+  _i10.Future<List<Map<String, dynamic>>> getShippingCarriers() =>
       (super.noSuchMethod(
             Invocation.method(#getShippingCarriers, []),
-            returnValue: _i12.Future<List<Map<String, dynamic>>>.value(
+            returnValue: _i10.Future<List<Map<String, dynamic>>>.value(
               <Map<String, dynamic>>[],
             ),
           )
-          as _i12.Future<List<Map<String, dynamic>>>);
+          as _i10.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i12.Future<List<Map<String, dynamic>>> getShippingMethods(
+  _i10.Future<List<Map<String, dynamic>>> getShippingMethods(
     String? carrierCode,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getShippingMethods, [carrierCode]),
-            returnValue: _i12.Future<List<Map<String, dynamic>>>.value(
+            returnValue: _i10.Future<List<Map<String, dynamic>>>.value(
               <Map<String, dynamic>>[],
             ),
           )
-          as _i12.Future<List<Map<String, dynamic>>>);
+          as _i10.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i12.Future<_i8.EnhancedOrder> convertBasicToEnhancedOrder({
-    required _i6.BasicOrder? basicOrder,
+  _i10.Future<_i6.EnhancedOrder> convertBasicToEnhancedOrder({
+    required _i4.BasicOrder? basicOrder,
     required String? companyId,
-    required _i16.DeliveryAddress? deliveryAddress,
+    required _i15.DeliveryAddress? deliveryAddress,
     String? customerEmail,
     String? customerPhone,
   }) =>
@@ -892,8 +877,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #customerEmail: customerEmail,
               #customerPhone: customerPhone,
             }),
-            returnValue: _i12.Future<_i8.EnhancedOrder>.value(
-              _FakeEnhancedOrder_5(
+            returnValue: _i10.Future<_i6.EnhancedOrder>.value(
+              _FakeEnhancedOrder_4(
                 this,
                 Invocation.method(#convertBasicToEnhancedOrder, [], {
                   #basicOrder: basicOrder,
@@ -905,18 +890,18 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i8.EnhancedOrder>);
+          as _i10.Future<_i6.EnhancedOrder>);
 
   @override
-  _i12.Future<List<_i9.Review>> getReviewsForHike(int? hikeId) =>
+  _i10.Future<List<_i7.Review>> getReviewsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getReviewsForHike, [hikeId]),
-            returnValue: _i12.Future<List<_i9.Review>>.value(<_i9.Review>[]),
+            returnValue: _i10.Future<List<_i7.Review>>.value(<_i7.Review>[]),
           )
-          as _i12.Future<List<_i9.Review>>);
+          as _i10.Future<List<_i7.Review>>);
 
   @override
-  _i12.Future<_i9.Review> createReview({
+  _i10.Future<_i7.Review> createReview({
     required int? hikeId,
     required String? userId,
     required double? rating,
@@ -929,8 +914,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #rating: rating,
               #comment: comment,
             }),
-            returnValue: _i12.Future<_i9.Review>.value(
-              _FakeReview_6(
+            returnValue: _i10.Future<_i7.Review>.value(
+              _FakeReview_5(
                 this,
                 Invocation.method(#createReview, [], {
                   #hikeId: hikeId,
@@ -941,10 +926,10 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i9.Review>);
+          as _i10.Future<_i7.Review>);
 
   @override
-  _i12.Future<_i9.Review> updateReview({
+  _i10.Future<_i7.Review> updateReview({
     required int? reviewId,
     required String? userId,
     double? rating,
@@ -957,8 +942,8 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #rating: rating,
               #comment: comment,
             }),
-            returnValue: _i12.Future<_i9.Review>.value(
-              _FakeReview_6(
+            returnValue: _i10.Future<_i7.Review>.value(
+              _FakeReview_5(
                 this,
                 Invocation.method(#updateReview, [], {
                   #reviewId: reviewId,
@@ -969,10 +954,10 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               ),
             ),
           )
-          as _i12.Future<_i9.Review>);
+          as _i10.Future<_i7.Review>);
 
   @override
-  _i12.Future<void> deleteReview({
+  _i10.Future<void> deleteReview({
     required int? reviewId,
     required String? userId,
   }) =>
@@ -981,29 +966,29 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #reviewId: reviewId,
               #userId: userId,
             }),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
           )
-          as _i12.Future<void>);
+          as _i10.Future<void>);
 
   @override
-  _i12.Future<List<_i9.Review>> getReviewsByUser(String? userId) =>
+  _i10.Future<List<_i7.Review>> getReviewsByUser(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getReviewsByUser, [userId]),
-            returnValue: _i12.Future<List<_i9.Review>>.value(<_i9.Review>[]),
+            returnValue: _i10.Future<List<_i7.Review>>.value(<_i7.Review>[]),
           )
-          as _i12.Future<List<_i9.Review>>);
+          as _i10.Future<List<_i7.Review>>);
 
   @override
-  _i12.Future<double> getAverageRatingForHike(int? hikeId) =>
+  _i10.Future<double> getAverageRatingForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getAverageRatingForHike, [hikeId]),
-            returnValue: _i12.Future<double>.value(0.0),
+            returnValue: _i10.Future<double>.value(0.0),
           )
-          as _i12.Future<double>);
+          as _i10.Future<double>);
 
   @override
-  _i12.Future<_i9.Review?> getUserReviewForHike({
+  _i10.Future<_i7.Review?> getUserReviewForHike({
     required int? hikeId,
     required String? userId,
   }) =>
@@ -1012,25 +997,25 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               #hikeId: hikeId,
               #userId: userId,
             }),
-            returnValue: _i12.Future<_i9.Review?>.value(),
+            returnValue: _i10.Future<_i7.Review?>.value(),
           )
-          as _i12.Future<_i9.Review?>);
+          as _i10.Future<_i7.Review?>);
 
   @override
-  _i12.Future<Map<String, dynamic>> getReviewStatsForHike(int? hikeId) =>
+  _i10.Future<Map<String, dynamic>> getReviewStatsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getReviewStatsForHike, [hikeId]),
-            returnValue: _i12.Future<Map<String, dynamic>>.value(
+            returnValue: _i10.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
           )
-          as _i12.Future<Map<String, dynamic>>);
+          as _i10.Future<Map<String, dynamic>>);
 
   @override
-  _i12.Future<List<_i9.Review>> getRecentReviews({int? limit = 20}) =>
+  _i10.Future<List<_i7.Review>> getRecentReviews({int? limit = 20}) =>
       (super.noSuchMethod(
             Invocation.method(#getRecentReviews, [], {#limit: limit}),
-            returnValue: _i12.Future<List<_i9.Review>>.value(<_i9.Review>[]),
+            returnValue: _i10.Future<List<_i7.Review>>.value(<_i7.Review>[]),
           )
-          as _i12.Future<List<_i9.Review>>);
+          as _i10.Future<List<_i7.Review>>);
 }

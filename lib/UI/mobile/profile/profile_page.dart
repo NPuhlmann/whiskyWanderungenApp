@@ -20,6 +20,12 @@ class _ProfilePageState extends State<ProfilePage> {
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
   final ImagePicker _imagePicker = ImagePicker();
 
+  // Lokaler Edit-Buffer für die E-Mail, da Account (im Gegensatz zu Profile)
+  // unveränderlich ist. Null bis der User etwas eingibt - dann wird der
+  // Account-Wert aus dem ViewModel angezeigt.
+  String? _emailEdit;
+  String get _currentEmail => _emailEdit ?? widget.viewModel.account.email;
+
   // Funktion zur Überprüfung, ob der Benutzer mindestens 18 Jahre alt ist
   bool _isAtLeast18YearsOld(DateTime birthDate) {
     final DateTime today = DateTime.now();
@@ -401,24 +407,21 @@ class _ProfilePageState extends State<ProfilePage> {
                                 backgroundColor: Colors.grey[300],
                                 backgroundImage:
                                     widget.viewModel.profile.imageUrl.isNotEmpty
-                                    ? (widget
-                                              .viewModel
-                                              .profile
-                                              .imageUrl
+                                    ? (widget.viewModel.profile.imageUrl
                                               .startsWith('file://')
-                                        ? FileImage(
-                                            File(
-                                              Uri.parse(
-                                                widget
-                                                    .viewModel
-                                                    .profile
-                                                    .imageUrl,
-                                              ).path,
-                                            ),
-                                          )
-                                        : NetworkImage(
-                                            widget.viewModel.profile.imageUrl,
-                                          ))
+                                          ? FileImage(
+                                              File(
+                                                Uri.parse(
+                                                  widget
+                                                      .viewModel
+                                                      .profile
+                                                      .imageUrl,
+                                                ).path,
+                                              ),
+                                            )
+                                          : NetworkImage(
+                                              widget.viewModel.profile.imageUrl,
+                                            ))
                                     : null,
                                 child: widget.viewModel.profile.imageUrl.isEmpty
                                     ? const Icon(
@@ -556,13 +559,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // E-Mail-Feld
+                    // E-Mail-Feld (aus Account, nicht Profile)
                     TextField(
-                      controller: TextEditingController(
-                        text: widget.viewModel.profile.email,
-                      ),
+                      controller: TextEditingController(text: _currentEmail),
                       onChanged: (value) {
-                        widget.viewModel.profile.email = value;
+                        setState(() {
+                          _emailEdit = value;
+                        });
                       },
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -575,6 +578,26 @@ class _ProfilePageState extends State<ProfilePage> {
                           horizontal: 20,
                           vertical: 16,
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Rolle (nur lesend, aus Account)
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.role,
+                        floatingLabelBehavior: FloatingLabelBehavior.auto,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                      ),
+                      child: Text(
+                        widget.viewModel.account.role == 'admin'
+                            ? AppLocalizations.of(context)!.roleAdmin
+                            : AppLocalizations.of(context)!.roleUser,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -682,6 +705,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         // 3. Alles OK - Profil speichern
                         widget.viewModel.updateProfile(
                           widget.viewModel.profile,
+                          email: _currentEmail,
                         );
                       },
                       style: ElevatedButton.styleFrom(

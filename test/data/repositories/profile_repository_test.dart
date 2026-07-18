@@ -45,7 +45,6 @@ void main() {
           id: testUserId,
           firstName: 'Cached',
           lastName: 'User',
-          email: 'cached@example.com',
         );
 
         when(
@@ -57,9 +56,8 @@ void main() {
 
         // Assert
         expect(result, equals(cachedProfile));
-        expect(result.firstName, 'Cached');
+        expect(result!.firstName, 'Cached');
         expect(result.lastName, 'User');
-        expect(result.email, 'cached@example.com');
 
         // Should not call backend API on cache hit
         verifyNever(mockBackendApiService.getUserProfileById(testUserId));
@@ -74,7 +72,6 @@ void main() {
           id: testUserId,
           firstName: 'John',
           lastName: 'Doe',
-          email: 'john.doe@example.com',
           dateOfBirth: DateTime(1990, 5, 15),
           imageUrl: 'https://example.com/avatar.jpg',
         );
@@ -94,10 +91,9 @@ void main() {
 
         // Assert
         expect(result, equals(expectedProfile));
-        expect(result.id, testUserId);
+        expect(result!.id, testUserId);
         expect(result.firstName, 'John');
         expect(result.lastName, 'Doe');
-        expect(result.email, 'john.doe@example.com');
         expect(result.dateOfBirth, DateTime(1990, 5, 15));
         expect(result.imageUrl, 'https://example.com/avatar.jpg');
 
@@ -126,16 +122,38 @@ void main() {
           final result = await profileRepository.getUserProfileById(testUserId);
 
           // Assert
-          expect(result.id, testUserId);
+          expect(result!.id, testUserId);
           expect(result.firstName, '');
           expect(result.lastName, '');
-          expect(result.email, '');
           expect(result.dateOfBirth, null);
           expect(result.imageUrl, '');
 
           verify(
             mockBackendApiService.getUserProfileById(testUserId),
           ).called(1);
+        },
+      );
+
+      test(
+        'should return null and not cache when no profiles row exists',
+        () async {
+          // Arrange
+          when(
+            mockLocalCacheService.getCachedProfileData(testUserId),
+          ).thenAnswer((_) async => null); // Force cache miss
+          when(
+            mockBackendApiService.getUserProfileById(testUserId),
+          ).thenAnswer((_) async => null); // No row for this user
+
+          // Act
+          final result = await profileRepository.getUserProfileById(testUserId);
+
+          // Assert
+          expect(result, isNull);
+          verify(
+            mockBackendApiService.getUserProfileById(testUserId),
+          ).called(1);
+          verifyNever(mockLocalCacheService.cacheProfileData(any, any));
         },
       );
 
@@ -189,9 +207,9 @@ void main() {
         final result2 = await profileRepository.getUserProfileById(userId2);
 
         // Assert
-        expect(result1.id, userId1);
+        expect(result1!.id, userId1);
         expect(result1.firstName, 'Alice');
-        expect(result2.id, userId2);
+        expect(result2!.id, userId2);
         expect(result2.firstName, 'Bob');
 
         verify(mockBackendApiService.getUserProfileById(userId1)).called(1);
@@ -217,7 +235,7 @@ void main() {
         final result = await profileRepository.getUserProfileById(emptyUserId);
 
         // Assert
-        expect(result.id, emptyUserId);
+        expect(result!.id, emptyUserId);
         verify(mockBackendApiService.getUserProfileById(emptyUserId)).called(1);
       });
 
@@ -246,7 +264,7 @@ void main() {
         );
 
         // Assert
-        expect(result.id, specialUserId);
+        expect(result!.id, specialUserId);
         expect(result.firstName, 'José');
         expect(result.lastName, 'Müller-Özkaya');
         verify(
@@ -260,7 +278,6 @@ void main() {
           id: testUserId,
           firstName: 'Expired',
           lastName: 'Cache',
-          email: 'expired@example.com',
         );
 
         // Setup cache to return different values for sequential calls
@@ -282,7 +299,7 @@ void main() {
         final result = await profileRepository.getUserProfileById(testUserId);
 
         // Assert - should return expired profile as fallback
-        expect(result.id, expiredProfile.id);
+        expect(result!.id, expiredProfile.id);
         expect(result.firstName, expiredProfile.firstName);
         expect(result.lastName, expiredProfile.lastName);
         expect(result.firstName, 'Expired');
@@ -329,7 +346,6 @@ void main() {
           id: 'user123',
           firstName: 'Updated',
           lastName: 'User',
-          email: 'updated@example.com',
         );
 
         when(
@@ -358,6 +374,32 @@ void main() {
 
         verify(mockBackendApiService.updateUserProfile(profile)).called(1);
       });
+
+      test(
+        'should evict cache for the user when backend update fails',
+        () async {
+          // Arrange
+          final profile = Profile(id: 'user123', firstName: 'Test');
+
+          when(
+            mockBackendApiService.updateUserProfile(profile),
+          ).thenThrow(Exception('Update failed'));
+          when(
+            mockLocalCacheService.clearUserCache('user123'),
+          ).thenAnswer((_) async {});
+
+          // Act & Assert
+          await expectLater(
+            profileRepository.updateUserProfile(profile),
+            throwsA(isA<Exception>()),
+          );
+
+          // A failed save must not leave the pre-edit cache around to be
+          // served on the next load - that's exactly the "edits vanished"
+          // symptom the bug fix targets.
+          verify(mockLocalCacheService.clearUserCache('user123')).called(1);
+        },
+      );
 
       test('should handle profile with null date of birth', () async {
         // Arrange
@@ -402,7 +444,6 @@ void main() {
           id: 'user123',
           firstName: '',
           lastName: '',
-          email: '',
           imageUrl: '',
         );
 
@@ -422,7 +463,6 @@ void main() {
           id: 'user123',
           firstName: 'Updated',
           lastName: 'User',
-          email: 'updated@example.com',
         );
 
         when(
@@ -1040,8 +1080,8 @@ void main() {
         // Assert
         expect(results.length, 5);
         for (int i = 0; i < results.length; i++) {
-          expect(results[i].id, userIds[i]);
-          expect(results[i].firstName, 'User ${userIds[i]}');
+          expect(results[i]!.id, userIds[i]);
+          expect(results[i]!.firstName, 'User ${userIds[i]}');
           verify(
             mockBackendApiService.getUserProfileById(userIds[i]),
           ).called(1);
@@ -1092,7 +1132,7 @@ void main() {
         // Assert
         expect(results.length, 4);
         for (final result in results) {
-          expect(result.id, userId);
+          expect(result!.id, userId);
         }
 
         verify(mockBackendApiService.getUserProfileById(userId)).called(1);
@@ -1216,11 +1256,11 @@ void main() {
 
         // Act - First call should hit backend
         final result1 = await profileRepository.getUserProfileById(userId);
-        expect(result1.firstName, 'Backend'); // From backend
+        expect(result1!.firstName, 'Backend'); // From backend
 
         // Act - Second call should hit cache
         final result2 = await profileRepository.getUserProfileById(userId);
-        expect(result2.firstName, 'Cached'); // From cache
+        expect(result2!.firstName, 'Cached'); // From cache
 
         // Assert
         verify(
