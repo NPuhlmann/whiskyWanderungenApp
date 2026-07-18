@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:developer' as dev;
 
-import '../../../data/repositories/payment_repository.dart';
+import '../../../data/repositories/purchase_intake_repository.dart';
 import '../../../domain/models/basic_order.dart';
-import '../../../domain/models/basic_payment_result.dart';
+import '../../../domain/models/hike.dart';
 import '../../../domain/models/payment_intent.dart';
 import '../../../config/routing/routes.dart';
 
 /// ViewModel for managing checkout state and payment processing
 class CheckoutViewModel extends ChangeNotifier {
-  final PaymentRepository _paymentRepository;
-  final BasicOrder _order;
+  final PurchaseIntakeRepository _purchaseIntakeRepository;
+  final Hike _hike;
 
   CheckoutViewModel({
-    required PaymentRepository paymentRepository,
-    required BasicOrder order,
-  }) : _paymentRepository = paymentRepository,
-       _order = order;
+    required PurchaseIntakeRepository purchaseIntakeRepository,
+    required Hike hike,
+  }) : _purchaseIntakeRepository = purchaseIntakeRepository,
+       _hike = hike;
 
   // State properties
   bool _isLoading = false;
@@ -27,8 +27,12 @@ class CheckoutViewModel extends ChangeNotifier {
   String? _selectedPaymentMethodId;
   List<PaymentMethodType> _availablePaymentMethods = [];
   Map<String, dynamic>? _deliveryAddress;
+  // ponytail: no delivery-type picker in this slice — the tasting set always
+  // ships. Add a selector when pickup becomes a real option.
+  final DeliveryType _deliveryType = DeliveryType.standardShipping;
   bool _paymentSuccess = false;
   int? _completedOrderId;
+  String? _completedOrderNumber;
 
   // Getters
   bool get isLoading => _isLoading;
@@ -41,7 +45,21 @@ class CheckoutViewModel extends ChangeNotifier {
   Map<String, dynamic>? get deliveryAddress => _deliveryAddress;
   bool get paymentSuccess => _paymentSuccess;
   int? get completedOrderId => _completedOrderId;
-  BasicOrder get order => _order;
+  String? get completedOrderNumber => _completedOrderNumber;
+  Hike get hike => _hike;
+  DeliveryType get deliveryType => _deliveryType;
+
+  bool get requiresDeliveryAddress => _deliveryType != DeliveryType.pickup;
+
+  /// Fields the Edge Function needs before it will create an order.
+  static const _requiredAddressFields = [
+    'firstName',
+    'lastName',
+    'street',
+    'city',
+    'postalCode',
+    'country',
+  ];
 
   /// Check if payment can be processed
   bool get canProcessPayment {
@@ -55,14 +73,9 @@ class CheckoutViewModel extends ChangeNotifier {
       return false;
     }
 
-    // For shipping orders, delivery address is required
-    if (_order.deliveryType == DeliveryType.standardShipping ||
-        _order.deliveryType == DeliveryType.expressShipping) {
+    if (requiresDeliveryAddress) {
       if (_deliveryAddress == null) return false;
-
-      // Check required address fields
-      final requiredFields = ['street', 'city', 'postalCode', 'country'];
-      for (final field in requiredFields) {
+      for (final field in _requiredAddressFields) {
         if (_deliveryAddress![field] == null ||
             _deliveryAddress![field].toString().isEmpty) {
           return false;
@@ -78,10 +91,11 @@ class CheckoutViewModel extends ChangeNotifier {
     _setInitializing(true);
     try {
       dev.log('🔄 Initializing payment methods...');
-      _availablePaymentMethods = await _paymentRepository
+      _availablePaymentMethods = await _purchaseIntakeRepository
           .getAvailablePaymentMethods();
       dev.log(
-        '✅ Payment methods initialized: ${_availablePaymentMethods.map((m) => m.name).join(', ')}',
+        '✅ Payment methods initialized: '
+        '${_availablePaymentMethods.map((m) => m.name).join(', ')}',
       );
     } catch (e) {
       dev.log('❌ Failed to initialize payment methods: $e');
@@ -125,7 +139,7 @@ class CheckoutViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Process payment
+  /// Take the purchase from "Pay" to a paid order.
   Future<void> processPayment() async {
     if (!canProcessPayment) {
       _setError('Bitte füllen Sie alle erforderlichen Felder aus');
@@ -136,47 +150,29 @@ class CheckoutViewModel extends ChangeNotifier {
     clearError();
 
     try {
-      dev.log('🔄 Processing payment for order ${_order.orderNumber}...');
+      dev.log('🔄 Processing purchase for hike ${_hike.id}...');
 
-      // Update order with delivery address if shipping
-      BasicOrder orderToProcess = _order;
-      if ((_order.deliveryType == DeliveryType.standardShipping ||
-              _order.deliveryType == DeliveryType.expressShipping) &&
-          _deliveryAddress != null) {
-        orderToProcess = _order.copyWith(deliveryAddress: _deliveryAddress);
-      }
-
-      // Process payment through repository with new multi-payment API
-      final paymentResult = await _paymentRepository.processPayment(
-        order: orderToProcess,
+      final result = await _purchaseIntakeRepository.intakePurchase(
+        hike: _hike,
+        deliveryType: _deliveryType,
+        deliveryAddress: requiresDeliveryAddress ? _deliveryAddress : null,
         paymentMethod: _selectedPaymentMethod!,
         paymentMethodId: _selectedPaymentMethodId,
         metadata: {
           'source': 'mobile_checkout',
-          'delivery_type': _order.deliveryType.name,
-          'order_number': _order.orderNumber,
+          'delivery_type': _deliveryType.name,
           'payment_method_type': _selectedPaymentMethod!.name,
         },
       );
 
-      // Handle payment result
-      if (paymentResult.isSuccess) {
+      if (result.isSuccess) {
         _paymentSuccess = true;
-        _completedOrderId = _order.id;
-        dev.log('✅ Payment successful for order ${_order.orderNumber}');
-      } else if (paymentResult.requiresUserAction) {
-        _setError(
-          'Zusätzliche Authentifizierung erforderlich. Bitte versuchen Sie es erneut.',
-        );
-        dev.log('🔐 Payment requires additional authentication');
-      } else if (paymentResult.wasCancelled) {
-        _setError('Zahlung wurde abgebrochen');
-        dev.log('❌ Payment was cancelled');
+        _completedOrderId = result.orderId;
+        _completedOrderNumber = result.orderNumber;
+        dev.log('✅ Purchase successful: order ${result.orderNumber}');
       } else {
-        // Use friendly error message from payment result
-        final friendlyError = paymentResult.friendlyErrorMessage;
-        _setError(friendlyError);
-        dev.log('❌ Payment failed: ${paymentResult.errorMessage}');
+        _setError(result.message ?? 'Zahlung fehlgeschlagen');
+        dev.log('❌ Purchase failed: ${result.reason}');
       }
     } catch (e) {
       _setError(
@@ -192,6 +188,10 @@ class CheckoutViewModel extends ChangeNotifier {
   String? validateAddressField(String field, String value) {
     if (value.isEmpty) {
       switch (field) {
+        case 'firstName':
+          return 'Vorname ist erforderlich';
+        case 'lastName':
+          return 'Nachname ist erforderlich';
         case 'street':
           return 'Straße ist erforderlich';
         case 'city':
@@ -223,6 +223,12 @@ class CheckoutViewModel extends ChangeNotifier {
           return 'Stadt muss mindestens 2 Zeichen haben';
         }
         break;
+      case 'firstName':
+      case 'lastName':
+        if (value.length < 2) {
+          return 'Mindestens 2 Zeichen haben';
+        }
+        break;
     }
 
     return null; // Valid
@@ -240,11 +246,13 @@ class CheckoutViewModel extends ChangeNotifier {
     }
   }
 
-  /// Navigate to payment success page (alternative)
+  /// Navigate to payment success page
   void navigateToPaymentSuccess(BuildContext context) {
     if (_paymentSuccess) {
       dev.log('📍 Navigating to payment success page');
-      context.go('${Routes.paymentSuccess}?orderNumber=${_order.orderNumber}');
+      context.go(
+        '${Routes.paymentSuccess}?orderNumber=${_completedOrderNumber ?? ''}',
+      );
     } else {
       dev.log('⚠️ Cannot navigate to payment success: payment not successful');
     }
@@ -264,6 +272,7 @@ class CheckoutViewModel extends ChangeNotifier {
     _deliveryAddress = null;
     _paymentSuccess = false;
     _completedOrderId = null;
+    _completedOrderNumber = null;
     dev.log('🔄 Checkout state reset');
     notifyListeners();
   }

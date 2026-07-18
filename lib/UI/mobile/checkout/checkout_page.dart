@@ -6,63 +6,30 @@ import 'widgets/order_summary.dart';
 import 'widgets/multi_payment_method_selector.dart';
 import 'widgets/delivery_address_form.dart';
 import 'widgets/checkout_button.dart';
-import '../../../domain/models/basic_order.dart';
-import '../../../data/repositories/payment_repository.dart';
+import '../../../domain/models/hike.dart';
+import '../../../data/repositories/purchase_intake_repository.dart';
 import '../../../config/l10n/app_localizations.dart';
 
 /// Main checkout page for processing hike purchases
 class CheckoutPage extends StatefulWidget {
-  final BasicOrder order;
+  final Hike hike;
 
-  const CheckoutPage({super.key, required this.order});
+  const CheckoutPage({super.key, required this.hike});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  bool _hasShownSuccessDialog = false;
-
-  void _showPaymentSuccessDialog(CheckoutViewModel viewModel) {
-    if (_hasShownSuccessDialog) return;
-    _hasShownSuccessDialog = true;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
-        title: const Text('Zahlung erfolgreich!'),
-        content: Text(
-          'Ihre Bestellung ${viewModel.order.formattedOrderNumber} wurde erfolgreich verarbeitet.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              viewModel.navigateToOrderHistory(context);
-            },
-            child: const Text('Alle Bestellungen'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              viewModel.navigateToOrderTracking(context);
-            },
-            child: const Text('Bestellung verfolgen'),
-          ),
-        ],
-      ),
-    );
-  }
+  bool _hasNavigatedOnSuccess = false;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) {
         final viewModel = CheckoutViewModel(
-          paymentRepository: context.read<PaymentRepository>(),
-          order: widget.order,
+          purchaseIntakeRepository: context.read<PurchaseIntakeRepository>(),
+          hike: widget.hike,
         );
         // Initialize payment methods
         viewModel.initialize();
@@ -77,10 +44,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         body: Consumer<CheckoutViewModel>(
           builder: (context, viewModel, child) {
-            // Show success dialog when payment is successful
-            if (viewModel.paymentSuccess && !_hasShownSuccessDialog) {
+            // Leave for the success page once the purchase went through
+            if (viewModel.paymentSuccess && !_hasNavigatedOnSuccess) {
+              _hasNavigatedOnSuccess = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                _showPaymentSuccessDialog(viewModel);
+                if (mounted) viewModel.navigateToPaymentSuccess(context);
               });
             }
 
@@ -95,13 +63,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       // Order Summary
                       Semantics(
                         label: 'Bestellübersicht',
-                        child: OrderSummary(order: widget.order),
+                        child: OrderSummary(
+                          hike: widget.hike,
+                          deliveryType: viewModel.deliveryType,
+                        ),
                       ),
 
                       const SizedBox(height: 24),
 
                       // Delivery Address Form (only for shipping orders)
-                      if (widget.order.requiresDeliveryAddress) ...[
+                      if (viewModel.requiresDeliveryAddress) ...[
                         const Text(
                           'Lieferadresse',
                           style: TextStyle(
