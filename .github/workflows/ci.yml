@@ -31,7 +31,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Analyze code (lib/ strict; test/ excluded in analysis_options.yaml)
         run: flutter analyze
@@ -107,7 +107,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Build Android APK
         run: flutter build apk --debug
@@ -149,7 +149,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Build iOS
         run: flutter build ios --debug --no-codesign
@@ -182,7 +182,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
 
       - name: Build Web (admin entry)
         # lib/main.dart is the mobile entry; lib/main_web.dart is the admin
