@@ -11,6 +11,7 @@ Die App verwendet `OfflineFirstHikeRepository` mit `networkFirst`-Strategie fuer
 
 ### Consequences
 - `HikeRepository` wird durch `OfflineFirstHikeRepository` ersetzt.
-- `ConnectivityService` und `DataSyncService` muessen in `main.dart` initialisiert werden.
+- `ConnectivityService` muss in `main.dart` initialisiert werden. (Der urspruenglich
+  hier genannte `DataSyncService` wurde nie verdrahtet und mit #31 geloescht.)
 - `HomePage` bekommt einen `RefreshIndicator` mit `forceRefresh`.
 - Der bisherige `OfflineFirstHikeRepository`-Code ist keine tote Infrastruktur mehr.
