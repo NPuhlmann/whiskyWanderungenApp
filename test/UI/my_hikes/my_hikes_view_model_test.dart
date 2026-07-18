@@ -7,12 +7,12 @@ import '../../mocks/mock_repositories.dart';
 
 void main() {
   group('MyHikesViewModel Tests', () {
-    late MockHikeRepository mockHikeRepository;
+    late MockOfflineFirstHikeRepository mockHikeRepository;
     late MockUserRepository mockUserRepository;
     late MyHikesViewModel myHikesViewModel;
 
     setUp(() {
-      mockHikeRepository = MockHikeRepository();
+      mockHikeRepository = MockOfflineFirstHikeRepository();
       mockUserRepository = MockUserRepository();
       myHikesViewModel = MyHikesViewModel(
         hikeRepository: mockHikeRepository,
@@ -54,7 +54,10 @@ void main() {
 
           when(mockUserRepository.getUserId()).thenReturn(testUserId);
           when(
-            mockHikeRepository.getUserHikes(testUserId),
+            mockHikeRepository.getUserHikes(
+              testUserId,
+              forceRefresh: anyNamed('forceRefresh'),
+            ),
           ).thenAnswer((_) async => expectedHikes);
 
           bool listenerCalled = false;
@@ -69,7 +72,9 @@ void main() {
           expect(myHikesViewModel.errorMessage, isNull);
           expect(listenerCalled, true);
           verify(mockUserRepository.getUserId()).called(1);
-          verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
+          verify(
+            mockHikeRepository.getUserHikes(testUserId, forceRefresh: false),
+          ).called(1);
         },
       );
 
@@ -89,14 +94,22 @@ void main() {
         expect(myHikesViewModel.errorMessage, 'loginRequiredForHikes');
         expect(listenerCalled, true);
         verify(mockUserRepository.getUserId()).called(1);
-        verifyNever(mockHikeRepository.getUserHikes(any));
+        verifyNever(
+          mockHikeRepository.getUserHikes(
+            any,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
+        );
       });
 
       test('should handle empty user hikes list', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenAnswer((_) async => []);
 
         bool listenerCalled = false;
@@ -110,14 +123,19 @@ void main() {
         expect(myHikesViewModel.isLoading, false);
         expect(myHikesViewModel.errorMessage, isNull);
         expect(listenerCalled, true);
-        verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
+        verify(
+          mockHikeRepository.getUserHikes(testUserId, forceRefresh: false),
+        ).called(1);
       });
 
       test('should handle error loading user hikes', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenThrow(Exception('Network error'));
 
         bool listenerCalled = false;
@@ -131,13 +149,20 @@ void main() {
         expect(myHikesViewModel.isLoading, false);
         expect(myHikesViewModel.errorMessage, 'errorLoadingHikes');
         expect(listenerCalled, true);
-        verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
+        verify(
+          mockHikeRepository.getUserHikes(testUserId, forceRefresh: false),
+        ).called(1);
       });
 
       test('should not load multiple times simultaneously', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId)).thenAnswer((_) async {
+        when(
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
+        ).thenAnswer((_) async {
           // Simulate slow network
           await Future.delayed(const Duration(milliseconds: 100));
           return [const Hike(id: 1, name: 'Test Hike')];
@@ -150,13 +175,20 @@ void main() {
         await Future.wait([future1, future2]);
 
         // Assert - Should only call the repository once
-        verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
+        verify(
+          mockHikeRepository.getUserHikes(testUserId, forceRefresh: false),
+        ).called(1);
       });
 
       test('should set loading state correctly during load', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
-        when(mockHikeRepository.getUserHikes(testUserId)).thenAnswer((_) async {
+        when(
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
+        ).thenAnswer((_) async {
           // Verify loading is true during async call
           expect(myHikesViewModel.isLoading, true);
           await Future.delayed(const Duration(milliseconds: 10));
@@ -177,7 +209,10 @@ void main() {
         // Arrange - First cause an error
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenThrow(Exception('Network error'));
 
         await myHikesViewModel.loadUserHikes();
@@ -185,7 +220,10 @@ void main() {
 
         // Now return successful data
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenAnswer((_) async => [const Hike(id: 1, name: 'Test Hike')]);
 
         // Act
@@ -198,12 +236,15 @@ void main() {
     });
 
     group('refresh', () {
-      test('should call loadUserHikes', () async {
+      test('should call loadUserHikes with forceRefresh', () async {
         // Arrange
         const testUserId = 'user123';
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenAnswer((_) async => []);
 
         // Act
@@ -211,7 +252,9 @@ void main() {
 
         // Assert
         verify(mockUserRepository.getUserId()).called(1);
-        verify(mockHikeRepository.getUserHikes(testUserId)).called(1);
+        verify(
+          mockHikeRepository.getUserHikes(testUserId, forceRefresh: true),
+        ).called(1);
       });
 
       test('should handle refresh with existing data', () async {
@@ -225,7 +268,10 @@ void main() {
 
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenAnswer((_) async => initialHikes);
 
         await myHikesViewModel.loadUserHikes();
@@ -233,7 +279,10 @@ void main() {
 
         // Update mock to return new data
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenAnswer((_) async => updatedHikes);
 
         // Act
@@ -251,7 +300,10 @@ void main() {
         const testUserId = 'user123';
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenAnswer((_) async => []);
 
         int notificationCount = 0;
@@ -269,7 +321,10 @@ void main() {
         const testUserId = 'user123';
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
-          mockHikeRepository.getUserHikes(testUserId),
+          mockHikeRepository.getUserHikes(
+            testUserId,
+            forceRefresh: anyNamed('forceRefresh'),
+          ),
         ).thenThrow(Exception('Error'));
 
         int notificationCount = 0;

@@ -4,40 +4,42 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i13;
-import 'dart:typed_data' as _i14;
-import 'dart:ui' as _i17;
+import 'dart:typed_data' as _i16;
+import 'dart:ui' as _i19;
 
 import 'package:flutter/cupertino.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i15;
-import 'package:shared_preferences/shared_preferences.dart' as _i29;
+import 'package:mockito/src/dummies.dart' as _i17;
+import 'package:shared_preferences/shared_preferences.dart' as _i30;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i4;
 import 'package:whisky_hikes/data/models/pagination_result.dart' as _i8;
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart'
-    as _i18;
-import 'package:whisky_hikes/data/repositories/profile_repository.dart' as _i12;
-import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart'
-    as _i22;
-import 'package:whisky_hikes/data/repositories/user_repository.dart' as _i16;
-import 'package:whisky_hikes/data/repositories/waypoint_repository.dart'
     as _i20;
-import 'package:whisky_hikes/data/services/auth/auth_service.dart' as _i23;
+import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart'
+    as _i12;
+import 'package:whisky_hikes/data/repositories/profile_repository.dart' as _i15;
+import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart'
+    as _i23;
+import 'package:whisky_hikes/data/repositories/user_repository.dart' as _i18;
+import 'package:whisky_hikes/data/repositories/waypoint_repository.dart'
+    as _i21;
+import 'package:whisky_hikes/data/services/auth/auth_service.dart' as _i24;
 import 'package:whisky_hikes/data/services/cache/local_cache_service.dart'
-    as _i24;
-import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i27;
-import 'package:whisky_hikes/data/services/payment/multi_payment_service.dart'
     as _i25;
+import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i28;
+import 'package:whisky_hikes/data/services/payment/multi_payment_service.dart'
+    as _i26;
 import 'package:whisky_hikes/data/services/payment/stripe_service.dart' as _i6;
 import 'package:whisky_hikes/domain/models/basic_order.dart' as _i9;
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart' as _i7;
-import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i28;
+import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i29;
 import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i10;
-import 'package:whisky_hikes/domain/models/hike.dart' as _i19;
-import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i26;
+import 'package:whisky_hikes/domain/models/hike.dart' as _i14;
+import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i27;
 import 'package:whisky_hikes/domain/models/profile.dart' as _i2;
 import 'package:whisky_hikes/domain/models/review.dart' as _i11;
 import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i5;
-import 'package:whisky_hikes/domain/models/waypoint.dart' as _i21;
+import 'package:whisky_hikes/domain/models/waypoint.dart' as _i22;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -165,10 +167,56 @@ class _FakeRealtimeChannel_18 extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
+/// A class which mocks [OfflineFirstHikeRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockOfflineFirstHikeRepository extends _i1.Mock
+    implements _i12.OfflineFirstHikeRepository {
+  MockOfflineFirstHikeRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i13.Future<List<_i14.Hike>> getAllAvailableHikes({
+    bool? forceRefresh = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllAvailableHikes, [], {
+              #forceRefresh: forceRefresh,
+            }),
+            returnValue: _i13.Future<List<_i14.Hike>>.value(<_i14.Hike>[]),
+          )
+          as _i13.Future<List<_i14.Hike>>);
+
+  @override
+  _i13.Future<List<_i14.Hike>> getUserHikes(
+    String? userId, {
+    bool? forceRefresh = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getUserHikes,
+              [userId],
+              {#forceRefresh: forceRefresh},
+            ),
+            returnValue: _i13.Future<List<_i14.Hike>>.value(<_i14.Hike>[]),
+          )
+          as _i13.Future<List<_i14.Hike>>);
+
+  @override
+  _i13.Future<void> clearHikeCache() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearHikeCache, []),
+            returnValue: _i13.Future<void>.value(),
+            returnValueForMissingStub: _i13.Future<void>.value(),
+          )
+          as _i13.Future<void>);
+}
+
 /// A class which mocks [ProfileRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockProfileRepository extends _i1.Mock implements _i12.ProfileRepository {
+class MockProfileRepository extends _i1.Mock implements _i15.ProfileRepository {
   MockProfileRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -198,7 +246,7 @@ class MockProfileRepository extends _i1.Mock implements _i12.ProfileRepository {
   @override
   _i13.Future<String> uploadProfileImage(
     String? userId,
-    _i14.Uint8List? imageBytes,
+    _i16.Uint8List? imageBytes,
     String? fileExt,
   ) =>
       (super.noSuchMethod(
@@ -208,7 +256,7 @@ class MockProfileRepository extends _i1.Mock implements _i12.ProfileRepository {
               fileExt,
             ]),
             returnValue: _i13.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i17.dummyValue<String>(
                 this,
                 Invocation.method(#uploadProfileImage, [
                   userId,
@@ -268,7 +316,7 @@ class MockProfileRepository extends _i1.Mock implements _i12.ProfileRepository {
 /// A class which mocks [UserRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserRepository extends _i1.Mock implements _i16.UserRepository {
+class MockUserRepository extends _i1.Mock implements _i18.UserRepository {
   MockUserRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -360,13 +408,13 @@ class MockUserRepository extends _i1.Mock implements _i16.UserRepository {
           as _i13.Future<void>);
 
   @override
-  void addListener(_i17.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i19.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#addListener, [listener]),
     returnValueForMissingStub: null,
   );
 
   @override
-  void removeListener(_i17.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i19.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#removeListener, [listener]),
     returnValueForMissingStub: null,
   );
@@ -388,14 +436,14 @@ class MockUserRepository extends _i1.Mock implements _i16.UserRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockHikeImagesRepository extends _i1.Mock
-    implements _i18.HikeImagesRepository {
+    implements _i20.HikeImagesRepository {
   MockHikeImagesRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i13.Future<void> uploadHikeImages(
-    _i19.Hike? hike,
+    _i14.Hike? hike,
     List<String>? imagePaths,
   ) =>
       (super.noSuchMethod(
@@ -418,24 +466,24 @@ class MockHikeImagesRepository extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWaypointRepository extends _i1.Mock
-    implements _i20.WaypointRepository {
+    implements _i21.WaypointRepository {
   MockWaypointRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i13.Future<List<_i21.Waypoint>> getWaypointsForHike(int? hikeId) =>
+  _i13.Future<List<_i22.Waypoint>> getWaypointsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getWaypointsForHike, [hikeId]),
-            returnValue: _i13.Future<List<_i21.Waypoint>>.value(
-              <_i21.Waypoint>[],
+            returnValue: _i13.Future<List<_i22.Waypoint>>.value(
+              <_i22.Waypoint>[],
             ),
           )
-          as _i13.Future<List<_i21.Waypoint>>);
+          as _i13.Future<List<_i22.Waypoint>>);
 
   @override
   _i13.Future<void> addWaypoint(
-    _i21.Waypoint? waypoint,
+    _i22.Waypoint? waypoint,
     int? hikeId, {
     int? orderIndex,
   }) =>
@@ -451,7 +499,7 @@ class MockWaypointRepository extends _i1.Mock
           as _i13.Future<void>);
 
   @override
-  _i13.Future<void> updateWaypoint(_i21.Waypoint? waypoint) =>
+  _i13.Future<void> updateWaypoint(_i22.Waypoint? waypoint) =>
       (super.noSuchMethod(
             Invocation.method(#updateWaypoint, [waypoint]),
             returnValue: _i13.Future<void>.value(),
@@ -490,7 +538,7 @@ class MockWaypointRepository extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTastingSetRepository extends _i1.Mock
-    implements _i22.TastingSetRepository {
+    implements _i23.TastingSetRepository {
   MockTastingSetRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -683,7 +731,7 @@ class MockTastingSetRepository extends _i1.Mock
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i23.AuthService {
+class MockAuthService extends _i1.Mock implements _i24.AuthService {
   MockAuthService() {
     _i1.throwOnMissingStub(this);
   }
@@ -801,7 +849,7 @@ class MockAuthService extends _i1.Mock implements _i23.AuthService {
 /// A class which mocks [LocalCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLocalCacheService extends _i1.Mock implements _i24.LocalCacheService {
+class MockLocalCacheService extends _i1.Mock implements _i25.LocalCacheService {
   MockLocalCacheService() {
     _i1.throwOnMissingStub(this);
   }
@@ -826,7 +874,7 @@ class MockLocalCacheService extends _i1.Mock implements _i24.LocalCacheService {
   @override
   _i13.Future<String?> cacheProfileImage(
     String? userId,
-    _i14.Uint8List? imageBytes,
+    _i16.Uint8List? imageBytes,
     String? fileExtension,
   ) =>
       (super.noSuchMethod(
@@ -1000,7 +1048,7 @@ class MockStripeService extends _i1.Mock implements _i6.StripeService {
               #cvc: cvc,
             }),
             returnValue: _i13.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i17.dummyValue<String>(
                 this,
                 Invocation.method(#createPaymentMethod, [], {
                   #cardNumber: cardNumber,
@@ -1018,7 +1066,7 @@ class MockStripeService extends _i1.Mock implements _i6.StripeService {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockMultiPaymentService extends _i1.Mock
-    implements _i25.MultiPaymentService {
+    implements _i26.MultiPaymentService {
   MockMultiPaymentService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1034,7 +1082,7 @@ class MockMultiPaymentService extends _i1.Mock
 
   @override
   _i13.Future<bool> isPaymentMethodAvailable(
-    _i26.PaymentMethodType? paymentMethod,
+    _i27.PaymentMethodType? paymentMethod,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#isPaymentMethodAvailable, [paymentMethod]),
@@ -1043,18 +1091,18 @@ class MockMultiPaymentService extends _i1.Mock
           as _i13.Future<bool>);
 
   @override
-  _i13.Future<List<_i26.PaymentMethodType>> getAvailablePaymentMethods() =>
+  _i13.Future<List<_i27.PaymentMethodType>> getAvailablePaymentMethods() =>
       (super.noSuchMethod(
             Invocation.method(#getAvailablePaymentMethods, []),
-            returnValue: _i13.Future<List<_i26.PaymentMethodType>>.value(
-              <_i26.PaymentMethodType>[],
+            returnValue: _i13.Future<List<_i27.PaymentMethodType>>.value(
+              <_i27.PaymentMethodType>[],
             ),
           )
-          as _i13.Future<List<_i26.PaymentMethodType>>);
+          as _i13.Future<List<_i27.PaymentMethodType>>);
 
   @override
   _i13.Future<_i7.BasicPaymentResult> processPayment({
-    required _i26.PaymentMethodType? paymentMethod,
+    required _i27.PaymentMethodType? paymentMethod,
     required double? amount,
     String? currency = 'eur',
     Map<String, dynamic>? metadata,
@@ -1081,10 +1129,10 @@ class MockMultiPaymentService extends _i1.Mock
           as _i13.Future<_i7.BasicPaymentResult>);
 
   @override
-  String getPaymentMethodDisplayName(_i26.PaymentMethodType? paymentMethod) =>
+  String getPaymentMethodDisplayName(_i27.PaymentMethodType? paymentMethod) =>
       (super.noSuchMethod(
             Invocation.method(#getPaymentMethodDisplayName, [paymentMethod]),
-            returnValue: _i15.dummyValue<String>(
+            returnValue: _i17.dummyValue<String>(
               this,
               Invocation.method(#getPaymentMethodDisplayName, [paymentMethod]),
             ),
@@ -1092,10 +1140,10 @@ class MockMultiPaymentService extends _i1.Mock
           as String);
 
   @override
-  String getPaymentMethodIcon(_i26.PaymentMethodType? paymentMethod) =>
+  String getPaymentMethodIcon(_i27.PaymentMethodType? paymentMethod) =>
       (super.noSuchMethod(
             Invocation.method(#getPaymentMethodIcon, [paymentMethod]),
-            returnValue: _i15.dummyValue<String>(
+            returnValue: _i17.dummyValue<String>(
               this,
               Invocation.method(#getPaymentMethodIcon, [paymentMethod]),
             ),
@@ -1106,7 +1154,7 @@ class MockMultiPaymentService extends _i1.Mock
 /// A class which mocks [BackendApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
+class MockBackendApiService extends _i1.Mock implements _i28.BackendApiService {
   MockBackendApiService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1126,7 +1174,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
   String get supabaseUrl =>
       (super.noSuchMethod(
             Invocation.getter(#supabaseUrl),
-            returnValue: _i15.dummyValue<String>(
+            returnValue: _i17.dummyValue<String>(
               this,
               Invocation.getter(#supabaseUrl),
             ),
@@ -1137,7 +1185,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
   String get supabaseAnonKey =>
       (super.noSuchMethod(
             Invocation.getter(#supabaseAnonKey),
-            returnValue: _i15.dummyValue<String>(
+            returnValue: _i17.dummyValue<String>(
               this,
               Invocation.getter(#supabaseAnonKey),
             ),
@@ -1158,35 +1206,35 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
           as _i13.Future<_i2.Profile>);
 
   @override
-  _i13.Future<List<_i19.Hike>> fetchHikes() =>
+  _i13.Future<List<_i14.Hike>> fetchHikes() =>
       (super.noSuchMethod(
             Invocation.method(#fetchHikes, []),
-            returnValue: _i13.Future<List<_i19.Hike>>.value(<_i19.Hike>[]),
+            returnValue: _i13.Future<List<_i14.Hike>>.value(<_i14.Hike>[]),
           )
-          as _i13.Future<List<_i19.Hike>>);
+          as _i13.Future<List<_i14.Hike>>);
 
   @override
-  _i13.Future<_i8.PaginationResult<_i19.Hike>> fetchHikesPaginated(
+  _i13.Future<_i8.PaginationResult<_i14.Hike>> fetchHikesPaginated(
     _i8.PaginationParams? params,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#fetchHikesPaginated, [params]),
-            returnValue: _i13.Future<_i8.PaginationResult<_i19.Hike>>.value(
-              _FakePaginationResult_6<_i19.Hike>(
+            returnValue: _i13.Future<_i8.PaginationResult<_i14.Hike>>.value(
+              _FakePaginationResult_6<_i14.Hike>(
                 this,
                 Invocation.method(#fetchHikesPaginated, [params]),
               ),
             ),
           )
-          as _i13.Future<_i8.PaginationResult<_i19.Hike>>);
+          as _i13.Future<_i8.PaginationResult<_i14.Hike>>);
 
   @override
-  _i13.Future<List<_i19.Hike>> fetchUserHikes(String? userId) =>
+  _i13.Future<List<_i14.Hike>> fetchUserHikes(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchUserHikes, [userId]),
-            returnValue: _i13.Future<List<_i19.Hike>>.value(<_i19.Hike>[]),
+            returnValue: _i13.Future<List<_i14.Hike>>.value(<_i14.Hike>[]),
           )
-          as _i13.Future<List<_i19.Hike>>);
+          as _i13.Future<List<_i14.Hike>>);
 
   @override
   _i13.Future<void> deleteHike(int? hikeId) =>
@@ -1226,7 +1274,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
   @override
   _i13.Future<String> uploadProfileImage(
     String? userId,
-    _i14.Uint8List? fileBytes,
+    _i16.Uint8List? fileBytes,
     String? fileExt,
   ) =>
       (super.noSuchMethod(
@@ -1236,7 +1284,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               fileExt,
             ]),
             returnValue: _i13.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i17.dummyValue<String>(
                 this,
                 Invocation.method(#uploadProfileImage, [
                   userId,
@@ -1257,18 +1305,18 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
           as _i13.Future<String?>);
 
   @override
-  _i13.Future<List<_i21.Waypoint>> getWaypointsForHike(int? hikeId) =>
+  _i13.Future<List<_i22.Waypoint>> getWaypointsForHike(int? hikeId) =>
       (super.noSuchMethod(
             Invocation.method(#getWaypointsForHike, [hikeId]),
-            returnValue: _i13.Future<List<_i21.Waypoint>>.value(
-              <_i21.Waypoint>[],
+            returnValue: _i13.Future<List<_i22.Waypoint>>.value(
+              <_i22.Waypoint>[],
             ),
           )
-          as _i13.Future<List<_i21.Waypoint>>);
+          as _i13.Future<List<_i22.Waypoint>>);
 
   @override
   _i13.Future<void> addWaypoint(
-    _i21.Waypoint? waypoint,
+    _i22.Waypoint? waypoint,
     int? hikeId, {
     int? orderIndex,
   }) =>
@@ -1284,7 +1332,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
           as _i13.Future<void>);
 
   @override
-  _i13.Future<void> updateWaypoint(_i21.Waypoint? waypoint) =>
+  _i13.Future<void> updateWaypoint(_i22.Waypoint? waypoint) =>
       (super.noSuchMethod(
             Invocation.method(#updateWaypoint, [waypoint]),
             returnValue: _i13.Future<void>.value(),
@@ -1613,7 +1661,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
     required double? baseOrderValue,
     double? taxAmount = 0.0,
     String? currency = 'EUR',
-    required _i28.DeliveryAddress? deliveryAddress,
+    required _i29.DeliveryAddress? deliveryAddress,
     _i9.DeliveryType? deliveryType = _i9.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
@@ -1674,7 +1722,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
     required double? totalAmount,
     String? currency = 'EUR',
     double? baseAmount = 0.0,
-    required _i28.DeliveryAddress? deliveryAddress,
+    required _i29.DeliveryAddress? deliveryAddress,
     _i9.DeliveryType? deliveryType = _i9.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
@@ -1906,7 +1954,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
   _i13.Future<_i10.EnhancedOrder> convertBasicToEnhancedOrder({
     required _i9.BasicOrder? basicOrder,
     required String? companyId,
-    required _i28.DeliveryAddress? deliveryAddress,
+    required _i29.DeliveryAddress? deliveryAddress,
     String? customerEmail,
     String? customerPhone,
   }) =>
@@ -2223,7 +2271,7 @@ class MockSupabaseClient extends _i1.Mock implements _i4.SupabaseClient {
       (super.noSuchMethod(
             Invocation.method(#removeChannel, [channel]),
             returnValue: _i13.Future<String>.value(
-              _i15.dummyValue<String>(
+              _i17.dummyValue<String>(
                 this,
                 Invocation.method(#removeChannel, [channel]),
               ),
@@ -2252,7 +2300,7 @@ class MockSupabaseClient extends _i1.Mock implements _i4.SupabaseClient {
 /// A class which mocks [SharedPreferences].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSharedPreferences extends _i1.Mock implements _i29.SharedPreferences {
+class MockSharedPreferences extends _i1.Mock implements _i30.SharedPreferences {
   MockSharedPreferences() {
     _i1.throwOnMissingStub(this);
   }

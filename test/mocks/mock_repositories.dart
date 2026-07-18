@@ -1,4 +1,5 @@
 import 'package:mockito/annotations.dart';
+import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
@@ -13,6 +14,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @GenerateMocks([
+  OfflineFirstHikeRepository,
   ProfileRepository,
   UserRepository,
   HikeImagesRepository,
