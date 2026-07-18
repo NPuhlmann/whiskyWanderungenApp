@@ -115,28 +115,28 @@ class CheckoutViewModel extends ChangeNotifier {
     dev.log(
       '💳 Payment method selected: ${paymentMethod.name} (ID: $paymentMethodId)',
     );
-    notifyListeners();
+    _notify();
   }
 
   /// Set delivery address (for shipping orders)
   void setDeliveryAddress(Map<String, dynamic> address) {
     _deliveryAddress = address;
     dev.log('📍 Delivery address updated: ${address['city']}');
-    notifyListeners();
+    _notify();
   }
 
   /// Update specific address field
   void updateAddressField(String field, String value) {
     _deliveryAddress ??= {};
     _deliveryAddress![field] = value;
-    notifyListeners();
+    _notify();
   }
 
   /// Clear error message
   void clearError() {
     _errorMessage = null;
     dev.log('🧹 Error message cleared');
-    notifyListeners();
+    _notify();
   }
 
   /// Take the purchase from "Pay" to a paid order.
@@ -274,27 +274,38 @@ class CheckoutViewModel extends ChangeNotifier {
     _completedOrderId = null;
     _completedOrderNumber = null;
     dev.log('🔄 Checkout state reset');
-    notifyListeners();
+    _notify();
   }
 
   // Private helper methods
+
+  /// A payment round-trip can outlive this ViewModel if the user backs out of
+  /// checkout mid-flight; notifying a disposed ChangeNotifier throws.
+  bool _disposed = false;
+
+  void _notify() {
+    if (_disposed) return;
+    notifyListeners();
+  }
+
   void _setLoading(bool loading) {
     _isLoading = loading;
-    notifyListeners();
+    _notify();
   }
 
   void _setInitializing(bool initializing) {
     _isInitializing = initializing;
-    notifyListeners();
+    _notify();
   }
 
   void _setError(String error) {
     _errorMessage = error;
-    notifyListeners();
+    _notify();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     dev.log('🗑️ CheckoutViewModel disposed');
     super.dispose();
   }
