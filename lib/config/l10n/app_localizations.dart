@@ -1207,6 +1207,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Average ABV'**
   String get averageAbv;
+
+  /// No description provided for @tasteCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste'**
+  String get tasteCta;
+
+  /// No description provided for @untasteCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as untasted'**
+  String get untasteCta;
+
+  /// No description provided for @closeCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeCta;
 }
 
 class _AppLocalizationsDelegate

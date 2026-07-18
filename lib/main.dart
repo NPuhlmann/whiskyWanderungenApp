@@ -7,6 +7,7 @@ import 'package:whisky_hikes/config/routing/router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:async';
 import 'config/dependencies.dart';
+import 'config/theme/app_theme.dart';
 import 'config/lifecycle/app_lifecycle_manager.dart';
 import 'data/services/payment/multi_payment_service.dart';
 import 'data/services/offline/offline_service.dart';
@@ -149,14 +150,8 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
     );
   }

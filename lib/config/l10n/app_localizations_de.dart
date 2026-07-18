@@ -580,4 +580,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get averageAbv => 'Durchschnittlicher ABV';
+
+  @override
+  String get tasteCta => 'Probieren';
+
+  @override
+  String get untasteCta => 'Als nicht probiert markieren';
+
+  @override
+  String get closeCta => 'Schließen';
 }

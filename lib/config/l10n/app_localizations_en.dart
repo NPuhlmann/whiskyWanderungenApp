@@ -573,4 +573,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get averageAbv => 'Average ABV';
+
+  @override
+  String get tasteCta => 'Taste';
+
+  @override
+  String get untasteCta => 'Mark as untasted';
+
+  @override
+  String get closeCta => 'Close';
 }

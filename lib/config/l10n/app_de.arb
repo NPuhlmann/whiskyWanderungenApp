@@ -195,5 +195,8 @@
   "whiskySamples": "Whisky-Proben",
   "noSamplesYet": "Noch keine Proben",
   "statistics": "Statistiken",
-  "averageAbv": "Durchschnittlicher ABV"
+  "averageAbv": "Durchschnittlicher ABV",
+  "tasteCta": "Probieren",
+  "untasteCta": "Als nicht probiert markieren",
+  "closeCta": "Schließen"
 }

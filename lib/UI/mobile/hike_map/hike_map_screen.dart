@@ -3,6 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
+import '../../../config/l10n/app_localizations.dart';
+import '../../../config/theme/app_tokens.dart';
+import '../../core/widgets/poi_whisky_card.dart';
 import '../../../domain/models/waypoint.dart';
 import '../../../data/repositories/offline_first_waypoint_repository.dart';
 import 'hike_map_view_model.dart';
@@ -129,9 +132,7 @@ class _HikeMapViewState extends State<HikeMapView> {
                       _updateMapView();
                     }
                   },
-                  onTap: (_, point) {
-                    // Schließe offene Popups, wenn auf die Karte getippt wird
-                  },
+                  onTap: (_, _) => viewModel.clearSelection(),
                 ),
                 children: [
                   TileLayer(
@@ -142,7 +143,6 @@ class _HikeMapViewState extends State<HikeMapView> {
                     maxZoom: 19,
                     tileProvider: NetworkTileProvider(),
                   ),
-                  MarkerLayer(markers: _buildMarkers(waypoints)),
                   PolylineLayer(
                     polylines: [
                       Polyline(
@@ -152,11 +152,12 @@ class _HikeMapViewState extends State<HikeMapView> {
                                   LatLng(waypoint.latitude, waypoint.longitude),
                             )
                             .toList(),
-                        color: Colors.blue,
+                        color: AppColors.green700,
                         strokeWidth: 3.0,
                       ),
                     ],
                   ),
+                  MarkerLayer(markers: _buildMarkers(viewModel, waypoints)),
                 ],
               ),
               // Zoom-Steuerelemente
@@ -199,6 +200,21 @@ class _HikeMapViewState extends State<HikeMapView> {
                   ],
                 ),
               ),
+              if (viewModel.selectedWaypoint != null)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: _buildPreviewCard(
+                        context,
+                        viewModel,
+                        viewModel.selectedWaypoint!,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           );
         },
@@ -220,34 +236,55 @@ class _HikeMapViewState extends State<HikeMapView> {
     );
   }
 
-  List<Marker> _buildMarkers(List<Waypoint> waypoints) {
+  List<Marker> _buildMarkers(
+    HikeMapViewModel viewModel,
+    List<Waypoint> waypoints,
+  ) {
     return waypoints.map((waypoint) {
+      final isSelected = viewModel.selectedWaypoint?.id == waypoint.id;
       return Marker(
-        width: 40.0,
-        height: 40.0,
+        width: 72.0,
+        height: 64.0,
         point: LatLng(waypoint.latitude, waypoint.longitude),
         child: GestureDetector(
-          onTap: () => _showWaypointDetails(waypoint),
+          onTap: () => viewModel.selectWaypoint(waypoint),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              AnimatedContainer(
+                duration: AppMotion.fast,
+                curve: AppMotion.standardCurve,
+                padding: EdgeInsets.all(isSelected ? AppSpacing.sm : 4),
                 decoration: BoxDecoration(
-                  color: waypoint.isVisited ? Colors.green : Colors.red,
+                  color: waypoint.isVisited
+                      ? AppColors.green700
+                      : AppColors.amber700,
                   shape: BoxShape.circle,
+                  // Amber glow marks the selected POI without a modal.
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppColors.amber700.withValues(alpha: 0.6),
+                            blurRadius: 16,
+                            spreadRadius: 4,
+                          ),
+                        ]
+                      : AppElevation.cardShadow,
                 ),
-                child: const Icon(
-                  Icons.location_on,
-                  color: Colors.white,
-                  size: 25.0,
+                child: Icon(
+                  waypoint.isVisited ? Icons.check : Icons.local_bar,
+                  color: AppColors.white,
+                  size: isSelected ? 24.0 : 18.0,
                 ),
               ),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 waypoint.name,
-                style: const TextStyle(
-                  fontSize: 9.0,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.peat900,
+                  fontWeight: FontWeight.w700,
                 ),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -257,81 +294,21 @@ class _HikeMapViewState extends State<HikeMapView> {
     }).toList();
   }
 
-  void _showWaypointDetails(Waypoint waypoint) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                waypoint.name,
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(waypoint.description),
-              const SizedBox(height: 16.0),
-              if (waypoint.images.isNotEmpty) ...[
-                const Text(
-                  'Bilder:',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8.0),
-                SizedBox(
-                  height: 100.0,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: waypoint.images.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Image.network(
-                          waypoint.images[index],
-                          height: 100.0,
-                          width: 100.0,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-              const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Besucht: ${waypoint.isVisited ? 'Ja' : 'Nein'}',
-                    style: TextStyle(
-                      color: waypoint.isVisited ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<HikeMapViewModel>().toggleWaypointVisited(
-                        waypoint,
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      waypoint.isVisited
-                          ? 'Als unbesucht markieren'
-                          : 'Als besucht markieren',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+  Widget _buildPreviewCard(
+    BuildContext context,
+    HikeMapViewModel viewModel,
+    Waypoint waypoint,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    return PoiWhiskyCard(
+      key: ValueKey(waypoint.id),
+      waypoint: waypoint,
+      imageUrl: waypoint.images.isNotEmpty ? waypoint.images.first : null,
+      storyText: waypoint.description,
+      whiskyCta: waypoint.isVisited ? l10n.untasteCta : l10n.tasteCta,
+      skipCta: l10n.closeCta,
+      onTaste: () => viewModel.toggleWaypointVisited(waypoint),
+      onSkip: viewModel.clearSelection,
     );
   }
 }

@@ -195,5 +195,8 @@
   "whiskySamples": "Whisky Samples",
   "noSamplesYet": "No samples yet",
   "statistics": "Statistics",
-  "averageAbv": "Average ABV"
+  "averageAbv": "Average ABV",
+  "tasteCta": "Taste",
+  "untasteCta": "Mark as untasted",
+  "closeCta": "Close"
 } 

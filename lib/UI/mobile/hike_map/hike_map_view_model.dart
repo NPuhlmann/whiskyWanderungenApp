@@ -19,6 +19,7 @@ class HikeMapViewModel extends ChangeNotifier {
   List<Waypoint> _waypoints = [];
   bool _isLoading = false;
   String? _error;
+  Waypoint? _selectedWaypoint;
 
   // GPS-related state
   Position? _currentPosition;
@@ -34,6 +35,22 @@ class HikeMapViewModel extends ChangeNotifier {
   List<Waypoint> get waypoints => _waypoints;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  /// POI tapped on the map; drives the inline preview card.
+  Waypoint? get selectedWaypoint => _selectedWaypoint;
+
+  /// Selects [waypoint], highlighting its marker and opening the preview card.
+  void selectWaypoint(Waypoint waypoint) {
+    _selectedWaypoint = waypoint;
+    notifyListeners();
+  }
+
+  /// Dismisses the preview card. No-op when nothing is selected.
+  void clearSelection() {
+    if (_selectedWaypoint == null) return;
+    _selectedWaypoint = null;
+    notifyListeners();
+  }
 
   // GPS-related getters
   Position? get currentPosition => _currentPosition;
@@ -207,7 +224,10 @@ class HikeMapViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _waypoints = await waypointRepository.getWaypointsForHike(hikeId);
+      // Copy: _waypoints is mutated in place below, the repository's list isn't ours.
+      _waypoints = List.of(
+        await waypointRepository.getWaypointsForHike(hikeId),
+      );
 
       // Überprüfen, ob die Wegpunkte unterschiedliche Koordinaten haben
       if (_waypoints.isEmpty || _hasOverlappingCoordinates()) {
@@ -226,17 +246,7 @@ class HikeMapViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleWaypointVisited(Waypoint waypoint) async {
-    final updatedWaypoint = Waypoint(
-      id: waypoint.id,
-      hikeId: waypoint.hikeId,
-      name: waypoint.name,
-      description: waypoint.description,
-      latitude: waypoint.latitude,
-      longitude: waypoint.longitude,
-      orderIndex: waypoint.orderIndex,
-      images: waypoint.images,
-      isVisited: !waypoint.isVisited,
-    );
+    final updatedWaypoint = waypoint.copyWith(isVisited: !waypoint.isVisited);
 
     try {
       // Da es keinen is_visited Marker in der Tabelle gibt, speichern wir den Status nur lokal
@@ -246,6 +256,9 @@ class HikeMapViewModel extends ChangeNotifier {
       final index = _waypoints.indexWhere((w) => w.id == waypoint.id);
       if (index != -1) {
         _waypoints[index] = updatedWaypoint;
+        if (_selectedWaypoint?.id == waypoint.id) {
+          _selectedWaypoint = updatedWaypoint;
+        }
         notifyListeners();
       }
     } catch (e) {
