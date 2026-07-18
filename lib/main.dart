@@ -11,6 +11,7 @@ import 'config/lifecycle/app_lifecycle_manager.dart';
 import 'data/services/payment/multi_payment_service.dart';
 import 'data/services/offline/offline_service.dart';
 import 'data/services/cache/local_cache_service.dart';
+import 'data/services/connectivity/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,10 @@ void main() async {
     debugPrint('⚠️ Payment services initialization failed: $e');
     // Continue app startup even if payment initialization fails
   }
+
+  // Initialize connectivity service
+  ConnectivityService.instance.initialize();
+  debugPrint('✅ ConnectivityService initialized');
 
   runApp(MultiProvider(providers: providers, child: const MyApp()));
 }

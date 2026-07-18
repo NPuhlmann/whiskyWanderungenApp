@@ -6,6 +6,7 @@ import 'package:whisky_hikes/UI/mobile/hike_details/hike_details_view_model.dart
 import 'package:whisky_hikes/UI/mobile/my_hikes/my_hikes_view_model.dart';
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 import 'package:whisky_hikes/data/repositories/hike_repository.dart';
+import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/waypoint_repository.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 
@@ -15,6 +16,7 @@ import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
 import '../data/services/cache/local_cache_service.dart';
 import '../data/services/offline/offline_service.dart';
+import 'package:whisky_hikes/data/services/connectivity/connectivity_service.dart';
 import '../data/services/database/backend_api.dart';
 import '../data/services/admin/order_management_service.dart';
 import '../data/providers/order_management_provider.dart';
@@ -39,6 +41,8 @@ List<SingleChildWidget> get providers {
     Provider<BackendApiService>(create: (_) => BackendApiService()),
     Provider<LocalCacheService>(create: (_) => LocalCacheService()),
     Provider<OfflineService>(create: (_) => OfflineService()),
+    // ConnectivityService: Singleton-Instanz, initialisiert in main.dart.
+    Provider<ConnectivityService>(create: (_) => ConnectivityService.instance),
     Provider<OrderManagementService>(create: (_) => OrderManagementService()),
     Provider<WhiskyManagementService>(
       create: (_) => WhiskyManagementService(Supabase.instance.client),
@@ -69,6 +73,13 @@ List<SingleChildWidget> get providers {
     ),
     Provider<HikeRepository>(
       create: (context) => HikeRepository(context.read<BackendApiService>()),
+    ),
+    Provider<OfflineFirstHikeRepository>(
+      create: (context) => OfflineFirstHikeRepository(
+        context.read<BackendApiService>(),
+        context.read<OfflineService>(),
+        context.read<ConnectivityService>(),
+      ),
     ),
     Provider<HikeImagesRepository>(
       create: (context) =>
