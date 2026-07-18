@@ -34,7 +34,8 @@ class StripeService {
 
       _isInitialized = true;
       dev.log(
-        '✅ Stripe initialized successfully with key: ${key.substring(0, 12)}...',
+        '✅ Stripe initialized successfully with key: '
+        '${key.length > 12 ? key.substring(0, 12) : key}...',
       );
     } catch (e) {
       dev.log('❌ Error during Stripe initialization: $e');
@@ -112,7 +113,8 @@ class StripeService {
       }
 
       dev.log(
-        '🔄 Confirming payment with client secret: ${clientSecret.substring(0, 20)}...',
+        '🔄 Confirming payment with client secret: '
+        '${clientSecret.length > 20 ? clientSecret.substring(0, 20) : clientSecret}...',
       );
 
       // Use real Stripe SDK to confirm payment
