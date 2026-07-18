@@ -254,3 +254,9 @@ Temporary Items
 # End of https://www.toptal.com/developers/gitignore/api/flutter,macos,intellij+all,dart
 
 .env
+
+# Local AI tool configs
+.agents/
+.claude/
+.opencode/
+opencode.json
