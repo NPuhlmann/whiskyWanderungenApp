@@ -6,7 +6,7 @@ import 'package:whisky_hikes/UI/mobile/hike_details/hike_details_view_model.dart
 import 'package:whisky_hikes/UI/mobile/my_hikes/my_hikes_view_model.dart';
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart';
-import 'package:whisky_hikes/data/repositories/waypoint_repository.dart';
+import 'package:whisky_hikes/data/repositories/offline_first_waypoint_repository.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
 
 import '../UI/mobile/home/home_view_model.dart';
@@ -78,11 +78,12 @@ List<SingleChildWidget> get providers {
       create: (context) =>
           HikeImagesRepository(context.read<BackendApiService>()),
     ),
-    // WaypointRepository explizit vor den ViewModels registrieren
-    Provider<WaypointRepository>(
-      create: (context) =>
-          WaypointRepository(context.read<BackendApiService>()),
-      lazy: false, // Sofort initialisieren, nicht erst bei Bedarf
+    Provider<OfflineFirstWaypointRepository>(
+      create: (context) => OfflineFirstWaypointRepository(
+        context.read<BackendApiService>(),
+        context.read<OfflineService>(),
+        context.read<ConnectivityService>(),
+      ),
     ),
     Provider<PaymentRepository>(
       create: (context) => PaymentRepositoryFactory.create(
@@ -102,7 +103,7 @@ List<SingleChildWidget> get providers {
     ChangeNotifierProvider<HikeDetailsPageViewModel>(
       create: (context) => HikeDetailsPageViewModel(
         hikeImagesRepository: context.read<HikeImagesRepository>(),
-        waypointRepository: context.read<WaypointRepository>(),
+        waypointRepository: context.read<OfflineFirstWaypointRepository>(),
       ),
     ),
     ChangeNotifierProvider<MyHikesViewModel>(

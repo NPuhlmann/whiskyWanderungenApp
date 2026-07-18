@@ -27,7 +27,6 @@ analyzer:
     - "test/data/repositories/notification_repository_test.dart"
     - "test/data/repositories/review_repository_test.dart"
     - "test/data/repositories/user_repository_test.dart"
-    - "test/data/repositories/waypoint_repository_test.dart"
     - "test/data/services/admin/**"
     - "test/data/services/analytics/**"
     - "test/data/services/auth_service_simple_test.dart"

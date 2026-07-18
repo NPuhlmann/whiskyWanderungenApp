@@ -9,25 +9,18 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/repositories/hike_images_repository.dart';
-import '../../../data/repositories/waypoint_repository.dart';
+import '../../../data/repositories/offline_first_waypoint_repository.dart';
 import '../../../domain/models/hike.dart';
 
 class HikeDetailsPageViewModel extends ChangeNotifier {
   HikeDetailsPageViewModel({
     required HikeImagesRepository hikeImagesRepository,
-    required WaypointRepository? waypointRepository,
-  }) : _hikeImagesRepository = hikeImagesRepository {
-    // Ensure WaypointRepository is not null
-    _waypointRepository = waypointRepository;
-    if (_waypointRepository == null) {
-      dev.log(
-        "WARNING: WaypointRepository is null in HikeDetailsPageViewModel",
-      );
-    }
-  }
+    required OfflineFirstWaypointRepository waypointRepository,
+  }) : _hikeImagesRepository = hikeImagesRepository,
+       _waypointRepository = waypointRepository;
 
   final HikeImagesRepository _hikeImagesRepository;
-  WaypointRepository? _waypointRepository;
+  final OfflineFirstWaypointRepository _waypointRepository;
 
   List<String> _hikeImages = [];
   List<String> get hikeImages => _hikeImages;
@@ -109,26 +102,21 @@ class HikeDetailsPageViewModel extends ChangeNotifier {
       }
 
       // 4. Wegpunkte der Wanderung laden und speichern
-      if (_waypointRepository != null) {
-        try {
-          final waypoints = await _waypointRepository!.getWaypointsForHike(
-            hike.id,
-          );
-          final waypointsJsonList = waypoints
-              .map((wp) => jsonEncode(wp.toJson()))
-              .toList();
-          await prefs.setStringList(
-            'offline_hike_waypoints_${hike.id}',
-            waypointsJsonList,
-          );
-          dev.log("${waypoints.length} Wegpunkte für Wanderung gespeichert");
-        } catch (e) {
-          dev.log("Fehler beim Laden der Wegpunkte: $e", error: e);
-          // Wir setzen eine leere Liste, damit die App nicht abstürzt
-          await prefs.setStringList('offline_hike_waypoints_${hike.id}', []);
-        }
-      } else {
-        dev.log("WaypointRepository ist null, überspringe Wegpunkte");
+      try {
+        final waypoints = await _waypointRepository.getWaypointsForHike(
+          hike.id,
+        );
+        final waypointsJsonList = waypoints
+            .map((wp) => jsonEncode(wp.toJson()))
+            .toList();
+        await prefs.setStringList(
+          'offline_hike_waypoints_${hike.id}',
+          waypointsJsonList,
+        );
+        dev.log("${waypoints.length} Wegpunkte für Wanderung gespeichert");
+      } catch (e) {
+        dev.log("Fehler beim Laden der Wegpunkte: $e", error: e);
+        // Wir setzen eine leere Liste, damit die App nicht abstürzt
         await prefs.setStringList('offline_hike_waypoints_${hike.id}', []);
       }
 

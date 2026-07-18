@@ -15,11 +15,11 @@ void main() {
   group('HikeDetailsPageViewModel Tests', () {
     late HikeDetailsPageViewModel viewModel;
     late MockHikeImagesRepository mockHikeImagesRepository;
-    late MockWaypointRepository mockWaypointRepository;
+    late MockOfflineFirstWaypointRepository mockWaypointRepository;
 
     setUp(() {
       mockHikeImagesRepository = MockHikeImagesRepository();
-      mockWaypointRepository = MockWaypointRepository();
+      mockWaypointRepository = MockOfflineFirstWaypointRepository();
 
       // Clear SharedPreferences before each test
       SharedPreferences.setMockInitialValues({});
@@ -33,17 +33,6 @@ void main() {
     group('Initialization', () {
       test('should initialize with correct default values', () {
         expect(viewModel.hikeImages, isEmpty);
-      });
-
-      test('should handle null waypoint repository', () {
-        // Arrange & Act
-        final nullWaypointViewModel = HikeDetailsPageViewModel(
-          hikeImagesRepository: mockHikeImagesRepository,
-          waypointRepository: null,
-        );
-
-        // Assert - should not throw and should handle gracefully
-        expect(nullWaypointViewModel, isA<HikeDetailsPageViewModel>());
       });
     });
 
@@ -328,33 +317,6 @@ void main() {
 
         // Assert
         expect(result, true); // Should still succeed
-
-        // Check that empty waypoints list was saved
-        final prefs = await SharedPreferences.getInstance();
-        final savedWaypoints = prefs.getStringList(
-          'offline_hike_waypoints_${testHike.id}',
-        );
-        expect(savedWaypoints, isEmpty);
-      });
-
-      test('should handle null waypoint repository', () async {
-        // Arrange
-        final viewModelWithNullWaypoints = HikeDetailsPageViewModel(
-          hikeImagesRepository: mockHikeImagesRepository,
-          waypointRepository: null,
-        );
-
-        when(
-          mockHikeImagesRepository.getHikeImages(testHike.id),
-        ).thenAnswer((_) async => testImages);
-
-        // Act
-        final result = await viewModelWithNullWaypoints.saveHikeForOfflineUse(
-          testHike,
-        );
-
-        // Assert
-        expect(result, true);
 
         // Check that empty waypoints list was saved
         final prefs = await SharedPreferences.getInstance();

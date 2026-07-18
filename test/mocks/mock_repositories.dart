@@ -3,9 +3,10 @@ import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dar
 import 'package:whisky_hikes/data/repositories/profile_repository.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
-import 'package:whisky_hikes/data/repositories/waypoint_repository.dart';
+import 'package:whisky_hikes/data/repositories/offline_first_waypoint_repository.dart';
 import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart';
 import 'package:whisky_hikes/data/services/auth/auth_service.dart';
+import 'package:whisky_hikes/data/services/connectivity/connectivity_service.dart';
 import 'package:whisky_hikes/data/services/cache/local_cache_service.dart';
 import 'package:whisky_hikes/data/services/payment/stripe_service.dart';
 import 'package:whisky_hikes/data/services/payment/multi_payment_service.dart';
@@ -18,9 +19,10 @@ import 'package:shared_preferences/shared_preferences.dart';
   ProfileRepository,
   UserRepository,
   HikeImagesRepository,
-  WaypointRepository,
+  OfflineFirstWaypointRepository,
   TastingSetRepository,
   AuthService,
+  ConnectivityService,
   LocalCacheService,
   StripeService,
   MultiPaymentService,

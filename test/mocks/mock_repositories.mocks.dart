@@ -9,33 +9,35 @@ import 'dart:ui' as _i19;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i17;
-import 'package:shared_preferences/shared_preferences.dart' as _i30;
+import 'package:shared_preferences/shared_preferences.dart' as _i31;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i2;
 import 'package:whisky_hikes/data/models/pagination_result.dart' as _i7;
 import 'package:whisky_hikes/data/repositories/hike_images_repository.dart'
     as _i20;
 import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart'
     as _i11;
+import 'package:whisky_hikes/data/repositories/offline_first_waypoint_repository.dart'
+    as _i21;
 import 'package:whisky_hikes/data/repositories/profile_repository.dart' as _i14;
 import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart'
     as _i23;
 import 'package:whisky_hikes/data/repositories/user_repository.dart' as _i18;
-import 'package:whisky_hikes/data/repositories/waypoint_repository.dart'
-    as _i21;
 import 'package:whisky_hikes/data/services/auth/auth_service.dart' as _i24;
 import 'package:whisky_hikes/data/services/cache/local_cache_service.dart'
-    as _i25;
-import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i28;
-import 'package:whisky_hikes/data/services/payment/multi_payment_service.dart'
     as _i26;
+import 'package:whisky_hikes/data/services/connectivity/connectivity_service.dart'
+    as _i25;
+import 'package:whisky_hikes/data/services/database/backend_api.dart' as _i29;
+import 'package:whisky_hikes/data/services/payment/multi_payment_service.dart'
+    as _i27;
 import 'package:whisky_hikes/data/services/payment/stripe_service.dart' as _i5;
 import 'package:whisky_hikes/domain/models/account.dart' as _i3;
 import 'package:whisky_hikes/domain/models/basic_order.dart' as _i8;
 import 'package:whisky_hikes/domain/models/basic_payment_result.dart' as _i6;
-import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i29;
+import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i30;
 import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i9;
 import 'package:whisky_hikes/domain/models/hike.dart' as _i13;
-import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i27;
+import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i28;
 import 'package:whisky_hikes/domain/models/profile.dart' as _i15;
 import 'package:whisky_hikes/domain/models/review.dart' as _i10;
 import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i4;
@@ -471,19 +473,26 @@ class MockHikeImagesRepository extends _i1.Mock
           as _i12.Future<List<String>>);
 }
 
-/// A class which mocks [WaypointRepository].
+/// A class which mocks [OfflineFirstWaypointRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockWaypointRepository extends _i1.Mock
-    implements _i21.WaypointRepository {
-  MockWaypointRepository() {
+class MockOfflineFirstWaypointRepository extends _i1.Mock
+    implements _i21.OfflineFirstWaypointRepository {
+  MockOfflineFirstWaypointRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i12.Future<List<_i22.Waypoint>> getWaypointsForHike(int? hikeId) =>
+  _i12.Future<List<_i22.Waypoint>> getWaypointsForHike(
+    int? hikeId, {
+    bool? forceRefresh = false,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#getWaypointsForHike, [hikeId]),
+            Invocation.method(
+              #getWaypointsForHike,
+              [hikeId],
+              {#forceRefresh: forceRefresh},
+            ),
             returnValue: _i12.Future<List<_i22.Waypoint>>.value(
               <_i22.Waypoint>[],
             ),
@@ -491,52 +500,9 @@ class MockWaypointRepository extends _i1.Mock
           as _i12.Future<List<_i22.Waypoint>>);
 
   @override
-  _i12.Future<void> addWaypoint(
-    _i22.Waypoint? waypoint,
-    int? hikeId, {
-    int? orderIndex,
-  }) =>
+  _i12.Future<void> clearWaypointCache() =>
       (super.noSuchMethod(
-            Invocation.method(
-              #addWaypoint,
-              [waypoint, hikeId],
-              {#orderIndex: orderIndex},
-            ),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
-          )
-          as _i12.Future<void>);
-
-  @override
-  _i12.Future<void> updateWaypoint(_i22.Waypoint? waypoint) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateWaypoint, [waypoint]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
-          )
-          as _i12.Future<void>);
-
-  @override
-  _i12.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
-      (super.noSuchMethod(
-            Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
-            returnValue: _i12.Future<void>.value(),
-            returnValueForMissingStub: _i12.Future<void>.value(),
-          )
-          as _i12.Future<void>);
-
-  @override
-  _i12.Future<void> updateWaypointOrder(
-    int? hikeId,
-    int? waypointId,
-    int? newOrderIndex,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateWaypointOrder, [
-              hikeId,
-              waypointId,
-              newOrderIndex,
-            ]),
+            Invocation.method(#clearWaypointCache, []),
             returnValue: _i12.Future<void>.value(),
             returnValueForMissingStub: _i12.Future<void>.value(),
           )
@@ -855,10 +821,96 @@ class MockAuthService extends _i1.Mock implements _i24.AuthService {
           as _i12.Future<void>);
 }
 
+/// A class which mocks [ConnectivityService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockConnectivityService extends _i1.Mock
+    implements _i25.ConnectivityService {
+  MockConnectivityService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i25.NetworkStatus get currentStatus =>
+      (super.noSuchMethod(
+            Invocation.getter(#currentStatus),
+            returnValue: _i25.NetworkStatus.unknown,
+          )
+          as _i25.NetworkStatus);
+
+  @override
+  _i12.Stream<_i25.NetworkStatus> get networkStatusStream =>
+      (super.noSuchMethod(
+            Invocation.getter(#networkStatusStream),
+            returnValue: _i12.Stream<_i25.NetworkStatus>.empty(),
+          )
+          as _i12.Stream<_i25.NetworkStatus>);
+
+  @override
+  _i12.Future<void> initialize() =>
+      (super.noSuchMethod(
+            Invocation.method(#initialize, []),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<void> dispose() =>
+      (super.noSuchMethod(
+            Invocation.method(#dispose, []),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<_i25.NetworkStatus> checkNetworkStatus() =>
+      (super.noSuchMethod(
+            Invocation.method(#checkNetworkStatus, []),
+            returnValue: _i12.Future<_i25.NetworkStatus>.value(
+              _i25.NetworkStatus.unknown,
+            ),
+          )
+          as _i12.Future<_i25.NetworkStatus>);
+
+  @override
+  _i12.Future<bool> hasInternetConnection() =>
+      (super.noSuchMethod(
+            Invocation.method(#hasInternetConnection, []),
+            returnValue: _i12.Future<bool>.value(false),
+          )
+          as _i12.Future<bool>);
+
+  @override
+  _i12.Future<bool> canReachHost(String? host) =>
+      (super.noSuchMethod(
+            Invocation.method(#canReachHost, [host]),
+            returnValue: _i12.Future<bool>.value(false),
+          )
+          as _i12.Future<bool>);
+
+  @override
+  _i12.Future<bool> canReachSupabase() =>
+      (super.noSuchMethod(
+            Invocation.method(#canReachSupabase, []),
+            returnValue: _i12.Future<bool>.value(false),
+          )
+          as _i12.Future<bool>);
+
+  @override
+  Map<String, dynamic> getNetworkStats() =>
+      (super.noSuchMethod(
+            Invocation.method(#getNetworkStats, []),
+            returnValue: <String, dynamic>{},
+          )
+          as Map<String, dynamic>);
+}
+
 /// A class which mocks [LocalCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLocalCacheService extends _i1.Mock implements _i25.LocalCacheService {
+class MockLocalCacheService extends _i1.Mock implements _i26.LocalCacheService {
   MockLocalCacheService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1075,7 +1127,7 @@ class MockStripeService extends _i1.Mock implements _i5.StripeService {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockMultiPaymentService extends _i1.Mock
-    implements _i26.MultiPaymentService {
+    implements _i27.MultiPaymentService {
   MockMultiPaymentService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1091,7 +1143,7 @@ class MockMultiPaymentService extends _i1.Mock
 
   @override
   _i12.Future<bool> isPaymentMethodAvailable(
-    _i27.PaymentMethodType? paymentMethod,
+    _i28.PaymentMethodType? paymentMethod,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#isPaymentMethodAvailable, [paymentMethod]),
@@ -1100,18 +1152,18 @@ class MockMultiPaymentService extends _i1.Mock
           as _i12.Future<bool>);
 
   @override
-  _i12.Future<List<_i27.PaymentMethodType>> getAvailablePaymentMethods() =>
+  _i12.Future<List<_i28.PaymentMethodType>> getAvailablePaymentMethods() =>
       (super.noSuchMethod(
             Invocation.method(#getAvailablePaymentMethods, []),
-            returnValue: _i12.Future<List<_i27.PaymentMethodType>>.value(
-              <_i27.PaymentMethodType>[],
+            returnValue: _i12.Future<List<_i28.PaymentMethodType>>.value(
+              <_i28.PaymentMethodType>[],
             ),
           )
-          as _i12.Future<List<_i27.PaymentMethodType>>);
+          as _i12.Future<List<_i28.PaymentMethodType>>);
 
   @override
   _i12.Future<_i6.BasicPaymentResult> processPayment({
-    required _i27.PaymentMethodType? paymentMethod,
+    required _i28.PaymentMethodType? paymentMethod,
     required double? amount,
     String? currency = 'eur',
     Map<String, dynamic>? metadata,
@@ -1138,7 +1190,7 @@ class MockMultiPaymentService extends _i1.Mock
           as _i12.Future<_i6.BasicPaymentResult>);
 
   @override
-  String getPaymentMethodDisplayName(_i27.PaymentMethodType? paymentMethod) =>
+  String getPaymentMethodDisplayName(_i28.PaymentMethodType? paymentMethod) =>
       (super.noSuchMethod(
             Invocation.method(#getPaymentMethodDisplayName, [paymentMethod]),
             returnValue: _i17.dummyValue<String>(
@@ -1149,7 +1201,7 @@ class MockMultiPaymentService extends _i1.Mock
           as String);
 
   @override
-  String getPaymentMethodIcon(_i27.PaymentMethodType? paymentMethod) =>
+  String getPaymentMethodIcon(_i28.PaymentMethodType? paymentMethod) =>
       (super.noSuchMethod(
             Invocation.method(#getPaymentMethodIcon, [paymentMethod]),
             returnValue: _i17.dummyValue<String>(
@@ -1163,7 +1215,7 @@ class MockMultiPaymentService extends _i1.Mock
 /// A class which mocks [BackendApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockBackendApiService extends _i1.Mock implements _i28.BackendApiService {
+class MockBackendApiService extends _i1.Mock implements _i29.BackendApiService {
   MockBackendApiService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1665,7 +1717,7 @@ class MockBackendApiService extends _i1.Mock implements _i28.BackendApiService {
     required double? baseOrderValue,
     double? taxAmount = 0.0,
     String? currency = 'EUR',
-    required _i29.DeliveryAddress? deliveryAddress,
+    required _i30.DeliveryAddress? deliveryAddress,
     _i8.DeliveryType? deliveryType = _i8.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
@@ -1726,7 +1778,7 @@ class MockBackendApiService extends _i1.Mock implements _i28.BackendApiService {
     required double? totalAmount,
     String? currency = 'EUR',
     double? baseAmount = 0.0,
-    required _i29.DeliveryAddress? deliveryAddress,
+    required _i30.DeliveryAddress? deliveryAddress,
     _i8.DeliveryType? deliveryType = _i8.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
@@ -1958,7 +2010,7 @@ class MockBackendApiService extends _i1.Mock implements _i28.BackendApiService {
   _i12.Future<_i9.EnhancedOrder> convertBasicToEnhancedOrder({
     required _i8.BasicOrder? basicOrder,
     required String? companyId,
-    required _i29.DeliveryAddress? deliveryAddress,
+    required _i30.DeliveryAddress? deliveryAddress,
     String? customerEmail,
     String? customerPhone,
   }) =>
@@ -2304,7 +2356,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
 /// A class which mocks [SharedPreferences].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSharedPreferences extends _i1.Mock implements _i30.SharedPreferences {
+class MockSharedPreferences extends _i1.Mock implements _i31.SharedPreferences {
   MockSharedPreferences() {
     _i1.throwOnMissingStub(this);
   }

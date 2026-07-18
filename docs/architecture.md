@@ -124,7 +124,6 @@ weiter.
 | Repository | Aufgabe |
 | --- | --- |
 | `HikeRepository` | verfuegbare und gekaufte Hikes, Pagination |
-| `WaypointRepository` | Waypoint-CRUD und Reihenfolge |
 | `ProfileRepository` | cache-first Profil- und Avatarzugriff |
 | `UserRepository` | Authentifizierung und Auth-Status |
 | `HikeImagesRepository` | Bilddaten zu Hikes |
@@ -132,7 +131,7 @@ weiter.
 | `TastingSetRepository` | Sets, Samples, Suche und Verwaltung |
 | `ReviewRepository` | Reviews, Bewertungen und Statistiken |
 | `OfflineFirstHikeRepository` | Cache-Strategien fuer Hikes |
-| `OfflineFirstWaypointRepository` | Offline-Waypoints und Sync-Vormerkung |
+| `OfflineFirstWaypointRepository` | Waypoints einer Wanderung, network-first gecacht |
 
 ## Offline und Cache
 

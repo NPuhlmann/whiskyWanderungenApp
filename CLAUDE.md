@@ -92,7 +92,7 @@ Central service for all Supabase operations:
 
 #### Repositories
 - **HikeRepository** - Manages hike data and user purchases
-- **WaypointRepository** - Handles waypoint operations with offline caching
+- **OfflineFirstWaypointRepository** - Reads a hike's waypoints, network-first with cache fallback
 - **ProfileRepository** - User profile management with local caching and image upload
 - **UserRepository** - Authentication state management
 - **HikeImagesRepository** - Hike image management
@@ -144,7 +144,7 @@ The app uses these main Supabase tables:
 - iOS privacy permissions configured (Camera, Photo Library, Microphone)
 
 ### Offline Functionality
-- **WaypointRepository** implements caching for offline access to previously loaded waypoints
+- **OfflineFirstWaypointRepository** caches waypoints for offline access to previously loaded hikes
 - **LocalCacheService** provides transparent profile data and image caching with TTL support
 - Profile data cached for 24h, images for 7 days with 50MB size limit
 - Cache-first loading strategy with automatic background sync

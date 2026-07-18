@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../../../domain/models/waypoint.dart';
-import '../../../data/repositories/waypoint_repository.dart';
+import '../../../data/repositories/offline_first_waypoint_repository.dart';
 import 'hike_map_view_model.dart';
 
 class HikeMapScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class HikeMapScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => HikeMapViewModel(
         hikeId: hikeId,
-        waypointRepository: Provider.of<WaypointRepository>(
+        waypointRepository: Provider.of<OfflineFirstWaypointRepository>(
           context,
           listen: false,
         ),

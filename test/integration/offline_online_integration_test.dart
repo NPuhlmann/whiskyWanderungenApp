@@ -62,7 +62,6 @@ void main() {
 
         // Act - Get hikes while offline
         final offlineResult = await hikeRepository.getAllAvailableHikes(
-          strategy: CacheStrategy.cacheFirst,
         );
 
         // Assert - Should return cached data
@@ -81,7 +80,6 @@ void main() {
         // Act - Force refresh now that we're online
         final onlineResult = await hikeRepository.getAllAvailableHikes(
           forceRefresh: true,
-          strategy: CacheStrategy.cacheFirst,
         );
 
         // Assert - Should return fresh data and update cache
@@ -111,7 +109,6 @@ void main() {
           // Act - Try to get fresh data but network fails
           final result = await hikeRepository.getAllAvailableHikes(
             forceRefresh: true,
-            strategy: CacheStrategy.cacheFirst,
           );
 
           // Assert - Should fallback to cached data
@@ -181,7 +178,6 @@ void main() {
           // Act - Get waypoints offline
           final offlineWaypoints = await waypointRepository.getWaypointsForHike(
             hikeId,
-            strategy: CacheStrategy.cacheFirst,
           );
           expect(offlineWaypoints, equals(cachedWaypoints));
 
@@ -217,7 +213,6 @@ void main() {
           final onlineWaypoints = await waypointRepository.getWaypointsForHike(
             hikeId,
             forceRefresh: true,
-            strategy: CacheStrategy.networkFirst,
           );
 
           // Assert - Should include the new waypoint
@@ -276,7 +271,6 @@ void main() {
           final onlineWaypoints = await waypointRepository.getWaypointsForHike(
             hikeId,
             forceRefresh: true,
-            strategy: CacheStrategy.networkFirst,
           );
 
           // Assert - Deleted waypoint should not be present
@@ -503,7 +497,6 @@ void main() {
 
           // Should still be able to access cached data
           final cachedHikes = await hikeRepository.getAllAvailableHikes(
-            strategy: CacheStrategy.cacheFirst,
           );
           expect(cachedHikes, equals(initialHikes));
 

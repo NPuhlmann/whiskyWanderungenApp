@@ -6,13 +6,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../domain/models/waypoint.dart';
-import '../../../data/repositories/waypoint_repository.dart';
+import '../../../data/repositories/offline_first_waypoint_repository.dart';
 import '../../../data/services/location/location_service.dart';
 import '../../../data/services/navigation/navigation_service.dart';
 
 class HikeMapViewModel extends ChangeNotifier {
   final int hikeId;
-  final WaypointRepository waypointRepository;
+  final OfflineFirstWaypointRepository waypointRepository;
   final LocationService _locationService = LocationService.instance;
   final NavigationService _navigationService = NavigationService.instance;
 

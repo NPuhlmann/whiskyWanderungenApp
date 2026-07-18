@@ -82,7 +82,6 @@ When writing new tests, use `test/test_helpers.dart` for test data factories. Mo
 ## Gotchas
 
 - **Two entry points**: `lib/main.dart` (mobile) vs `lib/main_web.dart` (web admin). `flutter build web` must use `--target lib/main_web.dart`.
-- **`WaypointRepository`** is eagerly initialized (`lazy: false`) in dependencies.
 - **Admin routes** (`/admin/*`) are not auth-guarded at the router level — each page uses `AdminGuard` widget.
 - **`pubspec.lock`** is committed (despite `.gitignore` having it commented out, the file is tracked).
 - **`build/` and `site/`** are gitignored.

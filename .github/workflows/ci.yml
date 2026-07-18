@@ -58,6 +58,7 @@ jobs:
           test/widget_test.dart
           test/data/services/auth_service_test.dart
           test/data/repositories/profile_repository_test.dart
+          test/data/repositories/offline_first_waypoint_repository_test.dart
           test/UI/hike_details/hike_details_view_model_test.dart
           test/UI/checkout/checkout_view_model_test.dart
           test/UI/mobile/home/home_page_test.dart
