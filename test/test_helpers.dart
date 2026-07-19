@@ -6,7 +6,6 @@ import 'package:whisky_hikes/domain/models/commission.dart';
 import 'package:whisky_hikes/domain/models/analytics/sales_statistics.dart';
 import 'package:whisky_hikes/domain/models/analytics/route_performance.dart';
 import 'package:whisky_hikes/domain/models/analytics/customer_insights.dart';
-import 'package:whisky_hikes/domain/models/analytics/performance_metrics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -869,27 +868,6 @@ class TestHelpers {
             3: 100, // 100 customers with 3 orders
             4: 50, // 50 customers with 4+ orders
           },
-    );
-  }
-
-  /// Creates a test PerformanceMetrics instance
-  static PerformanceMetrics createTestPerformanceMetrics({
-    double conversionRate = 0.08,
-    double averageOrderValue = 125.0,
-    double customerLifetimeValue = 450.0,
-    int totalViews = 1000,
-    int totalPurchases = 80,
-    Map<String, double>? metricsByPeriod,
-  }) {
-    return PerformanceMetrics(
-      conversionRate: conversionRate,
-      averageOrderValue: averageOrderValue,
-      customerLifetimeValue: customerLifetimeValue,
-      totalViews: totalViews,
-      totalPurchases: totalPurchases,
-      metricsByPeriod:
-          metricsByPeriod ??
-          {'2025-01': 0.06, '2025-02': 0.08, '2025-03': 0.10},
     );
   }
 

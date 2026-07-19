@@ -176,10 +176,12 @@ The app uses these main Supabase tables:
 - `profiles` - User profile data with automatic creation via triggers
 - `waypoints` - GPS waypoints for trails with ordering system
 - `hikes_waypoints` - Junction table linking hikes to waypoints
-- `purchased_hikes` - User purchase tracking
+- `purchased_hikes` - User purchase tracking; client-read-only, written only
+  via service_role after payment (ADR-0011, #93 — do not restore client
+  write policies)
 - `hike_images` - Trail images
 
-**Important**: When making database schema changes, always check if corresponding updates are needed in the Terraform configuration (`terraform-supabase/` directory).
+**Important**: Schema changes are a new dated migration in `terraform-supabase/supabase/migrations/` — see "Database migrations" below.
 
 ### Storage
 - Supabase Storage buckets with RLS policies for user-specific image access
@@ -534,12 +536,12 @@ supabase functions deploy create-payment-intent
 supabase functions deploy calculate-shipping
 ```
 
-There is no Makefile and `terraform apply` is **not** how this project is
-provisioned — see `docs/known-deviations.md`. `terraform-supabase/*.tf` is kept
-for the project resource itself; it does not own the schema.
+There is no Makefile and no Terraform. The `.tf` files were removed with #81 —
+they described a provisioning path this project never took. `terraform-supabase/`
+now holds only `supabase/` (migrations + Edge Functions) and `sample_images/`;
+the directory name is historical.
 
-Terraform variables load from `.env`: `SUPABASE_ACCESS_TOKEN`, `PROJECT_ID`,
-`ORGANIZATION_ID`, `DATABASE_PASSWORD`.
+Operators need `SUPABASE_ACCESS_TOKEN` in `.env` for `supabase link`.
 
 ## Supabase Integration Patterns
 

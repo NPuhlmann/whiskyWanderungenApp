@@ -17,6 +17,7 @@ Bestand stehen jeweils bei den Konsequenzen.
 | [0008](0008-offline-first-hike-caching.md) | Offline-First-Hike-Caching | Akzeptiert |
 | [0009](0009-split-profile-avatar-account-concepts.md) | Profile, Avatar und Account als getrennte Domaenenkonzepte | Akzeptiert |
 | [0010](0010-profiles-email-as-denormalized-projection.md) | `profiles.email` als denormalisierte Projektion per Trigger synchronisiert | Akzeptiert |
+| [0011](0011-server-side-entitlements-purchased-hikes.md) | `purchased_hikes`-Entitlements werden nur serverseitig geschrieben | Akzeptiert |
 
 Neue ADRs erhalten fortlaufende vierstellige Nummern. Sie werden nur fuer
 schwer rueckgaengig zu machende Entscheidungen mit relevanten Alternativen

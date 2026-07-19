@@ -143,23 +143,11 @@ SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-### Terraform-Variablen
-
-Für das Supabase-Deployment erstelle `terraform-supabase/terraform.tfvars`:
-
-```hcl
-organization_id = "<deine-organization-id>"
-project_name = "whisky-hikes"
-region = "us-east-1"
-database_password = "<starkes-passwort>"
-environment = "dev"
-```
 
 ### GitHub Secrets (für CI/CD)
 
-Die maßgebliche Liste steht in
-[`CI_CD_SETUP.md`](CI_CD_SETUP.md) und stammt aus `distribute.yml` — abweichende
-Schreibweisen führen zu einem fehlschlagenden Workflow.
+Die maßgebliche Liste steht in `.github/workflows/distribute.yml` selbst —
+abweichende Schreibweisen führen zu einem fehlschlagenden Workflow.
 
 ## 🗄️ Supabase Setup
 
@@ -167,10 +155,8 @@ Schreibweisen führen zu einem fehlschlagenden Workflow.
 
 Das Projekt enthält bereits die vollständige Supabase-Konfiguration. Vor dem Provisionieren eines neuen Projekts die folgenden Stellen prüfen:
 
-- `terraform-supabase/main.tf`, `variables.tf`, `outputs.tf`, `vault_secrets.tf` — Infrastructure-as-Code für das Supabase-Projekt (Terraform).
 - `terraform-supabase/supabase/config.toml` — lokale Supabase-CLI-Konfiguration.
-- `terraform-supabase/supabase/migrations/20250821151237_initial_schema.sql` — initiales DB-Schema.
-- `supabase_trigger_profile_creation.sql`, `migration_existing_users.sql` — zusätzliche SQL, die nach der Schema-Migration eingespielt wird.
+- `terraform-supabase/supabase/migrations/` — das vollständige Schema als datierte Migrationen, beginnend mit `20250821151237_initial_schema.sql`.
 - `lib/main.dart` — Laufzeit-Initialisierung via `Supabase.initialize(url: dotenv.env['SUPABASE_URL'], publishableKey: dotenv.env['SUPABASE_ANON_KEY'])`.
 - `lib/data/services/database/backend_api.dart` — zentraler Zugriffspunkt für Supabase-Aufrufe aus dem App-Code.
 
@@ -193,8 +179,8 @@ Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANO
 > **Tabellen nicht von Hand anlegen.** Nach
 > [ADR-0003](docs/adr/0003-supabase-cli-migrations-as-schema-authority.md) sind
 > die Migrationen unter `terraform-supabase/supabase/migrations/` die alleinige
-> Schemaautorität. `terraform apply` ist **nicht** der Weg, auf dem dieses
-> Projekt provisioniert wird — siehe
+> Schemaautorität. Einen Terraform-Pfad gibt es nicht mehr; die `.tf`-Dateien
+> wurden mit #81 entfernt — siehe
 > [Bekannte Abweichungen](docs/known-deviations.md).
 
 ## 🧪 Testing
@@ -414,8 +400,8 @@ Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe [LICENSE](LICENSE) f�
 ## 🆘 Support
 
 - **Issues**: Erstelle ein Issue auf GitHub
-- **Dokumentation**: Siehe `DEPLOYMENT.md` für detaillierte Deployment-Anweisungen
-- **CI/CD**: Siehe `CI_CD_SETUP.md` für Pipeline-Konfiguration
+- **Dokumentation**: Siehe `docs/operations.md` und `docs/backend.md`
+- **CI/CD**: Siehe `.github/workflows/`
 
 ## 🙏 Danksagungen
 

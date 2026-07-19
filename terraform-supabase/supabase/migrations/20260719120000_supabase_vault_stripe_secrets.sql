@@ -5,7 +5,8 @@
 -- 08_supabase_vault_setup.sql` so that the migration tree stays the single
 -- schema authority (ADR-0003). `get_stripe_config()` is called at runtime by
 -- `supabase/functions/create-payment-intent/index.ts`; `test_vault_secrets()`
--- is called by `terraform-supabase/check_vault_status.sh`.
+-- is a manual smoke check from the SQL editor (its former caller,
+-- check_vault_status.sh, was removed with the Terraform tree in #81).
 --
 -- Not ported: the `public.vault_access_audit` table and its `audit_vault_access`
 -- trigger function. The trigger was never attached to anything (the original

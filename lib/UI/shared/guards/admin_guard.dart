@@ -27,7 +27,19 @@ class _AdminGuardState extends State<AdminGuard> {
     _check();
   }
 
+  Object? _error;
+
   Future<void> _check() async {
+    try {
+      await _runCheck();
+    } catch (e) {
+      // Without this, a throwing check leaves _isAdmin null forever and the
+      // UI renders a spinner that never resolves.
+      if (mounted) setState(() => _error = e);
+    }
+  }
+
+  Future<void> _runCheck() async {
     final userRepository = context.read<UserRepository>();
     _isLoggedIn = userRepository.isUserLoggedIn();
     if (!_isLoggedIn) {
@@ -42,20 +54,55 @@ class _AdminGuardState extends State<AdminGuard> {
     if (!mounted) return;
     setState(() => _isAdmin = isAdmin);
     if (!isAdmin) {
+      // No redirect here: '/' points back at an admin route, so navigating
+      // away just bounced straight back in and span forever.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.go('/');
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Du musst Admin sein um dich hier anmelden zu können',
+            ),
+          ),
+        );
       });
     }
   }
 
+  Future<void> _signOut() async {
+    await context.read<UserRepository>().signUserOut();
+    if (mounted) context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      return Scaffold(
+        body: Center(child: Text('Admin-Check fehlgeschlagen: $_error')),
+      );
+    }
     if (_isAdmin == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (_isAdmin == false) {
-      // Redirect wurde in _check() bereits geplant — bis er greift, Spinner.
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      // Logged out: the redirect to /login is already scheduled.
+      if (!_isLoggedIn) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+      // Logged in but not an admin. The snackbar disappears, so leave a way
+      // back on screen.
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Du musst Admin sein um dich hier anmelden zu können'),
+              const SizedBox(height: 16),
+              FilledButton(onPressed: _signOut, child: const Text('Abmelden')),
+            ],
+          ),
+        ),
+      );
     }
     return widget.child;
   }

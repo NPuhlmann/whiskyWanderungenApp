@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/UI/shared/guards/admin_guard.dart';
+import 'package:whisky_hikes/data/repositories/user_repository.dart';
 import 'package:whisky_hikes/data/services/auth/auth_service.dart';
 
 /// Fake-AuthService, der weder Supabase noch RouterState benötigt.
@@ -26,19 +27,22 @@ class _FakeAuthService implements AuthService {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-// Negativ-Pfade (nicht-Admin / nicht eingeloggt) triggern context.go(...),
-// was ohne installierten GoRouter in Widget-Tests fehlschlägt. Sie sind
-// in den Provider-/Service-Tests indirekt abgedeckt; hier konzentrieren
-// wir uns auf die UI-Sichtbarkeitsregeln des Guards.
+// Der "nicht eingeloggt"-Pfad triggert context.go(...), was ohne installierten
+// GoRouter in Widget-Tests fehlschlägt, und ist hier ausgespart.
+Widget _guard({required bool loggedIn, required bool admin, Widget? child}) =>
+    ChangeNotifierProvider<UserRepository>(
+      create: (_) =>
+          UserRepository(_FakeAuthService(loggedIn: loggedIn, admin: admin)),
+      child: MaterialApp(
+        home: AdminGuard(child: child ?? const Text('Dashboard')),
+      ),
+    );
+
 void main() {
   group('AdminGuard', () {
     testWidgets('zeigt Spinner während Rolle geladen wird', (tester) async {
-      final auth = _FakeAuthService(loggedIn: true, admin: true);
       await tester.pumpWidget(
-        Provider<AuthService>.value(
-          value: auth,
-          child: const MaterialApp(home: AdminGuard(child: Text('geheim'))),
-        ),
+        _guard(loggedIn: true, admin: true, child: const Text('geheim')),
       );
 
       // Erstes Frame: Future noch nicht aufgelöst -> Spinner sichtbar.
@@ -47,15 +51,24 @@ void main() {
     });
 
     testWidgets('zeigt Kind-Widget, wenn User Admin ist', (tester) async {
-      final auth = _FakeAuthService(loggedIn: true, admin: true);
-      await tester.pumpWidget(
-        Provider<AuthService>.value(
-          value: auth,
-          child: const MaterialApp(home: AdminGuard(child: Text('Dashboard'))),
-        ),
-      );
+      await tester.pumpWidget(_guard(loggedIn: true, admin: true));
       await tester.pumpAndSettle();
       expect(find.text('Dashboard'), findsOneWidget);
+    });
+
+    testWidgets('zeigt Hinweis statt Dashboard, wenn User kein Admin ist', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_guard(loggedIn: true, admin: false));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('Dashboard'), findsNothing);
+      expect(
+        find.text('Du musst Admin sein um dich hier anmelden zu können'),
+        findsWidgets,
+      );
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   });
 }

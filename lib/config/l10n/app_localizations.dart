@@ -302,12 +302,6 @@ abstract class AppLocalizations {
   /// **'Select date'**
   String get selectDate;
 
-  /// No description provided for @mustBeAtLeast18.
-  ///
-  /// In en, this message translates to:
-  /// **'You must be at least 18 years old'**
-  String get mustBeAtLeast18;
-
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -338,41 +332,11 @@ abstract class AppLocalizations {
   /// **'Choose from gallery'**
   String get chooseFromGallery;
 
-  /// No description provided for @errorUploadingImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Error uploading image'**
-  String get errorUploadingImage;
-
-  /// No description provided for @noWaypointsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No waypoints found for this hike'**
-  String get noWaypointsFound;
-
-  /// No description provided for @errorLoadingWaypoints.
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading waypoints'**
-  String get errorLoadingWaypoints;
-
-  /// No description provided for @errorCalculatingRoute.
-  ///
-  /// In en, this message translates to:
-  /// **'Error calculating route'**
-  String get errorCalculatingRoute;
-
   /// No description provided for @waypointReached.
   ///
   /// In en, this message translates to:
   /// **'Waypoint reached!'**
   String get waypointReached;
-
-  /// No description provided for @continueHike.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue hike'**
-  String get continueHike;
 
   /// No description provided for @saveMapOffline.
   ///
@@ -464,47 +428,17 @@ abstract class AppLocalizations {
   /// **'Order not found'**
   String get orderNotFound;
 
-  /// No description provided for @invalidOrderId.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid order ID'**
-  String get invalidOrderId;
-
   /// No description provided for @checkout.
   ///
   /// In en, this message translates to:
   /// **'Checkout'**
   String get checkout;
 
-  /// No description provided for @pickupOnSite.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick up on site'**
-  String get pickupOnSite;
-
-  /// No description provided for @free.
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get free;
-
-  /// No description provided for @shippingByPost.
-  ///
-  /// In en, this message translates to:
-  /// **'Ship by post'**
-  String get shippingByPost;
-
   /// No description provided for @shippingCost.
   ///
   /// In en, this message translates to:
   /// **'+5.00 € shipping costs'**
   String get shippingCost;
-
-  /// No description provided for @redirectingToCheckout.
-  ///
-  /// In en, this message translates to:
-  /// **'Redirecting to checkout...'**
-  String get redirectingToCheckout;
 
   /// No description provided for @orderTracking.
   ///
@@ -530,47 +464,17 @@ abstract class AppLocalizations {
   /// **'Cancel order'**
   String get cancelOrder;
 
-  /// No description provided for @contactSupport.
-  ///
-  /// In en, this message translates to:
-  /// **'Contact support'**
-  String get contactSupport;
-
-  /// No description provided for @cancelOrderConfirmation.
-  ///
-  /// In en, this message translates to:
-  /// **'Do you really want to cancel this order?'**
-  String get cancelOrderConfirmation;
-
   /// No description provided for @confirm.
   ///
   /// In en, this message translates to:
   /// **'Confirm'**
   String get confirm;
 
-  /// No description provided for @cancellationRequested.
-  ///
-  /// In en, this message translates to:
-  /// **'Order cancellation has been requested'**
-  String get cancellationRequested;
-
-  /// No description provided for @contactingSupport.
-  ///
-  /// In en, this message translates to:
-  /// **'Contacting support...'**
-  String get contactingSupport;
-
   /// No description provided for @tastingSet.
   ///
   /// In en, this message translates to:
   /// **'Tasting Set'**
   String get tastingSet;
-
-  /// No description provided for @proceedToCheckout.
-  ///
-  /// In en, this message translates to:
-  /// **'Proceed to checkout'**
-  String get proceedToCheckout;
 
   /// No description provided for @trackingOpen.
   ///
@@ -584,65 +488,17 @@ abstract class AppLocalizations {
   /// **'Unknown order type'**
   String get unknownOrderType;
 
-  /// No description provided for @mobileLayout.
-  ///
-  /// In en, this message translates to:
-  /// **'Mobile Layout'**
-  String get mobileLayout;
-
-  /// No description provided for @webAppRunning.
-  ///
-  /// In en, this message translates to:
-  /// **'Web app running successfully! 🎉'**
-  String get webAppRunning;
-
   /// No description provided for @dashboard.
   ///
   /// In en, this message translates to:
   /// **'Dashboard'**
   String get dashboard;
 
-  /// No description provided for @hikingRoutes.
-  ///
-  /// In en, this message translates to:
-  /// **'Hiking Routes'**
-  String get hikingRoutes;
-
   /// No description provided for @orders.
   ///
   /// In en, this message translates to:
   /// **'Orders'**
   String get orders;
-
-  /// No description provided for @flutterWebEnabled.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Flutter Web enabled'**
-  String get flutterWebEnabled;
-
-  /// No description provided for @responsiveLayoutImplemented.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Responsive Layout implemented'**
-  String get responsiveLayoutImplemented;
-
-  /// No description provided for @adminDashboardCreated.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Admin Dashboard created'**
-  String get adminDashboardCreated;
-
-  /// No description provided for @navigationImplemented.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Navigation implemented'**
-  String get navigationImplemented;
-
-  /// No description provided for @webDependenciesAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Web-specific dependencies added'**
-  String get webDependenciesAdded;
 
   /// No description provided for @manageHikingRoutes.
   ///
@@ -656,35 +512,11 @@ abstract class AppLocalizations {
   /// **'Here you can create and manage hiking routes'**
   String get manageHikingRoutesDescription;
 
-  /// No description provided for @inDevelopment.
-  ///
-  /// In en, this message translates to:
-  /// **'🚧 In Development 🚧'**
-  String get inDevelopment;
-
-  /// No description provided for @manageOrders.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Orders'**
-  String get manageOrders;
-
-  /// No description provided for @manageOrdersDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Here you can view and process all orders'**
-  String get manageOrdersDescription;
-
   /// No description provided for @manageWhiskyCatalog.
   ///
   /// In en, this message translates to:
   /// **'Manage Whisky Catalog'**
   String get manageWhiskyCatalog;
-
-  /// No description provided for @manageWhiskyCatalogDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Here you can manage the whisky catalog'**
-  String get manageWhiskyCatalogDescription;
 
   /// No description provided for @adminDashboard.
   ///
@@ -872,12 +704,6 @@ abstract class AppLocalizations {
   /// **'All'**
   String get all;
 
-  /// No description provided for @loading.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading'**
-  String get loading;
-
   /// No description provided for @edit.
   ///
   /// In en, this message translates to:
@@ -889,12 +715,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
-
-  /// No description provided for @newTastingSet.
-  ///
-  /// In en, this message translates to:
-  /// **'New Tasting Set'**
-  String get newTastingSet;
 
   /// No description provided for @sampleCount.
   ///
@@ -967,12 +787,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete Tasting Set'**
   String get deleteTastingSet;
-
-  /// No description provided for @searchPlaceholder.
-  ///
-  /// In en, this message translates to:
-  /// **'Search by name, distillery, or region'**
-  String get searchPlaceholder;
 
   /// No description provided for @deleteTastingSetConfirmation.
   ///
@@ -1075,84 +889,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Description'**
   String get description;
-
-  /// No description provided for @availability.
-  ///
-  /// In en, this message translates to:
-  /// **'Availability'**
-  String get availability;
-
-  /// No description provided for @sampleDetails.
-  ///
-  /// In en, this message translates to:
-  /// **'Sample Details'**
-  String get sampleDetails;
-
-  /// No description provided for @viewDetails.
-  ///
-  /// In en, this message translates to:
-  /// **'View Details'**
-  String get viewDetails;
-
-  /// No description provided for @quickActions.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick Actions'**
-  String get quickActions;
-
-  /// No description provided for @uploadImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Upload Image'**
-  String get uploadImage;
-
-  /// No description provided for @chooseImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose Image'**
-  String get chooseImage;
-
-  /// No description provided for @removeImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove Image'**
-  String get removeImage;
-
-  /// No description provided for @imageUploaded.
-  ///
-  /// In en, this message translates to:
-  /// **'Image uploaded successfully'**
-  String get imageUploaded;
-
-  /// No description provided for @imageRemoved.
-  ///
-  /// In en, this message translates to:
-  /// **'Image removed successfully'**
-  String get imageRemoved;
-
-  /// No description provided for @errorUploadingImageGeneral.
-  ///
-  /// In en, this message translates to:
-  /// **'Error uploading image'**
-  String get errorUploadingImageGeneral;
-
-  /// No description provided for @errorRemovingImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Error removing image'**
-  String get errorRemovingImage;
-
-  /// No description provided for @noImageSelected.
-  ///
-  /// In en, this message translates to:
-  /// **'No image selected'**
-  String get noImageSelected;
-
-  /// No description provided for @years.
-  ///
-  /// In en, this message translates to:
-  /// **'years'**
-  String get years;
 
   /// No description provided for @price.
   ///

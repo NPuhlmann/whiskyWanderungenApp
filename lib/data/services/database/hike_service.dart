@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../domain/models/hike.dart';
 import '../error/error_handler.dart';
-import '../../models/pagination_result.dart';
 
 /// Dedicated service for hike-related operations
 class HikeService {
@@ -23,57 +22,6 @@ class HikeService {
           .toList();
     } catch (e) {
       throw ErrorHandler.createSafeException('Fetch hikes', e);
-    }
-  }
-
-  /// Get paginated list of hikes
-  Future<PaginationResult<Hike>> fetchHikesPaginated(
-    PaginationParams params,
-  ) async {
-    try {
-      // Calculate offset
-      final offset = (params.page - 1) * params.pageSize;
-      final limit = params.pageSize;
-
-      // Get total count first
-      final countResponse = await client.from('hikes').select('id');
-      final totalItems = countResponse.length;
-      final totalPages = (totalItems / params.pageSize).ceil();
-
-      // Get paginated data
-      var query = client
-          .from('hikes')
-          .select()
-          .order(params.orderBy, ascending: params.ascending)
-          .range(offset, offset + limit - 1);
-
-      // Apply filters if provided
-      if (params.filters != null) {
-        // Note: eq method doesn't exist in current Postgrest version
-        // TODO: Implement filtering when Postgrest is updated
-        // for (final entry in params.filters!.entries) {
-        //   query = query.eq(entry.key, entry.value);
-        // }
-      }
-
-      final response = await query;
-      final List<dynamic> hikeData = response as List<dynamic>;
-
-      final hikes = hikeData
-          .map((element) => Hike.fromJson(element as Map<String, dynamic>))
-          .toList();
-
-      return PaginationResult<Hike>(
-        items: hikes,
-        currentPage: params.page,
-        totalPages: totalPages,
-        totalItems: totalItems,
-        pageSize: params.pageSize,
-        hasNextPage: params.page < totalPages,
-        hasPreviousPage: params.page > 1,
-      );
-    } catch (e) {
-      throw ErrorHandler.createSafeException('Fetch paginated hikes', e);
     }
   }
 
@@ -132,7 +80,12 @@ class HikeService {
     }
   }
 
-  /// Record successful hike purchase
+  /// Record successful hike purchase.
+  ///
+  /// Since #93 `purchased_hikes` is read-only for clients — this insert is
+  /// always rejected by RLS and the method throws. Entitlements are written
+  /// server-side via service_role (#57). Do not wire this back into the
+  /// purchase flow.
   Future<void> recordHikePurchase(
     String userId,
     int hikeId,
@@ -209,8 +162,8 @@ class HikeService {
   ///   2. whisky_samples     (samples of the hike's tasting set)
   ///   3. tasting_sets       (the hike's tasting set, 1:1)
   ///   4. hikes_waypoints    (junction linking hike -> waypoints)
-  ///   5. purchased_hikes    (user purchase records)
-  ///   6. hikes              (the hike itself)
+  ///   5. hikes              (the hike itself; purchased_hikes rows follow
+  ///                          via ON DELETE CASCADE — client-read-only, #93)
   ///
   /// Waypoints themselves are NOT deleted because they may be shared
   /// between multiple hikes.
@@ -245,10 +198,10 @@ class HikeService {
       // 4. hikes_waypoints junction (keeps the waypoints themselves)
       await client.from('hikes_waypoints').delete().eq('hike_id', hikeId);
 
-      // 5. purchased_hikes
-      await client.from('purchased_hikes').delete().eq('hike_id', hikeId);
+      // purchased_hikes is client-read-only since #93; its rows go via the
+      // ON DELETE CASCADE on hike_id when the hike row is deleted below.
 
-      // 6. the hike itself
+      // 5. the hike itself
       await client.from('hikes').delete().eq('id', hikeId);
 
       dev.log('✅ Hike $hikeId deleted successfully');

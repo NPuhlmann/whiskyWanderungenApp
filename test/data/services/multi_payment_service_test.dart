@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/data/services/payment/multi_payment_service.dart';
 import 'package:whisky_hikes/domain/models/payment_intent.dart';
-import 'package:whisky_hikes/domain/models/basic_payment_result.dart';
 
 void main() {
   group('MultiPaymentService', () {
