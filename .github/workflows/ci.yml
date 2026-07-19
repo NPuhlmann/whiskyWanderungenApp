@@ -64,6 +64,7 @@ jobs:
           test/UI/mobile/home/home_page_test.dart
           test/UI/mobile/home/home_view_model_test.dart
           test/UI/my_hikes/my_hikes_view_model_test.dart
+          test/UI/mobile/payment/order_history_view_model_test.dart
 
   security-scan:
     name: Security Scan
