@@ -8,6 +8,14 @@ import 'hike_details_view_model.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+/// Nächster Bildindex im Karussell, umlaufend am Ende.
+int nextImageIndex(int current, int count) =>
+    count <= 1 ? current : (current + 1) % count;
+
+/// Vorheriger Bildindex im Karussell, umlaufend am Anfang.
+int prevImageIndex(int current, int count) =>
+    count <= 1 ? current : (current - 1 + count) % count;
+
 class HikeDetailsPage extends StatefulWidget {
   const HikeDetailsPage({
     super.key,
@@ -27,6 +35,25 @@ class HikeDetailsPage extends StatefulWidget {
 class _HikeDetailsPageState extends State<HikeDetailsPage> {
   final PageController _pageController = PageController();
   bool _isOfflineAvailable = false;
+
+  // Blättert ein Bild weiter. Beim Umlauf wird hart gesprungen, sonst
+  // würde die Animation rückwärts durch alle Bilder scrollen.
+  void _step(int Function(int, int) indexFn) {
+    if (!_pageController.hasClients) return;
+    final count = widget.viewModel.hikeImages.length;
+    final current = _pageController.page?.round() ?? 0;
+    final target = indexFn(current, count);
+    if (target == current) return;
+    if ((target - current).abs() > 1) {
+      _pageController.jumpToPage(target);
+    } else {
+      _pageController.animateToPage(
+        target,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
 
   // wenn das Widget erstellt wird, sollen die Bilder des Hikes geladen werden
   @override
@@ -175,24 +202,6 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                   maxWidthDiskCache: 1000,
                                 );
                               },
-                              onPageChanged: (index) {
-                                // Nur wenn wir am Ende angekommen sind und es mehr als ein Bild gibt
-                                if (index ==
-                                        widget.viewModel.hikeImages.length -
-                                            1 &&
-                                    widget.viewModel.hikeImages.length > 1) {
-                                  // Verzögert zum ersten Bild zurückspringen, um Animation zu vermeiden
-                                  Future.delayed(Duration(seconds: 2), () {
-                                    if (mounted && _pageController.hasClients) {
-                                      _pageController.animateToPage(
-                                        0,
-                                        duration: Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  });
-                                }
-                              },
                             ),
                             Positioned(
                               left: 0,
@@ -203,12 +212,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                   Icons.arrow_back_ios,
                                   color: Colors.white,
                                 ),
-                                onPressed: () {
-                                  _pageController.previousPage(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
+                                onPressed: () => _step(prevImageIndex),
                               ),
                             ),
                             Positioned(
@@ -228,12 +232,7 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                     ),
                                   ],
                                 ),
-                                onPressed: () {
-                                  _pageController.nextPage(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
+                                onPressed: () => _step(nextImageIndex),
                               ),
                             ),
                           ],

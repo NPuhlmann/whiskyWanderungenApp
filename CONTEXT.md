@@ -12,6 +12,10 @@ _Avoid_: Wanderung, tour, trek, route
 A Hike is either *active* (available for purchase) or *archived* (no longer sold). Archived Hikes are never deleted — purchasers retain access with an "archived" label.
 _Avoid_: deleted, removed, disabled, inactive
 
+**Hike Image**:
+A photograph illustrating a Hike in the catalog and on its detail screen. Stored as a binary object in Supabase Storage; referenced by a public URL. A Hike has zero or more, in a defined order.
+_Avoid_: photo, picture, Bild, gallery image
+
 **Purchase**:
 The act of a User buying a Hike. Grants permanent access to the Hike's GPX route and offline whisky tasting pack. A Purchase is created atomically server-side by the `create-payment-intent` Edge Function — order row, Payment Intent, and company/hike validation happen in one transaction. The client never creates an order record directly; it invokes the Edge Function and confirms the Payment Intent via the Stripe SDK. The `PurchaseIntakeRepository` module is the client-side seam for this flow.
 _Avoid_: order, booking, reservation, subscription
