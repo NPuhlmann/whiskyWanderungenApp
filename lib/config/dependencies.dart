@@ -28,6 +28,13 @@ import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
 import '../data/repositories/commission_repository.dart';
 import '../data/repositories/tasting_set_repository.dart';
+import '../data/repositories/analytics_repository.dart';
+import '../data/repositories/metrics_repository.dart';
+import '../data/repositories/order_admin_repository.dart';
+import '../data/repositories/route_admin_repository.dart';
+import '../data/services/admin/admin_service.dart';
+import '../data/services/admin/dashboard_metrics_service.dart';
+import '../data/services/admin/route_management_service.dart';
 import '../data/providers/team_provider.dart';
 import '../data/services/analytics/sales_analytics_service.dart';
 import '../data/services/analytics/customer_analytics_service.dart';
@@ -51,6 +58,9 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     // ConnectivityService: Singleton-Instanz, initialisiert in main.dart.
     Provider<ConnectivityService>(create: (_) => ConnectivityService.instance),
     Provider<OrderManagementService>(create: (_) => OrderManagementService()),
+    Provider<AdminService>(create: (_) => AdminService()),
+    Provider<DashboardMetricsService>(create: (_) => DashboardMetricsService()),
+    Provider<RouteManagementService>(create: (_) => RouteManagementService()),
     Provider<WhiskyManagementService>(
       create: (_) => WhiskyManagementService(Supabase.instance.client),
     ),
@@ -91,6 +101,26 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
         context.read<OfflineService>(),
         context.read<ConnectivityService>(),
       ),
+    ),
+    Provider<MetricsRepository>(
+      create: (context) => MetricsRepository(
+        context.read<AdminService>(),
+        context.read<DashboardMetricsService>(),
+      ),
+    ),
+    Provider<AnalyticsRepository>(
+      create: (context) => AnalyticsRepository(
+        salesService: context.read<SalesAnalyticsService>(),
+        customerService: context.read<CustomerAnalyticsService>(),
+      ),
+    ),
+    Provider<OrderAdminRepository>(
+      create: (context) =>
+          OrderAdminRepository(context.read<OrderManagementService>()),
+    ),
+    Provider<RouteAdminRepository>(
+      create: (context) =>
+          RouteAdminRepository(context.read<RouteManagementService>()),
     ),
     Provider<TastingSetRepository>(
       create: (context) => TastingSetRepository(
@@ -140,7 +170,7 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     // Admin-Provider
     ChangeNotifierProvider<OrderManagementProvider>(
       create: (context) => OrderManagementProvider(
-        orderManagementService: context.read<OrderManagementService>(),
+        orderRepository: context.read<OrderAdminRepository>(),
       ),
     ),
     ChangeNotifierProvider<WhiskyManagementProvider>(
@@ -157,18 +187,23 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
           TeamProvider(userRepository: context.read<UserRepository>()),
     ),
     ChangeNotifierProvider<AnalyticsProvider>(
-      create: (context) => AnalyticsProvider(
-        salesService: context.read<SalesAnalyticsService>(),
-        customerService: context.read<CustomerAnalyticsService>(),
-      ),
+      create: (context) =>
+          AnalyticsProvider(repository: context.read<AnalyticsRepository>()),
     ),
     // Admin-Dashboard & Route-Management
-    ChangeNotifierProvider<AdminProvider>(create: (_) => AdminProvider()),
+    ChangeNotifierProvider<AdminProvider>(
+      create: (context) =>
+          AdminProvider(metricsRepository: context.read<MetricsRepository>()),
+    ),
     ChangeNotifierProvider<DashboardProvider>(
-      create: (_) => DashboardProvider(),
+      create: (context) => DashboardProvider(
+        metricsRepository: context.read<MetricsRepository>(),
+      ),
     ),
     ChangeNotifierProvider<RouteManagementProvider>(
-      create: (_) => RouteManagementProvider(),
+      create: (context) => RouteManagementProvider(
+        routeRepository: context.read<RouteAdminRepository>(),
+      ),
     ),
 
     // HikeMapViewModel wird in HikeMapScreen erstellt

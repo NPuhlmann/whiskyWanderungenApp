@@ -3,8 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../domain/models/analytics/customer_insights.dart';
 import '../../domain/models/analytics/route_performance.dart';
 import '../../domain/models/analytics/sales_statistics.dart';
-import '../services/analytics/customer_analytics_service.dart';
-import '../services/analytics/sales_analytics_service.dart';
+import '../repositories/analytics_repository.dart';
 
 /// State-Management für `/admin/analytics`.
 ///
@@ -12,16 +11,13 @@ import '../services/analytics/sales_analytics_service.dart';
 /// Services kapseln Supabase; der Provider hält Zustand, lädt parallel und
 /// stellt Loading-/Fehler-Flags zur Verfügung.
 class AnalyticsProvider extends ChangeNotifier {
-  final SalesAnalyticsService _sales;
-  final CustomerAnalyticsService _customer;
+  final AnalyticsRepository _repository;
 
   AnalyticsProvider({
-    required SalesAnalyticsService salesService,
-    required CustomerAnalyticsService customerService,
+    required AnalyticsRepository repository,
     DateTime? initialStart,
     DateTime? initialEnd,
-  }) : _sales = salesService,
-       _customer = customerService {
+  }) : _repository = repository {
     final now = DateTime.now();
     _endDate = initialEnd ?? DateTime(now.year, now.month, now.day, 23, 59, 59);
     _startDate = initialStart ?? _endDate.subtract(const Duration(days: 30));
@@ -82,19 +78,19 @@ class AnalyticsProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final results = await Future.wait([
-        _sales.getSalesStatistics(
+        _repository.getSalesStatistics(
           startDate: _startDate,
           endDate: _endDate,
           companyId: _companyId,
         ),
-        _customer.getCustomerInsights(
+        _repository.getCustomerInsights(
           startDate: _startDate,
           endDate: _endDate,
           companyId: _companyId,
         ),
-        _sales.getTopRoutes(limit: 5),
-        _customer.getCustomerSegmentation(),
-        _customer.getChurnRiskCount(),
+        _repository.getTopRoutes(limit: 5),
+        _repository.getCustomerSegmentation(),
+        _repository.getChurnRiskCount(),
       ]);
       _sales_ = results[0] as SalesStatistics;
       _insights = results[1] as CustomerInsights;
