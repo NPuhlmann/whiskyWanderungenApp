@@ -10,7 +10,7 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.example.whiskyHikes</key>
+        <key>com.puhlmann.whiskyHikes</key>
         <string>YOUR_PROVISIONING_PROFILE_NAME</string>
     </dict>
     <key>signingCertificate</key>
