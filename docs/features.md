@@ -16,7 +16,9 @@ cache-first Zugriff auf Profildaten und Avatarbilder.
 1. Das Home-ViewModel laedt verfuegbare Hikes ueber `HikeRepository`.
 2. Favoriten werden lokal in `SharedPreferences` verwaltet.
 3. Der Kauf erzeugt Bestelldaten und Zahlungsdaten.
-4. Die Besitzbeziehung wird ueber `purchased_hikes` abgebildet.
+4. Die Besitzbeziehung wird ueber `purchased_hikes` abgebildet. Die Tabelle
+   ist client-read-only (ADR-0011); bis das serverseitige Settlement (#57)
+   existiert, bleibt „My Hikes" nach einem Kauf bewusst leer.
 5. `MyHikesViewModel` laedt die gekauften Wanderungen des aktuellen Nutzers.
 
 Hike-Bilder, Tasting-Sets, Whisky-Samples und Waypoints werden in den

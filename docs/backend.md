@@ -42,6 +42,11 @@ Tabellenzugriff muss mit klaren RLS-Policies geplant werden. Client-Code wird
 als nicht vertrauenswuerdig behandelt, selbst wenn ein Navigation-Guard
 vorhanden ist.
 
+`purchased_hikes` ist seit `20260719130000_purchased_hikes_read_only.sql` fuer
+`anon` und `authenticated` read-only (Policies entfernt und Schreibrechte
+revoked). Entitlements schreibt ausschliesslich `service_role` — bis das
+Settlement (#57) existiert, schaltet ein Kauf bewusst nichts frei (ADR-0011).
+
 ## Storage
 
 Die App speichert insbesondere Avatar- und Hike-Bilder in Supabase Storage.

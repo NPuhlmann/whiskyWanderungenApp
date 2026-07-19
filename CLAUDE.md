@@ -176,7 +176,9 @@ The app uses these main Supabase tables:
 - `profiles` - User profile data with automatic creation via triggers
 - `waypoints` - GPS waypoints for trails with ordering system
 - `hikes_waypoints` - Junction table linking hikes to waypoints
-- `purchased_hikes` - User purchase tracking
+- `purchased_hikes` - User purchase tracking; client-read-only, written only
+  via service_role after payment (ADR-0011, #93 — do not restore client
+  write policies)
 - `hike_images` - Trail images
 
 **Important**: When making database schema changes, always check if corresponding updates are needed in the Terraform configuration (`terraform-supabase/` directory).
