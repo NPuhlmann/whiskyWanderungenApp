@@ -605,9 +605,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sorry — you must be of legal drinking age to use Whisky Hikes.';
 
   @override
-  String get ageGateChangeAnswer => 'I entered that by mistake';
-
-  @override
   String get signInWithMagicLink => 'Sign in with a magic link';
 
   @override

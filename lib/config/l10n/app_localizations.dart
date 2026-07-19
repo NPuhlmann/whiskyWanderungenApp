@@ -1262,12 +1262,6 @@ abstract class AppLocalizations {
   /// **'Sorry — you must be of legal drinking age to use Whisky Hikes.'**
   String get ageBlockedBody;
 
-  /// No description provided for @ageGateChangeAnswer.
-  ///
-  /// In en, this message translates to:
-  /// **'I entered that by mistake'**
-  String get ageGateChangeAnswer;
-
   /// No description provided for @signInWithMagicLink.
   ///
   /// In en, this message translates to:

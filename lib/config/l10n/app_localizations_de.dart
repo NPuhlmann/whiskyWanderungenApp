@@ -612,9 +612,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Leider musst du volljährig sein, um Whisky Wanderungen zu nutzen.';
 
   @override
-  String get ageGateChangeAnswer => 'Das war ein Versehen';
-
-  @override
   String get signInWithMagicLink => 'Mit Magic Link anmelden';
 
   @override

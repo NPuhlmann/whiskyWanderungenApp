@@ -50,12 +50,13 @@ class UserRepository extends ChangeNotifier {
     await _authService.sendMagicLink(email);
   }
 
+  /// Notifies only on success. A rejected code changes no auth state, and
+  /// notifying would refresh the router, rebuild the magic-link route with a
+  /// fresh ViewModel, and throw the user back to the email step mid-flow.
   Future<AuthResponse> verifyMagicLinkCode(String email, String code) async {
-    try {
-      return await _authService.verifyMagicLinkCode(email, code);
-    } finally {
-      notifyListeners();
-    }
+    final response = await _authService.verifyMagicLinkCode(email, code);
+    notifyListeners();
+    return response;
   }
 
   /// Re-fires [notifyListeners] so the router redirect re-evaluates after an

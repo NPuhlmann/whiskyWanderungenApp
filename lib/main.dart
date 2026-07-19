@@ -12,7 +12,7 @@ import 'config/theme/app_theme.dart';
 import 'config/lifecycle/app_lifecycle_manager.dart';
 import 'data/services/payment/multi_payment_service.dart';
 import 'data/services/offline/offline_service.dart';
-import 'data/services/cache/age_gate_service.dart';
+import 'data/services/auth/age_gate_service.dart';
 import 'data/services/cache/local_cache_service.dart';
 import 'data/repositories/user_repository.dart';
 import 'data/services/connectivity/connectivity_service.dart';

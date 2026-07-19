@@ -38,13 +38,4 @@ class AgeGateService extends ChangeNotifier {
     _ofLegalAge = ofLegalAge;
     notifyListeners();
   }
-
-  /// Returns to the undeclared state so the question can be asked again.
-  /// Exists so a mis-tap on "no" does not brick the install until reinstall.
-  Future<void> reset() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
-    _ofLegalAge = null;
-    notifyListeners();
-  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/UI/mobile/auth/age_gate/age_gate_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/age_gate/age_gate_view_model.dart';
 import 'package:whisky_hikes/UI/mobile/auth/login/login_page.dart';
 import 'package:whisky_hikes/UI/mobile/auth/magic_link/magic_link_page.dart';
 import 'package:whisky_hikes/UI/mobile/auth/magic_link/magic_link_view_model.dart';
@@ -21,7 +22,7 @@ import 'package:whisky_hikes/UI/mobile/orders/order_tracking_page.dart';
 import 'package:whisky_hikes/config/routing/auth_redirect.dart';
 import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
-import 'package:whisky_hikes/data/services/cache/age_gate_service.dart';
+import 'package:whisky_hikes/data/services/auth/age_gate_service.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 
 import '../../UI/mobile/auth/signup/sign_up_page_view_model.dart';
@@ -44,7 +45,14 @@ GoRouter router(
   routes: [
     GoRoute(
       path: Routes.ageGate,
-      builder: (context, state) => const AgeGatePage(),
+      // ChangeNotifierProvider so the ViewModel's listener on AgeGateService
+      // is released when the route goes away.
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (context) => AgeGateViewModel(ageGateService: context.read()),
+        child: Consumer<AgeGateViewModel>(
+          builder: (context, viewModel, _) => AgeGatePage(viewModel: viewModel),
+        ),
+      ),
     ),
     GoRoute(
       path: Routes.magicLink,

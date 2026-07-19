@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:whisky_hikes/data/services/cache/age_gate_service.dart';
+import 'package:whisky_hikes/data/services/auth/age_gate_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -92,25 +92,6 @@ void main() {
       expect(afterRestart.isBlocked, isTrue);
       expect(afterRestart.isAllowed, isFalse);
     });
-
-    test(
-      'reset returns to undeclared and does not survive a restart',
-      () async {
-        // Arrange
-        final service = AgeGateService();
-        await service.declare(ofLegalAge: false);
-
-        // Act
-        await service.reset();
-
-        // Assert
-        expect(service.isDeclared, isFalse);
-        expect(service.isBlocked, isFalse);
-        final afterRestart = AgeGateService();
-        await afterRestart.load();
-        expect(afterRestart.isDeclared, isFalse);
-      },
-    );
 
     test('a later declaration overwrites an earlier one', () async {
       // Arrange

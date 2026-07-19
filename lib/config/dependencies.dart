@@ -15,7 +15,7 @@ import '../UI/mobile/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
-import '../data/services/cache/age_gate_service.dart';
+import '../data/services/auth/age_gate_service.dart';
 import '../data/services/cache/local_cache_service.dart';
 import '../data/services/connectivity/connectivity_service.dart';
 import '../data/services/offline/offline_service.dart';
