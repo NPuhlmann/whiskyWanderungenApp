@@ -71,26 +71,31 @@ class HikeDetailsPageViewModel extends ChangeNotifier {
       // If not in cache, fetch from repository
       final images = await _hikeImagesRepository.getHikeImages(hikeId);
       // A newer call started while we were awaiting - discard this result.
-      if (requestId != _requestId) return;
+      if (requestId == _requestId) {
+        // Store in cache
+        _imageCache[hikeId] = List<String>.from(
+          images,
+        ); // Create copy to avoid reference issues
 
-      // Store in cache
-      _imageCache[hikeId] = List<String>.from(
-        images,
-      ); // Create copy to avoid reference issues
-
-      _hikeImages = List<String>.from(
-        images,
-      ); // Create copy to avoid reference issues
+        _hikeImages = List<String>.from(
+          images,
+        ); // Create copy to avoid reference issues
+      }
     } catch (e) {
-      if (requestId != _requestId) return;
-      dev.log("Fehler beim Laden der Hike-Bilder: $e", error: e);
-      _error = e;
-      _hikeImages = [];
+      if (requestId == _requestId) {
+        dev.log("Fehler beim Laden der Hike-Bilder: $e", error: e);
+        _error = e;
+        _hikeImages = [];
+      }
+    } finally {
+      // A discarded response must not touch isLoading - a newer call may
+      // still be in flight and owns that state.
+      if (requestId == _requestId) {
+        _isLoading = false;
+        // Safe call to notifyListeners()
+        Future.microtask(() => notifyListeners());
+      }
     }
-
-    _isLoading = false;
-    // Safe call to notifyListeners()
-    Future.microtask(() => notifyListeners());
   }
 
   /// Clear cache when no longer needed

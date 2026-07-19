@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Bottom sheet widget showing a summary of selected tasting sets

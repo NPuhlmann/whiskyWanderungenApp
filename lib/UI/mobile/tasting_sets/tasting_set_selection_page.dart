@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/UI/mobile/tasting_sets/widgets/tasting_set_info_card.dart';
