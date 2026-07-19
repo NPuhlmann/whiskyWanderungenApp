@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/UI/mobile/hike_map/hike_map_view_model.dart';
@@ -82,6 +84,23 @@ void main() {
 
         expect(vm.selectedWaypoint?.isVisited, isTrue);
         expect(vm.waypoints.first.isVisited, isTrue);
+      },
+    );
+
+    test(
+      'loadWaypoints does not notify after dispose (fast navigate-away)',
+      () async {
+        final fetchCompleter = Completer<List<Waypoint>>();
+        when(
+          mockRepository.getWaypointsForHike(any),
+        ).thenAnswer((_) => fetchCompleter.future);
+
+        final vm = buildViewModel();
+        final loadFuture = vm.loadWaypoints();
+        vm.dispose();
+        fetchCompleter.complete([waypointA, waypointB]);
+
+        await expectLater(loadFuture, completes);
       },
     );
   });
