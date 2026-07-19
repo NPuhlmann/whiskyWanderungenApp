@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
 import 'commission_status_chip.dart';

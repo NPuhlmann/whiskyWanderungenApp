@@ -4,7 +4,7 @@ import 'package:whisky_hikes/data/providers/dashboard_provider.dart';
 import 'package:whisky_hikes/UI/web/admin/dashboard/widgets/kpi_card.dart';
 import 'package:whisky_hikes/UI/web/admin/dashboard/widgets/recent_orders_widget.dart';
 import 'package:whisky_hikes/UI/web/admin/dashboard/widgets/popular_routes_widget.dart';
-import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 
 class DashboardOverviewPage extends StatefulWidget {
   const DashboardOverviewPage({super.key});
@@ -53,6 +53,9 @@ class _DashboardOverviewPageState extends State<DashboardOverviewPage> {
 
           return ResponsiveLayout(
             mobile: _buildMobileLayout(provider),
+            // ponytail: explicit tablet keeps the old core-variant behaviour
+            // (tablet ?? desktop); shared falls back to mobile instead.
+            tablet: _buildDesktopLayout(provider),
             desktop: _buildDesktopLayout(provider),
           );
         },
