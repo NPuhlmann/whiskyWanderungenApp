@@ -157,20 +157,9 @@ environment = "dev"
 
 ### GitHub Secrets (für CI/CD)
 
-Füge diese Secrets in deinem GitHub Repository hinzu:
-
-#### Android
-- `ANDROID_KEYSTORE_BASE64`
-- `ANDROID_KEYSTORE_PASSWORD`
-- `ANDROID_KEY_ALIAS`
-- `ANDROID_KEY_PASSWORD`
-
-#### iOS
-- `IOS_P12_BASE64`
-- `IOS_P12_PASSWORD`
-- `IOS_APP_STORE_CONNECT_API_KEY`
-- `IOS_APP_STORE_CONNECT_ISSUER_ID`
-- `IOS_APP_STORE_CONNECT_KEY_ID`
+Die maßgebliche Liste steht in
+[`CI_CD_SETUP.md`](CI_CD_SETUP.md) und stammt aus `distribute.yml` — abweichende
+Schreibweisen führen zu einem fehlschlagenden Workflow.
 
 ## 🗄️ Supabase Setup
 
@@ -185,41 +174,13 @@ Das Projekt enthält bereits die vollständige Supabase-Konfiguration. Vor dem P
 - `lib/main.dart` — Laufzeit-Initialisierung via `Supabase.initialize(url: dotenv.env['SUPABASE_URL'], publishableKey: dotenv.env['SUPABASE_ANON_KEY'])`.
 - `lib/data/services/database/backend_api.dart` — zentraler Zugriffspunkt für Supabase-Aufrufe aus dem App-Code.
 
-Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANON_KEY` aus dem Supabase-Dashboard (Settings → API) in die lokale `.env` eintragen — kein Re-Provisioning nötig. Für ein neues Projekt siehe den Abschnitt **Automatisches Deployment** unten.
+Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANON_KEY` aus dem Supabase-Dashboard (Settings → API) in die lokale `.env` eintragen — kein Re-Provisioning nötig. Für ein neues Projekt siehe den Abschnitt unten.
 
-### Automatisches Deployment
+### Neues Supabase-Projekt aufsetzen
 
-1. **Terraform initialisieren**
-   ```bash
-   cd terraform-supabase
-   export SUPABASE_ACCESS_TOKEN="<dein-access-token>"
-   terraform init
-   ```
-
-2. **Deployment ausführen**
-   ```bash
-   terraform plan
-   terraform apply
-   ```
-
-3. **Datenbank-Schema erstellen**
-   ```bash
-   chmod +x complete_schema.sh
-   ./complete_schema.sh
-   ```
-
-4. **RLS-Policies anwenden**
-   ```bash
-   chmod +x create_policies.sh
-   ./create_policies.sh
-   ```
-
-### Bestehendes Supabase-Projekt verwenden
-
-1. Gehe zu [supabase.com](https://supabase.com)
-2. Erstelle ein neues Projekt
-3. Kopiere URL und Anon Key (Settings → API) in deine `.env` Datei
-4. Spiele das Schema per CLI ein:
+1. Projekt auf [supabase.com](https://supabase.com) anlegen
+2. URL und Anon Key (Settings → API) in die lokale `.env` eintragen
+3. Schema und Edge Functions per CLI einspielen:
 
    ```bash
    cd terraform-supabase
@@ -232,8 +193,8 @@ Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANO
 > **Tabellen nicht von Hand anlegen.** Nach
 > [ADR-0003](docs/adr/0003-supabase-cli-migrations-as-schema-authority.md) sind
 > die Migrationen unter `terraform-supabase/supabase/migrations/` die alleinige
-> Schemaautorität. Das Verzeichnis `terraform-supabase/sql/` ist ein älterer
-> Spiegel und keine Vorlage für neue Projekte — siehe
+> Schemaautorität. `terraform apply` ist **nicht** der Weg, auf dem dieses
+> Projekt provisioniert wird — siehe
 > [Bekannte Abweichungen](docs/known-deviations.md).
 
 ## 🧪 Testing

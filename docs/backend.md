@@ -64,16 +64,15 @@ fuer die SDK-Bestaetigung erhalten.
 
 ## Terraform und weitere SQL-Pfade
 
-`terraform-supabase/main.tf` kann ein Supabase-Projekt erzeugen und fuehrt
-ueber `null_resource` und `local-exec` einzelne SQL-Dateien aus
-`terraform-supabase/sql/` aus. Parallel existieren Supabase-CLI-Migrationen,
-Root-SQL-Dateien und Hilfsskripte wie `complete_schema.sh`.
+`terraform-supabase/main.tf` kann ein Supabase-Projekt erzeugen. Das Schema
+kommt ausschliesslich aus `terraform-supabase/supabase/migrations/` und wird mit
+`supabase db push` eingespielt (ADR-0003). Der frueher parallel gepflegte Baum
+`terraform-supabase/sql/` wurde mit #67 entfernt.
 
-!!! warning "Migrationen vor einem Deployment konsolidieren"
-    Die mehreren Schemaquellen sind nicht vollstaendig ueber Terraform
-    miteinander verbunden. Vor einer neuen Umgebung muss festgelegt werden,
-    ob die Supabase-CLI-Migrationen oder die Terraform-Skripte die verbindliche
-    Quelle sind. Erst danach darf ein produktives Schema-Deployment erfolgen.
+!!! warning "Terraform provisioniert nicht das Schema"
+    `terraform apply` ist nicht der Weg, auf dem dieses Projekt aufgesetzt wird.
+    Neue Schemaversionen entstehen als datierte Migration, nie als Skript oder
+    Dashboard-Aenderung.
 
 ### Terraform-Variablen
 

@@ -520,29 +520,26 @@ test('should handle errors gracefully', () async {
 });
 ```
 
-## Terraform Infrastructure
+## Database migrations
 
-### Project Structure
-- `terraform-supabase/main.tf` - Main Terraform configuration
-- `terraform-supabase/variables.tf` - Variable definitions (no sensitive defaults)
-- `terraform-supabase/terraform.tfvars.example` - Configuration template
-- `terraform-supabase/sql/` - SQL migration files
+**`terraform-supabase/supabase/migrations/` is the only schema authority**
+(ADR-0003). Schema changes are a new dated migration there, applied with the
+Supabase CLI:
 
-### Common Commands
 ```bash
-make init     # Initialize Terraform
-make plan     # Review changes  
-make apply    # Deploy infrastructure
-make schema   # Create database schema
-make policies # Apply security policies
+cd terraform-supabase
+supabase link --project-ref <ref>
+supabase db push
+supabase functions deploy create-payment-intent
+supabase functions deploy calculate-shipping
 ```
 
-### Environment Variables
-All scripts load from `.env`:
-- `SUPABASE_ACCESS_TOKEN`
-- `PROJECT_ID` 
-- `ORGANIZATION_ID`
-- `DATABASE_PASSWORD`
+There is no Makefile and `terraform apply` is **not** how this project is
+provisioned — see `docs/known-deviations.md`. `terraform-supabase/*.tf` is kept
+for the project resource itself; it does not own the schema.
+
+Terraform variables load from `.env`: `SUPABASE_ACCESS_TOKEN`, `PROJECT_ID`,
+`ORGANIZATION_ID`, `DATABASE_PASSWORD`.
 
 ## Supabase Integration Patterns
 

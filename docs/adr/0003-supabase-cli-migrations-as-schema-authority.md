@@ -20,3 +20,11 @@ einschliesslich RLS, Indizes, Triggern und Storage-Policies. Die bestehenden
 Terraform-SQL-Deployments sind bekannte technische Schuld und duerfen nicht als
 zusaetzliche Quelle neuer Schemaversionen verwendet werden, bevor sie auf den
 kanonischen Ablauf umgestellt oder entfernt sind.
+
+**Nachtrag (2026-07-19, #67):** Der Spiegelbaum `terraform-supabase/sql/` wurde
+entfernt. Jede seiner 16 Dateien hatte eine Entsprechung unter
+`supabase/migrations/`, mit einer Ausnahme: das Vault-Setup lebt jetzt als
+`20260719120000_supabase_vault_stripe_secrets.sql`. Der Baum darf nicht wieder
+angelegt werden — eine zweite Schemawahrheit ist genau das, was dieses ADR
+ausschliesst. Neue SQL-Dateien gehoeren als datierte Migration nach
+`terraform-supabase/supabase/migrations/`.
