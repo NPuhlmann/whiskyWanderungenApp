@@ -1,7 +1,5 @@
 import 'dart:developer' as dev;
 
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../domain/models/enhanced_order.dart';
 import '../database/backend_api.dart';
 import '../notifications/supabase_notification_service.dart';
@@ -475,25 +473,5 @@ class OrderStatusWorkflow {
   ) async {
     // Schedule check for processing timeout
     dev.log('⏱️ Scheduling timeout check for order $orderId');
-  }
-}
-
-/// Factory for creating OrderStatusWorkflow instances
-class OrderStatusWorkflowFactory {
-  static OrderStatusWorkflow create({
-    BackendApiService? backendApi,
-    SupabaseNotificationService? notificationService,
-    OrderTrackingService? trackingService,
-  }) {
-    final api = backendApi ?? BackendApiService();
-    return OrderStatusWorkflow(
-      backendApi: api,
-      notificationService:
-          notificationService ??
-          SupabaseNotificationService(Supabase.instance.client),
-      trackingService:
-          trackingService ??
-          OrderTrackingServiceFactory.create(backendApi: api),
-    );
   }
 }

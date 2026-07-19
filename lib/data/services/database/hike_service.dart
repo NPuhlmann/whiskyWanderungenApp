@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../domain/models/hike.dart';
 import '../error/error_handler.dart';
-import '../../models/pagination_result.dart';
 
 /// Dedicated service for hike-related operations
 class HikeService {
@@ -23,57 +22,6 @@ class HikeService {
           .toList();
     } catch (e) {
       throw ErrorHandler.createSafeException('Fetch hikes', e);
-    }
-  }
-
-  /// Get paginated list of hikes
-  Future<PaginationResult<Hike>> fetchHikesPaginated(
-    PaginationParams params,
-  ) async {
-    try {
-      // Calculate offset
-      final offset = (params.page - 1) * params.pageSize;
-      final limit = params.pageSize;
-
-      // Get total count first
-      final countResponse = await client.from('hikes').select('id');
-      final totalItems = countResponse.length;
-      final totalPages = (totalItems / params.pageSize).ceil();
-
-      // Get paginated data
-      var query = client
-          .from('hikes')
-          .select()
-          .order(params.orderBy, ascending: params.ascending)
-          .range(offset, offset + limit - 1);
-
-      // Apply filters if provided
-      if (params.filters != null) {
-        // Note: eq method doesn't exist in current Postgrest version
-        // TODO: Implement filtering when Postgrest is updated
-        // for (final entry in params.filters!.entries) {
-        //   query = query.eq(entry.key, entry.value);
-        // }
-      }
-
-      final response = await query;
-      final List<dynamic> hikeData = response as List<dynamic>;
-
-      final hikes = hikeData
-          .map((element) => Hike.fromJson(element as Map<String, dynamic>))
-          .toList();
-
-      return PaginationResult<Hike>(
-        items: hikes,
-        currentPage: params.page,
-        totalPages: totalPages,
-        totalItems: totalItems,
-        pageSize: params.pageSize,
-        hasNextPage: params.page < totalPages,
-        hasPreviousPage: params.page > 1,
-      );
-    } catch (e) {
-      throw ErrorHandler.createSafeException('Fetch paginated hikes', e);
     }
   }
 

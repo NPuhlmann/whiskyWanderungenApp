@@ -23,7 +23,7 @@ Flutter: `>=3.35.1` (CI pins `3.41.7`). Dart SDK: `^3.9.0`.
 | Config | `lib/config/` | Dependencies (`dependencies.dart`), routing, l10n |
 | Data | `lib/data/` | Repositories, services (Supabase, payment, cache, offline) |
 | Domain | `lib/domain/models/` | Freezed models + generated `.freezed.dart` / `.g.dart` |
-| Infra | `terraform-supabase/` | Supabase provisioning (Terraform) |
+| Infra | `terraform-supabase/supabase/` | Migrations + Edge Functions (`supabase db push`) |
 | Tests | `test/` | See Testing section |
 
 **State management**: Provider + ChangeNotifier ViewModels. All providers registered in `lib/config/dependencies.dart` (services → repositories → ViewModels order).

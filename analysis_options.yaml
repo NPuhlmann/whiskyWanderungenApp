@@ -32,7 +32,6 @@ analyzer:
     - "test/data/providers/order_management_provider_test.dart"
     - "test/data/providers/whisky_management_provider_test.dart"
     - "test/data/providers/team_provider_test.dart"
-    - "test/data/providers/dashboard_provider_simple_test.dart"
     - "test/data/providers/commission_provider_test.dart"
     - "test/data/repositories/hike_images_repository_test.dart"
     - "test/data/repositories/notification_repository_test.dart"

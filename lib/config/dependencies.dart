@@ -33,14 +33,12 @@ import '../data/repositories/metrics_repository.dart';
 import '../data/repositories/order_admin_repository.dart';
 import '../data/repositories/route_admin_repository.dart';
 import '../data/services/admin/admin_service.dart';
-import '../data/services/admin/dashboard_metrics_service.dart';
 import '../data/services/admin/route_management_service.dart';
 import '../data/providers/team_provider.dart';
 import '../data/services/analytics/sales_analytics_service.dart';
 import '../data/services/analytics/customer_analytics_service.dart';
 import '../data/providers/analytics_provider.dart';
 import '../data/providers/admin_provider.dart';
-import '../data/providers/dashboard_provider.dart';
 import '../data/providers/route_management_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -59,7 +57,6 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     Provider<ConnectivityService>(create: (_) => ConnectivityService.instance),
     Provider<OrderManagementService>(create: (_) => OrderManagementService()),
     Provider<AdminService>(create: (_) => AdminService()),
-    Provider<DashboardMetricsService>(create: (_) => DashboardMetricsService()),
     Provider<RouteManagementService>(create: (_) => RouteManagementService()),
     Provider<WhiskyManagementService>(
       create: (_) => WhiskyManagementService(Supabase.instance.client),
@@ -103,10 +100,7 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
       ),
     ),
     Provider<MetricsRepository>(
-      create: (context) => MetricsRepository(
-        context.read<AdminService>(),
-        context.read<DashboardMetricsService>(),
-      ),
+      create: (context) => MetricsRepository(context.read<AdminService>()),
     ),
     Provider<AnalyticsRepository>(
       create: (context) => AnalyticsRepository(
@@ -123,10 +117,8 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
           RouteAdminRepository(context.read<RouteManagementService>()),
     ),
     Provider<TastingSetRepository>(
-      create: (context) => TastingSetRepository(
-        context.read<BackendApiService>(),
-        context.read<WhiskyManagementService>(),
-      ),
+      create: (context) =>
+          TastingSetRepository(context.read<WhiskyManagementService>()),
     ),
     Provider<CommissionRepository>(
       create: (context) =>
@@ -194,11 +186,6 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     ChangeNotifierProvider<AdminProvider>(
       create: (context) =>
           AdminProvider(metricsRepository: context.read<MetricsRepository>()),
-    ),
-    ChangeNotifierProvider<DashboardProvider>(
-      create: (context) => DashboardProvider(
-        metricsRepository: context.read<MetricsRepository>(),
-      ),
     ),
     ChangeNotifierProvider<RouteManagementProvider>(
       create: (context) => RouteManagementProvider(

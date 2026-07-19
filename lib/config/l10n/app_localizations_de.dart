@@ -116,9 +116,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectDate => 'Datum auswählen';
 
   @override
-  String get mustBeAtLeast18 => 'Du musst mindestens 18 Jahre alt sein';
-
-  @override
   String get cancel => 'Abbrechen';
 
   @override
@@ -134,22 +131,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get chooseFromGallery => 'Aus Galerie wählen';
 
   @override
-  String get errorUploadingImage => 'Fehler beim Hochladen des Bildes';
-
-  @override
-  String get noWaypointsFound => 'Keine Wegpunkte für diese Wanderung gefunden';
-
-  @override
-  String get errorLoadingWaypoints => 'Fehler beim Laden der Wegpunkte';
-
-  @override
-  String get errorCalculatingRoute => 'Fehler bei der Routenberechnung';
-
-  @override
   String get waypointReached => 'Wegpunkt erreicht!';
-
-  @override
-  String get continueHike => 'Wanderung fortsetzen';
 
   @override
   String get saveMapOffline => 'Karte offline speichern';
@@ -201,25 +183,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get orderNotFound => 'Bestellung nicht gefunden';
 
   @override
-  String get invalidOrderId => 'Ungültige Bestell-ID';
-
-  @override
   String get checkout => 'Checkout';
 
   @override
-  String get pickupOnSite => 'Vor Ort abholen';
-
-  @override
-  String get free => 'Kostenlos';
-
-  @override
-  String get shippingByPost => 'Per Post versenden';
-
-  @override
   String get shippingCost => '+5,00 € Versandkosten';
-
-  @override
-  String get redirectingToCheckout => 'Weiterleitung zum Checkout...';
 
   @override
   String get orderTracking => 'Bestellverfolgung';
@@ -234,27 +201,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cancelOrder => 'Bestellung stornieren';
 
   @override
-  String get contactSupport => 'Support kontaktieren';
-
-  @override
-  String get cancelOrderConfirmation =>
-      'Möchtest du diese Bestellung wirklich stornieren?';
-
-  @override
   String get confirm => 'Bestätigen';
 
   @override
-  String get cancellationRequested =>
-      'Stornierung der Bestellung wurde angefordert';
-
-  @override
-  String get contactingSupport => 'Kontaktiere Support...';
-
-  @override
   String get tastingSet => 'Tasting Set';
-
-  @override
-  String get proceedToCheckout => 'Weiter zum Checkout';
 
   @override
   String get trackingOpen => 'Tracking öffnen';
@@ -263,35 +213,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unknownOrderType => 'Unbekannter Bestelltyp';
 
   @override
-  String get mobileLayout => 'Mobile Layout';
-
-  @override
-  String get webAppRunning => 'Web-App läuft erfolgreich! 🎉';
-
-  @override
   String get dashboard => 'Dashboard';
 
   @override
-  String get hikingRoutes => 'Wanderrouten';
-
-  @override
   String get orders => 'Bestellungen';
-
-  @override
-  String get flutterWebEnabled => '✅ Flutter Web aktiviert';
-
-  @override
-  String get responsiveLayoutImplemented => '✅ Responsive Layout implementiert';
-
-  @override
-  String get adminDashboardCreated => '✅ Admin-Dashboard erstellt';
-
-  @override
-  String get navigationImplemented => '✅ Navigation implementiert';
-
-  @override
-  String get webDependenciesAdded =>
-      '✅ Web-spezifische Dependencies hinzugefügt';
 
   @override
   String get manageHikingRoutes => 'Wanderrouten verwalten';
@@ -301,21 +226,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Hier können Sie Wanderrouten erstellen und verwalten';
 
   @override
-  String get inDevelopment => '🚧 In Entwicklung 🚧';
-
-  @override
-  String get manageOrders => 'Bestellungen verwalten';
-
-  @override
-  String get manageOrdersDescription =>
-      'Hier können Sie alle Bestellungen einsehen und bearbeiten';
-
-  @override
   String get manageWhiskyCatalog => 'Whisky-Katalog verwalten';
-
-  @override
-  String get manageWhiskyCatalogDescription =>
-      'Hier können Sie den Whisky-Katalog verwalten';
 
   @override
   String get adminDashboard => 'Admin Dashboard';
@@ -411,16 +322,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get all => 'Alle';
 
   @override
-  String get loading => 'Lädt';
-
-  @override
   String get edit => 'Bearbeiten';
 
   @override
   String get delete => 'Löschen';
-
-  @override
-  String get newTastingSet => 'Neues Tasting Set';
 
   @override
   String get sampleCount => 'Probenanzahl';
@@ -458,9 +363,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get deleteTastingSet => 'Tasting Set löschen';
-
-  @override
-  String get searchPlaceholder => 'Nach Name, Brennerei oder Region suchen';
 
   @override
   String deleteTastingSetConfirmation(String name) {
@@ -514,45 +416,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get description => 'Beschreibung';
-
-  @override
-  String get availability => 'Verfügbarkeit';
-
-  @override
-  String get sampleDetails => 'Probendetails';
-
-  @override
-  String get viewDetails => 'Details anzeigen';
-
-  @override
-  String get quickActions => 'Schnellaktionen';
-
-  @override
-  String get uploadImage => 'Bild hochladen';
-
-  @override
-  String get chooseImage => 'Bild wählen';
-
-  @override
-  String get removeImage => 'Bild entfernen';
-
-  @override
-  String get imageUploaded => 'Bild erfolgreich hochgeladen';
-
-  @override
-  String get imageRemoved => 'Bild erfolgreich entfernt';
-
-  @override
-  String get errorUploadingImageGeneral => 'Fehler beim Hochladen des Bildes';
-
-  @override
-  String get errorRemovingImage => 'Fehler beim Entfernen des Bildes';
-
-  @override
-  String get noImageSelected => 'Kein Bild ausgewählt';
-
-  @override
-  String get years => 'Jahre';
 
   @override
   String get price => 'Preis';

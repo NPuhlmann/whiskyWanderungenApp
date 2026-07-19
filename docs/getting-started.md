@@ -67,20 +67,19 @@ einfache Admin-Oberflaeche bzw. ein Build-Target.
 ## Lokale Infrastruktur
 
 Ein vorhandenes Supabase-Projekt kann direkt verwendet werden: URL und Anon
-Key aus dem Supabase-Dashboard in `.env` eintragen. Fuer ein neues Projekt
-liegen Terraform-Variablen unter `terraform-supabase/`.
+Key aus dem Supabase-Dashboard in `.env` eintragen. Ein neues Projekt wird im
+Dashboard bzw. ueber die Management API angelegt und dann verbunden:
 
 ```bash
 cd terraform-supabase
-cp terraform.tfvars.example terraform.tfvars
-terraform init
-terraform plan
+supabase link --project-ref <ref>
+supabase db push
 ```
 
 Die vollstaendige Provisionierung ist in
-[Daten und Infrastruktur](backend.md) beschrieben. Vor `terraform apply`
-muessen die sensiblen Variablen lokal gesetzt sein; sie duerfen nicht in
-`.env` der Flutter-App oder in Git landen.
+[Daten und Infrastruktur](backend.md) beschrieben. `SUPABASE_ACCESS_TOKEN`
+muss dafuer lokal gesetzt sein; Operator-Secrets duerfen nicht in `.env` der
+Flutter-App oder in Git landen.
 
 ## Nuetzliche Befehle
 

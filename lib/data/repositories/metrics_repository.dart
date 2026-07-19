@@ -1,17 +1,17 @@
 import '../services/admin/admin_service.dart';
-import '../services/admin/dashboard_metrics_service.dart';
 
 /// Repository für Admin-Kennzahlen (ADR-0004).
 ///
-/// Fasst [AdminService] und [DashboardMetricsService] hinter einer Kante
-/// zusammen — beide fragen dieselben Umsatz-Tabellen ab, zwei Repositories
-/// darüber wären zwei Wahrheiten. Reiner Pass-through: die Query-Logik
-/// bleibt in den Services.
+/// Pure pass-through to [AdminService]; the query logic stays in the service.
+///
+/// ponytail: until #84 this also held a DashboardMetricsService, but its two
+/// forwarders were only ever called by DashboardProvider, which went with the
+/// duplicate dashboard. That leaves the service itself without a consumer —
+/// tearing it down belongs to #114.
 class MetricsRepository {
   final AdminService _adminService;
-  final DashboardMetricsService _dashboardService;
 
-  MetricsRepository(this._adminService, this._dashboardService);
+  MetricsRepository(this._adminService);
 
   // --- AdminProvider ---
 
@@ -26,14 +26,4 @@ class MetricsRepository {
 
   Future<List<Map<String, dynamic>>> getTopRoutes({int limit = 5}) =>
       _adminService.getTopRoutes(limit: limit);
-
-  // --- DashboardProvider ---
-
-  Future<Map<String, dynamic>> getDashboardMetrics() =>
-      _dashboardService.getDashboardMetrics();
-
-  /// Reine Formatierung, kein Datenzugriff — liegt hier nur, damit der
-  /// DashboardProvider nicht zusätzlich den Service halten muss.
-  String formatCurrency(double amount) =>
-      _dashboardService.formatCurrency(amount);
 }
