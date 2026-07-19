@@ -6,6 +6,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is "Whisky Hikes" - a Flutter mobile application for discovering and tracking hiking trails. The user shall be able to buy whisky samples and hike the routes that he bought. At special locations on the map, the user gets some infos about a whisky and shall drink one of the samples. That is the case for 4-7 Whiskys along the route. The app uses Supabase as the backend service for authentication, data storage, and image hosting.
 
+## Work in a worktree, never on a branch in the main checkout
+
+**This is mandatory. Do not `git checkout -b` in the primary working directory.**
+
+Multiple agents and the developer share this repository at the same time. A
+`git checkout` in the shared directory changes the branch *under everyone else*.
+When that happens, a `git add -A` sweeps up whatever another agent was
+mid-edit on and commits it to the wrong branch. This has already happened once.
+
+For any change, create a worktree first:
+
+```bash
+git worktree add ../wt-<short-topic> -b <type>/<issue>-<slug>
+cd ../wt-<short-topic>
+cp /path/to/main/checkout/.env .env   # required — see below
+flutter pub get && dart run build_runner build
+```
+
+Then work, commit and push entirely inside that directory. When the PR is
+merged:
+
+```bash
+git worktree remove ../wt-<short-topic>
+```
+
+Two things that bite:
+
+- **`.env` must be copied in.** `pubspec.yaml` registers `.env` as a Flutter
+  asset, so a fresh worktree fails to build until the file exists. It is
+  gitignored and therefore never carried over automatically.
+- **Generated files are not shared.** Run `dart run build_runner build` in the
+  worktree; `.dart_tool/` is per-worktree.
+
+Before running any git command that changes state, check where you are:
+
+```bash
+git branch --show-current && git status --short
+```
+
+If the branch is not the one you created, stop — someone else moved it. Never
+use `git add -A` when you did not author every listed change; stage the files
+you actually touched by name.
+
 ## Common Development Commands
 
 ### Build and Run
@@ -149,22 +192,18 @@ The app uses these main Supabase tables:
 - Profile data cached for 24h, images for 7 days with 50MB size limit
 - Cache-first loading strategy with automatic background sync
 
-### Latest Updates (December 2024)
+### Dependency versions
 
-**Flutter Version:** 3.35.1 (Latest Stable)  
-**Dart SDK:** 3.9.0
+**`pubspec.yaml` is the only source of truth for versions — do not restate them
+here.** A pinned list in this file went stale within months and misled readers
+into coding against superseded APIs.
 
-#### Recent Major Dependency Updates (August 2024):
-- **flutter_map**: 6.1.0 → 8.2.1 (Breaking Changes - API updates required)
-- **go_router**: 14.6.2 → 16.2.0 (Breaking Changes - Route definitions updated)  
-- **geolocator**: 11.0.0 → 14.0.2 (Breaking Changes - Permission handling updated)
-- **freezed**: 2.5.7 → 3.2.0 (Breaking Changes - @unfreezed syntax updated)
-- **flutter_lints**: 5.0.0 → 6.0.0 (New lint rules active)
+Version constraints live in `pubspec.yaml`, the resolved graph in
+`pubspec.lock`. CI pins the Flutter version in `.github/workflows/*.yml`; note
+that it currently lags the version most developers run locally.
 
-#### Supabase Dependencies (December 2024):
-- **supabase_flutter**: 2.9.1
-- **gotrue**: 2.13.0 (Breaking Changes - API type changes)
-- **storage_client**: 2.4.0 (Breaking Changes - constructor parameters)
+The migration notes below are kept because they explain *why* the code looks the
+way it does, not because the versions are current.
 
 #### Known Issues After Updates:
 ✅ **Localization Issue**: Fixed - imports updated to use local l10n files  
