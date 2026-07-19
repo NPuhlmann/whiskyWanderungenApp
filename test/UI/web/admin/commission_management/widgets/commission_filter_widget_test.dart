@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/UI/web/admin/commission_management/widgets/commission_filter_widget.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
 
-// Create mock provider
-class MockCommissionProvider extends Mock implements CommissionProvider {}
+// A generated mock, not `extends Mock implements CommissionProvider`: a hand
+// rolled Mock returns null from non-nullable getters like `currentFilter`,
+// which throws while `when()` is still building the stub and leaves it
+// half-open ("Cannot call `when` within a stub response" on the next test).
+@GenerateNiceMocks([MockSpec<CommissionProvider>()])
+import 'commission_filter_widget_test.mocks.dart';
 
 void main() {
   group('CommissionFilterWidget Tests', () {

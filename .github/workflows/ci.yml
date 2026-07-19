@@ -86,7 +86,16 @@ jobs:
           test/UI/mobile/home/home_page_test.dart
           test/UI/mobile/home/home_view_model_test.dart
           test/UI/my_hikes/my_hikes_view_model_test.dart
+          test/data/providers/route_management_provider_test.dart
+          test/data/repositories/review_repository_test.dart
+          test/data/repositories/user_repository_test.dart
+          test/data/services/backend_api_payment_extension_simple_test.dart
+          test/data/services/location/location_service_test.dart
+          test/UI/core/scaffold_with_navigation_bar_test.dart
+          test/UI/mobile/home/widgets/hike_card_test.dart
           test/UI/mobile/payment/order_history_view_model_test.dart
+          test/UI/shared/responsive_layout_test.dart
+          test/UI/web/admin/commission_management/widgets/commission_status_chip_test.dart
 
   security-scan:
     name: Security Scan

@@ -2,7 +2,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:whisky_hikes/domain/models/basic_order.dart';
+/// Live-database integration test. NOT part of the hermetic `flutter test`
+/// unit run — it opens a real network client and writes to a real Supabase
+/// project.
+///
+/// Run it on demand against a project with real credentials in `.env`:
+///
+/// ```bash
+/// flutter test integration_test/database/payment_schema_integration_test.dart
+/// ```
+///
+/// It fails against the default dev `.env`, which holds placeholder
+/// credentials.
+// ponytail: fixed valid UUID rather than a fresh random one per run, so rows
+// left behind by a failed run stay trivially identifiable and cleanable.
+const testUserId = '00000000-0000-4000-8000-000000000123';
 
 void main() {
   group('Payment Database Schema Integration Tests (TDD - GREEN Phase)', () {
@@ -25,7 +39,7 @@ void main() {
         final orderData = {
           'order_number': 'WH2025-000001',
           'hike_id': 1,
-          'user_id': 'test-user-uuid-123',
+          'user_id': testUserId,
           'total_amount': 30.99,
           'delivery_type': 'shipping',
           'status': 'pending',
@@ -61,7 +75,7 @@ void main() {
         final invalidOrderData = {
           'order_number': 'WH2025-000002',
           'hike_id': 1,
-          'user_id': 'test-user-uuid-123',
+          'user_id': testUserId,
           'total_amount': 25.99,
           'delivery_type': 'shipping',
           'status': 'invalid_status', // Should fail constraint
@@ -83,7 +97,7 @@ void main() {
         final invalidDeliveryData = {
           'order_number': 'WH2025-000003',
           'hike_id': 1,
-          'user_id': 'test-user-uuid-123',
+          'user_id': testUserId,
           'total_amount': 25.99,
           'delivery_type': 'invalid_delivery', // Should fail constraint
           'status': 'pending',
@@ -105,7 +119,7 @@ void main() {
         final orderWithOptionals = {
           'order_number': 'WH2025-000004',
           'hike_id': 1,
-          'user_id': 'test-user-uuid-123',
+          'user_id': testUserId,
           'total_amount': 30.99,
           'delivery_type': 'shipping',
           'status': 'confirmed',
@@ -345,7 +359,7 @@ void main() {
           final orderData = {
             'order_number': 'WH2025-FK-TEST',
             'hike_id': 999999, // Non-existent hike
-            'user_id': 'test-user-uuid-123',
+            'user_id': testUserId,
             'total_amount': 25.99,
             'delivery_type': 'pickup',
             'status': 'pending',

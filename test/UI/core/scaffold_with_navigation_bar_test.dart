@@ -1,3 +1,7 @@
+// The mock shell is a mutable Widget and its stub State deliberately skips
+// the real StatefulNavigationShell lifecycle, which needs a live GoRouter.
+// ignore_for_file: must_be_immutable, must_call_super
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -5,14 +9,60 @@ import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:whisky_hikes/UI/core/scaffold_with_navigation_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
+import 'package:whisky_hikes/data/services/auth/auth_service.dart';
 
 class MockStatefulNavigationShell extends Mock
     implements StatefulNavigationShell {
+  // `currentIndex` is a non-nullable getter, so a bare Mock returns null and
+  // throws before `when()` can even register the stub — which in turn leaves
+  // the stub half-open and produces "Cannot call `when` within a stub
+  // response" on the next test. A plain settable field sidesteps both, and
+  // avoids the nested-stubbing anti-pattern CLAUDE.md warns about.
+  int _currentIndex = 0;
+
+  @override
+  int get currentIndex => _currentIndex;
+
+  set currentIndex(int value) => _currentIndex = value;
+
+  // The shell is mounted as the Scaffold body, so it has to be a real,
+  // buildable widget — a bare Mock returns null from createElement/createState
+  // and the framework blows up. These render an inert placeholder.
+  @override
+  StatefulElement createElement() => StatefulElement(this);
+
+  @override
+  StatefulNavigationShellState createState() => _StubShellState();
+
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MockStatefulNavigationShell';
   }
+}
+
+class _StubShellState extends StatefulNavigationShellState {
+  // Deliberately does not call super.initState(): the real implementation
+  // wires itself into a live GoRouter, which no unit test has.
+  @override
+  void initState() {}
+
+  // RestorationMixin reads restorationId while mounting; the real getter
+  // dereferences `widget.route`, which a mocked shell does not have.
+  @override
+  String? get restorationId => null;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {}
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
+class MockAuthService extends Mock implements AuthService {
+  @override
+  Future<bool> isCurrentUserAdmin() async => false;
 }
 
 void main() {
@@ -32,13 +82,16 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en', ''), Locale('de', '')],
-        home: child,
+        home: Provider<AuthService>.value(
+          value: MockAuthService(),
+          child: child,
+        ),
       );
     }
 
     testWidgets('should build without crashing', (WidgetTester tester) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -57,7 +110,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -75,7 +128,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -90,16 +143,13 @@ void main() {
         find.byType(BottomNavigationBar),
       );
       expect(bottomNavBar.items.length, equals(3));
-
-      // Verify navigation items exist
-      expect(find.byType(BottomNavigationBarItem), findsNWidgets(3));
     });
 
     testWidgets('should have correct icons for navigation items', (
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -125,7 +175,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(1);
+      mockNavigationShell.currentIndex = 1;
 
       // Act
       await tester.pumpWidget(
@@ -145,7 +195,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -165,7 +215,7 @@ void main() {
       'should call goBranch with initialLocation true when tapping current index',
       (WidgetTester tester) async {
         // Arrange
-        when(mockNavigationShell.currentIndex).thenReturn(1);
+        mockNavigationShell.currentIndex = 1;
 
         // Act
         await tester.pumpWidget(
@@ -188,7 +238,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -212,7 +262,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -232,7 +282,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act
       await tester.pumpWidget(
@@ -270,7 +320,7 @@ void main() {
     ) async {
       for (int i = 0; i < 3; i++) {
         // Arrange
-        when(mockNavigationShell.currentIndex).thenReturn(i);
+        mockNavigationShell.currentIndex = i;
 
         // Act
         await tester.pumpWidget(
@@ -289,7 +339,7 @@ void main() {
 
     testWidgets('should use localized strings', (WidgetTester tester) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(0);
+      mockNavigationShell.currentIndex = 0;
 
       // Act - Test with German locale
       await tester.pumpWidget(
@@ -302,7 +352,12 @@ void main() {
           ],
           supportedLocales: const [Locale('de', '')],
           locale: const Locale('de', ''),
-          home: ScaffoldWithNavigationBar(navigationShell: mockNavigationShell),
+          home: Provider<AuthService>.value(
+            value: MockAuthService(),
+            child: ScaffoldWithNavigationBar(
+              navigationShell: mockNavigationShell,
+            ),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -317,7 +372,7 @@ void main() {
       WidgetTester tester,
     ) async {
       // Arrange
-      when(mockNavigationShell.currentIndex).thenReturn(1);
+      mockNavigationShell.currentIndex = 1;
 
       // Act
       await tester.pumpWidget(
@@ -327,7 +382,7 @@ void main() {
       );
 
       // Rebuild the widget
-      when(mockNavigationShell.currentIndex).thenReturn(2);
+      mockNavigationShell.currentIndex = 2;
       await tester.pumpWidget(
         createTestWidget(
           ScaffoldWithNavigationBar(navigationShell: mockNavigationShell),

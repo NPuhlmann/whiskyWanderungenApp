@@ -253,9 +253,11 @@ void main() {
           createTestWidget(status: CommissionStatus.paid),
         );
 
-        // Assert
-        final chip = tester.widget<Chip>(find.byType(Chip));
-        expect(chip.semanticLabel, 'Provision Status: Bezahlt');
+        // Assert — the Tooltip carries the status to screen readers.
+        // `Chip.semanticLabel` was removed in Flutter 3.35, and the widget
+        // never set it; the Tooltip message is the real accessible label.
+        final tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
+        expect(tooltip.message, 'Status: Bezahlt');
       });
     });
   });

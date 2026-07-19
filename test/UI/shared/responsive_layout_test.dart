@@ -2,14 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 
+/// Sets the logical viewport for a widget test.
+///
+/// `tester.view.physicalSize` is in *physical* pixels, so it only equals the
+/// logical size the widgets see once `devicePixelRatio` is pinned to 1.0 —
+/// the test default of 3.0 otherwise divides the requested width by three and
+/// silently lands in the wrong breakpoint. `tester.view.reset()` in the
+/// teardown stops sizes leaking into the next test.
+Future<void> setViewport(WidgetTester tester, Size size) async {
+  tester.view.devicePixelRatio = 1.0;
+  tester.view.physicalSize = size;
+  addTearDown(tester.view.reset);
+}
+
 void main() {
   group('ResponsiveLayout Tests', () {
     testWidgets(
       'ResponsiveLayout zeigt mobile Layout bei kleiner Bildschirmbreite',
       (WidgetTester tester) async {
-        await tester.binding.setSurfaceSize(
-          const Size(400, 800),
-        ); // Mobile Größe
+        await setViewport(tester, const Size(400, 800)); // Mobile Größe
 
         await tester.pumpWidget(
           MaterialApp(
@@ -28,9 +39,7 @@ void main() {
     testWidgets(
       'ResponsiveLayout zeigt desktop Layout bei großer Bildschirmbreite',
       (WidgetTester tester) async {
-        await tester.binding.setSurfaceSize(
-          const Size(1400, 800),
-        ); // Desktop Größe
+        await setViewport(tester, const Size(1400, 800)); // Desktop Größe
 
         await tester.pumpWidget(
           MaterialApp(
@@ -49,9 +58,7 @@ void main() {
     testWidgets(
       'ResponsiveLayout zeigt mobile Layout bei Tablet-Größe ohne tablet Widget',
       (WidgetTester tester) async {
-        await tester.binding.setSurfaceSize(
-          const Size(1000, 800),
-        ); // Tablet Größe
+        await setViewport(tester, const Size(1000, 800)); // Tablet Größe
 
         await tester.pumpWidget(
           MaterialApp(
@@ -70,9 +77,7 @@ void main() {
     testWidgets(
       'ResponsiveLayout zeigt tablet Layout bei Tablet-Größe mit tablet Widget',
       (WidgetTester tester) async {
-        await tester.binding.setSurfaceSize(
-          const Size(1000, 800),
-        ); // Tablet Größe
+        await setViewport(tester, const Size(1000, 800)); // Tablet Größe
 
         await tester.pumpWidget(
           MaterialApp(
@@ -95,7 +100,7 @@ void main() {
     testWidgets('isMobile erkennt mobile Bildschirmgröße korrekt', (
       WidgetTester tester,
     ) async {
-      await tester.binding.setSurfaceSize(const Size(400, 800));
+      await setViewport(tester, const Size(400, 800));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -114,7 +119,7 @@ void main() {
     testWidgets('isDesktop erkennt desktop Bildschirmgröße korrekt', (
       WidgetTester tester,
     ) async {
-      await tester.binding.setSurfaceSize(const Size(1400, 800));
+      await setViewport(tester, const Size(1400, 800));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -133,7 +138,7 @@ void main() {
     testWidgets('isTablet erkennt tablet Bildschirmgröße korrekt', (
       WidgetTester tester,
     ) async {
-      await tester.binding.setSurfaceSize(const Size(1000, 800));
+      await setViewport(tester, const Size(1000, 800));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -154,9 +159,7 @@ void main() {
     testWidgets(
       'ResponsiveBuilder funktioniert mit verschiedenen Bildschirmgrößen',
       (WidgetTester tester) async {
-        await tester.binding.setSurfaceSize(
-          const Size(400, 800),
-        ); // Mobile Größe
+        await setViewport(tester, const Size(400, 800)); // Mobile Größe
 
         await tester.pumpWidget(
           MaterialApp(
@@ -178,9 +181,7 @@ void main() {
     testWidgets('ResponsiveBuilder funktioniert bei Desktop-Größe', (
       WidgetTester tester,
     ) async {
-      await tester.binding.setSurfaceSize(
-        const Size(1400, 800),
-      ); // Desktop Größe
+      await setViewport(tester, const Size(1400, 800)); // Desktop Größe
 
       await tester.pumpWidget(
         MaterialApp(

@@ -144,10 +144,10 @@ void main() {
       test('should wrap other exceptions', () async {
         when(
           mockBackendApi.createReview(
-            hikeId: any,
-            userId: any,
-            rating: any,
-            comment: any,
+            hikeId: anyNamed('hikeId'),
+            userId: anyNamed('userId'),
+            rating: anyNamed('rating'),
+            comment: anyNamed('comment'),
           ),
         ).thenThrow(Exception('Database error'));
 
