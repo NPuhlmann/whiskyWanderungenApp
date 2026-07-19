@@ -3,21 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
-import 'package:whisky_hikes/data/services/commission/commission_service.dart';
+import 'package:whisky_hikes/data/repositories/commission_repository.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
 import '../../test_helpers.dart';
 
-@GenerateMocks([CommissionService])
+@GenerateMocks([CommissionRepository])
 import 'commission_provider_test.mocks.dart';
 
 void main() {
   group('CommissionProvider Tests', () {
     late CommissionProvider provider;
-    late MockCommissionService mockService;
+    late MockCommissionRepository mockService;
 
     setUp(() {
-      mockService = MockCommissionService();
-      provider = CommissionProvider(commissionService: mockService);
+      mockService = MockCommissionRepository();
+      provider = CommissionProvider(commissionRepository: mockService);
     });
 
     group('State Management', () {

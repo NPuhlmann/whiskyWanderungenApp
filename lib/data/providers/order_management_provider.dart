@@ -1,14 +1,13 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import '../services/admin/order_management_service.dart';
+import '../repositories/order_admin_repository.dart';
 
 /// Provider für die Verwaltung von Bestellungen im Admin-Bereich
 class OrderManagementProvider extends ChangeNotifier {
-  final OrderManagementService _orderManagementService;
+  final OrderAdminRepository _orderRepository;
 
-  OrderManagementProvider({OrderManagementService? orderManagementService})
-    : _orderManagementService =
-          orderManagementService ?? OrderManagementService();
+  OrderManagementProvider({required OrderAdminRepository orderRepository})
+    : _orderRepository = orderRepository;
 
   // State
   List<Map<String, dynamic>> _orders = [];
@@ -94,7 +93,7 @@ class OrderManagementProvider extends ChangeNotifier {
 
     try {
       log('Loading orders...');
-      _orders = await _orderManagementService.getAllOrdersForAdmin();
+      _orders = await _orderRepository.getAllOrdersForAdmin();
       _filteredOrders = List.from(_orders);
       log('Loaded ${_orders.length} orders');
     } catch (e) {
@@ -114,11 +113,11 @@ class OrderManagementProvider extends ChangeNotifier {
       log('Creating new order...');
 
       // Validiere Bestelldaten
-      if (!_orderManagementService.validateOrderData(orderData)) {
+      if (!_orderRepository.validateOrderData(orderData)) {
         throw Exception('Ungültige Bestelldaten');
       }
 
-      await _orderManagementService.createOrder(orderData);
+      await _orderRepository.createOrder(orderData);
 
       // Lade Bestellungen neu, um die neue Bestellung anzuzeigen
       await loadOrders();
@@ -141,11 +140,11 @@ class OrderManagementProvider extends ChangeNotifier {
       log('Updating order $orderId');
 
       // Validiere Update-Daten
-      if (!_orderManagementService.validateUpdateData(updateData)) {
+      if (!_orderRepository.validateUpdateData(updateData)) {
         throw Exception('Ungültige Update-Daten');
       }
 
-      await _orderManagementService.updateOrder(orderId, updateData);
+      await _orderRepository.updateOrder(orderId, updateData);
 
       // Lade Bestellungen neu, um die Änderungen anzuzeigen
       await loadOrders();
@@ -175,7 +174,7 @@ class OrderManagementProvider extends ChangeNotifier {
     try {
       log('Deleting order $orderId');
 
-      await _orderManagementService.deleteOrder(orderId);
+      await _orderRepository.deleteOrder(orderId);
 
       // Entferne Bestellung aus lokaler Liste
       _orders.removeWhere((order) => order['id'] == orderId);
@@ -201,7 +200,7 @@ class OrderManagementProvider extends ChangeNotifier {
       log('Selecting order: ${order['id']}');
 
       // Lade vollständige Bestelldetails
-      _selectedOrder = await _orderManagementService.getOrderById(order['id']);
+      _selectedOrder = await _orderRepository.getOrderById(order['id']);
       notifyListeners();
 
       log('Order selected successfully');
@@ -228,11 +227,11 @@ class OrderManagementProvider extends ChangeNotifier {
       log('Updating order $orderId status to: $newStatus');
 
       // Validiere Status
-      if (!_orderManagementService.validateOrderStatus(newStatus)) {
+      if (!_orderRepository.validateOrderStatus(newStatus)) {
         throw Exception('Invalid order status: $newStatus');
       }
 
-      await _orderManagementService.updateOrderStatus(orderId, newStatus);
+      await _orderRepository.updateOrderStatus(orderId, newStatus);
 
       // Lade Bestellungen neu
       await loadOrders();
@@ -248,7 +247,7 @@ class OrderManagementProvider extends ChangeNotifier {
 
   /// Gibt die verfügbaren Bestellstatus zurück
   List<String> getValidOrderStatuses() {
-    return _orderManagementService.getValidStatuses();
+    return _orderRepository.getValidStatuses();
   }
 
   // Filtering and Search
@@ -265,9 +264,7 @@ class OrderManagementProvider extends ChangeNotifier {
       if (status == 'all') {
         _filteredOrders = List.from(_orders);
       } else {
-        _filteredOrders = await _orderManagementService.getOrdersByStatus(
-          status,
-        );
+        _filteredOrders = await _orderRepository.getOrdersByStatus(status);
       }
 
       notifyListeners();
@@ -290,9 +287,7 @@ class OrderManagementProvider extends ChangeNotifier {
       if (searchTerm.isEmpty) {
         _filteredOrders = List.from(_orders);
       } else {
-        _filteredOrders = await _orderManagementService.searchOrders(
-          searchTerm,
-        );
+        _filteredOrders = await _orderRepository.searchOrders(searchTerm);
       }
 
       notifyListeners();
@@ -315,7 +310,7 @@ class OrderManagementProvider extends ChangeNotifier {
         'Filtering orders by date range: ${startDate.toIso8601String()} to ${endDate.toIso8601String()}',
       );
 
-      _filteredOrders = await _orderManagementService.getOrdersByDateRange(
+      _filteredOrders = await _orderRepository.getOrdersByDateRange(
         startDate,
         endDate,
       );
@@ -337,7 +332,7 @@ class OrderManagementProvider extends ChangeNotifier {
 
       _currentFilter = 'all';
       _searchTerm = '';
-      _filteredOrders = await _orderManagementService.getAllOrdersForAdmin();
+      _filteredOrders = await _orderRepository.getAllOrdersForAdmin();
 
       notifyListeners();
       log('Filters cleared, showing ${_filteredOrders.length} orders');
@@ -356,7 +351,7 @@ class OrderManagementProvider extends ChangeNotifier {
 
     try {
       log('Loading order statistics...');
-      _orderStatistics = await _orderManagementService.getOrderStatistics();
+      _orderStatistics = await _orderRepository.getOrderStatistics();
       log('Order statistics loaded');
     } catch (e) {
       log('Error loading order statistics: $e');
@@ -372,9 +367,7 @@ class OrderManagementProvider extends ChangeNotifier {
 
     try {
       log('Loading recent orders (limit: $limit)...');
-      _recentOrders = await _orderManagementService.getRecentOrders(
-        limit: limit,
-      );
+      _recentOrders = await _orderRepository.getRecentOrders(limit: limit);
       notifyListeners();
       log('Loaded ${_recentOrders.length} recent orders');
     } catch (e) {
@@ -451,14 +444,12 @@ class OrderManagementProvider extends ChangeNotifier {
 
     final pendingOrders = _orders
         .where(
-          (order) =>
-              _orderManagementService.isPendingStatus(order['status'] ?? ''),
+          (order) => _orderRepository.isPendingStatus(order['status'] ?? ''),
         )
         .length;
     final completedOrders = _orders
         .where(
-          (order) =>
-              _orderManagementService.isCompletedStatus(order['status'] ?? ''),
+          (order) => _orderRepository.isCompletedStatus(order['status'] ?? ''),
         )
         .length;
 
@@ -492,7 +483,7 @@ class OrderManagementProvider extends ChangeNotifier {
 
   /// Prüft ob eine Bestellung bearbeitet werden kann
   bool canModifyOrder(Map<String, dynamic> order) {
-    return _orderManagementService.isPendingStatus(order['status'] ?? '');
+    return _orderRepository.isPendingStatus(order['status'] ?? '');
   }
 
   /// Formatiert Bestellbetrag

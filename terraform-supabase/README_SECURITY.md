@@ -40,12 +40,12 @@ terraform init
 ### 4. **Deployment testen**
 
 ```bash
-# Test der Konfiguration
-make plan
-
-# Deployment ausführen
-make apply
+supabase link --project-ref <ref>
+supabase db push
 ```
+
+> Es gibt kein Makefile. `make plan`/`make apply` haben in diesem Repo nie
+> existiert; das Schema kommt aus `supabase/migrations/` (ADR-0003).
 
 ## 🔐 Sicherheitsfeatures
 

@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
-import '../services/admin/admin_service.dart';
+import '../repositories/metrics_repository.dart';
 
 /// Provider für Admin-Dashboard-Daten
 class AdminProvider extends ChangeNotifier {
-  final AdminService _adminService;
+  final MetricsRepository _metricsRepository;
 
-  AdminProvider({AdminService? adminService})
-    : _adminService = adminService ?? AdminService();
+  AdminProvider({required MetricsRepository metricsRepository})
+    : _metricsRepository = metricsRepository;
 
   // Dashboard-Daten
   Map<String, dynamic> _dashboardKPIs = {};
@@ -47,7 +47,7 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _dashboardKPIs = await _adminService.getDashboardKPIs();
+      _dashboardKPIs = await _metricsRepository.getDashboardKPIs();
     } catch (e) {
       debugPrint('Fehler beim Laden der Dashboard-KPIs: $e');
       _dashboardKPIs = {
@@ -70,7 +70,7 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _recentOrders = await _adminService.getRecentOrders(limit: 10);
+      _recentOrders = await _metricsRepository.getRecentOrders(limit: 10);
     } catch (e) {
       debugPrint('Fehler beim Laden der aktuellen Bestellungen: $e');
       _recentOrders = [];
@@ -86,7 +86,7 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _revenueTrend = await _adminService.getRevenueTrend(days: 30);
+      _revenueTrend = await _metricsRepository.getRevenueTrend(days: 30);
     } catch (e) {
       debugPrint('Fehler beim Laden der Umsatz-Entwicklung: $e');
       _revenueTrend = [];
@@ -102,7 +102,7 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _topRoutes = await _adminService.getTopRoutes(limit: 5);
+      _topRoutes = await _metricsRepository.getTopRoutes(limit: 5);
     } catch (e) {
       debugPrint('Fehler beim Laden der beliebtesten Routen: $e');
       _topRoutes = [];
@@ -116,7 +116,7 @@ class AdminProvider extends ChangeNotifier {
   Future<void> updateOrderStatus(String orderId, String newStatus) async {
     try {
       // Hier würde der API-Call erfolgen
-      // await _adminService.updateOrderStatus(orderId, newStatus);
+      // await _metricsRepository.updateOrderStatus(orderId, newStatus);
 
       // Aktualisiere lokale Daten
       final orderIndex = _recentOrders.indexWhere(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:whisky_hikes/data/providers/whisky_management_provider.dart';
-import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 import 'widgets/whisky_catalog_overview.dart';
 import 'widgets/tasting_set_list.dart';
 import 'widgets/whisky_catalog_filters.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:whisky_hikes/data/providers/whisky_management_provider.dart';
-import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Overview widget showing key statistics for the whisky catalog

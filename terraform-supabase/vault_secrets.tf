@@ -5,14 +5,14 @@
 resource "null_resource" "vault_setup" {
   triggers = {
     # Re-run if vault SQL changes
-    vault_sql_hash = filemd5("${path.module}/sql/08_supabase_vault_setup.sql")
+    vault_sql_hash = filemd5("${path.module}/supabase/migrations/20260719120000_supabase_vault_stripe_secrets.sql")
   }
 
   provisioner "local-exec" {
     command = <<-EOT
       export SUPABASE_ACCESS_TOKEN="${var.supabase_access_token}"
       export PROJECT_ID="${supabase_project.whisky_hikes.id}"
-      ${path.module}/execute_sql.sh "$(cat ${path.module}/sql/08_supabase_vault_setup.sql)"
+      ${path.module}/execute_sql.sh "$(cat ${path.module}/supabase/migrations/20260719120000_supabase_vault_stripe_secrets.sql)"
     EOT
   }
 

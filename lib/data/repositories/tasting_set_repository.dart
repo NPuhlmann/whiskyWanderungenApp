@@ -1,12 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:whisky_hikes/data/services/database/backend_api.dart';
+import 'package:whisky_hikes/data/services/whisky/whisky_management_service.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Repository for managing tasting sets and whisky samples
 /// Note: Tasting sets are now 1:1 with hikes and automatically included
 class TastingSetRepository {
   final BackendApiService _backendApi;
+  final WhiskyManagementService _whiskyService;
 
-  TastingSetRepository(this._backendApi);
+  TastingSetRepository(this._backendApi, this._whiskyService);
 
   /// Get the tasting set for a specific hike (1:1 relationship)
   Future<TastingSet?> getTastingSetForHike(int hikeId) async {
@@ -28,16 +32,6 @@ class TastingSetRepository {
     }
   }
 
-  /// Get all tasting sets (for admin/company management)
-  Future<List<TastingSet>> getAllTastingSets() async {
-    try {
-      final response = await _backendApi.getAllTastingSets();
-      return response;
-    } catch (e) {
-      throw Exception('Fehler beim Laden aller Tasting Sets: $e');
-    }
-  }
-
   /// Get whisky samples for a specific tasting set
   Future<List<WhiskySample>> getWhiskySamplesForTastingSet(
     int tastingSetId,
@@ -49,16 +43,6 @@ class TastingSetRepository {
       return response;
     } catch (e) {
       throw Exception('Fehler beim Laden der Whisky Samples: $e');
-    }
-  }
-
-  /// Search tasting sets by name or description
-  Future<List<TastingSet>> searchTastingSets(String query) async {
-    try {
-      final response = await _backendApi.searchTastingSets(query);
-      return response;
-    } catch (e) {
-      throw Exception('Fehler bei der Suche nach Tasting Sets: $e');
     }
   }
 
@@ -118,60 +102,63 @@ class TastingSetRepository {
     }
   }
 
-  /// Create a new tasting set for a hike (for companies)
-  Future<TastingSet> createTastingSet({
-    required int hikeId,
-    required String name,
-    required String description,
-    String? imageUrl,
-    DateTime? availableFrom,
-    DateTime? availableUntil,
-  }) async {
-    try {
-      final response = await _backendApi.createTastingSet(
-        hikeId: hikeId,
-        name: name,
-        description: description,
-        imageUrl: imageUrl,
-        availableFrom: availableFrom,
-        availableUntil: availableUntil,
-      );
-      return response;
-    } catch (e) {
-      throw Exception('Fehler beim Erstellen des Tasting Sets: $e');
-    }
-  }
+  // --- Admin-/Company-Verwaltung -------------------------------------------
+  // Reine Pass-throughs auf WhiskyManagementService; die Query-Logik bleibt
+  // dort. Das Repository verschiebt nur die Abhaengigkeitskante, damit
+  // WhiskyManagementProvider keinen Supabase-Service mehr haelt (ADR-0004).
 
-  /// Update an existing tasting set (for companies)
-  Future<TastingSet> updateTastingSet({
-    required int tastingSetId,
-    String? name,
-    String? description,
-    String? imageUrl,
-    DateTime? availableFrom,
-    DateTime? availableUntil,
-  }) async {
-    try {
-      final response = await _backendApi.updateTastingSet(
-        tastingSetId: tastingSetId,
-        name: name,
-        description: description,
-        imageUrl: imageUrl,
-        availableFrom: availableFrom,
-        availableUntil: availableUntil,
-      );
-      return response;
-    } catch (e) {
-      throw Exception('Fehler beim Aktualisieren des Tasting Sets: $e');
-    }
-  }
+  Future<List<TastingSet>> getAllTastingSets() =>
+      _whiskyService.getAllTastingSets();
 
-  /// Delete a tasting set (for companies)
-  Future<void> deleteTastingSet(int tastingSetId) async {
-    try {
-      await _backendApi.deleteTastingSet(tastingSetId);
-    } catch (e) {
-      throw Exception('Fehler beim Löschen des Tasting Sets: $e');
-    }
-  }
+  Future<TastingSet?> getTastingSetByHikeId(int hikeId) =>
+      _whiskyService.getTastingSetByHikeId(hikeId);
+
+  Future<TastingSet> createTastingSet(TastingSet tastingSet) =>
+      _whiskyService.createTastingSet(tastingSet);
+
+  Future<TastingSet> updateTastingSet(TastingSet tastingSet) =>
+      _whiskyService.updateTastingSet(tastingSet);
+
+  Future<void> deleteTastingSet(int tastingSetId) =>
+      _whiskyService.deleteTastingSet(tastingSetId);
+
+  Future<List<TastingSet>> searchTastingSets(String query) =>
+      _whiskyService.searchTastingSets(query);
+
+  Future<List<WhiskySample>> getWhiskySamplesByTastingSetId(int tastingSetId) =>
+      _whiskyService.getWhiskySamplesByTastingSetId(tastingSetId);
+
+  Future<WhiskySample> createWhiskySample(WhiskySample sample) =>
+      _whiskyService.createWhiskySample(sample);
+
+  Future<WhiskySample> updateWhiskySample(WhiskySample sample) =>
+      _whiskyService.updateWhiskySample(sample);
+
+  Future<void> deleteWhiskySample(int sampleId) =>
+      _whiskyService.deleteWhiskySample(sampleId);
+
+  Future<void> updateSampleOrder(List<WhiskySample> reorderedSamples) =>
+      _whiskyService.updateSampleOrder(reorderedSamples);
+
+  Future<String> uploadWhiskyImage(
+    int sampleId,
+    Uint8List imageBytes,
+    String fileExtension,
+  ) => _whiskyService.uploadWhiskyImage(sampleId, imageBytes, fileExtension);
+
+  Future<String> uploadTastingSetImage(
+    int tastingSetId,
+    Uint8List imageBytes,
+    String fileExtension,
+  ) => _whiskyService.uploadTastingSetImage(
+    tastingSetId,
+    imageBytes,
+    fileExtension,
+  );
+
+  Future<Map<String, dynamic>> getTastingSetStatistics() =>
+      _whiskyService.getTastingSetStatistics();
+
+  Future<List<Map<String, dynamic>>> getPopularDistilleries({int limit = 10}) =>
+      _whiskyService.getPopularDistilleries(limit: limit);
 }

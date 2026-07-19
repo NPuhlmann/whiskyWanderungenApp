@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart';
-import 'package:whisky_hikes/data/services/database/backend_api.dart';
 
 /// ViewModel for managing tasting set display (1:1 relationship with hikes)
 class TastingSetSelectionViewModel extends ChangeNotifier {
@@ -11,9 +10,8 @@ class TastingSetSelectionViewModel extends ChangeNotifier {
 
   TastingSetSelectionViewModel({
     required this.hike,
-    TastingSetRepository? tastingSetRepository,
-  }) : _tastingSetRepository =
-           tastingSetRepository ?? TastingSetRepository(BackendApiService()) {
+    required TastingSetRepository tastingSetRepository,
+  }) : _tastingSetRepository = tastingSetRepository {
     _loadTastingSet();
   }
 

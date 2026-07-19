@@ -4,7 +4,6 @@ library;
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/domain/models/profile.dart';
 import 'package:whisky_hikes/domain/models/waypoint.dart';
-import 'package:whisky_hikes/domain/models/order.dart';
 
 /// Helper class for creating test data
 class TestHelpers {
@@ -208,37 +207,6 @@ class TestHelpers {
     };
   }
 
-  /// Creates a test Order object
-  static Order createTestOrder({
-    required int id,
-    required String userId,
-    required int hikeId,
-    String? status,
-    double? totalAmount,
-    String? paymentMethod,
-    String? paymentStatus,
-    String? shippingAddress,
-    String? trackingNumber,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return Order.fromJson(
-      createTestOrderJson(
-        id: id,
-        userId: userId,
-        hikeId: hikeId,
-        status: status,
-        totalAmount: totalAmount,
-        paymentMethod: paymentMethod,
-        paymentStatus: paymentStatus,
-        shippingAddress: shippingAddress,
-        trackingNumber: trackingNumber,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      ),
-    );
-  }
-
   /// Creates a list of test hikes
   static List<Hike> createTestHikesList({int count = 3}) {
     return List.generate(
@@ -274,24 +242,6 @@ class TestHelpers {
     );
   }
 
-  /// Creates a list of test orders
-  static List<Order> createTestOrdersList({int count = 3}) {
-    return List.generate(
-      count,
-      (index) => createTestOrder(
-        id: index + 1,
-        userId: 'user-${index + 1}',
-        hikeId: index + 1,
-        status: index == 0
-            ? 'pending'
-            : index == 1
-            ? 'processing'
-            : 'shipped',
-        totalAmount: 49.99 + (index * 10),
-      ),
-    );
-  }
-
   /// Creates test dashboard metrics data
   static Map<String, dynamic> createTestDashboardMetrics() {
     return {
@@ -303,9 +253,14 @@ class TestHelpers {
       'orders_growth': 8.7,
       'routes_growth': 0.0,
       'rating_growth': 2.3,
-      'recent_orders': createTestOrdersList(
-        count: 5,
-      ).map((order) => order.toJson()).toList(),
+      'recent_orders': List.generate(
+        5,
+        (index) => createTestOrderJson(
+          id: index + 1,
+          userId: 'user-${index + 1}',
+          hikeId: index + 1,
+        ),
+      ),
       'popular_routes': createTestHikesList(
         count: 3,
       ).map((hike) => hike.toJson()).toList(),

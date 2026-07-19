@@ -7,8 +7,7 @@ import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;
-import 'package:whisky_hikes/data/services/admin/dashboard_metrics_service.dart'
-    as _i2;
+import 'package:whisky_hikes/data/repositories/metrics_repository.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,54 +24,23 @@ import 'package:whisky_hikes/data/services/admin/dashboard_metrics_service.dart'
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
-/// A class which mocks [DashboardMetricsService].
+/// A class which mocks [MetricsRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDashboardMetricsService extends _i1.Mock
-    implements _i2.DashboardMetricsService {
-  MockDashboardMetricsService() {
+class MockMetricsRepository extends _i1.Mock implements _i2.MetricsRepository {
+  MockMetricsRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<double> getDailyRevenue() =>
+  _i3.Future<Map<String, dynamic>> getDashboardKPIs() =>
       (super.noSuchMethod(
-            Invocation.method(#getDailyRevenue, []),
-            returnValue: _i3.Future<double>.value(0.0),
+            Invocation.method(#getDashboardKPIs, []),
+            returnValue: _i3.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
           )
-          as _i3.Future<double>);
-
-  @override
-  _i3.Future<double> getWeeklyRevenue() =>
-      (super.noSuchMethod(
-            Invocation.method(#getWeeklyRevenue, []),
-            returnValue: _i3.Future<double>.value(0.0),
-          )
-          as _i3.Future<double>);
-
-  @override
-  _i3.Future<double> getMonthlyRevenue() =>
-      (super.noSuchMethod(
-            Invocation.method(#getMonthlyRevenue, []),
-            returnValue: _i3.Future<double>.value(0.0),
-          )
-          as _i3.Future<double>);
-
-  @override
-  _i3.Future<int> getActiveOrdersByStatus(String? status) =>
-      (super.noSuchMethod(
-            Invocation.method(#getActiveOrdersByStatus, [status]),
-            returnValue: _i3.Future<int>.value(0),
-          )
-          as _i3.Future<int>);
-
-  @override
-  _i3.Future<int> getTotalActiveOrders() =>
-      (super.noSuchMethod(
-            Invocation.method(#getTotalActiveOrders, []),
-            returnValue: _i3.Future<int>.value(0),
-          )
-          as _i3.Future<int>);
+          as _i3.Future<Map<String, dynamic>>);
 
   @override
   _i3.Future<List<Map<String, dynamic>>> getRecentOrders({int? limit = 10}) =>
@@ -85,35 +53,9 @@ class MockDashboardMetricsService extends _i1.Mock
           as _i3.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i3.Future<int> getSoldRoutesToday() =>
+  _i3.Future<List<Map<String, dynamic>>> getRevenueTrend({int? days = 30}) =>
       (super.noSuchMethod(
-            Invocation.method(#getSoldRoutesToday, []),
-            returnValue: _i3.Future<int>.value(0),
-          )
-          as _i3.Future<int>);
-
-  @override
-  _i3.Future<int> getSoldRoutesThisWeek() =>
-      (super.noSuchMethod(
-            Invocation.method(#getSoldRoutesThisWeek, []),
-            returnValue: _i3.Future<int>.value(0),
-          )
-          as _i3.Future<int>);
-
-  @override
-  _i3.Future<int> getSoldRoutesThisMonth() =>
-      (super.noSuchMethod(
-            Invocation.method(#getSoldRoutesThisMonth, []),
-            returnValue: _i3.Future<int>.value(0),
-          )
-          as _i3.Future<int>);
-
-  @override
-  _i3.Future<List<Map<String, dynamic>>> getMostPopularRoutes({
-    int? limit = 5,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#getMostPopularRoutes, [], {#limit: limit}),
+            Invocation.method(#getRevenueTrend, [], {#days: days}),
             returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
               <Map<String, dynamic>>[],
             ),
@@ -121,12 +63,14 @@ class MockDashboardMetricsService extends _i1.Mock
           as _i3.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i3.Future<double> getAverageCustomerRating() =>
+  _i3.Future<List<Map<String, dynamic>>> getTopRoutes({int? limit = 5}) =>
       (super.noSuchMethod(
-            Invocation.method(#getAverageCustomerRating, []),
-            returnValue: _i3.Future<double>.value(0.0),
+            Invocation.method(#getTopRoutes, [], {#limit: limit}),
+            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
           )
-          as _i3.Future<double>);
+          as _i3.Future<List<Map<String, dynamic>>>);
 
   @override
   _i3.Future<Map<String, dynamic>> getDashboardMetrics() =>
@@ -145,28 +89,6 @@ class MockDashboardMetricsService extends _i1.Mock
             returnValue: _i4.dummyValue<String>(
               this,
               Invocation.method(#formatCurrency, [amount]),
-            ),
-          )
-          as String);
-
-  @override
-  String formatPercentage(double? value) =>
-      (super.noSuchMethod(
-            Invocation.method(#formatPercentage, [value]),
-            returnValue: _i4.dummyValue<String>(
-              this,
-              Invocation.method(#formatPercentage, [value]),
-            ),
-          )
-          as String);
-
-  @override
-  String formatNumber(int? number) =>
-      (super.noSuchMethod(
-            Invocation.method(#formatNumber, [number]),
-            returnValue: _i4.dummyValue<String>(
-              this,
-              Invocation.method(#formatNumber, [number]),
             ),
           )
           as String);

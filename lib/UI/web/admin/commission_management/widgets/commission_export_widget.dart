@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
+import 'package:whisky_hikes/data/repositories/commission_repository.dart';
 import 'package:whisky_hikes/data/services/commission/commission_export_service.dart';
-import 'package:whisky_hikes/data/services/commission/commission_service.dart';
 import 'package:whisky_hikes/UI/web/admin/shared/browser_download.dart';
 import 'dart:typed_data';
 
@@ -25,7 +24,7 @@ class _CommissionExportWidgetState extends State<CommissionExportWidget> {
   void initState() {
     super.initState();
     _exportService = CommissionExportService(
-      CommissionService(Supabase.instance.client),
+      context.read<CommissionRepository>(),
     );
   }
 

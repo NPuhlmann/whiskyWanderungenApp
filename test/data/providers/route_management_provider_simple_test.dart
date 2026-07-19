@@ -2,19 +2,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:whisky_hikes/data/providers/route_management_provider.dart';
-import 'package:whisky_hikes/data/services/admin/route_management_service.dart';
+import 'package:whisky_hikes/data/repositories/route_admin_repository.dart';
 
-@GenerateMocks([RouteManagementService])
+@GenerateMocks([RouteAdminRepository])
 import 'route_management_provider_simple_test.mocks.dart';
 
 void main() {
   group('RouteManagementProvider Basic Tests', () {
     late RouteManagementProvider provider;
-    late MockRouteManagementService mockService;
+    late MockRouteAdminRepository mockService;
 
     setUp(() {
-      mockService = MockRouteManagementService();
-      provider = RouteManagementProvider(routeManagementService: mockService);
+      mockService = MockRouteAdminRepository();
+      provider = RouteManagementProvider(routeRepository: mockService);
     });
 
     group('Initial State', () {

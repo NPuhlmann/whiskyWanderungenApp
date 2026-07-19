@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:whisky_hikes/data/providers/analytics_provider.dart';
+import 'package:whisky_hikes/data/repositories/analytics_repository.dart';
 import 'package:whisky_hikes/data/services/analytics/customer_analytics_service.dart';
 import 'package:whisky_hikes/data/services/analytics/sales_analytics_service.dart';
 import 'package:whisky_hikes/domain/models/analytics/customer_insights.dart';
@@ -121,8 +122,10 @@ void main() {
         churn: 2,
       );
       final p = AnalyticsProvider(
-        salesService: sales,
-        customerService: customer,
+        repository: AnalyticsRepository(
+          salesService: sales,
+          customerService: customer,
+        ),
       );
 
       await p.load();
@@ -144,8 +147,10 @@ void main() {
         churn: 0,
       );
       final p = AnalyticsProvider(
-        salesService: sales,
-        customerService: customer,
+        repository: AnalyticsRepository(
+          salesService: sales,
+          customerService: customer,
+        ),
       );
 
       final start = DateTime(2026, 1, 1);
@@ -166,8 +171,10 @@ void main() {
         churn: 0,
       );
       final p = AnalyticsProvider(
-        salesService: sales,
-        customerService: customer,
+        repository: AnalyticsRepository(
+          salesService: sales,
+          customerService: customer,
+        ),
       );
 
       await p.setCompanyId('cmp-1');
@@ -185,8 +192,10 @@ void main() {
         churn: 0,
       );
       final p = AnalyticsProvider(
-        salesService: sales,
-        customerService: customer,
+        repository: AnalyticsRepository(
+          salesService: sales,
+          customerService: customer,
+        ),
       );
 
       await p.load();
@@ -206,8 +215,10 @@ void main() {
         churn: 0,
       );
       final p = AnalyticsProvider(
-        salesService: sales,
-        customerService: customer,
+        repository: AnalyticsRepository(
+          salesService: sales,
+          customerService: customer,
+        ),
       );
       await p.load();
       expect(p.error, isNotNull);

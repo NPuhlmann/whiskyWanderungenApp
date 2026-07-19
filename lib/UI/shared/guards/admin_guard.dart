@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../../data/services/auth/auth_service.dart';
+import '../../../data/repositories/user_repository.dart';
 
 /// Admin-Guard für geschützte Admin-Routen.
 ///
@@ -28,8 +28,8 @@ class _AdminGuardState extends State<AdminGuard> {
   }
 
   Future<void> _check() async {
-    final authService = context.read<AuthService>();
-    _isLoggedIn = authService.isUserLoggedIn();
+    final userRepository = context.read<UserRepository>();
+    _isLoggedIn = userRepository.isUserLoggedIn();
     if (!_isLoggedIn) {
       if (!mounted) return;
       setState(() => _isAdmin = false);
@@ -38,7 +38,7 @@ class _AdminGuardState extends State<AdminGuard> {
       });
       return;
     }
-    final isAdmin = await authService.isCurrentUserAdmin();
+    final isAdmin = await userRepository.isCurrentUserAdmin();
     if (!mounted) return;
     setState(() => _isAdmin = isAdmin);
     if (!isAdmin) {
@@ -65,20 +65,20 @@ class _AdminGuardState extends State<AdminGuard> {
 class AdminRouteGuard {
   /// Prüft, ob der Benutzer Zugriff auf die Route hat (eingeloggt + Admin).
   Future<bool> canAccess(BuildContext context, GoRouterState state) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    if (!authService.isUserLoggedIn()) return false;
-    return await authService.isCurrentUserAdmin();
+    final repo = Provider.of<UserRepository>(context, listen: false);
+    if (!repo.isUserLoggedIn()) return false;
+    return await repo.isCurrentUserAdmin();
   }
 
   /// Redirect-Funktion für GoRouter. Wird async aufgerufen, damit der
   /// Rollen-Check gegen Supabase laufen kann.
   Future<String?> redirect(BuildContext context, GoRouterState state) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final repo = Provider.of<UserRepository>(context, listen: false);
 
-    if (!authService.isUserLoggedIn()) {
+    if (!repo.isUserLoggedIn()) {
       return '/login';
     }
-    final isAdmin = await authService.isCurrentUserAdmin();
+    final isAdmin = await repo.isCurrentUserAdmin();
     if (!isAdmin) {
       return '/';
     }

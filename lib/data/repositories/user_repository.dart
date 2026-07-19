@@ -120,6 +120,36 @@ class UserRepository extends ChangeNotifier {
     }
   }
 
+  /// Setzt die Rolle für [userId] auf [newRole] (`'user'` | `'admin'`).
+  /// Geht über die SECURITY-DEFINER-RPC `public.set_user_role`; alle
+  /// Berechtigungs- und Self-Demotion-Checks laufen in der DB.
+  Future<Account> setUserRole({
+    required String userId,
+    required String newRole,
+  }) async {
+    try {
+      final response = await _authService.client.rpc(
+        'set_user_role',
+        params: {'target_user_id': userId, 'new_role': newRole},
+      );
+      if (response == null) {
+        throw StateError('set_user_role returned no row for user $userId');
+      }
+      // Supabase liefert für Funktionen mit `RETURNS row` ein
+      // Map<String, dynamic>; Account.fromJson liest daraus nur
+      // id/email/role, weitere Spalten werden ignoriert.
+      return Account.fromJson(Map<String, dynamic>.from(response as Map));
+    } catch (e) {
+      log("Error setting role for user $userId: $e");
+      rethrow;
+    }
+  }
+
+  /// Ob der eingeloggte Benutzer die Rolle 'admin' hat. Der Route-Guard
+  /// braucht die Prüfung, hat aber kein eigenes ViewModel — deshalb liegt
+  /// sie hier statt in einem Service (ADR-0004).
+  Future<bool> isCurrentUserAdmin() => _authService.isCurrentUserAdmin();
+
   Future<String> _fetchRole(String userId) async {
     final response = await _authService.client
         .from('profiles')

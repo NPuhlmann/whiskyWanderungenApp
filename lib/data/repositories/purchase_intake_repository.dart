@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer' as dev;
+import 'dart:math';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -85,6 +87,25 @@ Map<String, dynamic> buildPaymentIntentBody({
   return body;
 }
 
+/// An in-flight `create-payment-intent` attempt, kept so a retry of the same
+/// purchase reuses the order and PaymentIntent it already created.
+class _PendingIntent {
+  /// Fingerprint of the request body, minus the idempotency key.
+  final String fingerprint;
+  final String idempotencyKey;
+
+  /// The Edge Function response, once one has come back successfully.
+  Map<String, dynamic>? data;
+
+  _PendingIntent(this.fingerprint, this.idempotencyKey);
+}
+
+final _random = Random();
+
+String _newIdempotencyKey() =>
+    'wh_${DateTime.now().microsecondsSinceEpoch}_'
+    '${_random.nextInt(1 << 32).toRadixString(16)}';
+
 /// Takes a purchase from "user tapped Buy" to "order paid".
 ///
 /// Creates the payment intent server-side via the `create-payment-intent`
@@ -95,6 +116,11 @@ class PurchaseIntakeRepository {
   final MultiPaymentService _multiPaymentService;
   final EdgeFunctionInvoker _invoke;
   final String? Function() _currentUserId;
+
+  // ponytail: one attempt at a time is all checkout can produce — the user
+  // pays for one hike from one screen. Key it by user too if a background
+  // purchase queue ever lands.
+  _PendingIntent? _pending;
 
   PurchaseIntakeRepository({
     required StripeConfirmAdapter confirmAdapter,
@@ -150,26 +176,48 @@ class PurchaseIntakeRepository {
     }
 
     try {
-      final data = await _invoke(
-        'create-payment-intent',
-        buildPaymentIntentBody(
-          hike: hike,
-          userId: userId,
-          deliveryType: deliveryType,
-          deliveryAddress: deliveryAddress,
-          metadata: metadata,
-        ),
+      final body = buildPaymentIntentBody(
+        hike: hike,
+        userId: userId,
+        deliveryType: deliveryType,
+        deliveryAddress: deliveryAddress,
+        metadata: metadata,
       );
 
-      final clientSecret = data['clientSecret'] as String?;
-      if (data['success'] != true || clientSecret == null) {
-        final error = data['error'] ?? 'Zahlung konnte nicht gestartet werden';
-        dev.log('❌ create-payment-intent failed: $error');
-        return PurchaseResult.failure(
-          reason: 'intentFailed',
-          message: error.toString(),
-        );
+      // A retry of the same purchase — declined card, 3DS, or the user
+      // dismissing the Stripe sheet — must not leave a second pending order
+      // and a second PaymentIntent behind (#39).
+      final fingerprint = jsonEncode(body);
+      var pending = _pending;
+      if (pending == null || pending.fingerprint != fingerprint) {
+        pending = _PendingIntent(fingerprint, _newIdempotencyKey());
+        _pending = pending;
       }
+
+      var data = pending.data;
+      if (data == null) {
+        data = await _invoke('create-payment-intent', {
+          ...body,
+          'idempotencyKey': pending.idempotencyKey,
+        });
+
+        if (data['success'] != true || data['clientSecret'] == null) {
+          final error =
+              data['error'] ?? 'Zahlung konnte nicht gestartet werden';
+          dev.log('❌ create-payment-intent failed: $error');
+          // Keep the idempotency key so the next attempt is a retry of this
+          // intent, not a new one.
+          return PurchaseResult.failure(
+            reason: 'intentFailed',
+            message: error.toString(),
+          );
+        }
+        pending.data = data;
+      } else {
+        dev.log('♻️ Reusing pending order ${data['orderNumber']}');
+      }
+
+      final clientSecret = data['clientSecret'] as String;
 
       final confirmation = await _confirmAdapter.confirm(
         clientSecret: clientSecret,
@@ -178,6 +226,7 @@ class PurchaseIntakeRepository {
       );
 
       if (confirmation.isSuccess) {
+        _pending = null;
         dev.log('✅ Purchase completed for order ${data['orderNumber']}');
         return PurchaseResult.success(
           orderId: data['orderId'] as int,

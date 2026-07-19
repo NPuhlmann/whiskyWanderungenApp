@@ -51,7 +51,6 @@ analyzer:
     - "test/integration/**"
     - "test/repositories/**"
     - "test/run_all_tests.dart"
-    - "test/services/**"
     - "test/UI/auth/**"
     - "test/UI/checkout/checkout_page_test.dart"
     - "test/UI/navigation/**"

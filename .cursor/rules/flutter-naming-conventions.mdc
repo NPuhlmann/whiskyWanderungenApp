@@ -59,7 +59,7 @@ Alle Domain-Modelle verwenden `@JsonKey` Annotationen, um camelCase-Dart-Felder 
 - [lib/domain/models/waypoint.dart](mdc:lib/domain/models/waypoint.dart)
 
 ### Datenbankschema
-- [terraform-supabase/sql/01_create_tables.sql](mdc:terraform-supabase/sql/01_create_tables.sql)
+- [initial_schema.sql](mdc:terraform-supabase/supabase/migrations/20250821151237_initial_schema.sql)
 
 ### Tests
 - [test/domain/models/profile_test.dart](mdc:test/domain/models/profile_test.dart)
