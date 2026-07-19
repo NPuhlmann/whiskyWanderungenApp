@@ -30,6 +30,10 @@ interface PaymentIntentRequest {
   shippingCost: number;
   currency?: string; // Default: 'eur'
   metadata?: { [key: string]: string };
+  // Vom Client erzeugt, stabil über Retries desselben Kaufs. Wird als Stripe
+  // `Idempotency-Key` durchgereicht, damit ein wiederholter Aufruf denselben
+  // Payment Intent zurückgibt statt einen zweiten zu erzeugen (#39).
+  idempotencyKey?: string;
 }
 
 /// Versandkosten in Euro. Einzige Quelle der Wahrheit für den Aufpreis.
@@ -466,6 +470,9 @@ async function createStripePaymentIntent(
       'Authorization': `Bearer ${stripeConfig.secret_key}`,
       'Content-Type': 'application/x-www-form-urlencoded',
       'Stripe-Version': stripeConfig.api_version,
+      ...(request.idempotencyKey
+        ? { 'Idempotency-Key': request.idempotencyKey }
+        : {}),
     },
     body: new URLSearchParams({
       amount: amountInCents.toString(),
