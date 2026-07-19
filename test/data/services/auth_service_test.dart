@@ -704,5 +704,117 @@ void main() {
         );
       });
     });
+
+    group('Magic Link', () {
+      test('sendMagicLink requests an OTP for the given email', () async {
+        // Arrange
+        const email = 'test@example.com';
+        when(
+          mockAuthClient.signInWithOtp(
+            email: anyNamed('email'),
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).thenAnswer((_) async {});
+
+        // Act
+        await authService.sendMagicLink(email);
+
+        // Assert
+        verify(
+          mockAuthClient.signInWithOtp(
+            email: email,
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).called(1);
+      });
+
+      test('sendMagicLink skips the deep link in dev mode', () async {
+        // Arrange
+        final devAuthService = AuthService(
+          client: mockSupabaseClient,
+          isDevMode: true,
+        );
+        when(
+          mockAuthClient.signInWithOtp(
+            email: anyNamed('email'),
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).thenAnswer((_) async {});
+
+        // Act
+        await devAuthService.sendMagicLink('test@example.com');
+
+        // Assert
+        verify(
+          mockAuthClient.signInWithOtp(
+            email: 'test@example.com',
+            emailRedirectTo: null,
+          ),
+        ).called(1);
+      });
+
+      test('sendMagicLink propagates errors', () async {
+        // Arrange
+        when(
+          mockAuthClient.signInWithOtp(
+            email: anyNamed('email'),
+            emailRedirectTo: anyNamed('emailRedirectTo'),
+          ),
+        ).thenThrow(Exception('Rate limited'));
+
+        // Act & Assert
+        expect(
+          () => authService.sendMagicLink('test@example.com'),
+          throwsException,
+        );
+      });
+
+      test('verifyMagicLinkCode verifies the OTP as an email token', () async {
+        // Arrange
+        const email = 'test@example.com';
+        const token = '123456';
+        final expectedResponse = AuthResponse(
+          user: mockUser,
+          session: mockSession,
+        );
+        when(
+          mockAuthClient.verifyOTP(
+            email: anyNamed('email'),
+            token: anyNamed('token'),
+            type: anyNamed('type'),
+          ),
+        ).thenAnswer((_) async => expectedResponse);
+
+        // Act
+        final result = await authService.verifyMagicLinkCode(email, token);
+
+        // Assert
+        expect(result, equals(expectedResponse));
+        verify(
+          mockAuthClient.verifyOTP(
+            email: email,
+            token: token,
+            type: OtpType.email,
+          ),
+        ).called(1);
+      });
+
+      test('verifyMagicLinkCode propagates errors', () async {
+        // Arrange
+        when(
+          mockAuthClient.verifyOTP(
+            email: anyNamed('email'),
+            token: anyNamed('token'),
+            type: anyNamed('type'),
+          ),
+        ).thenThrow(Exception('Token expired'));
+
+        // Act & Assert
+        expect(
+          () => authService.verifyMagicLinkCode('test@example.com', '000000'),
+          throwsException,
+        );
+      });
+    });
   });
 }

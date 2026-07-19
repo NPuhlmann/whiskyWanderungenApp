@@ -198,5 +198,28 @@
   "averageAbv": "Durchschnittlicher ABV",
   "tasteCta": "Probieren",
   "untasteCta": "Als nicht probiert markieren",
-  "closeCta": "Schließen"
+  "closeCta": "Schließen",
+  "ageGateTitle": "Bist du volljährig?",
+  "ageGateBody": "Whisky Wanderungen enthält Whisky- und andere alkoholbezogene Inhalte. Du musst in deinem Land volljährig sein, um fortzufahren.",
+  "ageGateDeny": "Nein, bin ich nicht",
+  "ageGateDisclaimer": "Mit dem Fortfahren bestätigst du, dass diese Angabe wahrheitsgemäß ist.",
+  "ageBlockedTitle": "Zugriff eingeschränkt",
+  "ageBlockedBody": "Leider musst du volljährig sein, um Whisky Wanderungen zu nutzen.",
+  "ageGateChangeAnswer": "Das war ein Versehen",
+  "signInWithMagicLink": "Mit Magic Link anmelden",
+  "magicLinkIntro": "Wir senden dir einen Anmeldelink und einen 6-stelligen Code per E-Mail. Kein Passwort nötig.",
+  "magicLinkSend": "Link per E-Mail senden",
+  "magicLinkSentTo": "Wir haben einen Link und einen Code an {email} gesendet. Öffne den Link oder gib den Code unten ein.",
+  "magicLinkCodeLabel": "6-stelliger Code",
+  "magicLinkVerify": "Anmelden",
+  "magicLinkUseDifferentEmail": "Andere E-Mail-Adresse verwenden",
+  "invalidEmailAddress": "Gib eine gültige E-Mail-Adresse ein",
+  "enterCodeFromEmail": "Gib den Code aus deiner E-Mail ein",
+  "@magicLinkSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
 }

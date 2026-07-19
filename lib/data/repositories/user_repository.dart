@@ -44,6 +44,25 @@ class UserRepository extends ChangeNotifier {
     }
   }
 
+  /// Emails a magic link / OTP code. No session exists yet afterwards, so
+  /// there is nothing for the router to react to — hence no notify.
+  Future<void> sendMagicLink(String email) async {
+    await _authService.sendMagicLink(email);
+  }
+
+  Future<AuthResponse> verifyMagicLinkCode(String email, String code) async {
+    try {
+      return await _authService.verifyMagicLinkCode(email, code);
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  /// Re-fires [notifyListeners] so the router redirect re-evaluates after an
+  /// auth change that happened outside this repository — notably a magic-link
+  /// deep link resolving into a session inside the Supabase SDK.
+  void signalAuthChanged() => notifyListeners();
+
   bool isUserLoggedIn() {
     isLoggedIn = _authService.isUserLoggedIn();
     return isLoggedIn;

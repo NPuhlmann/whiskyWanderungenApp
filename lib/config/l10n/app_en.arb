@@ -198,5 +198,28 @@
   "averageAbv": "Average ABV",
   "tasteCta": "Taste",
   "untasteCta": "Mark as untasted",
-  "closeCta": "Close"
-} 
+  "closeCta": "Close",
+  "ageGateTitle": "Are you of legal drinking age?",
+  "ageGateBody": "Whisky Hikes contains whisky and other alcohol-related content. You must be of legal drinking age in your country to continue.",
+  "ageGateDeny": "No, I am not",
+  "ageGateDisclaimer": "By continuing you confirm this declaration is truthful.",
+  "ageBlockedTitle": "Access restricted",
+  "ageBlockedBody": "Sorry — you must be of legal drinking age to use Whisky Hikes.",
+  "ageGateChangeAnswer": "I entered that by mistake",
+  "signInWithMagicLink": "Sign in with a magic link",
+  "magicLinkIntro": "We'll email you a sign-in link and a 6-digit code. No password needed.",
+  "magicLinkSend": "Email me a link",
+  "magicLinkSentTo": "We sent a link and a code to {email}. Open the link, or type the code below.",
+  "magicLinkCodeLabel": "6-digit code",
+  "magicLinkVerify": "Sign in",
+  "magicLinkUseDifferentEmail": "Use a different email address",
+  "invalidEmailAddress": "Enter a valid email address",
+  "enterCodeFromEmail": "Enter the code from your email",
+  "@magicLinkSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
+}

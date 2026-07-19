@@ -18,8 +18,12 @@ class AuthService {
       return false;
     }
 
-    // In development, check test mode or environment variable
-    return _testDevMode ?? (dotenv.env['DEV_MODE']?.toLowerCase() == 'true');
+    // In development, check test mode or environment variable. dotenv throws
+    // if `load()` was never called (tests, or any entrypoint that skips it),
+    // so treat "not initialized" as "not dev mode" rather than exploding.
+    if (_testDevMode != null) return _testDevMode;
+    if (!dotenv.isInitialized) return false;
+    return dotenv.env['DEV_MODE']?.toLowerCase() == 'true';
   }
 
   // sign in with email and password
@@ -185,6 +189,28 @@ class AuthService {
     } catch (e) {
       throw Exception('Error during manual email confirmation: $e');
     }
+  }
+
+  /// Emails a magic link plus a 6-digit code the user can type instead.
+  /// Supabase creates the account on first use, so this doubles as signup.
+  Future<void> sendMagicLink(String email) async {
+    await client.auth.signInWithOtp(
+      email: email,
+      emailRedirectTo: isDevMode ? null : 'whiskyhikes://email-confirm',
+    );
+  }
+
+  /// Verifies the 6-digit code from the magic-link email. [email] must be the
+  /// exact address [sendMagicLink] was called with.
+  ///
+  /// The type is [OtpType.email], not `magiclink`: `magiclink` is for the token
+  /// embedded in the link URL, `email` for a manually entered code.
+  Future<AuthResponse> verifyMagicLinkCode(String email, String token) async {
+    return await client.auth.verifyOTP(
+      email: email,
+      token: token,
+      type: OtpType.email,
+    );
   }
 
   // Handle deep link email confirmation

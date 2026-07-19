@@ -15,6 +15,7 @@ import '../UI/mobile/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/user_repository.dart';
 import '../data/services/auth/auth_service.dart';
+import '../data/services/cache/age_gate_service.dart';
 import '../data/services/cache/local_cache_service.dart';
 import '../data/services/connectivity/connectivity_service.dart';
 import '../data/services/offline/offline_service.dart';
@@ -35,9 +36,13 @@ import '../data/providers/dashboard_provider.dart';
 import '../data/providers/route_management_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-List<SingleChildWidget> get providers {
+/// [ageGateService] is created and loaded in `main` before `runApp` so the
+/// router's redirect never sees a stale "undeclared" on the first frame and
+/// flashes the age gate at a user who already answered it.
+List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
   return [
     // Services zuerst bereitstellen
+    ChangeNotifierProvider<AgeGateService>.value(value: ageGateService),
     Provider<AuthService>(create: (_) => AuthService()),
     Provider<BackendApiService>(create: (_) => BackendApiService()),
     Provider<LocalCacheService>(create: (_) => LocalCacheService()),
