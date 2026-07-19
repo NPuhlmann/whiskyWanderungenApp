@@ -331,10 +331,3 @@ extension DeliveryAddressShippingExtensions on DeliveryAddress {
     return '$countryCode-${postalCode.replaceAll(' ', '')}-${city.toLowerCase()}';
   }
 }
-
-/// Service-Factory für Dependency Injection
-class ShippingCalculationServiceFactory {
-  static ShippingCalculationService create(BackendApiService backendApi) {
-    return ShippingCalculationService(backendApi);
-  }
-}

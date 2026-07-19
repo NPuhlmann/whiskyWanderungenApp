@@ -402,20 +402,3 @@ class OrderTrackingService {
     };
   }
 }
-
-/// Factory for creating OrderTrackingService instances
-class OrderTrackingServiceFactory {
-  static OrderTrackingService create({
-    BackendApiService? backendApi,
-    SupabaseNotificationService? notificationService,
-    SupabaseClient? supabaseClient,
-  }) {
-    final client = supabaseClient ?? Supabase.instance.client;
-    return OrderTrackingService(
-      backendApi: backendApi ?? BackendApiService(),
-      notificationService:
-          notificationService ?? SupabaseNotificationService(client),
-      supabaseClient: client,
-    );
-  }
-}

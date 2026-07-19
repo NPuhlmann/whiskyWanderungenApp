@@ -43,7 +43,6 @@ class BackendApiService {
     return await _hikeService.fetchHikes();
   }
 
-
   // get a list of hikes purchased by a user
   Future<List<Hike>> fetchUserHikes(String userId) async {
     return await _hikeService.fetchUserHikes(userId);
@@ -263,24 +262,6 @@ class BackendApiService {
     } catch (e) {
       dev.log('Fehler beim Aktualisieren des Wegpunkts: $e', error: e);
       throw Exception('Fehler beim Aktualisieren des Wegpunkts: $e');
-    }
-  }
-
-  // Methode zum Löschen eines Wegpunkts
-  Future<void> deleteWaypoint(int waypointId, int hikeId) async {
-    try {
-      // Zuerst die Verknüpfung in der 'hikes_waypoints' Tabelle löschen
-      await client
-          .from('hikes_waypoints')
-          .delete()
-          .eq('waypoint_id', waypointId)
-          .eq('hike_id', hikeId);
-
-      // Dann den Wegpunkt selbst aus der 'waypoints' Tabelle löschen
-      await client.from('waypoints').delete().eq('id', waypointId);
-    } catch (e) {
-      dev.log('Fehler beim Löschen des Wegpunkts: $e', error: e);
-      throw Exception('Fehler beim Löschen des Wegpunkts: $e');
     }
   }
 
@@ -534,64 +515,6 @@ class BackendApiService {
   // TASTING SET EXTENSION METHODS
   // ======================================
 
-  /// Get the tasting set for a specific hike (1:1 relationship)
-  Future<TastingSet?> getTastingSetForHike(int hikeId) async {
-    if (hikeId <= 0) {
-      throw ArgumentError('Hike ID must be greater than 0');
-    }
-
-    try {
-      dev.log('🔍 Fetching tasting set for hike: $hikeId');
-
-      final response = await client
-          .from('tasting_sets')
-          .select('*, whisky_samples(*)')
-          .eq('hike_id', hikeId)
-          .maybeSingle();
-
-      if (response == null) {
-        dev.log('❌ No tasting set found for hike $hikeId');
-        return null;
-      }
-
-      dev.log('✅ Tasting set found for hike $hikeId');
-      return TastingSet.fromJson(response);
-    } catch (e) {
-      dev.log('❌ Error fetching tasting set for hike $hikeId: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch tasting set for hike: $e');
-    }
-  }
-
-  /// Get a specific tasting set by ID
-  Future<TastingSet?> getTastingSetById(int tastingSetId) async {
-    if (tastingSetId <= 0) {
-      throw ArgumentError('Tasting set ID must be greater than 0');
-    }
-
-    try {
-      dev.log('🔍 Fetching tasting set by ID: $tastingSetId');
-
-      final response = await client
-          .from('tasting_sets')
-          .select('*, whisky_samples(*)')
-          .eq('id', tastingSetId)
-          .maybeSingle();
-
-      if (response == null) {
-        dev.log('❌ No tasting set found with ID $tastingSetId');
-        return null;
-      }
-
-      dev.log('✅ Tasting set $tastingSetId fetched successfully');
-      return TastingSet.fromJson(response);
-    } catch (e) {
-      dev.log('❌ Error fetching tasting set $tastingSetId: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch tasting set: $e');
-    }
-  }
-
   /// Get all tasting sets (admin/company management)
   Future<List<TastingSet>> getAllTastingSets() async {
     try {
@@ -615,41 +538,6 @@ class BackendApiService {
       dev.log('❌ Error fetching all tasting sets: $e', error: e);
       if (e is PostgrestException) rethrow;
       throw Exception('Failed to fetch tasting sets: $e');
-    }
-  }
-
-  /// Get whisky samples for a specific tasting set
-  Future<List<WhiskySample>> getWhiskySamplesForTastingSet(
-    int tastingSetId,
-  ) async {
-    if (tastingSetId <= 0) {
-      throw ArgumentError('Tasting set ID must be greater than 0');
-    }
-
-    try {
-      dev.log('🔍 Fetching whisky samples for tasting set: $tastingSetId');
-
-      final response = await client
-          .from('whisky_samples')
-          .select()
-          .eq('tasting_set_id', tastingSetId)
-          .order('order_index', ascending: true);
-
-      final List<dynamic> sampleData = response as List<dynamic>;
-      final List<WhiskySample> samples = sampleData
-          .map<WhiskySample>(
-            (json) => WhiskySample.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
-
-      dev.log(
-        '✅ Found ${samples.length} whisky samples for tasting set $tastingSetId',
-      );
-      return samples;
-    } catch (e) {
-      dev.log('❌ Error fetching whisky samples: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch whisky samples: $e');
     }
   }
 
@@ -681,146 +569,6 @@ class BackendApiService {
       dev.log('❌ Error searching tasting sets: $e', error: e);
       if (e is PostgrestException) rethrow;
       throw Exception('Failed to search tasting sets: $e');
-    }
-  }
-
-  /// Get tasting sets by region
-  Future<List<TastingSet>> getTastingSetsByRegion(String region) async {
-    if (region.trim().isEmpty) {
-      throw ArgumentError('Region cannot be empty');
-    }
-
-    try {
-      dev.log('🔍 Fetching tasting sets by region: $region');
-
-      final response = await client
-          .from('tasting_sets')
-          .select('*, whisky_samples!inner(*)')
-          .eq('whisky_samples.region', region)
-          .order('created_at', ascending: false);
-
-      final List<dynamic> tastingSetData = response as List<dynamic>;
-      final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>(
-            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
-
-      dev.log('✅ Found ${tastingSets.length} tasting sets from region $region');
-      return tastingSets;
-    } catch (e) {
-      dev.log('❌ Error fetching tasting sets by region: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch tasting sets by region: $e');
-    }
-  }
-
-  /// Get currently available tasting sets
-  Future<List<TastingSet>> getCurrentlyAvailableTastingSets() async {
-    try {
-      dev.log('🔍 Fetching currently available tasting sets');
-
-      final now = DateTime.now().toIso8601String();
-      final response = await client
-          .from('tasting_sets')
-          .select('*, whisky_samples(*)')
-          .eq('is_available', true)
-          .or('available_from.is.null,available_from.lte.$now')
-          .or('available_until.is.null,available_until.gte.$now')
-          .order('created_at', ascending: false);
-
-      final List<dynamic> tastingSetData = response as List<dynamic>;
-      final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>(
-            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
-
-      dev.log('✅ Found ${tastingSets.length} currently available tasting sets');
-      return tastingSets;
-    } catch (e) {
-      dev.log('❌ Error fetching available tasting sets: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch available tasting sets: $e');
-    }
-  }
-
-  /// Update tasting set availability status
-  Future<void> updateTastingSetAvailability(
-    int tastingSetId,
-    bool isAvailable,
-  ) async {
-    if (tastingSetId <= 0) {
-      throw ArgumentError('Tasting set ID must be greater than 0');
-    }
-
-    try {
-      dev.log(
-        '🔄 Updating tasting set $tastingSetId availability: $isAvailable',
-      );
-
-      final updateData = {
-        'is_available': isAvailable,
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-
-      await client
-          .from('tasting_sets')
-          .update(updateData)
-          .eq('id', tastingSetId);
-
-      dev.log('✅ Tasting set $tastingSetId availability updated');
-    } catch (e) {
-      dev.log('❌ Error updating tasting set availability: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to update tasting set availability: $e');
-    }
-  }
-
-  /// Get tasting sets with pagination
-  Future<List<TastingSet>> getTastingSetsWithPagination({
-    int limit = 10,
-    int offset = 0,
-    String? orderBy = 'created_at',
-    bool ascending = false,
-  }) async {
-    if (limit <= 0) {
-      throw ArgumentError('Limit must be greater than 0');
-    }
-    if (offset < 0) {
-      throw ArgumentError('Offset must be non-negative');
-    }
-
-    try {
-      dev.log(
-        '🔍 Fetching tasting sets with pagination: limit=$limit, offset=$offset',
-      );
-
-      var query = client
-          .from('tasting_sets')
-          .select('*, whisky_samples(*)')
-          .range(offset, offset + limit - 1);
-
-      if (orderBy != null) {
-        query = query.order(orderBy, ascending: ascending);
-      }
-
-      final response = await query;
-      final List<dynamic> tastingSetData = response as List<dynamic>;
-      final List<TastingSet> tastingSets = tastingSetData
-          .map<TastingSet>(
-            (json) => TastingSet.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
-
-      dev.log(
-        '✅ Found ${tastingSets.length} tasting sets (page ${offset ~/ limit + 1})',
-      );
-      return tastingSets;
-    } catch (e) {
-      dev.log('❌ Error fetching tasting sets with pagination: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch tasting sets: $e');
     }
   }
 
@@ -1142,37 +890,6 @@ class BackendApiService {
     }
   }
 
-  /// Get enhanced order by order number
-  Future<enhanced.EnhancedOrder?> getEnhancedOrderByNumber(
-    String orderNumber,
-  ) async {
-    if (orderNumber.trim().isEmpty) {
-      throw ArgumentError('Order number cannot be empty');
-    }
-
-    try {
-      dev.log('🔍 Fetching enhanced order by number: $orderNumber');
-
-      final response = await client
-          .from('enhanced_orders')
-          .select('*, companies(*), order_status_history(*)')
-          .eq('order_number', orderNumber.trim())
-          .maybeSingle();
-
-      if (response == null) {
-        dev.log('❌ No enhanced order found with number $orderNumber');
-        return null;
-      }
-
-      dev.log('✅ Enhanced order $orderNumber fetched successfully');
-      return enhanced.EnhancedOrder.fromJson(response);
-    } catch (e) {
-      dev.log('❌ Error fetching enhanced order by number: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch enhanced order: $e');
-    }
-  }
-
   /// Get all enhanced orders for a customer
   Future<List<enhanced.EnhancedOrder>> getCustomerEnhancedOrders({
     required String customerId,
@@ -1217,65 +934,6 @@ class BackendApiService {
       dev.log('❌ Error fetching customer enhanced orders: $e', error: e);
       if (e is PostgrestException) rethrow;
       throw Exception('Failed to fetch customer enhanced orders: $e');
-    }
-  }
-
-  /// Get all enhanced orders for a company
-  Future<List<enhanced.EnhancedOrder>> getCompanyEnhancedOrders({
-    required String companyId,
-    int limit = 100,
-    int offset = 0,
-    List<String>? statuses,
-    DateTime? dateFrom,
-    DateTime? dateTo,
-  }) async {
-    if (companyId.trim().isEmpty) {
-      throw ArgumentError('Company ID cannot be empty');
-    }
-
-    try {
-      dev.log('🔍 Fetching enhanced orders for company $companyId');
-
-      var query = client
-          .from('enhanced_orders')
-          .select()
-          .eq('company_id', companyId)
-          .order('created_at', ascending: false)
-          .range(offset, offset + limit - 1);
-
-      if (statuses != null && statuses.isNotEmpty) {
-        // Note: inFilter method doesn't exist in current Postgrest version
-        // TODO: Implement status filtering when Postgrest is updated
-        // query = query.inFilter('status', statuses);
-      }
-
-      // Note: gte and lte methods don't exist in current Postgrest version
-      // TODO: Implement date filtering when Postgrest is updated
-      if (dateFrom != null) {
-        // query = query.gte('created_at', dateFrom.toIso8601String());
-      }
-
-      if (dateTo != null) {
-        // query = query.lte('created_at', dateTo.toIso8601String());
-      }
-
-      final response = await query;
-      final List<dynamic> orderData = response as List<dynamic>;
-      final List<enhanced.EnhancedOrder> orders = orderData
-          .map<enhanced.EnhancedOrder>(
-            (json) =>
-                enhanced.EnhancedOrder.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
-
-      dev.log(
-        '✅ Found ${orders.length} enhanced orders for company $companyId',
-      );
-      return orders;
-    } catch (e) {
-      dev.log('❌ Error fetching company enhanced orders: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch company enhanced orders: $e');
     }
   }
 
@@ -1328,59 +986,6 @@ class BackendApiService {
     }
   }
 
-  /// Add tracking information to enhanced order
-  Future<enhanced.EnhancedOrder> addTrackingToEnhancedOrder({
-    required int orderId,
-    required String trackingNumber,
-    String? shippingCarrier,
-    String? shippingService,
-    DateTime? estimatedDelivery,
-    String? trackingUrl,
-  }) async {
-    if (orderId <= 0) {
-      throw ArgumentError('Order ID must be greater than 0');
-    }
-    if (trackingNumber.trim().isEmpty) {
-      throw ArgumentError('Tracking number cannot be empty');
-    }
-
-    try {
-      dev.log('📦 Adding tracking $trackingNumber to enhanced order $orderId');
-
-      // Auto-generate tracking URL if not provided
-      String? finalTrackingUrl = trackingUrl;
-      if (finalTrackingUrl == null && shippingCarrier != null) {
-        finalTrackingUrl = await _generateTrackingUrl(
-          shippingCarrier,
-          trackingNumber,
-        );
-      }
-
-      final updateData = {
-        'tracking_number': trackingNumber.trim(),
-        'tracking_url': finalTrackingUrl,
-        'shipping_carrier': shippingCarrier,
-        'shipping_service': shippingService,
-        'estimated_delivery': estimatedDelivery?.toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-
-      final response = await client
-          .from('enhanced_orders')
-          .update(updateData)
-          .eq('id', orderId)
-          .select('*, companies(*)')
-          .single();
-
-      dev.log('✅ Tracking information added to enhanced order $orderId');
-      return enhanced.EnhancedOrder.fromJson(response);
-    } catch (e) {
-      dev.log('❌ Error adding tracking to enhanced order: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to add tracking to enhanced order: $e');
-    }
-  }
-
   /// Get order status history
   Future<List<enhanced.OrderStatusChange>> getOrderStatusHistory(
     int orderId,
@@ -1413,55 +1018,6 @@ class BackendApiService {
       dev.log('❌ Error fetching order status history: $e', error: e);
       if (e is PostgrestException) rethrow;
       throw Exception('Failed to fetch order status history: $e');
-    }
-  }
-
-  /// Get available shipping carriers
-  Future<List<Map<String, dynamic>>> getShippingCarriers() async {
-    try {
-      dev.log('🚛 Fetching available shipping carriers');
-
-      final response = await client
-          .from('shipping_carriers')
-          .select()
-          .eq('is_active', true)
-          .order('name', ascending: true);
-
-      dev.log('✅ Found ${(response as List).length} shipping carriers');
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
-      dev.log('❌ Error fetching shipping carriers: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch shipping carriers: $e');
-    }
-  }
-
-  /// Get shipping methods for a carrier
-  Future<List<Map<String, dynamic>>> getShippingMethods(
-    String carrierCode,
-  ) async {
-    if (carrierCode.trim().isEmpty) {
-      throw ArgumentError('Carrier code cannot be empty');
-    }
-
-    try {
-      dev.log('📦 Fetching shipping methods for carrier $carrierCode');
-
-      final response = await client
-          .from('shipping_methods')
-          .select('*, shipping_carriers!inner(*)')
-          .eq('shipping_carriers.code', carrierCode)
-          .eq('is_active', true)
-          .order('base_cost', ascending: true);
-
-      dev.log(
-        '✅ Found ${(response as List).length} shipping methods for $carrierCode',
-      );
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
-      dev.log('❌ Error fetching shipping methods: $e', error: e);
-      if (e is PostgrestException) rethrow;
-      throw Exception('Failed to fetch shipping methods: $e');
     }
   }
 
@@ -1512,32 +1068,6 @@ class BackendApiService {
     } catch (e) {
       dev.log('❌ Error converting basic to enhanced order: $e', error: e);
       throw Exception('Failed to convert basic to enhanced order: $e');
-    }
-  }
-
-  /// Generate tracking URL from carrier code and tracking number
-  Future<String?> _generateTrackingUrl(
-    String carrierCode,
-    String trackingNumber,
-  ) async {
-    try {
-      final response = await client
-          .from('shipping_carriers')
-          .select('tracking_url_template')
-          .eq('code', carrierCode)
-          .maybeSingle();
-
-      if (response != null && response['tracking_url_template'] != null) {
-        final template = response['tracking_url_template'] as String;
-        return template.replaceAll('{tracking_number}', trackingNumber);
-      }
-
-      return null;
-    } catch (e) {
-      dev.log(
-        '⚠️ Warning: Could not generate tracking URL for $carrierCode: $e',
-      );
-      return null;
     }
   }
 

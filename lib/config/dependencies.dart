@@ -117,10 +117,8 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
           RouteAdminRepository(context.read<RouteManagementService>()),
     ),
     Provider<TastingSetRepository>(
-      create: (context) => TastingSetRepository(
-        context.read<BackendApiService>(),
-        context.read<WhiskyManagementService>(),
-      ),
+      create: (context) =>
+          TastingSetRepository(context.read<WhiskyManagementService>()),
     ),
     Provider<CommissionRepository>(
       create: (context) =>

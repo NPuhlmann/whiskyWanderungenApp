@@ -230,15 +230,6 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<void> deleteWaypoint(int? waypointId, int? hikeId) =>
-      (super.noSuchMethod(
-            Invocation.method(#deleteWaypoint, [waypointId, hikeId]),
-            returnValue: _i9.Future<void>.value(),
-            returnValueForMissingStub: _i9.Future<void>.value(),
-          )
-          as _i9.Future<void>);
-
-  @override
   _i9.Future<void> updateWaypointOrder(
     int? hikeId,
     int? waypointId,
@@ -350,22 +341,6 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
           as _i9.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<_i4.TastingSet?> getTastingSetForHike(int? hikeId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getTastingSetForHike, [hikeId]),
-            returnValue: _i9.Future<_i4.TastingSet?>.value(),
-          )
-          as _i9.Future<_i4.TastingSet?>);
-
-  @override
-  _i9.Future<_i4.TastingSet?> getTastingSetById(int? tastingSetId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getTastingSetById, [tastingSetId]),
-            returnValue: _i9.Future<_i4.TastingSet?>.value(),
-          )
-          as _i9.Future<_i4.TastingSet?>);
-
-  @override
   _i9.Future<List<_i4.TastingSet>> getAllTastingSets() =>
       (super.noSuchMethod(
             Invocation.method(#getAllTastingSets, []),
@@ -376,76 +351,9 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
           as _i9.Future<List<_i4.TastingSet>>);
 
   @override
-  _i9.Future<List<_i4.WhiskySample>> getWhiskySamplesForTastingSet(
-    int? tastingSetId,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#getWhiskySamplesForTastingSet, [tastingSetId]),
-            returnValue: _i9.Future<List<_i4.WhiskySample>>.value(
-              <_i4.WhiskySample>[],
-            ),
-          )
-          as _i9.Future<List<_i4.WhiskySample>>);
-
-  @override
   _i9.Future<List<_i4.TastingSet>> searchTastingSets(String? query) =>
       (super.noSuchMethod(
             Invocation.method(#searchTastingSets, [query]),
-            returnValue: _i9.Future<List<_i4.TastingSet>>.value(
-              <_i4.TastingSet>[],
-            ),
-          )
-          as _i9.Future<List<_i4.TastingSet>>);
-
-  @override
-  _i9.Future<List<_i4.TastingSet>> getTastingSetsByRegion(String? region) =>
-      (super.noSuchMethod(
-            Invocation.method(#getTastingSetsByRegion, [region]),
-            returnValue: _i9.Future<List<_i4.TastingSet>>.value(
-              <_i4.TastingSet>[],
-            ),
-          )
-          as _i9.Future<List<_i4.TastingSet>>);
-
-  @override
-  _i9.Future<List<_i4.TastingSet>> getCurrentlyAvailableTastingSets() =>
-      (super.noSuchMethod(
-            Invocation.method(#getCurrentlyAvailableTastingSets, []),
-            returnValue: _i9.Future<List<_i4.TastingSet>>.value(
-              <_i4.TastingSet>[],
-            ),
-          )
-          as _i9.Future<List<_i4.TastingSet>>);
-
-  @override
-  _i9.Future<void> updateTastingSetAvailability(
-    int? tastingSetId,
-    bool? isAvailable,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateTastingSetAvailability, [
-              tastingSetId,
-              isAvailable,
-            ]),
-            returnValue: _i9.Future<void>.value(),
-            returnValueForMissingStub: _i9.Future<void>.value(),
-          )
-          as _i9.Future<void>);
-
-  @override
-  _i9.Future<List<_i4.TastingSet>> getTastingSetsWithPagination({
-    int? limit = 10,
-    int? offset = 0,
-    String? orderBy = 'created_at',
-    bool? ascending = false,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#getTastingSetsWithPagination, [], {
-              #limit: limit,
-              #offset: offset,
-              #orderBy: orderBy,
-              #ascending: ascending,
-            }),
             returnValue: _i9.Future<List<_i4.TastingSet>>.value(
               <_i4.TastingSet>[],
             ),
@@ -675,16 +583,6 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
           as _i9.Future<_i5.EnhancedOrder?>);
 
   @override
-  _i9.Future<_i5.EnhancedOrder?> getEnhancedOrderByNumber(
-    String? orderNumber,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#getEnhancedOrderByNumber, [orderNumber]),
-            returnValue: _i9.Future<_i5.EnhancedOrder?>.value(),
-          )
-          as _i9.Future<_i5.EnhancedOrder?>);
-
-  @override
   _i9.Future<List<_i5.EnhancedOrder>> getCustomerEnhancedOrders({
     required String? customerId,
     int? limit = 50,
@@ -697,30 +595,6 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
               #limit: limit,
               #offset: offset,
               #statuses: statuses,
-            }),
-            returnValue: _i9.Future<List<_i5.EnhancedOrder>>.value(
-              <_i5.EnhancedOrder>[],
-            ),
-          )
-          as _i9.Future<List<_i5.EnhancedOrder>>);
-
-  @override
-  _i9.Future<List<_i5.EnhancedOrder>> getCompanyEnhancedOrders({
-    required String? companyId,
-    int? limit = 100,
-    int? offset = 0,
-    List<String>? statuses,
-    DateTime? dateFrom,
-    DateTime? dateTo,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#getCompanyEnhancedOrders, [], {
-              #companyId: companyId,
-              #limit: limit,
-              #offset: offset,
-              #statuses: statuses,
-              #dateFrom: dateFrom,
-              #dateTo: dateTo,
             }),
             returnValue: _i9.Future<List<_i5.EnhancedOrder>>.value(
               <_i5.EnhancedOrder>[],
@@ -772,40 +646,6 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
           as _i9.Future<_i5.EnhancedOrder>);
 
   @override
-  _i9.Future<_i5.EnhancedOrder> addTrackingToEnhancedOrder({
-    required int? orderId,
-    required String? trackingNumber,
-    String? shippingCarrier,
-    String? shippingService,
-    DateTime? estimatedDelivery,
-    String? trackingUrl,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#addTrackingToEnhancedOrder, [], {
-              #orderId: orderId,
-              #trackingNumber: trackingNumber,
-              #shippingCarrier: shippingCarrier,
-              #shippingService: shippingService,
-              #estimatedDelivery: estimatedDelivery,
-              #trackingUrl: trackingUrl,
-            }),
-            returnValue: _i9.Future<_i5.EnhancedOrder>.value(
-              _FakeEnhancedOrder_3(
-                this,
-                Invocation.method(#addTrackingToEnhancedOrder, [], {
-                  #orderId: orderId,
-                  #trackingNumber: trackingNumber,
-                  #shippingCarrier: shippingCarrier,
-                  #shippingService: shippingService,
-                  #estimatedDelivery: estimatedDelivery,
-                  #trackingUrl: trackingUrl,
-                }),
-              ),
-            ),
-          )
-          as _i9.Future<_i5.EnhancedOrder>);
-
-  @override
   _i9.Future<List<_i5.OrderStatusChange>> getOrderStatusHistory(int? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#getOrderStatusHistory, [orderId]),
@@ -814,28 +654,6 @@ class MockBackendApiService extends _i1.Mock implements _i7.BackendApiService {
             ),
           )
           as _i9.Future<List<_i5.OrderStatusChange>>);
-
-  @override
-  _i9.Future<List<Map<String, dynamic>>> getShippingCarriers() =>
-      (super.noSuchMethod(
-            Invocation.method(#getShippingCarriers, []),
-            returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
-          )
-          as _i9.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i9.Future<List<Map<String, dynamic>>> getShippingMethods(
-    String? carrierCode,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#getShippingMethods, [carrierCode]),
-            returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
-          )
-          as _i9.Future<List<Map<String, dynamic>>>);
 
   @override
   _i9.Future<_i5.EnhancedOrder> convertBasicToEnhancedOrder({
