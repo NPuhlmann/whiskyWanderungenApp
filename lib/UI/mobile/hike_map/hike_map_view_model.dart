@@ -31,6 +31,16 @@ class HikeMapViewModel extends ChangeNotifier {
     _initializeGpsServices();
   }
 
+  /// GPS init and waypoint fetch can outlive this route-scoped ViewModel if
+  /// the user backs out of the map mid-flight; notifying a disposed
+  /// ChangeNotifier throws.
+  bool _disposed = false;
+
+  void _notify() {
+    if (_disposed) return;
+    notifyListeners();
+  }
+
   // Basic getters
   List<Waypoint> get waypoints => _waypoints;
   bool get isLoading => _isLoading;
@@ -42,14 +52,14 @@ class HikeMapViewModel extends ChangeNotifier {
   /// Selects [waypoint], highlighting its marker and opening the preview card.
   void selectWaypoint(Waypoint waypoint) {
     _selectedWaypoint = waypoint;
-    notifyListeners();
+    _notify();
   }
 
   /// Dismisses the preview card. No-op when nothing is selected.
   void clearSelection() {
     if (_selectedWaypoint == null) return;
     _selectedWaypoint = null;
-    notifyListeners();
+    _notify();
   }
 
   // GPS-related getters
@@ -75,7 +85,7 @@ class HikeMapViewModel extends ChangeNotifier {
       log('Error initializing GPS services: $e');
       _isGpsEnabled = false;
     }
-    notifyListeners();
+    _notify();
   }
 
   /// Startet GPS-Tracking
@@ -87,7 +97,7 @@ class HikeMapViewModel extends ChangeNotifier {
         _positionSubscription = _locationService.positionStream.listen(
           (position) {
             _currentPosition = position;
-            notifyListeners();
+            _notify();
           },
           onError: (error) {
             log('GPS position error: $error');
@@ -103,7 +113,7 @@ class HikeMapViewModel extends ChangeNotifier {
   Future<bool> startNavigation() async {
     if (_waypoints.isEmpty) {
       _error = 'Keine Waypoints für Navigation verfügbar';
-      notifyListeners();
+      _notify();
       return false;
     }
 
@@ -117,17 +127,17 @@ class HikeMapViewModel extends ChangeNotifier {
         // Höre auf Navigation Status Updates
         _navigationService.addListener(_onNavigationUpdate);
 
-        notifyListeners();
+        _notify();
         return true;
       } else {
         _error = 'Navigation konnte nicht gestartet werden';
-        notifyListeners();
+        _notify();
         return false;
       }
     } catch (e) {
       log('Error starting navigation: $e');
       _error = 'Fehler beim Starten der Navigation: $e';
-      notifyListeners();
+      _notify();
       return false;
     }
   }
@@ -138,7 +148,7 @@ class HikeMapViewModel extends ChangeNotifier {
       await _navigationService.stopNavigation();
       _navigationService.removeListener(_onNavigationUpdate);
       _isNavigationActive = false;
-      notifyListeners();
+      _notify();
     } catch (e) {
       log('Error stopping navigation: $e');
     }
@@ -147,18 +157,18 @@ class HikeMapViewModel extends ChangeNotifier {
   /// Pausiert die Navigation
   Future<void> pauseNavigation() async {
     await _navigationService.pauseNavigation();
-    notifyListeners();
+    _notify();
   }
 
   /// Setzt die Navigation fort
   Future<void> resumeNavigation() async {
     await _navigationService.resumeNavigation();
-    notifyListeners();
+    _notify();
   }
 
   /// Navigation Status Update Handler
   void _onNavigationUpdate() {
-    notifyListeners();
+    _notify();
   }
 
   /// Aktiviert/Deaktiviert GPS-Tracking
@@ -177,13 +187,13 @@ class HikeMapViewModel extends ChangeNotifier {
             'GPS konnte nicht aktiviert werden. Bitte überprüfen Sie die Berechtigung.';
       }
     }
-    notifyListeners();
+    _notify();
   }
 
   /// Zentriert die Karte auf die aktuelle Position
   void centerOnCurrentPosition() {
     if (_currentPosition != null) {
-      notifyListeners(); // Dies wird vom UI verwendet um die Karte zu zentrieren
+      _notify(); // Dies wird vom UI verwendet um die Karte zu zentrieren
     }
   }
 
@@ -221,7 +231,7 @@ class HikeMapViewModel extends ChangeNotifier {
   Future<void> loadWaypoints() async {
     _isLoading = true;
     _error = null;
-    notifyListeners();
+    _notify();
 
     try {
       // Copy: _waypoints is mutated in place below, the repository's list isn't ours.
@@ -241,7 +251,7 @@ class HikeMapViewModel extends ChangeNotifier {
       _error = e.toString();
     } finally {
       _isLoading = false;
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -259,11 +269,11 @@ class HikeMapViewModel extends ChangeNotifier {
         if (_selectedWaypoint?.id == waypoint.id) {
           _selectedWaypoint = updatedWaypoint;
         }
-        notifyListeners();
+        _notify();
       }
     } catch (e) {
       _error = e.toString();
-      notifyListeners();
+      _notify();
     }
   }
 
@@ -376,6 +386,8 @@ class HikeMapViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
+
     // Cleanup GPS resources
     _positionSubscription?.cancel();
     _navigationService.removeListener(_onNavigationUpdate);
