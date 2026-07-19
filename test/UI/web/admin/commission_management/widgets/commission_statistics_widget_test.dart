@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/UI/web/admin/commission_management/widgets/commission_statistics_widget.dart';
 import 'package:whisky_hikes/data/providers/commission_provider.dart';
 
-// Create mock provider
-class MockCommissionProvider extends Mock implements CommissionProvider {}
+// Generated, not hand-rolled: a bare Mock returns null from non-nullable
+// members such as `statistics`, which throws before `when()` can stub them.
+@GenerateNiceMocks([MockSpec<CommissionProvider>()])
+import 'commission_statistics_widget_test.mocks.dart';
 
 void main() {
   group('CommissionStatisticsWidget Tests', () {
@@ -312,7 +315,7 @@ void main() {
         await tester.tap(refreshButton);
 
         // Assert
-        verify(mockProvider.loadStatistics(any)).called(1);
+        verify(mockProvider.loadStatistics('current-company')).called(1);
       });
     });
 

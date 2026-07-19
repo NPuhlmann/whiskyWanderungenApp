@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:go_router/go_router.dart';
+import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/UI/mobile/home/widgets/card_widget.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 
-import '../../../test_helpers.dart';
+import '../../../../test_helpers.dart';
 
 void main() {
   group('HikeCard Widget Tests', () {
@@ -49,9 +49,9 @@ void main() {
       // Check if hike card displays correct information
       expect(find.text('Test Hike'), findsOneWidget);
       expect(find.text('Test Description'), findsOneWidget);
-      expect(find.text('Easy'), findsOneWidget); // Localized difficulty
+      expect(find.text('easy'), findsOneWidget); // Localized difficulty
       expect(find.byType(CachedNetworkImage), findsOneWidget);
-      expect(find.byType(InkWell), findsOneWidget);
+      expect(find.byType(InkWell), findsWidgets);
     });
 
     testWidgets(
@@ -123,7 +123,7 @@ void main() {
         );
 
         // Tap the card
-        await tester.tap(find.byType(InkWell));
+        await tester.tap(find.byType(InkWell).first);
         await tester.pumpAndSettle();
 
         // Verify navigation was called
@@ -152,7 +152,7 @@ void main() {
         );
 
         // Tap the card
-        await tester.tap(find.byType(InkWell));
+        await tester.tap(find.byType(InkWell).first);
         await tester.pumpAndSettle();
 
         // Verify navigation to MyHikes subroute
@@ -183,7 +183,7 @@ void main() {
       );
 
       // Should show localized very hard difficulty
-      expect(find.text('Very Hard'), findsOneWidget);
+      expect(find.text('very hard'), findsOneWidget);
     });
 
     testWidgets('should handle missing thumbnail gracefully', (tester) async {

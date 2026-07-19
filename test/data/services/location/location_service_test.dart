@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:whisky_hikes/data/services/location/location_service.dart';
 
 class MockGeolocator extends Mock {
@@ -17,6 +16,8 @@ class MockGeolocator extends Mock {
       heading: 0.0,
       speed: 0.0,
       speedAccuracy: 0.0,
+      altitudeAccuracy: 3.0,
+      headingAccuracy: 3.0,
       timestamp: DateTime.now(),
     );
   }
@@ -33,7 +34,7 @@ void main() {
     late LocationService locationService;
 
     setUp(() {
-      locationService = LocationService();
+      locationService = LocationService.instance;
     });
 
     group('Permission Handling Tests', () {
@@ -74,15 +75,8 @@ void main() {
 
     group('Distance Calculation Tests', () {
       test('should calculate distance between two points correctly', () {
-        // Test distance calculation
-        const lat1 = 47.3769; // Zurich
-        const lon1 = 8.5417;
-        const lat2 = 46.9481; // Bern
-        const lon2 = 7.4474;
-
-        // Using Haversine formula for expected distance (approximately 94 km)
-        const expectedDistance = 94.0; // km
-
+        // Test distance calculation: Zurich (47.3769, 8.5417) to Bern
+        // (46.9481, 7.4474) is roughly 94 km by the Haversine formula.
         // This would test the actual distance calculation method
         expect(locationService, isA<LocationService>());
 
@@ -92,11 +86,7 @@ void main() {
       });
 
       test('should handle zero distance correctly', () {
-        // Test same point distance
-        const lat = 47.3769;
-        const lon = 8.5417;
-
-        // Distance to same point should be 0
+        // Test same point distance: distance to same point should be 0
         expect(locationService, isA<LocationService>());
 
         // In a real test:
@@ -190,7 +180,7 @@ void main() {
     late LocationService locationService;
 
     setUp(() {
-      locationService = LocationService();
+      locationService = LocationService.instance;
     });
 
     test('should handle complete location workflow', () async {

@@ -136,25 +136,13 @@ void main() {
     });
 
     group('Business Logic Validation Tests', () {
-      test('should use proper table names in queries', () {
-        // The methods should reference correct database tables:
-        // - orders table for order operations
-        // - purchased_hikes table for purchase tracking
-        // - payments table for payment history
-
-        // This is tested indirectly through integration tests
-        // Here we verify the methods exist and accept correct parameters
-
-        expect(() => apiService.fetchUserOrders('valid-user'), returnsNormally);
-        expect(
-          () => apiService.hasUserPurchasedHike('valid-user', 1),
-          returnsNormally,
-        );
-        expect(
-          () => apiService.recordHikePurchase('valid-user', 1, 1),
-          returnsNormally,
-        );
-      });
+      // Removed: 'should use proper table names in queries'. It called
+      // fetchUserOrders / hasUserPurchasedHike / recordHikePurchase against an
+      // unstubbed Supabase client and wrapped them in `returnsNormally`, which
+      // is a tautology for a Future-returning method — the real failure
+      // surfaced asynchronously. Its own comment conceded the behaviour is
+      // "tested indirectly through integration tests". Real coverage belongs
+      // in the live integration suite, not here.
 
       test('should handle different order statuses correctly', () {
         // Test that all OrderStatus values are accepted (method signature)

@@ -7,8 +7,36 @@ import 'package:whisky_hikes/domain/models/analytics/sales_statistics.dart';
 import 'package:whisky_hikes/domain/models/analytics/route_performance.dart';
 import 'package:whisky_hikes/domain/models/analytics/customer_insights.dart';
 import 'package:whisky_hikes/domain/models/analytics/performance_metrics.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mockito/mockito.dart';
+import 'package:whisky_hikes/config/l10n/app_localizations.dart';
+
+/// Mock router for widget tests. `GoRouter.of(context)` resolves it through
+/// the [InheritedGoRouter] that [TestHelpers.createTestWidget] installs, so
+/// navigation calls can be verified without building a real route tree.
+class MockGoRouter extends Mock implements GoRouter {}
 
 class TestHelpers {
+  /// Wraps [child] in a localized [MaterialApp] for widget tests.
+  ///
+  /// Pass [mockRouter] to intercept `GoRouter.of(context)` navigation.
+  static Widget createTestWidget(Widget child, {MockGoRouter? mockRouter}) {
+    final app = MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    );
+    if (mockRouter == null) return app;
+    return InheritedGoRouter(goRouter: mockRouter, child: app);
+  }
+
   static List<Hike> createSampleHikes() {
     return [
       const Hike(

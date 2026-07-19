@@ -304,7 +304,7 @@ void main() {
       );
 
       test(
-        'should notify listeners even when updateUserEmail throws',
+        'should rethrow and NOT notify listeners when updateUserEmail throws',
         () async {
           // Arrange
           const newEmail = 'newemail@example.com';
@@ -316,11 +316,15 @@ void main() {
           userRepository.addListener(() => listenerCalled = true);
 
           // Act & Assert
-          expect(
-            () async => await userRepository.updateUserEmail(newEmail),
+          await expectLater(
+            () => userRepository.updateUserEmail(newEmail),
             throwsA(isA<Exception>()),
           );
-          expect(listenerCalled, true);
+          // UserRepository.updateUserEmail calls notifyListeners() only after
+          // the update succeeds. Nothing changed, so there is nothing to
+          // notify about — the old expectation of `true` described behaviour
+          // the code never had, and the un-awaited expect() hid the mismatch.
+          expect(listenerCalled, false);
           verify(mockAuthService.updateUserEmail(newEmail)).called(1);
         },
       );

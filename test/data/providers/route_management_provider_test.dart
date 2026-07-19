@@ -225,7 +225,8 @@ void main() {
         expect(provider.errorMessage, isNull);
         expect(provider.routes, isEmpty);
         verify(mockService.deleteRoute(routeId)).called(1);
-        verify(mockService.getAllRoutesForAdmin()).called(1);
+        // deleteRoute prunes the local list instead of refetching.
+        verifyNever(mockService.getAllRoutesForAdmin());
       });
 
       test('should select route and load waypoints', () async {
@@ -305,21 +306,24 @@ void main() {
         when(
           mockService.addWaypointToRoute(routeId, waypointData),
         ).thenAnswer((_) async => createdWaypoint);
-        when(mockService.getRouteWaypoints(routeId)).thenAnswer(
-          (_) async => [
+        // Call counter, not chained stubs (see CLAUDE.md, Test Mocking Best
+        // Practices): selectRoute loads waypoints once (empty), addWaypoint
+        // reloads them afterwards and must see the new waypoint.
+        var waypointLoads = 0;
+        when(mockService.getRouteWaypoints(routeId)).thenAnswer((_) async {
+          waypointLoads++;
+          if (waypointLoads == 1) return [];
+          return [
             {
               'waypoint_id': 456,
               'order_index': 1,
               'waypoints': createdWaypoint,
             },
-          ],
-        );
+          ];
+        });
 
         // Set selected route through selectRoute method
         final testRoute = {'id': routeId, 'name': 'Test Route'};
-        when(
-          mockService.getRouteWaypoints(routeId),
-        ).thenAnswer((_) async => []);
         await provider.selectRoute(testRoute);
 
         // Act
@@ -330,7 +334,7 @@ void main() {
         expect(provider.errorMessage, isNull);
         expect(provider.waypoints.length, equals(1));
         verify(mockService.addWaypointToRoute(routeId, waypointData)).called(1);
-        verify(mockService.getRouteWaypoints(routeId)).called(1);
+        verify(mockService.getRouteWaypoints(routeId)).called(2);
       });
 
       test('should reorder waypoints successfully', () async {
@@ -344,8 +348,13 @@ void main() {
         when(
           mockService.updateWaypointOrder(routeId, newOrder),
         ).thenAnswer((_) async => {});
-        when(mockService.getRouteWaypoints(routeId)).thenAnswer(
-          (_) async => [
+        // Call counter, not chained stubs: the first load (selectRoute) is
+        // empty, the reload after reorderWaypoints returns the new order.
+        var waypointLoads = 0;
+        when(mockService.getRouteWaypoints(routeId)).thenAnswer((_) async {
+          waypointLoads++;
+          if (waypointLoads == 1) return [];
+          return [
             {
               'waypoint_id': 457,
               'order_index': 1,
@@ -356,14 +365,11 @@ void main() {
               'order_index': 2,
               'waypoints': {'id': 456, 'name': 'Waypoint 1'},
             },
-          ],
-        );
+          ];
+        });
 
         // Set selected route through selectRoute method
         final testRoute = {'id': routeId, 'name': 'Test Route'};
-        when(
-          mockService.getRouteWaypoints(routeId),
-        ).thenAnswer((_) async => []);
         await provider.selectRoute(testRoute);
 
         // Act
@@ -379,7 +385,7 @@ void main() {
         ); // Reordered
         expect(provider.waypoints[1]['waypoints']['id'], equals(456));
         verify(mockService.updateWaypointOrder(routeId, newOrder)).called(1);
-        verify(mockService.getRouteWaypoints(routeId)).called(1);
+        verify(mockService.getRouteWaypoints(routeId)).called(2);
       });
 
       test('should remove waypoint successfully', () async {

@@ -102,8 +102,10 @@ void main() {
       // Dashboard sollte die erste Route sein
       expect(AdminRoutes.allRoutes.first, equals(AdminRoutes.dashboard));
 
-      // Settings sollte die letzte Route sein
-      expect(AdminRoutes.allRoutes.last, equals(AdminRoutes.settings));
+      // Die Settings-Gruppe sollte am Ende stehen. Auf die exakte letzte
+      // Route zu prüfen bricht, sobald eine Unterroute dazukommt — der
+      // Präfix-Check hält die Absicht fest.
+      expect(AdminRoutes.allRoutes.last, startsWith(AdminRoutes.settings));
 
       // Alle Routen sollten mit /admin/ beginnen
       for (final route in AdminRoutes.allRoutes) {

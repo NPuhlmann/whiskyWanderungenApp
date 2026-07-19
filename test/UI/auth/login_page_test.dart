@@ -10,7 +10,11 @@ import 'package:whisky_hikes/UI/mobile/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-class MockLoginPageViewModel extends Mock implements LoginPageViewModel {}
+// Generated rather than hand-rolled: a bare `extends Mock` returns null from
+// non-nullable members such as `loginWithEmailAndPassword`, which throws
+// before `when()` can register a stub.
+@GenerateNiceMocks([MockSpec<LoginPageViewModel>()])
+import 'login_page_test.mocks.dart';
 
 void main() {
   group('LoginPage Widget Tests', () {

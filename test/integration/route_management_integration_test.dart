@@ -91,29 +91,17 @@ void main() {
 
         // Fill out form
         await tester.enterText(
-          find.widgetWithText(TextFormField, null).first,
+          find.byType(TextFormField).first,
           'Integration Test Route',
         );
         await tester.enterText(
-          find.widgetWithText(TextFormField, null).at(1),
+          find.byType(TextFormField).at(1),
           'Test Description',
         );
-        await tester.enterText(
-          find.widgetWithText(TextFormField, null).at(2),
-          '10.5',
-        );
-        await tester.enterText(
-          find.widgetWithText(TextFormField, null).at(3),
-          '240',
-        );
-        await tester.enterText(
-          find.widgetWithText(TextFormField, null).at(4),
-          '89.99',
-        );
-        await tester.enterText(
-          find.widgetWithText(TextFormField, null).at(5),
-          '12',
-        );
+        await tester.enterText(find.byType(TextFormField).at(2), '10.5');
+        await tester.enterText(find.byType(TextFormField).at(3), '240');
+        await tester.enterText(find.byType(TextFormField).at(4), '89.99');
+        await tester.enterText(find.byType(TextFormField).at(5), '12');
 
         // Mock successful creation and reload
         mockRoutes.add(newRoute);
@@ -127,7 +115,9 @@ void main() {
 
         // Verify route was created
         verify(mockService.createRoute(any)).called(1);
-        verify(mockService.getAllRoutesForAdmin()).called(atLeast(2));
+        verify(
+          mockService.getAllRoutesForAdmin(),
+        ).called(greaterThanOrEqualTo(2));
 
         // Verify success message
         expect(find.text('Route erfolgreich erstellt'), findsOneWidget);
@@ -207,9 +197,9 @@ void main() {
           },
         };
 
-        when(
-          mockService.addWaypointToRoute(123, any),
-        ).thenAnswer((_) async => newWaypoint['waypoints']);
+        when(mockService.addWaypointToRoute(123, any)).thenAnswer(
+          (_) async => newWaypoint['waypoints'] as Map<String, dynamic>,
+        );
 
         mockWaypoints.add(newWaypoint);
         when(
@@ -222,7 +212,9 @@ void main() {
 
         // Verify waypoint was added
         verify(mockService.addWaypointToRoute(123, any)).called(1);
-        verify(mockService.getRouteWaypoints(123)).called(atLeast(2));
+        verify(
+          mockService.getRouteWaypoints(123),
+        ).called(greaterThanOrEqualTo(2));
 
         // Verify waypoint appears in list
         expect(find.text('Test Waypoint 1'), findsOneWidget);
@@ -383,6 +375,7 @@ void main() {
         await tester.binding.setSurfaceSize(
           const Size(400, 800),
         ); // Mobile size
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final mockRoute = {
           'id': 123,
@@ -416,6 +409,7 @@ void main() {
         await tester.binding.setSurfaceSize(
           const Size(1200, 800),
         ); // Desktop size
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final mockRoute = {
           'id': 123,
@@ -504,11 +498,6 @@ void main() {
         expect(find.text('Route 5'), findsOneWidget);
         expect(find.text('Route 50'), findsOneWidget); // Matches substring
       });
-    });
-
-    tearDown(() {
-      // Reset surface size
-      tester.binding.setSurfaceSize(null);
     });
   });
 }
