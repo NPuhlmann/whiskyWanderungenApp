@@ -32,7 +32,8 @@ zu klären.
 
 Es existieren nur die Edge Functions `create-payment-intent` und
 `calculate-shipping`. Das Webhook-Secret wird in
-`terraform-supabase/sql/08_supabase_vault_setup.sql` im Vault abgelegt, aber
+`terraform-supabase/supabase/migrations/20260719120000_supabase_vault_stripe_secrets.sql`
+im Vault abgelegt, aber
 nichts konsumiert es.
 
 Folge: Nach erfolgreicher Bestätigung über das Stripe-SDK schreibt weder Client
@@ -120,7 +121,6 @@ den RLS-Policies.
 | `lib/config/routing/admin_routes.dart` | 25 Routenkonstanten, von niemandem importiert; real gebaut werden 8 |
 | `WebHomePage` in `lib/main_web.dart` | Demo-Seite ohne Route, Navigation nur `debugPrint` |
 | `_handleInitialLink()` in `lib/main.dart` | leerer Rumpf mit einem `debugPrint` |
-| `terraform-supabase/sql/` | Spiegel der Migrationen; zweite Schemawahrheit gegen ADR-0003 |
 
 Lebendig und beide in Benutzung sind dagegen `basic_order.dart` (mobil) und
 `enhanced_order.dart` (Backend-API und Provisionen). Die Tracking-Ansichten

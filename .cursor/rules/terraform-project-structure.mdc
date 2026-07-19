@@ -55,7 +55,7 @@ terraform-supabase/
 4. Run database scripts as needed
 
 ### Database Changes
-1. Create new SQL files in [sql/](mdc:terraform-supabase/sql/) directory
+1. Create a new dated migration in [migrations/](mdc:terraform-supabase/supabase/migrations/) and apply it with `supabase db push`
 2. Update [main.tf](mdc:terraform-supabase/main.tf) if needed
 3. Test with `make sql SQL="YOUR_SQL_HERE"`
 4. Commit SQL files to version control

@@ -36,7 +36,7 @@ Whisky Hikes ist eine Flutter-App für geführte Wanderungen mit integrierten Wh
 ### Database & Backend
 - [backend_api.dart](mdc:lib/data/services/database/backend_api.dart) - Haupt-API-Service
 - [terraform-supabase/](mdc:terraform-supabase/) - Supabase-Infrastruktur
-- [06_tasting_sets_tables.sql](mdc:terraform-supabase/sql/06_tasting_sets_tables.sql) - Tasting Set Schema
+- [tasting_sets.sql](mdc:terraform-supabase/supabase/migrations/20260508120200_tasting_sets.sql) - Tasting Set Schema
 
 ### UI Components
 - [tasting_set_selection_page.dart](mdc:lib/UI/tasting_sets/tasting_set_selection_page.dart) - Tasting Set Anzeige
@@ -59,8 +59,8 @@ flutter test test/domain/models/tasting_set_test.dart
 - Alle Tests müssen bestehen
 
 ### 3. Database Changes
-- SQL-Skripte in `terraform-supabase/sql/` definieren
-- Manuell in Supabase ausführen oder über Terraform deployen
+- Datierte Migration unter `terraform-supabase/supabase/migrations/` anlegen
+- Mit `supabase db push` einspielen (ADR-0003)
 
 ## Key Business Rules
 
