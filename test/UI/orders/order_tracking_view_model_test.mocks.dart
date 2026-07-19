@@ -3,15 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:whisky_hikes/data/repositories/payment_repository.dart' as _i5;
+import 'package:whisky_hikes/data/repositories/payment_repository.dart' as _i4;
 import 'package:whisky_hikes/domain/models/basic_order.dart' as _i2;
-import 'package:whisky_hikes/domain/models/basic_payment_result.dart' as _i3;
-import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i8;
-import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i4;
-import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i7;
+import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i7;
+import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i3;
+import 'package:whisky_hikes/domain/models/payment_intent.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -33,27 +32,21 @@ class _FakeBasicOrder_0 extends _i1.SmartFake implements _i2.BasicOrder {
     : super(parent, parentInvocation);
 }
 
-class _FakeBasicPaymentResult_1 extends _i1.SmartFake
-    implements _i3.BasicPaymentResult {
-  _FakeBasicPaymentResult_1(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-}
-
-class _FakeEnhancedOrder_2 extends _i1.SmartFake implements _i4.EnhancedOrder {
-  _FakeEnhancedOrder_2(Object parent, Invocation parentInvocation)
+class _FakeEnhancedOrder_1 extends _i1.SmartFake implements _i3.EnhancedOrder {
+  _FakeEnhancedOrder_1(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
 /// A class which mocks [PaymentRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
+class MockPaymentRepository extends _i1.Mock implements _i4.PaymentRepository {
   MockPaymentRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<_i2.BasicOrder> createOrder({
+  _i5.Future<_i2.BasicOrder> createOrder({
     required int? hikeId,
     required String? userId,
     required double? amount,
@@ -68,7 +61,7 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               #deliveryType: deliveryType,
               #deliveryAddress: deliveryAddress,
             }),
-            returnValue: _i6.Future<_i2.BasicOrder>.value(
+            returnValue: _i5.Future<_i2.BasicOrder>.value(
               _FakeBasicOrder_0(
                 this,
                 Invocation.method(#createOrder, [], {
@@ -81,106 +74,53 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               ),
             ),
           )
-          as _i6.Future<_i2.BasicOrder>);
+          as _i5.Future<_i2.BasicOrder>);
 
   @override
-  _i6.Future<List<_i7.PaymentMethodType>> getAvailablePaymentMethods() =>
+  _i5.Future<List<_i6.PaymentMethodType>> getAvailablePaymentMethods() =>
       (super.noSuchMethod(
             Invocation.method(#getAvailablePaymentMethods, []),
-            returnValue: _i6.Future<List<_i7.PaymentMethodType>>.value(
-              <_i7.PaymentMethodType>[],
+            returnValue: _i5.Future<List<_i6.PaymentMethodType>>.value(
+              <_i6.PaymentMethodType>[],
             ),
           )
-          as _i6.Future<List<_i7.PaymentMethodType>>);
+          as _i5.Future<List<_i6.PaymentMethodType>>);
 
   @override
-  _i6.Future<bool> isPaymentMethodAvailable(
-    _i7.PaymentMethodType? paymentMethod,
+  _i5.Future<bool> isPaymentMethodAvailable(
+    _i6.PaymentMethodType? paymentMethod,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#isPaymentMethodAvailable, [paymentMethod]),
-            returnValue: _i6.Future<bool>.value(false),
+            returnValue: _i5.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
+          as _i5.Future<bool>);
 
   @override
-  _i6.Future<_i3.BasicPaymentResult> processPayment({
-    required _i2.BasicOrder? order,
-    required _i7.PaymentMethodType? paymentMethod,
-    String? paymentMethodId,
-    Map<String, dynamic>? metadata,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#processPayment, [], {
-              #order: order,
-              #paymentMethod: paymentMethod,
-              #paymentMethodId: paymentMethodId,
-              #metadata: metadata,
-            }),
-            returnValue: _i6.Future<_i3.BasicPaymentResult>.value(
-              _FakeBasicPaymentResult_1(
-                this,
-                Invocation.method(#processPayment, [], {
-                  #order: order,
-                  #paymentMethod: paymentMethod,
-                  #paymentMethodId: paymentMethodId,
-                  #metadata: metadata,
-                }),
-              ),
-            ),
-          )
-          as _i6.Future<_i3.BasicPaymentResult>);
-
-  @override
-  _i6.Future<_i3.BasicPaymentResult> processStripePayment({
-    required _i2.BasicOrder? order,
-    required String? paymentMethodId,
-    Map<String, dynamic>? metadata,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#processStripePayment, [], {
-              #order: order,
-              #paymentMethodId: paymentMethodId,
-              #metadata: metadata,
-            }),
-            returnValue: _i6.Future<_i3.BasicPaymentResult>.value(
-              _FakeBasicPaymentResult_1(
-                this,
-                Invocation.method(#processStripePayment, [], {
-                  #order: order,
-                  #paymentMethodId: paymentMethodId,
-                  #metadata: metadata,
-                }),
-              ),
-            ),
-          )
-          as _i6.Future<_i3.BasicPaymentResult>);
-
-  @override
-  _i6.Future<_i2.BasicOrder> getOrderById(int? orderId) =>
+  _i5.Future<_i2.BasicOrder> getOrderById(int? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#getOrderById, [orderId]),
-            returnValue: _i6.Future<_i2.BasicOrder>.value(
+            returnValue: _i5.Future<_i2.BasicOrder>.value(
               _FakeBasicOrder_0(
                 this,
                 Invocation.method(#getOrderById, [orderId]),
               ),
             ),
           )
-          as _i6.Future<_i2.BasicOrder>);
+          as _i5.Future<_i2.BasicOrder>);
 
   @override
-  _i6.Future<List<_i2.BasicOrder>> getUserOrders(String? userId) =>
+  _i5.Future<List<_i2.BasicOrder>> getUserOrders(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getUserOrders, [userId]),
-            returnValue: _i6.Future<List<_i2.BasicOrder>>.value(
+            returnValue: _i5.Future<List<_i2.BasicOrder>>.value(
               <_i2.BasicOrder>[],
             ),
           )
-          as _i6.Future<List<_i2.BasicOrder>>);
+          as _i5.Future<List<_i2.BasicOrder>>);
 
   @override
-  _i6.Future<_i2.BasicOrder> updateOrderStatus({
+  _i5.Future<_i2.BasicOrder> updateOrderStatus({
     required int? orderId,
     required _i2.OrderStatus? status,
     String? trackingNumber,
@@ -195,7 +135,7 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               #estimatedDelivery: estimatedDelivery,
               #paymentIntentId: paymentIntentId,
             }),
-            returnValue: _i6.Future<_i2.BasicOrder>.value(
+            returnValue: _i5.Future<_i2.BasicOrder>.value(
               _FakeBasicOrder_0(
                 this,
                 Invocation.method(#updateOrderStatus, [], {
@@ -208,15 +148,15 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               ),
             ),
           )
-          as _i6.Future<_i2.BasicOrder>);
+          as _i5.Future<_i2.BasicOrder>);
 
   @override
-  _i6.Future<_i4.EnhancedOrder> createEnhancedOrder({
+  _i5.Future<_i3.EnhancedOrder> createEnhancedOrder({
     required int? hikeId,
     required String? userId,
     required String? companyId,
     required double? baseAmount,
-    required _i8.DeliveryAddress? deliveryAddress,
+    required _i7.DeliveryAddress? deliveryAddress,
     _i2.DeliveryType? deliveryType = _i2.DeliveryType.standardShipping,
     String? customerEmail,
     String? customerPhone,
@@ -234,8 +174,8 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               #customerPhone: customerPhone,
               #metadata: metadata,
             }),
-            returnValue: _i6.Future<_i4.EnhancedOrder>.value(
-              _FakeEnhancedOrder_2(
+            returnValue: _i5.Future<_i3.EnhancedOrder>.value(
+              _FakeEnhancedOrder_1(
                 this,
                 Invocation.method(#createEnhancedOrder, [], {
                   #hikeId: hikeId,
@@ -251,46 +191,18 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               ),
             ),
           )
-          as _i6.Future<_i4.EnhancedOrder>);
+          as _i5.Future<_i3.EnhancedOrder>);
 
   @override
-  _i6.Future<_i3.BasicPaymentResult> processEnhancedOrderPayment({
-    required _i4.EnhancedOrder? order,
-    required _i7.PaymentMethodType? paymentMethod,
-    String? paymentMethodId,
-    Map<String, dynamic>? metadata,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#processEnhancedOrderPayment, [], {
-              #order: order,
-              #paymentMethod: paymentMethod,
-              #paymentMethodId: paymentMethodId,
-              #metadata: metadata,
-            }),
-            returnValue: _i6.Future<_i3.BasicPaymentResult>.value(
-              _FakeBasicPaymentResult_1(
-                this,
-                Invocation.method(#processEnhancedOrderPayment, [], {
-                  #order: order,
-                  #paymentMethod: paymentMethod,
-                  #paymentMethodId: paymentMethodId,
-                  #metadata: metadata,
-                }),
-              ),
-            ),
-          )
-          as _i6.Future<_i3.BasicPaymentResult>);
-
-  @override
-  _i6.Future<_i4.EnhancedOrder?> getEnhancedOrderById(int? orderId) =>
+  _i5.Future<_i3.EnhancedOrder?> getEnhancedOrderById(int? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#getEnhancedOrderById, [orderId]),
-            returnValue: _i6.Future<_i4.EnhancedOrder?>.value(),
+            returnValue: _i5.Future<_i3.EnhancedOrder?>.value(),
           )
-          as _i6.Future<_i4.EnhancedOrder?>);
+          as _i5.Future<_i3.EnhancedOrder?>);
 
   @override
-  _i6.Future<List<_i4.EnhancedOrder>> getCustomerEnhancedOrders({
+  _i5.Future<List<_i3.EnhancedOrder>> getCustomerEnhancedOrders({
     required String? customerId,
     int? limit = 50,
     int? offset = 0,
@@ -303,14 +215,14 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               #offset: offset,
               #statuses: statuses,
             }),
-            returnValue: _i6.Future<List<_i4.EnhancedOrder>>.value(
-              <_i4.EnhancedOrder>[],
+            returnValue: _i5.Future<List<_i3.EnhancedOrder>>.value(
+              <_i3.EnhancedOrder>[],
             ),
           )
-          as _i6.Future<List<_i4.EnhancedOrder>>);
+          as _i5.Future<List<_i3.EnhancedOrder>>);
 
   @override
-  _i6.Future<_i4.EnhancedOrder> updateEnhancedOrderStatus({
+  _i5.Future<_i3.EnhancedOrder> updateEnhancedOrderStatus({
     required int? orderId,
     required String? newStatus,
     String? reason,
@@ -327,8 +239,8 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               #estimatedDelivery: estimatedDelivery,
               #metadata: metadata,
             }),
-            returnValue: _i6.Future<_i4.EnhancedOrder>.value(
-              _FakeEnhancedOrder_2(
+            returnValue: _i5.Future<_i3.EnhancedOrder>.value(
+              _FakeEnhancedOrder_1(
                 this,
                 Invocation.method(#updateEnhancedOrderStatus, [], {
                   #orderId: orderId,
@@ -341,13 +253,13 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               ),
             ),
           )
-          as _i6.Future<_i4.EnhancedOrder>);
+          as _i5.Future<_i3.EnhancedOrder>);
 
   @override
-  _i6.Future<_i4.EnhancedOrder> convertToEnhancedOrder({
+  _i5.Future<_i3.EnhancedOrder> convertToEnhancedOrder({
     required _i2.BasicOrder? basicOrder,
     required String? companyId,
-    required _i8.DeliveryAddress? deliveryAddress,
+    required _i7.DeliveryAddress? deliveryAddress,
     String? customerEmail,
     String? customerPhone,
   }) =>
@@ -359,8 +271,8 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               #customerEmail: customerEmail,
               #customerPhone: customerPhone,
             }),
-            returnValue: _i6.Future<_i4.EnhancedOrder>.value(
-              _FakeEnhancedOrder_2(
+            returnValue: _i5.Future<_i3.EnhancedOrder>.value(
+              _FakeEnhancedOrder_1(
                 this,
                 Invocation.method(#convertToEnhancedOrder, [], {
                   #basicOrder: basicOrder,
@@ -372,5 +284,5 @@ class MockPaymentRepository extends _i1.Mock implements _i5.PaymentRepository {
               ),
             ),
           )
-          as _i6.Future<_i4.EnhancedOrder>);
+          as _i5.Future<_i3.EnhancedOrder>);
 }

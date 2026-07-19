@@ -1,30 +1,25 @@
 import 'dart:developer' as dev;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../services/payment/stripe_service.dart';
 import '../services/payment/multi_payment_service.dart';
 import '../services/database/backend_api.dart';
 import '../../domain/models/basic_order.dart';
 import '../../domain/models/enhanced_order.dart';
 import '../../domain/models/delivery_address.dart';
-import '../../domain/models/basic_payment_result.dart';
 import '../../domain/models/payment_intent.dart' show PaymentMethodType;
 
 /// Repository for handling payment-related database operations
 /// Integrates with MultiPaymentService for multiple payment methods and Supabase for data persistence
 class PaymentRepository {
   final SupabaseClient _supabaseClient;
-  final StripeService _stripeService;
   final MultiPaymentService _multiPaymentService;
   final BackendApiService _backendApiService;
 
   PaymentRepository({
     required SupabaseClient supabaseClient,
-    required StripeService stripeService,
     MultiPaymentService? multiPaymentService,
     BackendApiService? backendApiService,
   }) : _supabaseClient = supabaseClient,
-       _stripeService = stripeService,
        _multiPaymentService =
            multiPaymentService ?? MultiPaymentService.instance,
        _backendApiService =
@@ -113,131 +108,6 @@ class PaymentRepository {
     }
   }
 
-  /// Process payment for an order using specified payment method
-  Future<BasicPaymentResult> processPayment({
-    required BasicOrder order,
-    required PaymentMethodType paymentMethod,
-    String? paymentMethodId, // For card payments
-    Map<String, dynamic>? metadata,
-  }) async {
-    try {
-      dev.log(
-        '🔄 Processing ${paymentMethod.name} payment for order ${order.orderNumber}...',
-      );
-
-      // Use MultiPaymentService for all payment methods
-      final paymentResult = await _multiPaymentService.processPayment(
-        paymentMethod: paymentMethod,
-        amount: order.totalAmount,
-        currency: 'eur',
-        metadata: {
-          'order_id': order.id.toString(),
-          'hike_id': order.hikeId.toString(),
-          'delivery_type': order.deliveryType.name,
-          'order_number': order.orderNumber,
-          ...?metadata,
-        },
-      );
-
-      // Store payment record in database
-      await _createPaymentRecord(
-        order: order,
-        paymentMethod: paymentMethod,
-        paymentResult: paymentResult,
-      );
-
-      // Update order status based on payment result
-      if (paymentResult.isSuccess) {
-        await updateOrderStatus(
-          orderId: order.id,
-          status: OrderStatus.confirmed,
-          paymentIntentId: paymentResult.paymentIntentId,
-        );
-        dev.log(
-          '✅ ${paymentMethod.name} payment successful for order ${order.orderNumber}',
-        );
-      } else if (paymentResult.requiresUserAction) {
-        dev.log(
-          '🔐 ${paymentMethod.name} payment requires additional authentication',
-        );
-      } else {
-        dev.log(
-          '❌ ${paymentMethod.name} payment failed for order ${order.orderNumber}',
-        );
-      }
-
-      return paymentResult;
-    } catch (e) {
-      dev.log('❌ Error processing ${paymentMethod.name} payment: $e');
-      // Return failed payment result instead of throwing
-      return BasicPaymentResult.failure(
-        error: 'Payment processing failed: ${e.toString()}',
-        status: PaymentStatus.failed,
-      );
-    }
-  }
-
-  /// Process payment for an order using Stripe (legacy method - kept for backward compatibility)
-  @Deprecated('Use processPayment with PaymentMethodType instead')
-  Future<BasicPaymentResult> processStripePayment({
-    required BasicOrder order,
-    required String paymentMethodId,
-    Map<String, dynamic>? metadata,
-  }) async {
-    try {
-      dev.log('🔄 Processing payment for order ${order.orderNumber}...');
-
-      // Create payment intent with Stripe
-      final paymentIntent = await _stripeService.createPaymentIntent(
-        amount: order.totalAmount,
-        currency: 'eur',
-        metadata: {
-          'order_id': order.id.toString(),
-          'hike_id': order.hikeId.toString(),
-          'delivery_type': order.deliveryType.name,
-          ...?metadata,
-        },
-      );
-
-      // Confirm payment with provided payment method
-      final paymentResult = await _stripeService.confirmPayment(
-        clientSecret: paymentIntent.clientSecret,
-        paymentMethodId: paymentMethodId,
-        metadata: metadata,
-      );
-
-      // Store payment record in database
-      await _createPaymentRecord(
-        order: order,
-        paymentMethod: PaymentMethodType.card, // Default to card for Stripe
-        paymentResult: paymentResult,
-      );
-
-      // Update order status based on payment result
-      if (paymentResult.isSuccess) {
-        await updateOrderStatus(
-          orderId: order.id,
-          status: OrderStatus.confirmed,
-          paymentIntentId: paymentIntent.id,
-        );
-        dev.log('✅ Payment successful for order ${order.orderNumber}');
-      } else if (paymentResult.requiresUserAction) {
-        dev.log('🔐 Payment requires additional authentication');
-      } else {
-        dev.log('❌ Payment failed for order ${order.orderNumber}');
-      }
-
-      return paymentResult;
-    } catch (e) {
-      dev.log('❌ Error processing payment: $e');
-      // Return failed payment result instead of throwing
-      return BasicPaymentResult.failure(
-        error: 'Payment processing failed: ${e.toString()}',
-        status: PaymentStatus.failed,
-      );
-    }
-  }
-
   /// Get order by ID
   Future<BasicOrder> getOrderById(int orderId) async {
     try {
@@ -305,40 +175,6 @@ class PaymentRepository {
       dev.log('❌ Error updating order status: $e');
       if (e is PostgrestException) rethrow;
       throw Exception('Failed to update order status: $e');
-    }
-  }
-
-  /// Create payment record in database for multi-payment methods
-  Future<void> _createPaymentRecord({
-    required BasicOrder order,
-    required PaymentMethodType paymentMethod,
-    required BasicPaymentResult paymentResult,
-  }) async {
-    try {
-      final paymentData = {
-        'order_id': order.id,
-        'payment_intent_id':
-            paymentResult.paymentIntentId ??
-            'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
-        'client_secret': paymentResult.clientSecret,
-        'amount': (order.totalAmount * 100).round(), // Convert to cents
-        'currency': 'eur',
-        'status': paymentResult.status?.name ?? 'pending',
-        'payment_method': paymentMethod.name,
-        if (paymentResult.errorMessage != null)
-          'failure_reason': paymentResult.errorMessage,
-        if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
-        'created_at': DateTime.now().toIso8601String(),
-      };
-
-      await _supabaseClient.from('payments').insert(paymentData);
-
-      dev.log(
-        '✅ Payment record created for ${paymentMethod.name} payment: ${paymentData['payment_intent_id']}',
-      );
-    } catch (e) {
-      dev.log('⚠️ Warning: Failed to create payment record: $e');
-      // Don't throw here - payment may have succeeded even if record creation failed
     }
   }
 
@@ -426,86 +262,6 @@ class PaymentRepository {
     }
   }
 
-  /// Process payment for enhanced order
-  Future<BasicPaymentResult> processEnhancedOrderPayment({
-    required EnhancedOrder order,
-    required PaymentMethodType paymentMethod,
-    String? paymentMethodId,
-    Map<String, dynamic>? metadata,
-  }) async {
-    try {
-      dev.log(
-        '🔄 Processing ${paymentMethod.name} payment for enhanced order ${order.orderNumber}...',
-      );
-
-      // Use MultiPaymentService for all payment methods
-      final paymentResult = await _multiPaymentService.processPayment(
-        paymentMethod: paymentMethod,
-        amount: order.totalAmount,
-        currency: order.currency.toLowerCase(),
-        metadata: {
-          'enhanced_order_id': order.id.toString(),
-          'company_id': order.companyId,
-          'hike_id': order.hikeId.toString(),
-          'delivery_type': order.deliveryType.name,
-          'order_number': order.orderNumber,
-          ...?metadata,
-        },
-      );
-
-      // Store payment record in database
-      await _createEnhancedOrderPaymentRecord(
-        order: order,
-        paymentMethod: paymentMethod,
-        paymentResult: paymentResult,
-      );
-
-      // Update enhanced order status based on payment result
-      if (paymentResult.isSuccess) {
-        await _backendApiService.updateEnhancedOrderStatus(
-          orderId: order.id,
-          newStatus: 'confirmed',
-          reason: 'Payment confirmed',
-          metadata: {
-            'payment_confirmed_at': DateTime.now().toIso8601String(),
-            'payment_method': paymentMethod.name,
-            'payment_intent_id': paymentResult.paymentIntentId,
-          },
-        );
-        dev.log('✅ Enhanced order payment successful: ${order.orderNumber}');
-      } else if (paymentResult.requiresUserAction) {
-        await _backendApiService.updateEnhancedOrderStatus(
-          orderId: order.id,
-          newStatus: 'paymentPending',
-          reason: 'Payment requires user action',
-        );
-        dev.log(
-          '🔐 Enhanced order payment requires authentication: ${order.orderNumber}',
-        );
-      } else {
-        await _backendApiService.updateEnhancedOrderStatus(
-          orderId: order.id,
-          newStatus: 'failed',
-          reason: 'Payment failed',
-          metadata: {
-            'payment_failed_at': DateTime.now().toIso8601String(),
-            'failure_reason': paymentResult.errorMessage,
-          },
-        );
-        dev.log('❌ Enhanced order payment failed: ${order.orderNumber}');
-      }
-
-      return paymentResult;
-    } catch (e) {
-      dev.log('❌ Error processing enhanced order payment: $e');
-      // Return failed payment result instead of throwing
-      return BasicPaymentResult.failure(
-        error: 'Enhanced order payment processing failed: ${e.toString()}',
-        status: PaymentStatus.failed,
-      );
-    }
-  }
-
   /// Get enhanced order by ID
   Future<EnhancedOrder?> getEnhancedOrderById(int orderId) async {
     try {
@@ -584,56 +340,18 @@ class PaymentRepository {
       throw Exception('Failed to convert to enhanced order: $e');
     }
   }
-
-  /// Create payment record for enhanced order
-  Future<void> _createEnhancedOrderPaymentRecord({
-    required EnhancedOrder order,
-    required PaymentMethodType paymentMethod,
-    required BasicPaymentResult paymentResult,
-  }) async {
-    try {
-      final paymentData = {
-        'order_id': order.id,
-        'payment_intent_id':
-            paymentResult.paymentIntentId ??
-            'pi_${paymentMethod.name}_${DateTime.now().millisecondsSinceEpoch}',
-        'client_secret': paymentResult.clientSecret,
-        'amount': (order.totalAmount * 100).round(), // Convert to cents
-        'currency': order.currency.toLowerCase(),
-        'status': paymentResult.status?.name ?? 'pending',
-        'payment_method': paymentMethod.name,
-        if (paymentResult.errorMessage != null)
-          'failure_reason': paymentResult.errorMessage,
-        if (paymentResult.metadata != null) 'metadata': paymentResult.metadata,
-        'created_at': DateTime.now().toIso8601String(),
-      };
-
-      // Note: This assumes we're using the same payments table for enhanced orders
-      // In production, you might want a separate enhanced_payments table
-      await _supabaseClient.from('payments').insert(paymentData);
-
-      dev.log(
-        '✅ Enhanced order payment record created: ${paymentData['payment_intent_id']}',
-      );
-    } catch (e) {
-      dev.log('⚠️ Warning: Failed to create enhanced order payment record: $e');
-      // Don't throw here - payment may have succeeded even if record creation failed
-    }
-  }
 }
 
 /// Factory for creating PaymentRepository instances
 class PaymentRepositoryFactory {
   static PaymentRepository create({
     SupabaseClient? supabaseClient,
-    StripeService? stripeService,
     MultiPaymentService? multiPaymentService,
     BackendApiService? backendApiService,
   }) {
     final client = supabaseClient ?? Supabase.instance.client;
     return PaymentRepository(
       supabaseClient: client,
-      stripeService: stripeService ?? StripeService.instance,
       multiPaymentService: multiPaymentService ?? MultiPaymentService.instance,
       backendApiService: backendApiService ?? BackendApiService(client: client),
     );

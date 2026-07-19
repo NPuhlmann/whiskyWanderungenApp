@@ -24,10 +24,20 @@ interface PaymentIntentRequest {
   userId: string;
   deliveryType: 'pickup' | 'standard_shipping' | 'express_shipping' | 'premium_shipping';
   deliveryAddress?: DeliveryAddress;
+  // orderValue/shippingCost werden serverseitig aus dem Hike-Preis und
+  // SHIPPING_COSTS überschrieben; Client-Werte sind nicht vertrauenswürdig.
   orderValue: number; // Basis-Hike-Preis
   shippingCost: number;
   currency?: string; // Default: 'eur'
   metadata?: { [key: string]: string };
+}
+
+/// Versandkosten in Euro. Einzige Quelle der Wahrheit für den Aufpreis.
+const SHIPPING_COSTS: { [key: string]: number } = {
+  pickup: 0,
+  standard_shipping: 5,
+  express_shipping: 10,
+  premium_shipping: 15,
 }
 
 interface StripeConfig {
@@ -150,6 +160,24 @@ serve(async (req) => {
         { 
           status: 404, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Preis serverseitig festlegen (ADR-0006).
+    // Der Client darf den Betrag nicht bestimmen: orderValue/shippingCost aus
+    // dem Request werden verworfen und aus dem Hike-Preis plus der
+    // serverseitigen Versandkostentabelle neu berechnet.
+    requestBody.orderValue = Number(hike.price)
+    requestBody.shippingCost = SHIPPING_COSTS[requestBody.deliveryType] ?? 0
+
+    if (!Number.isFinite(requestBody.orderValue) || requestBody.orderValue <= 0) {
+      console.error('Hike has no usable price:', hike.id, hike.price)
+      return new Response(
+        JSON.stringify({ error: 'Hike is not priced for sale' }),
+        {
+          status: 409,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
     }

@@ -8,6 +8,8 @@ import 'package:whisky_hikes/data/repositories/hike_images_repository.dart';
 import 'package:whisky_hikes/data/repositories/offline_first_hike_repository.dart';
 import 'package:whisky_hikes/data/repositories/offline_first_waypoint_repository.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
+import 'package:whisky_hikes/data/repositories/purchase_intake_repository.dart';
+import 'package:whisky_hikes/data/services/payment/stripe_confirm_adapter.dart';
 
 import '../UI/mobile/home/home_view_model.dart';
 import '../data/repositories/profile_repository.dart';
@@ -88,7 +90,14 @@ List<SingleChildWidget> get providers {
     Provider<PaymentRepository>(
       create: (context) => PaymentRepositoryFactory.create(
         supabaseClient: null, // Will use default Supabase.instance.client
-        stripeService: null, // Will use StripeService.instance
+      ),
+    ),
+    Provider<StripeConfirmAdapter>(
+      create: (context) => const FlutterStripeConfirmAdapter(),
+    ),
+    Provider<PurchaseIntakeRepository>(
+      create: (context) => PurchaseIntakeRepository(
+        confirmAdapter: context.read<StripeConfirmAdapter>(),
       ),
     ),
 

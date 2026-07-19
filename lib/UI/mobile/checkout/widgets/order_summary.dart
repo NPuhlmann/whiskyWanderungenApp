@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import '../../../../domain/models/basic_order.dart';
+import '../../../../domain/models/hike.dart';
+
+/// Shipping cost per delivery type, in euros.
+const _deliveryCosts = {
+  DeliveryType.pickup: 0.0,
+  DeliveryType.standardShipping: 5.0,
+  DeliveryType.expressShipping: 10.0,
+};
 
 /// Widget that displays order details and pricing breakdown
 class OrderSummary extends StatelessWidget {
-  final BasicOrder order;
+  final Hike hike;
+  final DeliveryType deliveryType;
 
-  const OrderSummary({super.key, required this.order});
+  const OrderSummary({
+    super.key,
+    required this.hike,
+    required this.deliveryType,
+  });
+
+  double get _deliveryCost => _deliveryCosts[deliveryType] ?? 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +42,14 @@ class OrderSummary extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Order Number
-            _buildInfoRow('Bestellnummer:', order.formattedOrderNumber, theme),
+            // Hike
+            _buildInfoRow('Wanderung:', hike.name, theme),
             const SizedBox(height: 8),
 
             // Delivery Type
             _buildInfoRow(
               'Lieferart:',
-              order.deliveryType == DeliveryType.standardShipping
-                  ? 'Versand'
-                  : 'Abholung',
+              deliveryType == DeliveryType.pickup ? 'Abholung' : 'Versand',
               theme,
             ),
             const SizedBox(height: 16),
@@ -45,18 +58,13 @@ class OrderSummary extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Pricing Breakdown
-            _buildPriceRow(
-              'Grundpreis:',
-              order.basePrice,
-              theme,
-              isSubtotal: true,
-            ),
+            _buildPriceRow('Grundpreis:', hike.price, theme, isSubtotal: true),
 
-            if (order.deliveryCost > 0) ...[
+            if (_deliveryCost > 0) ...[
               const SizedBox(height: 8),
               _buildPriceRow(
                 'Versandkosten:',
-                order.deliveryCost,
+                _deliveryCost,
                 theme,
                 isSubtotal: true,
               ),
@@ -67,15 +75,20 @@ class OrderSummary extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Total
-            _buildPriceRow('Gesamt:', order.totalAmount, theme, isTotal: true),
+            _buildPriceRow(
+              'Gesamt:',
+              hike.price + _deliveryCost,
+              theme,
+              isTotal: true,
+            ),
 
             const SizedBox(height: 16),
 
             // Delivery Info
-            if (order.deliveryType == DeliveryType.standardShipping)
-              _buildDeliveryInfo(theme)
+            if (deliveryType == DeliveryType.pickup)
+              _buildPickupInfo(theme)
             else
-              _buildPickupInfo(theme),
+              _buildDeliveryInfo(theme),
           ],
         ),
       ),

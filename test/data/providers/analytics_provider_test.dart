@@ -90,12 +90,12 @@ SalesStatistics _stats({double revenue = 100, int orders = 4}) =>
     );
 
 CustomerInsights _insights({int total = 3}) => CustomerInsights(
-      totalCustomers: total,
-      newCustomers: 1,
-      returningCustomers: total - 1,
-      repeatPurchaseRate: 0.5,
-      averageLifetimeValue: 200,
-    );
+  totalCustomers: total,
+  newCustomers: 1,
+  returningCustomers: total - 1,
+  repeatPurchaseRate: 0.5,
+  averageLifetimeValue: 200,
+);
 
 void main() {
   group('AnalyticsProvider', () {

@@ -119,8 +119,9 @@ void main() {
       });
 
       test('returns header-only CSV when there are no revenue entries', () {
-        final csvOutput =
-            service.generateRevenueTimelineCSV(SalesStatistics.empty());
+        final csvOutput = service.generateRevenueTimelineCSV(
+          SalesStatistics.empty(),
+        );
         final lines = splitCsv(csvOutput);
         expect(lines.length, 1);
         expect(lines.first, 'Datum,Umsatz (EUR),Bestellungen');

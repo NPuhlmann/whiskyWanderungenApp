@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../domain/models/enhanced_order.dart';
 import '../../../domain/models/basic_order.dart';
 import '../../../data/repositories/payment_repository.dart';
-import '../../../data/services/payment/stripe_service.dart';
 
 /// ViewModel for managing order tracking state and business logic
 class OrderTrackingViewModel extends ChangeNotifier {
@@ -17,10 +16,7 @@ class OrderTrackingViewModel extends ChangeNotifier {
     PaymentRepository? paymentRepository,
   }) : _paymentRepository =
            paymentRepository ??
-           PaymentRepository(
-             supabaseClient: Supabase.instance.client,
-             stripeService: StripeService.instance,
-           );
+           PaymentRepository(supabaseClient: Supabase.instance.client);
 
   // State variables
   bool _isLoading = true;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:developer' as dev;
+import '../../../config/routing/routes.dart';
 import '../../../domain/models/hike.dart';
 import '../hike_map/hike_map_page.dart';
 import 'hike_details_view_model.dart';
@@ -342,10 +344,11 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                                         ),
                                       );
                                     } else {
-                                      // Hier die Logik zum Kaufen der Wanderung
                                       dev.log("Wanderung kaufen");
-                                      // TODO: Implementiere die Logik zum Kaufen der Wanderung
-                                      // z.B. Navigation zu einer Zahlungsseite
+                                      context.push(
+                                        Routes.checkout,
+                                        extra: widget.hikeData,
+                                      );
                                     }
                                   },
                                   child: Text(
