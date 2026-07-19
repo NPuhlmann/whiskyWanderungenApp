@@ -56,27 +56,34 @@ GoRouter router(
     ),
     GoRoute(
       path: Routes.magicLink,
-      builder: (context, state) {
-        final viewModel = MagicLinkViewModel(userRepository: context.read());
-        return MagicLinkPage(viewModel: viewModel);
-      },
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (context) => MagicLinkViewModel(userRepository: context.read()),
+        child: Consumer<MagicLinkViewModel>(
+          builder: (context, viewModel, _) =>
+              MagicLinkPage(viewModel: viewModel),
+        ),
+      ),
     ),
     GoRoute(
       path: Routes.login,
-      builder: (context, state) {
-        final viewModel = LoginPageViewModel(userRepository: context.read());
-        return LoginPage(viewModel: viewModel);
-      },
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (context) => LoginPageViewModel(userRepository: context.read()),
+        child: Consumer<LoginPageViewModel>(
+          builder: (context, viewModel, _) => LoginPage(viewModel: viewModel),
+        ),
+      ),
     ),
     GoRoute(
       path: Routes.signUp,
-      builder: (context, state) {
-        final viewModel = SignUpPageViewModel(
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (context) => SignUpPageViewModel(
           userRepository: context.read(),
           authService: context.read(),
-        );
-        return SignupPage(viewModel: viewModel);
-      },
+        ),
+        child: Consumer<SignUpPageViewModel>(
+          builder: (context, viewModel, _) => SignupPage(viewModel: viewModel),
+        ),
+      ),
     ),
     StatefulShellRoute.indexedStack(
       builder:
@@ -116,13 +123,16 @@ GoRouter router(
           routes: <RouteBase>[
             GoRoute(
               path: Routes.profile,
-              builder: (context, state) {
-                final viewModel = ProfilePageViewModel(
+              builder: (context, state) => ChangeNotifierProvider(
+                create: (context) => ProfilePageViewModel(
                   profileRepository: context.read(),
                   userRepository: context.read(),
-                );
-                return ProfilePage(viewModel: viewModel);
-              },
+                ),
+                child: Consumer<ProfilePageViewModel>(
+                  builder: (context, viewModel, _) =>
+                      ProfilePage(viewModel: viewModel),
+                ),
+              ),
             ),
           ],
         ),
