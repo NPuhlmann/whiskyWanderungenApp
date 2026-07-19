@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:whisky_hikes/UI/core/widgets/square_network_thumbnail.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Card widget for displaying a tasting set with selection functionality
@@ -37,53 +37,12 @@ class TastingSetCard extends StatelessWidget {
               Row(
                 children: [
                   // Tasting set image
-                  if (tastingSet.imageUrl != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: tastingSet.imageUrl!,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) {
-                          return Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.wine_bar,
-                              size: 32,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  else
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.wine_bar,
-                        size: 32,
-                        color: Colors.grey,
-                      ),
-                    ),
+                  SquareNetworkThumbnail(
+                    imageUrl: tastingSet.imageUrl,
+                    size: 80,
+                    icon: Icons.wine_bar,
+                    iconSize: 32,
+                  ),
                   const SizedBox(width: 16),
 
                   // Tasting set info

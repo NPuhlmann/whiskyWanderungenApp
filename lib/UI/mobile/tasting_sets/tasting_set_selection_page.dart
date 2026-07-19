@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
+import 'package:whisky_hikes/UI/core/widgets/square_network_thumbnail.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 import 'package:whisky_hikes/UI/mobile/tasting_sets/widgets/tasting_set_info_card.dart';
 import 'package:whisky_hikes/UI/mobile/tasting_sets/tasting_set_selection_view_model.dart';
@@ -94,42 +94,11 @@ class TastingSetSelectionPage extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: Row(
                     children: [
-                      if (hike.thumbnailImageUrl != null)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: hike.thumbnailImageUrl!,
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 60,
-                              height: 60,
-                              color: Colors.grey[300],
-                            ),
-                            errorWidget: (context, url, error) {
-                              return Container(
-                                width: 60,
-                                height: 60,
-                                color: Colors.grey[300],
-                                child: const Icon(
-                                  Icons.hiking,
-                                  color: Colors.grey,
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      else
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.hiking, color: Colors.grey),
-                        ),
+                      SquareNetworkThumbnail(
+                        imageUrl: hike.thumbnailImageUrl,
+                        size: 60,
+                        icon: Icons.hiking,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(

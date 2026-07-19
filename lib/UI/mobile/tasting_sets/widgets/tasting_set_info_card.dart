@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:whisky_hikes/UI/core/widgets/square_network_thumbnail.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Card widget for displaying tasting set information (read-only)
@@ -22,53 +22,13 @@ class TastingSetInfoCard extends StatelessWidget {
             Row(
               children: [
                 // Tasting set image
-                if (tastingSet.imageUrl != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: tastingSet.imageUrl!,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) {
-                        return Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.wine_bar,
-                            size: 40,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                else
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.wine_bar,
-                      size: 40,
-                      color: Colors.grey,
-                    ),
-                  ),
+                SquareNetworkThumbnail(
+                  imageUrl: tastingSet.imageUrl,
+                  size: 100,
+                  borderRadius: 12,
+                  icon: Icons.wine_bar,
+                  iconSize: 40,
+                ),
 
                 const SizedBox(width: 20),
 
@@ -311,37 +271,10 @@ class _SampleItem extends StatelessWidget {
       child: Row(
         children: [
           // Sample image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
-              imageUrl: sample.imageUrl,
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              errorWidget: (context, url, error) {
-                return Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.wine_bar,
-                    size: 24,
-                    color: Colors.grey,
-                  ),
-                );
-              },
-            ),
+          SquareNetworkThumbnail(
+            imageUrl: sample.imageUrl,
+            size: 60,
+            icon: Icons.wine_bar,
           ),
 
           const SizedBox(width: 16),
