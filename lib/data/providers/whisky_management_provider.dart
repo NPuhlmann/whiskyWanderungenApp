@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:whisky_hikes/data/services/whisky/whisky_management_service.dart';
+import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 /// Enumeration for tasting set sorting options
@@ -9,9 +9,9 @@ enum TastingSetSortBy { name, sampleCount, averageAge, averageAbv, region }
 
 /// Provider for managing whisky-related data and state
 class WhiskyManagementProvider with ChangeNotifier {
-  final WhiskyManagementService _service;
+  final TastingSetRepository _repository;
 
-  WhiskyManagementProvider(this._service);
+  WhiskyManagementProvider(this._repository);
 
   // ==================== State Variables ====================
 
@@ -135,7 +135,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     _clearError();
 
     try {
-      _tastingSets = await _service.getAllTastingSets();
+      _tastingSets = await _repository.getAllTastingSets();
       notifyListeners();
     } catch (e) {
       _setError('Failed to load tasting sets: $e');
@@ -151,7 +151,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     _clearError();
 
     try {
-      _whiskySamples = await _service.getWhiskySamplesByTastingSetId(
+      _whiskySamples = await _repository.getWhiskySamplesByTastingSetId(
         tastingSetId,
       );
       notifyListeners();
@@ -166,7 +166,7 @@ class WhiskyManagementProvider with ChangeNotifier {
   /// Get tasting set by hike ID
   Future<TastingSet?> getTastingSetByHikeId(int hikeId) async {
     try {
-      return await _service.getTastingSetByHikeId(hikeId);
+      return await _repository.getTastingSetByHikeId(hikeId);
     } catch (e) {
       log('Error getting tasting set for hike $hikeId: $e');
       return null;
@@ -186,7 +186,7 @@ class WhiskyManagementProvider with ChangeNotifier {
         throw Exception('Validation failed: $validationError');
       }
 
-      await _service.createTastingSet(tastingSet);
+      await _repository.createTastingSet(tastingSet);
       await loadTastingSets(); // Reload to get updated list
     } catch (e) {
       _setError('Failed to create tasting set: $e');
@@ -207,7 +207,7 @@ class WhiskyManagementProvider with ChangeNotifier {
         throw Exception('Validation failed: $validationError');
       }
 
-      await _service.updateTastingSet(tastingSet);
+      await _repository.updateTastingSet(tastingSet);
       await loadTastingSets(); // Reload to get updated list
     } catch (e) {
       _setError('Failed to update tasting set: $e');
@@ -223,7 +223,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     _clearError();
 
     try {
-      await _service.deleteTastingSet(tastingSetId);
+      await _repository.deleteTastingSet(tastingSetId);
       await loadTastingSets(); // Reload to get updated list
     } catch (e) {
       _setError('Failed to delete tasting set: $e');
@@ -249,7 +249,7 @@ class WhiskyManagementProvider with ChangeNotifier {
         throw Exception('Validation failed: $validationError');
       }
 
-      await _service.createWhiskySample(sample);
+      await _repository.createWhiskySample(sample);
       await loadWhiskySamples(
         tastingSetId,
       ); // Reload samples for this tasting set
@@ -275,7 +275,7 @@ class WhiskyManagementProvider with ChangeNotifier {
         throw Exception('Validation failed: $validationError');
       }
 
-      await _service.updateWhiskySample(sample);
+      await _repository.updateWhiskySample(sample);
       await loadWhiskySamples(
         tastingSetId,
       ); // Reload samples for this tasting set
@@ -296,7 +296,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     _clearError();
 
     try {
-      await _service.deleteWhiskySample(sampleId);
+      await _repository.deleteWhiskySample(sampleId);
       await loadWhiskySamples(
         tastingSetId,
       ); // Reload samples for this tasting set
@@ -317,7 +317,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     _clearError();
 
     try {
-      await _service.updateSampleOrder(reorderedSamples);
+      await _repository.updateSampleOrder(reorderedSamples);
       await loadWhiskySamples(tastingSetId); // Reload to confirm order
     } catch (e) {
       _setError('Failed to reorder whisky samples: $e');
@@ -351,7 +351,7 @@ class WhiskyManagementProvider with ChangeNotifier {
   Future<void> applyFilters() async {
     if (_searchQuery.isNotEmpty) {
       try {
-        _tastingSets = await _service.searchTastingSets(_searchQuery);
+        _tastingSets = await _repository.searchTastingSets(_searchQuery);
         notifyListeners();
       } catch (e) {
         log('Error applying search filter: $e');
@@ -395,7 +395,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     String fileExtension,
   ) async {
     try {
-      return await _service.uploadWhiskyImage(
+      return await _repository.uploadWhiskyImage(
         sampleId,
         imageBytes,
         fileExtension,
@@ -413,7 +413,7 @@ class WhiskyManagementProvider with ChangeNotifier {
     String fileExtension,
   ) async {
     try {
-      return await _service.uploadTastingSetImage(
+      return await _repository.uploadTastingSetImage(
         tastingSetId,
         imageBytes,
         fileExtension,
@@ -429,7 +429,7 @@ class WhiskyManagementProvider with ChangeNotifier {
   /// Load tasting set statistics
   Future<void> loadStatistics() async {
     try {
-      _statistics = await _service.getTastingSetStatistics();
+      _statistics = await _repository.getTastingSetStatistics();
       notifyListeners();
     } catch (e) {
       log('Error loading statistics: $e');
@@ -439,7 +439,7 @@ class WhiskyManagementProvider with ChangeNotifier {
   /// Load popular distilleries
   Future<void> loadPopularDistilleries({int limit = 10}) async {
     try {
-      _popularDistilleries = await _service.getPopularDistilleries(
+      _popularDistilleries = await _repository.getPopularDistilleries(
         limit: limit,
       );
       notifyListeners();

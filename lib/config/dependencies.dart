@@ -27,6 +27,7 @@ import '../data/providers/whisky_management_provider.dart';
 import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
 import '../data/repositories/commission_repository.dart';
+import '../data/repositories/tasting_set_repository.dart';
 import '../data/providers/team_provider.dart';
 import '../data/services/analytics/sales_analytics_service.dart';
 import '../data/services/analytics/customer_analytics_service.dart';
@@ -91,6 +92,12 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
         context.read<ConnectivityService>(),
       ),
     ),
+    Provider<TastingSetRepository>(
+      create: (context) => TastingSetRepository(
+        context.read<BackendApiService>(),
+        context.read<WhiskyManagementService>(),
+      ),
+    ),
     Provider<CommissionRepository>(
       create: (context) =>
           CommissionRepository(context.read<CommissionService>()),
@@ -138,7 +145,7 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     ),
     ChangeNotifierProvider<WhiskyManagementProvider>(
       create: (context) =>
-          WhiskyManagementProvider(context.read<WhiskyManagementService>()),
+          WhiskyManagementProvider(context.read<TastingSetRepository>()),
     ),
     ChangeNotifierProvider<CommissionProvider>(
       create: (context) => CommissionProvider(

@@ -71,83 +71,88 @@ class _FakeTastingSet_2 extends _i1.SmartFake implements _i4.TastingSet {
     : super(parent, parentInvocation);
 }
 
-class _FakeSupabaseClient_3 extends _i1.SmartFake
+class _FakeWhiskySample_3 extends _i1.SmartFake implements _i4.WhiskySample {
+  _FakeWhiskySample_3(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSupabaseClient_4 extends _i1.SmartFake
     implements _i2.SupabaseClient {
-  _FakeSupabaseClient_3(Object parent, Invocation parentInvocation)
+  _FakeSupabaseClient_4(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakePaginationResult_4<T> extends _i1.SmartFake
+class _FakePaginationResult_5<T> extends _i1.SmartFake
     implements _i5.PaginationResult<T> {
-  _FakePaginationResult_4(Object parent, Invocation parentInvocation)
+  _FakePaginationResult_5(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeBasicOrder_5 extends _i1.SmartFake implements _i6.BasicOrder {
-  _FakeBasicOrder_5(Object parent, Invocation parentInvocation)
+class _FakeBasicOrder_6 extends _i1.SmartFake implements _i6.BasicOrder {
+  _FakeBasicOrder_6(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeEnhancedOrder_6 extends _i1.SmartFake implements _i7.EnhancedOrder {
-  _FakeEnhancedOrder_6(Object parent, Invocation parentInvocation)
+class _FakeEnhancedOrder_7 extends _i1.SmartFake implements _i7.EnhancedOrder {
+  _FakeEnhancedOrder_7(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeReview_7 extends _i1.SmartFake implements _i8.Review {
-  _FakeReview_7(Object parent, Invocation parentInvocation)
+class _FakeReview_8 extends _i1.SmartFake implements _i8.Review {
+  _FakeReview_8(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeFunctionsClient_8 extends _i1.SmartFake
+class _FakeFunctionsClient_9 extends _i1.SmartFake
     implements _i2.FunctionsClient {
-  _FakeFunctionsClient_8(Object parent, Invocation parentInvocation)
+  _FakeFunctionsClient_9(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSupabaseStorageClient_9 extends _i1.SmartFake
+class _FakeSupabaseStorageClient_10 extends _i1.SmartFake
     implements _i2.SupabaseStorageClient {
-  _FakeSupabaseStorageClient_9(Object parent, Invocation parentInvocation)
+  _FakeSupabaseStorageClient_10(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeRealtimeClient_10 extends _i1.SmartFake
+class _FakeRealtimeClient_11 extends _i1.SmartFake
     implements _i2.RealtimeClient {
-  _FakeRealtimeClient_10(Object parent, Invocation parentInvocation)
+  _FakeRealtimeClient_11(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakePostgrestClient_11 extends _i1.SmartFake
+class _FakePostgrestClient_12 extends _i1.SmartFake
     implements _i2.PostgrestClient {
-  _FakePostgrestClient_11(Object parent, Invocation parentInvocation)
+  _FakePostgrestClient_12(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeGoTrueClient_12 extends _i1.SmartFake implements _i2.GoTrueClient {
-  _FakeGoTrueClient_12(Object parent, Invocation parentInvocation)
+class _FakeGoTrueClient_13 extends _i1.SmartFake implements _i2.GoTrueClient {
+  _FakeGoTrueClient_13(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSupabaseQueryBuilder_13 extends _i1.SmartFake
+class _FakeSupabaseQueryBuilder_14 extends _i1.SmartFake
     implements _i2.SupabaseQueryBuilder {
-  _FakeSupabaseQueryBuilder_13(Object parent, Invocation parentInvocation)
+  _FakeSupabaseQueryBuilder_14(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeSupabaseQuerySchema_14 extends _i1.SmartFake
+class _FakeSupabaseQuerySchema_15 extends _i1.SmartFake
     implements _i2.SupabaseQuerySchema {
-  _FakeSupabaseQuerySchema_14(Object parent, Invocation parentInvocation)
+  _FakeSupabaseQuerySchema_15(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakePostgrestFilterBuilder_15<T1> extends _i1.SmartFake
+class _FakePostgrestFilterBuilder_16<T1> extends _i1.SmartFake
     implements _i2.PostgrestFilterBuilder<T1> {
-  _FakePostgrestFilterBuilder_15(Object parent, Invocation parentInvocation)
+  _FakePostgrestFilterBuilder_16(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeRealtimeChannel_16 extends _i1.SmartFake
+class _FakeRealtimeChannel_17 extends _i1.SmartFake
     implements _i2.RealtimeChannel {
-  _FakeRealtimeChannel_16(Object parent, Invocation parentInvocation)
+  _FakeRealtimeChannel_17(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -582,16 +587,6 @@ class MockTastingSetRepository extends _i1.Mock
           as _i10.Future<_i4.TastingSet?>);
 
   @override
-  _i10.Future<List<_i4.TastingSet>> getAllTastingSets() =>
-      (super.noSuchMethod(
-            Invocation.method(#getAllTastingSets, []),
-            returnValue: _i10.Future<List<_i4.TastingSet>>.value(
-              <_i4.TastingSet>[],
-            ),
-          )
-          as _i10.Future<List<_i4.TastingSet>>);
-
-  @override
   _i10.Future<List<_i4.WhiskySample>> getWhiskySamplesForTastingSet(
     int? tastingSetId,
   ) =>
@@ -602,16 +597,6 @@ class MockTastingSetRepository extends _i1.Mock
             ),
           )
           as _i10.Future<List<_i4.WhiskySample>>);
-
-  @override
-  _i10.Future<List<_i4.TastingSet>> searchTastingSets(String? query) =>
-      (super.noSuchMethod(
-            Invocation.method(#searchTastingSets, [query]),
-            returnValue: _i10.Future<List<_i4.TastingSet>>.value(
-              <_i4.TastingSet>[],
-            ),
-          )
-          as _i10.Future<List<_i4.TastingSet>>);
 
   @override
   _i10.Future<List<_i4.TastingSet>> getTastingSetsByRegion(String? region) =>
@@ -673,68 +658,44 @@ class MockTastingSetRepository extends _i1.Mock
           as _i10.Future<List<_i4.TastingSet>>);
 
   @override
-  _i10.Future<_i4.TastingSet> createTastingSet({
-    required int? hikeId,
-    required String? name,
-    required String? description,
-    String? imageUrl,
-    DateTime? availableFrom,
-    DateTime? availableUntil,
-  }) =>
+  _i10.Future<List<_i4.TastingSet>> getAllTastingSets() =>
       (super.noSuchMethod(
-            Invocation.method(#createTastingSet, [], {
-              #hikeId: hikeId,
-              #name: name,
-              #description: description,
-              #imageUrl: imageUrl,
-              #availableFrom: availableFrom,
-              #availableUntil: availableUntil,
-            }),
+            Invocation.method(#getAllTastingSets, []),
+            returnValue: _i10.Future<List<_i4.TastingSet>>.value(
+              <_i4.TastingSet>[],
+            ),
+          )
+          as _i10.Future<List<_i4.TastingSet>>);
+
+  @override
+  _i10.Future<_i4.TastingSet?> getTastingSetByHikeId(int? hikeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetByHikeId, [hikeId]),
+            returnValue: _i10.Future<_i4.TastingSet?>.value(),
+          )
+          as _i10.Future<_i4.TastingSet?>);
+
+  @override
+  _i10.Future<_i4.TastingSet> createTastingSet(_i4.TastingSet? tastingSet) =>
+      (super.noSuchMethod(
+            Invocation.method(#createTastingSet, [tastingSet]),
             returnValue: _i10.Future<_i4.TastingSet>.value(
               _FakeTastingSet_2(
                 this,
-                Invocation.method(#createTastingSet, [], {
-                  #hikeId: hikeId,
-                  #name: name,
-                  #description: description,
-                  #imageUrl: imageUrl,
-                  #availableFrom: availableFrom,
-                  #availableUntil: availableUntil,
-                }),
+                Invocation.method(#createTastingSet, [tastingSet]),
               ),
             ),
           )
           as _i10.Future<_i4.TastingSet>);
 
   @override
-  _i10.Future<_i4.TastingSet> updateTastingSet({
-    required int? tastingSetId,
-    String? name,
-    String? description,
-    String? imageUrl,
-    DateTime? availableFrom,
-    DateTime? availableUntil,
-  }) =>
+  _i10.Future<_i4.TastingSet> updateTastingSet(_i4.TastingSet? tastingSet) =>
       (super.noSuchMethod(
-            Invocation.method(#updateTastingSet, [], {
-              #tastingSetId: tastingSetId,
-              #name: name,
-              #description: description,
-              #imageUrl: imageUrl,
-              #availableFrom: availableFrom,
-              #availableUntil: availableUntil,
-            }),
+            Invocation.method(#updateTastingSet, [tastingSet]),
             returnValue: _i10.Future<_i4.TastingSet>.value(
               _FakeTastingSet_2(
                 this,
-                Invocation.method(#updateTastingSet, [], {
-                  #tastingSetId: tastingSetId,
-                  #name: name,
-                  #description: description,
-                  #imageUrl: imageUrl,
-                  #availableFrom: availableFrom,
-                  #availableUntil: availableUntil,
-                }),
+                Invocation.method(#updateTastingSet, [tastingSet]),
               ),
             ),
           )
@@ -748,6 +709,146 @@ class MockTastingSetRepository extends _i1.Mock
             returnValueForMissingStub: _i10.Future<void>.value(),
           )
           as _i10.Future<void>);
+
+  @override
+  _i10.Future<List<_i4.TastingSet>> searchTastingSets(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#searchTastingSets, [query]),
+            returnValue: _i10.Future<List<_i4.TastingSet>>.value(
+              <_i4.TastingSet>[],
+            ),
+          )
+          as _i10.Future<List<_i4.TastingSet>>);
+
+  @override
+  _i10.Future<List<_i4.WhiskySample>> getWhiskySamplesByTastingSetId(
+    int? tastingSetId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getWhiskySamplesByTastingSetId, [tastingSetId]),
+            returnValue: _i10.Future<List<_i4.WhiskySample>>.value(
+              <_i4.WhiskySample>[],
+            ),
+          )
+          as _i10.Future<List<_i4.WhiskySample>>);
+
+  @override
+  _i10.Future<_i4.WhiskySample> createWhiskySample(_i4.WhiskySample? sample) =>
+      (super.noSuchMethod(
+            Invocation.method(#createWhiskySample, [sample]),
+            returnValue: _i10.Future<_i4.WhiskySample>.value(
+              _FakeWhiskySample_3(
+                this,
+                Invocation.method(#createWhiskySample, [sample]),
+              ),
+            ),
+          )
+          as _i10.Future<_i4.WhiskySample>);
+
+  @override
+  _i10.Future<_i4.WhiskySample> updateWhiskySample(_i4.WhiskySample? sample) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWhiskySample, [sample]),
+            returnValue: _i10.Future<_i4.WhiskySample>.value(
+              _FakeWhiskySample_3(
+                this,
+                Invocation.method(#updateWhiskySample, [sample]),
+              ),
+            ),
+          )
+          as _i10.Future<_i4.WhiskySample>);
+
+  @override
+  _i10.Future<void> deleteWhiskySample(int? sampleId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteWhiskySample, [sampleId]),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
+          )
+          as _i10.Future<void>);
+
+  @override
+  _i10.Future<void> updateSampleOrder(
+    List<_i4.WhiskySample>? reorderedSamples,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateSampleOrder, [reorderedSamples]),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
+          )
+          as _i10.Future<void>);
+
+  @override
+  _i10.Future<String> uploadWhiskyImage(
+    int? sampleId,
+    _i14.Uint8List? imageBytes,
+    String? fileExtension,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#uploadWhiskyImage, [
+              sampleId,
+              imageBytes,
+              fileExtension,
+            ]),
+            returnValue: _i10.Future<String>.value(
+              _i15.dummyValue<String>(
+                this,
+                Invocation.method(#uploadWhiskyImage, [
+                  sampleId,
+                  imageBytes,
+                  fileExtension,
+                ]),
+              ),
+            ),
+          )
+          as _i10.Future<String>);
+
+  @override
+  _i10.Future<String> uploadTastingSetImage(
+    int? tastingSetId,
+    _i14.Uint8List? imageBytes,
+    String? fileExtension,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#uploadTastingSetImage, [
+              tastingSetId,
+              imageBytes,
+              fileExtension,
+            ]),
+            returnValue: _i10.Future<String>.value(
+              _i15.dummyValue<String>(
+                this,
+                Invocation.method(#uploadTastingSetImage, [
+                  tastingSetId,
+                  imageBytes,
+                  fileExtension,
+                ]),
+              ),
+            ),
+          )
+          as _i10.Future<String>);
+
+  @override
+  _i10.Future<Map<String, dynamic>> getTastingSetStatistics() =>
+      (super.noSuchMethod(
+            Invocation.method(#getTastingSetStatistics, []),
+            returnValue: _i10.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
+          )
+          as _i10.Future<Map<String, dynamic>>);
+
+  @override
+  _i10.Future<List<Map<String, dynamic>>> getPopularDistilleries({
+    int? limit = 10,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getPopularDistilleries, [], {#limit: limit}),
+            returnValue: _i10.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i10.Future<List<Map<String, dynamic>>>);
 }
 
 /// A class which mocks [AuthService].
@@ -762,7 +863,7 @@ class MockAuthService extends _i1.Mock implements _i22.AuthService {
   _i2.SupabaseClient get client =>
       (super.noSuchMethod(
             Invocation.getter(#client),
-            returnValue: _FakeSupabaseClient_3(
+            returnValue: _FakeSupabaseClient_4(
               this,
               Invocation.getter(#client),
             ),
@@ -1172,7 +1273,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
   _i2.SupabaseClient get client =>
       (super.noSuchMethod(
             Invocation.getter(#client),
-            returnValue: _FakeSupabaseClient_3(
+            returnValue: _FakeSupabaseClient_4(
               this,
               Invocation.getter(#client),
             ),
@@ -1224,7 +1325,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
       (super.noSuchMethod(
             Invocation.method(#fetchHikesPaginated, [params]),
             returnValue: _i10.Future<_i5.PaginationResult<_i11.Hike>>.value(
-              _FakePaginationResult_4<_i11.Hike>(
+              _FakePaginationResult_5<_i11.Hike>(
                 this,
                 Invocation.method(#fetchHikesPaginated, [params]),
               ),
@@ -1385,7 +1486,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
       (super.noSuchMethod(
             Invocation.method(#fetchOrderById, [orderId]),
             returnValue: _i10.Future<_i6.BasicOrder>.value(
-              _FakeBasicOrder_5(
+              _FakeBasicOrder_6(
                 this,
                 Invocation.method(#fetchOrderById, [orderId]),
               ),
@@ -1419,7 +1520,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
       (super.noSuchMethod(
             Invocation.method(#fetchOrderWithPaymentDetails, [orderId]),
             returnValue: _i10.Future<_i6.BasicOrder>.value(
-              _FakeBasicOrder_5(
+              _FakeBasicOrder_6(
                 this,
                 Invocation.method(#fetchOrderWithPaymentDetails, [orderId]),
               ),
@@ -1440,7 +1541,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #paymentIntentId: paymentIntentId,
             }),
             returnValue: _i10.Future<_i6.BasicOrder>.value(
-              _FakeBasicOrder_5(
+              _FakeBasicOrder_6(
                 this,
                 Invocation.method(#updateOrderAfterPayment, [], {
                   #orderId: orderId,
@@ -1691,7 +1792,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #tags: tags,
             }),
             returnValue: _i10.Future<_i7.EnhancedOrder>.value(
-              _FakeEnhancedOrder_6(
+              _FakeEnhancedOrder_7(
                 this,
                 Invocation.method(#createEnhancedOrderWithShipping, [], {
                   #orderNumber: orderNumber,
@@ -1755,7 +1856,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #tags: tags,
             }),
             returnValue: _i10.Future<_i7.EnhancedOrder>.value(
-              _FakeEnhancedOrder_6(
+              _FakeEnhancedOrder_7(
                 this,
                 Invocation.method(#createEnhancedOrder, [], {
                   #orderNumber: orderNumber,
@@ -1868,7 +1969,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #metadata: metadata,
             }),
             returnValue: _i10.Future<_i7.EnhancedOrder>.value(
-              _FakeEnhancedOrder_6(
+              _FakeEnhancedOrder_7(
                 this,
                 Invocation.method(#updateEnhancedOrderStatus, [], {
                   #orderId: orderId,
@@ -1905,7 +2006,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #trackingUrl: trackingUrl,
             }),
             returnValue: _i10.Future<_i7.EnhancedOrder>.value(
-              _FakeEnhancedOrder_6(
+              _FakeEnhancedOrder_7(
                 this,
                 Invocation.method(#addTrackingToEnhancedOrder, [], {
                   #orderId: orderId,
@@ -1971,7 +2072,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #customerPhone: customerPhone,
             }),
             returnValue: _i10.Future<_i7.EnhancedOrder>.value(
-              _FakeEnhancedOrder_6(
+              _FakeEnhancedOrder_7(
                 this,
                 Invocation.method(#convertBasicToEnhancedOrder, [], {
                   #basicOrder: basicOrder,
@@ -2008,7 +2109,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #comment: comment,
             }),
             returnValue: _i10.Future<_i8.Review>.value(
-              _FakeReview_7(
+              _FakeReview_8(
                 this,
                 Invocation.method(#createReview, [], {
                   #hikeId: hikeId,
@@ -2036,7 +2137,7 @@ class MockBackendApiService extends _i1.Mock implements _i27.BackendApiService {
               #comment: comment,
             }),
             returnValue: _i10.Future<_i8.Review>.value(
-              _FakeReview_7(
+              _FakeReview_8(
                 this,
                 Invocation.method(#updateReview, [], {
                   #reviewId: reviewId,
@@ -2125,7 +2226,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.FunctionsClient get functions =>
       (super.noSuchMethod(
             Invocation.getter(#functions),
-            returnValue: _FakeFunctionsClient_8(
+            returnValue: _FakeFunctionsClient_9(
               this,
               Invocation.getter(#functions),
             ),
@@ -2136,7 +2237,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.SupabaseStorageClient get storage =>
       (super.noSuchMethod(
             Invocation.getter(#storage),
-            returnValue: _FakeSupabaseStorageClient_9(
+            returnValue: _FakeSupabaseStorageClient_10(
               this,
               Invocation.getter(#storage),
             ),
@@ -2147,7 +2248,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.RealtimeClient get realtime =>
       (super.noSuchMethod(
             Invocation.getter(#realtime),
-            returnValue: _FakeRealtimeClient_10(
+            returnValue: _FakeRealtimeClient_11(
               this,
               Invocation.getter(#realtime),
             ),
@@ -2158,7 +2259,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.PostgrestClient get rest =>
       (super.noSuchMethod(
             Invocation.getter(#rest),
-            returnValue: _FakePostgrestClient_11(
+            returnValue: _FakePostgrestClient_12(
               this,
               Invocation.getter(#rest),
             ),
@@ -2177,7 +2278,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.GoTrueClient get auth =>
       (super.noSuchMethod(
             Invocation.getter(#auth),
-            returnValue: _FakeGoTrueClient_12(this, Invocation.getter(#auth)),
+            returnValue: _FakeGoTrueClient_13(this, Invocation.getter(#auth)),
           )
           as _i2.GoTrueClient);
 
@@ -2215,7 +2316,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.SupabaseQueryBuilder from(String? table) =>
       (super.noSuchMethod(
             Invocation.method(#from, [table]),
-            returnValue: _FakeSupabaseQueryBuilder_13(
+            returnValue: _FakeSupabaseQueryBuilder_14(
               this,
               Invocation.method(#from, [table]),
             ),
@@ -2226,7 +2327,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   _i2.SupabaseQuerySchema schema(String? schema) =>
       (super.noSuchMethod(
             Invocation.method(#schema, [schema]),
-            returnValue: _FakeSupabaseQuerySchema_14(
+            returnValue: _FakeSupabaseQuerySchema_15(
               this,
               Invocation.method(#schema, [schema]),
             ),
@@ -2241,7 +2342,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   }) =>
       (super.noSuchMethod(
             Invocation.method(#rpc, [fn], {#params: params, #get: get}),
-            returnValue: _FakePostgrestFilterBuilder_15<T>(
+            returnValue: _FakePostgrestFilterBuilder_16<T>(
               this,
               Invocation.method(#rpc, [fn], {#params: params, #get: get}),
             ),
@@ -2255,7 +2356,7 @@ class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
   }) =>
       (super.noSuchMethod(
             Invocation.method(#channel, [name], {#opts: opts}),
-            returnValue: _FakeRealtimeChannel_16(
+            returnValue: _FakeRealtimeChannel_17(
               this,
               Invocation.method(#channel, [name], {#opts: opts}),
             ),

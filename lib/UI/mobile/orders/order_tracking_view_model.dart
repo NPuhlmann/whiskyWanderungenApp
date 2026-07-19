@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../domain/models/enhanced_order.dart';
 import '../../../domain/models/basic_order.dart';
 import '../../../data/repositories/payment_repository.dart';
@@ -13,10 +12,8 @@ class OrderTrackingViewModel extends ChangeNotifier {
   OrderTrackingViewModel({
     required this.orderId,
     this.useEnhancedOrder = true,
-    PaymentRepository? paymentRepository,
-  }) : _paymentRepository =
-           paymentRepository ??
-           PaymentRepository(supabaseClient: Supabase.instance.client);
+    required PaymentRepository paymentRepository,
+  }) : _paymentRepository = paymentRepository;
 
   // State variables
   bool _isLoading = true;
