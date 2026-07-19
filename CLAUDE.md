@@ -6,6 +6,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is "Whisky Hikes" - a Flutter mobile application for discovering and tracking hiking trails. The user shall be able to buy whisky samples and hike the routes that he bought. At special locations on the map, the user gets some infos about a whisky and shall drink one of the samples. That is the case for 4-7 Whiskys along the route. The app uses Supabase as the backend service for authentication, data storage, and image hosting.
 
+## Work in a worktree, never on a branch in the main checkout
+
+**This is mandatory. Do not `git checkout -b` in the primary working directory.**
+
+Multiple agents and the developer share this repository at the same time. A
+`git checkout` in the shared directory changes the branch *under everyone else*.
+When that happens, a `git add -A` sweeps up whatever another agent was
+mid-edit on and commits it to the wrong branch. This has already happened once.
+
+For any change, create a worktree first:
+
+```bash
+git worktree add ../wt-<short-topic> -b <type>/<issue>-<slug>
+cd ../wt-<short-topic>
+cp /path/to/main/checkout/.env .env   # required — see below
+flutter pub get && dart run build_runner build
+```
+
+Then work, commit and push entirely inside that directory. When the PR is
+merged:
+
+```bash
+git worktree remove ../wt-<short-topic>
+```
+
+Two things that bite:
+
+- **`.env` must be copied in.** `pubspec.yaml` registers `.env` as a Flutter
+  asset, so a fresh worktree fails to build until the file exists. It is
+  gitignored and therefore never carried over automatically.
+- **Generated files are not shared.** Run `dart run build_runner build` in the
+  worktree; `.dart_tool/` is per-worktree.
+
+Before running any git command that changes state, check where you are:
+
+```bash
+git branch --show-current && git status --short
+```
+
+If the branch is not the one you created, stop — someone else moved it. Never
+use `git add -A` when you did not author every listed change; stage the files
+you actually touched by name.
+
 ## Common Development Commands
 
 ### Build and Run
