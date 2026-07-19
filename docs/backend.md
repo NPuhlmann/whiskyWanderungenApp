@@ -62,33 +62,24 @@ Secrets gehoeren in Supabase Vault oder eine vergleichbar serverseitige
 Secret-Verwaltung. Der Flutter-Client darf ausschliesslich einen Client Secret
 fuer die SDK-Bestaetigung erhalten.
 
-## Terraform und weitere SQL-Pfade
+## Schema-Pfad
 
-`terraform-supabase/main.tf` kann ein Supabase-Projekt erzeugen. Das Schema
-kommt ausschliesslich aus `terraform-supabase/supabase/migrations/` und wird mit
-`supabase db push` eingespielt (ADR-0003). Der frueher parallel gepflegte Baum
-`terraform-supabase/sql/` wurde mit #67 entfernt.
+Das Schema kommt ausschliesslich aus `terraform-supabase/supabase/migrations/`
+und wird mit `supabase db push` eingespielt (ADR-0003). Der frueher parallel
+gepflegte Baum `terraform-supabase/sql/` wurde mit #67 entfernt, die
+`.tf`-Dateien mit #81.
 
-!!! warning "Terraform provisioniert nicht das Schema"
-    `terraform apply` ist nicht der Weg, auf dem dieses Projekt aufgesetzt wird.
-    Neue Schemaversionen entstehen als datierte Migration, nie als Skript oder
+!!! warning "Es gibt keinen Terraform-Pfad mehr"
+    Das Supabase-Projekt wird ueber die Management API bzw. das Dashboard
+    angelegt, danach mit `supabase link` verbunden. Neue Schemaversionen
+    entstehen als datierte Migration, nie als loses Skript oder
     Dashboard-Aenderung.
 
-### Terraform-Variablen
+### Operator-Secrets
 
-`terraform-supabase/variables.tf` erwartet unter anderem:
-
-```hcl
-organization_id          = "<supabase-organisation>"
-database_password        = "<starkes-passwort>"
-environment              = "dev"
-supabase_access_token    = "<operator-token>"
-supabase_service_role_key = "<server-only-key>"
-```
-
-Weitere Variablen konfigurieren Stripe-Test- und optional Live-Schluessel.
-Alle sensitiven Werte sind nur in einem lokalen, ignorierten
-`terraform.tfvars`, in einem Secret Store oder in CI-Secrets abzulegen.
+`SUPABASE_ACCESS_TOKEN` (fuer `supabase link`) und `SUPABASE_SERVICE_ROLE_KEY`
+gehoeren in einen Secret Store oder in CI-Secrets — nie in `.env`, das per
+`pubspec.yaml` als Flutter-Asset mit ausgeliefert wird.
 
 ## Migrationsablauf fuer Entwickler
 

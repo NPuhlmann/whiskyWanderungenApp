@@ -9,7 +9,7 @@ sichere Secret-Ablage.
 | Kategorie | Beispiele | Ablage |
 | --- | --- | --- |
 | Client-Konfiguration | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, Stripe Publishable Key | lokale `.env` bzw. sicherer Client-Konfigurationsweg |
-| Operator-Secrets | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY` | Secret Store, lokale `terraform.tfvars`, CI-Secrets |
+| Operator-Secrets | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY` | Secret Store, CI-Secrets |
 | Stripe-Server-Secrets | `sk_*`, `whsec_*` | Supabase Vault oder anderer serverseitiger Secret Store |
 | Release-Signing | Android Keystore, iOS-Zertifikate | GitHub Secrets / CI Secret Store |
 

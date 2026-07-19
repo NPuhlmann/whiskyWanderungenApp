@@ -157,9 +157,8 @@ environment = "dev"
 
 ### GitHub Secrets (für CI/CD)
 
-Die maßgebliche Liste steht in
-[`CI_CD_SETUP.md`](CI_CD_SETUP.md) und stammt aus `distribute.yml` — abweichende
-Schreibweisen führen zu einem fehlschlagenden Workflow.
+Die maßgebliche Liste steht in `.github/workflows/distribute.yml` selbst —
+abweichende Schreibweisen führen zu einem fehlschlagenden Workflow.
 
 ## 🗄️ Supabase Setup
 
