@@ -260,3 +260,14 @@ Temporary Items
 .claude/
 .opencode/
 opencode.json
+
+# Release signing material — never commit. These are the identities behind
+# Play Store and TestFlight uploads; CI gets them as repo secrets instead
+# (see .github/workflows/distribute.yml). Unanchored on purpose: catches them
+# wherever they land, not just under android/ or ios/.
+*.jks
+*.keystore
+*.p12
+*.p8
+*.mobileprovision
+*.certSigningRequest
