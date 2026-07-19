@@ -96,36 +96,7 @@ GoRouter router(
                 final viewModel = context.watch<HomePageViewModel>();
                 return HomePage(viewModel: viewModel);
               },
-              routes: [
-                GoRoute(
-                  path: Routes.hikeDetails,
-                  builder: (context, state) {
-                    final Map<String, dynamic> extraData =
-                        state.extra as Map<String, dynamic>;
-                    final hikeData = extraData['hike'] as Hike;
-                    final isFromMyHikes = extraData['isFromMyHikes'] as bool;
-                    final viewModel = context.watch<HikeDetailsPageViewModel>();
-                    return HikeDetailsPage(
-                      hikeData: hikeData,
-                      viewModel: viewModel,
-                      isFromMyHikes: isFromMyHikes,
-                    );
-                  },
-                  routes: [
-                    GoRoute(
-                      path: Routes.hikeMap.substring(
-                        1,
-                      ), // Entferne den führenden Slash
-                      builder: (context, state) {
-                        final Map<String, dynamic> extraData =
-                            state.extra as Map<String, dynamic>;
-                        final hike = extraData['hike'] as Hike;
-                        return HikeMapPage(hikeId: hike.id);
-                      },
-                    ),
-                  ],
-                ),
-              ],
+              routes: _hikeRoutes(),
             ),
           ],
         ),
@@ -137,38 +108,7 @@ GoRouter router(
                 final viewModel = context.watch<MyHikesViewModel>();
                 return MyHikesPage(viewModel: viewModel);
               },
-              routes: [
-                GoRoute(
-                  path: Routes.hikeDetails.substring(
-                    1,
-                  ), // Entferne den führenden Slash
-                  builder: (context, state) {
-                    final Map<String, dynamic> extraData =
-                        state.extra as Map<String, dynamic>;
-                    final hikeData = extraData['hike'] as Hike;
-                    final isFromMyHikes = extraData['isFromMyHikes'] as bool;
-                    final viewModel = context.watch<HikeDetailsPageViewModel>();
-                    return HikeDetailsPage(
-                      hikeData: hikeData,
-                      viewModel: viewModel,
-                      isFromMyHikes: isFromMyHikes,
-                    );
-                  },
-                  routes: [
-                    GoRoute(
-                      path: Routes.hikeMap.substring(
-                        1,
-                      ), // Entferne den führenden Slash
-                      builder: (context, state) {
-                        final Map<String, dynamic> extraData =
-                            state.extra as Map<String, dynamic>;
-                        final hike = extraData['hike'] as Hike;
-                        return HikeMapPage(hikeId: hike.id);
-                      },
-                    ),
-                  ],
-                ),
-              ],
+              routes: _hikeRoutes(),
             ),
           ],
         ),
@@ -195,11 +135,7 @@ GoRouter router(
       name: 'checkout',
       builder: (context, state) {
         final hike = state.extra as Hike?;
-        if (hike == null) {
-          return const Scaffold(
-            body: Center(child: Text('Wanderung nicht gefunden')),
-          );
-        }
+        if (hike == null) return const _HikeNotFound();
 
         return CheckoutPage(hike: hike);
       },
@@ -252,6 +188,54 @@ GoRouter router(
     ...AdminRouter.getAdminRoutes(),
   ],
 );
+
+// Declared once and mounted under both the home and the my-hikes branch —
+// the pages behave the same either way, HikeDetailsPage already knows which
+// branch it came from via isFromMyHikes.
+List<RouteBase> _hikeRoutes() => [
+  GoRoute(
+    path: Routes.hikeDetails,
+    builder: (context, state) {
+      final hike = _hikeFrom(state);
+      if (hike == null) return const _HikeNotFound();
+      return HikeDetailsPage(
+        hikeData: hike,
+        viewModel: context.watch<HikeDetailsPageViewModel>(),
+        isFromMyHikes: _isFromMyHikes(state),
+      );
+    },
+    routes: [
+      GoRoute(
+        path: Routes.hikeMap,
+        builder: (context, state) {
+          final hike = _hikeFrom(state);
+          if (hike == null) return const _HikeNotFound();
+          return HikeMapPage(hikeId: hike.id);
+        },
+      ),
+    ],
+  ),
+];
+
+// state.extra is null on a deep link, a web reload or a restored route stack,
+// so every read has to tolerate its absence.
+Map<String, dynamic>? _extra(GoRouterState state) =>
+    state.extra is Map<String, dynamic>
+    ? state.extra as Map<String, dynamic>
+    : null;
+
+Hike? _hikeFrom(GoRouterState state) => _extra(state)?['hike'] as Hike?;
+
+bool _isFromMyHikes(GoRouterState state) =>
+    _extra(state)?['isFromMyHikes'] as bool? ?? false;
+
+class _HikeNotFound extends StatelessWidget {
+  const _HikeNotFound();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Wanderung nicht gefunden')));
+}
 
 // Decision logic lives in resolveRedirect (auth_redirect.dart) so it can be
 // unit-tested without a BuildContext.
