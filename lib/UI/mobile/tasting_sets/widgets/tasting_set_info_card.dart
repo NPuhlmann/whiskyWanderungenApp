@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
@@ -24,12 +25,20 @@ class TastingSetInfoCard extends StatelessWidget {
                 if (tastingSet.imageUrl != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      tastingSet.imageUrl!,
+                    child: CachedNetworkImage(
+                      imageUrl: tastingSet.imageUrl!,
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
+                      placeholder: (context, url) => Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) {
                         return Container(
                           width: 100,
                           height: 100,
@@ -304,12 +313,20 @@ class _SampleItem extends StatelessWidget {
           // Sample image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              sample.imageUrl,
+            child: CachedNetworkImage(
+              imageUrl: sample.imageUrl,
               width: 60,
               height: 60,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
+              placeholder: (context, url) => Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              errorWidget: (context, url, error) {
                 return Container(
                   width: 60,
                   height: 60,

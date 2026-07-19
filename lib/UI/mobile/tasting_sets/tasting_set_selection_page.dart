@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
@@ -96,12 +97,17 @@ class TastingSetSelectionPage extends StatelessWidget {
                       if (hike.thumbnailImageUrl != null)
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            hike.thumbnailImageUrl!,
+                          child: CachedNetworkImage(
+                            imageUrl: hike.thumbnailImageUrl!,
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
+                            placeholder: (context, url) => Container(
+                              width: 60,
+                              height: 60,
+                              color: Colors.grey[300],
+                            ),
+                            errorWidget: (context, url, error) {
                               return Container(
                                 width: 60,
                                 height: 60,

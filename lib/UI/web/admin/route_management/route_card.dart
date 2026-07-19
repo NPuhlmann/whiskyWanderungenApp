@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../config/l10n/app_localizations.dart';
 
@@ -117,13 +118,13 @@ class RouteCard extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(8),
               ),
-              child: Image.network(
-                thumbnailUrl,
+              child: CachedNetworkImage(
+                imageUrl: thumbnailUrl,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildImagePlaceholder(),
+                placeholder: (context, url) => _buildImagePlaceholder(),
+                errorWidget: (context, url, error) => _buildImagePlaceholder(),
               ),
             )
           else

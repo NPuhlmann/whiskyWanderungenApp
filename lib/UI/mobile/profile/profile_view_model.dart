@@ -27,12 +27,16 @@ class ProfilePageViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  Object? _error;
+  Object? get error => _error;
+
   /// Lädt Profile (Identität) und Account (E-Mail, Rolle) getrennt.
   /// Existiert noch keine `profiles`-Zeile (z.B. Signup-Trigger noch nicht
   /// gelaufen), zeigt der Screen ein leeres, editierbares Profil statt eines
   /// Fehlers.
-  Future<Profile> loadProfile() async {
+  Future<Profile?> loadProfile() async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
@@ -53,6 +57,10 @@ class ProfilePageViewModel extends ChangeNotifier {
 
       _profile = profile;
       return profile;
+    } catch (e) {
+      log("Fehler beim Laden des Profils: $e", error: e);
+      _error = e;
+      return null;
     } finally {
       _isLoading = false;
       notifyListeners();

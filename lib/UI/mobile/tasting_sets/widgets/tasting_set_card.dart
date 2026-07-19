@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
@@ -39,12 +40,20 @@ class TastingSetCard extends StatelessWidget {
                   if (tastingSet.imageUrl != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        tastingSet.imageUrl!,
+                      child: CachedNetworkImage(
+                        imageUrl: tastingSet.imageUrl!,
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
+                        placeholder: (context, url) => Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) {
                           return Container(
                             width: 80,
                             height: 80,
