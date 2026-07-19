@@ -157,20 +157,9 @@ environment = "dev"
 
 ### GitHub Secrets (für CI/CD)
 
-Füge diese Secrets in deinem GitHub Repository hinzu:
-
-#### Android
-- `ANDROID_KEYSTORE_BASE64`
-- `ANDROID_KEYSTORE_PASSWORD`
-- `ANDROID_KEY_ALIAS`
-- `ANDROID_KEY_PASSWORD`
-
-#### iOS
-- `IOS_P12_BASE64`
-- `IOS_P12_PASSWORD`
-- `IOS_APP_STORE_CONNECT_API_KEY`
-- `IOS_APP_STORE_CONNECT_ISSUER_ID`
-- `IOS_APP_STORE_CONNECT_KEY_ID`
+Die maßgebliche Liste steht in
+[`CI_CD_SETUP.md`](CI_CD_SETUP.md) und stammt aus `distribute.yml` — abweichende
+Schreibweisen führen zu einem fehlschlagenden Workflow.
 
 ## 🗄️ Supabase Setup
 

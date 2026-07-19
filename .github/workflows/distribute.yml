@@ -198,8 +198,8 @@ jobs:
             | base64 --decode > "$PROFILES_DIR/dist.mobileprovision"
 
       - name: Generate ExportOptions.plist
-        # Generated at runtime rather than using the checked-in
-        # ios-export-options.plist, so team ID / profile name come from secrets.
+        # Generated at runtime rather than from a checked-in template, so team
+        # ID and profile name come from secrets and never land in the repo.
         run: |
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
