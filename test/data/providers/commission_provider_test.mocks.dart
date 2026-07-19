@@ -6,7 +6,7 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:whisky_hikes/data/services/commission/commission_service.dart'
+import 'package:whisky_hikes/data/repositories/commission_repository.dart'
     as _i3;
 import 'package:whisky_hikes/domain/models/commission.dart' as _i2;
 
@@ -30,47 +30,14 @@ class _FakeCommission_0 extends _i1.SmartFake implements _i2.Commission {
     : super(parent, parentInvocation);
 }
 
-/// A class which mocks [CommissionService].
+/// A class which mocks [CommissionRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCommissionService extends _i1.Mock implements _i3.CommissionService {
-  MockCommissionService() {
+class MockCommissionRepository extends _i1.Mock
+    implements _i3.CommissionRepository {
+  MockCommissionRepository() {
     _i1.throwOnMissingStub(this);
   }
-
-  @override
-  _i4.Future<_i2.Commission> createCommissionForOrder({
-    required int? hikeId,
-    required String? companyId,
-    required String? orderId,
-    required double? baseAmount,
-    required double? commissionRate,
-    String? notes,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#createCommissionForOrder, [], {
-              #hikeId: hikeId,
-              #companyId: companyId,
-              #orderId: orderId,
-              #baseAmount: baseAmount,
-              #commissionRate: commissionRate,
-              #notes: notes,
-            }),
-            returnValue: _i4.Future<_i2.Commission>.value(
-              _FakeCommission_0(
-                this,
-                Invocation.method(#createCommissionForOrder, [], {
-                  #hikeId: hikeId,
-                  #companyId: companyId,
-                  #orderId: orderId,
-                  #baseAmount: baseAmount,
-                  #commissionRate: commissionRate,
-                  #notes: notes,
-                }),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.Commission>);
 
   @override
   _i4.Future<List<_i2.Commission>> getCommissionsForCompany(
@@ -85,117 +52,12 @@ class MockCommissionService extends _i1.Mock implements _i3.CommissionService {
           as _i4.Future<List<_i2.Commission>>);
 
   @override
-  _i4.Future<List<_i2.Commission>> getCommissionsByStatus(
-    String? companyId,
-    _i2.CommissionStatus? status,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#getCommissionsByStatus, [companyId, status]),
-            returnValue: _i4.Future<List<_i2.Commission>>.value(
-              <_i2.Commission>[],
-            ),
-          )
-          as _i4.Future<List<_i2.Commission>>);
-
-  @override
-  _i4.Future<_i2.Commission?> getCommissionById(int? id) =>
-      (super.noSuchMethod(
-            Invocation.method(#getCommissionById, [id]),
-            returnValue: _i4.Future<_i2.Commission?>.value(),
-          )
-          as _i4.Future<_i2.Commission?>);
-
-  @override
   _i4.Future<_i2.Commission?> getCommissionByOrderId(String? orderId) =>
       (super.noSuchMethod(
             Invocation.method(#getCommissionByOrderId, [orderId]),
             returnValue: _i4.Future<_i2.Commission?>.value(),
           )
           as _i4.Future<_i2.Commission?>);
-
-  @override
-  _i4.Future<_i2.Commission> markCommissionAsPaid(
-    int? commissionId, {
-    String? billingPeriodId,
-    String? notes,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(
-              #markCommissionAsPaid,
-              [commissionId],
-              {#billingPeriodId: billingPeriodId, #notes: notes},
-            ),
-            returnValue: _i4.Future<_i2.Commission>.value(
-              _FakeCommission_0(
-                this,
-                Invocation.method(
-                  #markCommissionAsPaid,
-                  [commissionId],
-                  {#billingPeriodId: billingPeriodId, #notes: notes},
-                ),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.Commission>);
-
-  @override
-  _i4.Future<_i2.Commission> updateCommissionStatus(
-    int? commissionId,
-    _i2.CommissionStatus? status, {
-    String? notes,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(
-              #updateCommissionStatus,
-              [commissionId, status],
-              {#notes: notes},
-            ),
-            returnValue: _i4.Future<_i2.Commission>.value(
-              _FakeCommission_0(
-                this,
-                Invocation.method(
-                  #updateCommissionStatus,
-                  [commissionId, status],
-                  {#notes: notes},
-                ),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.Commission>);
-
-  @override
-  _i4.Future<_i2.Commission> cancelCommission(
-    int? commissionId, {
-    String? reason,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(
-              #cancelCommission,
-              [commissionId],
-              {#reason: reason},
-            ),
-            returnValue: _i4.Future<_i2.Commission>.value(
-              _FakeCommission_0(
-                this,
-                Invocation.method(
-                  #cancelCommission,
-                  [commissionId],
-                  {#reason: reason},
-                ),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.Commission>);
-
-  @override
-  _i4.Future<Map<String, dynamic>> getCommissionStatistics(String? companyId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getCommissionStatistics, [companyId]),
-            returnValue: _i4.Future<Map<String, dynamic>>.value(
-              <String, dynamic>{},
-            ),
-          )
-          as _i4.Future<Map<String, dynamic>>);
 
   @override
   _i4.Future<List<_i2.Commission>> getCommissionsForDateRange(
@@ -226,30 +88,14 @@ class MockCommissionService extends _i1.Mock implements _i3.CommissionService {
           as _i4.Future<List<_i2.Commission>>);
 
   @override
-  _i4.Future<List<_i2.Commission>> processBatchPayment(
-    List<int>? commissionIds, {
-    String? billingPeriodId,
-    String? notes,
-  }) =>
+  _i4.Future<Map<String, dynamic>> getCommissionStatistics(String? companyId) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #processBatchPayment,
-              [commissionIds],
-              {#billingPeriodId: billingPeriodId, #notes: notes},
-            ),
-            returnValue: _i4.Future<List<_i2.Commission>>.value(
-              <_i2.Commission>[],
+            Invocation.method(#getCommissionStatistics, [companyId]),
+            returnValue: _i4.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
             ),
           )
-          as _i4.Future<List<_i2.Commission>>);
-
-  @override
-  _i4.Future<double> getTotalCommissionForPeriod(String? billingPeriodId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getTotalCommissionForPeriod, [billingPeriodId]),
-            returnValue: _i4.Future<double>.value(0.0),
-          )
-          as _i4.Future<double>);
+          as _i4.Future<Map<String, dynamic>>);
 
   @override
   _i4.Future<Map<int, Map<String, dynamic>>> getCommissionSummaryByHike(
@@ -268,4 +114,29 @@ class MockCommissionService extends _i1.Mock implements _i3.CommissionService {
             ),
           )
           as _i4.Future<Map<int, Map<String, dynamic>>>);
+
+  @override
+  _i4.Future<_i2.Commission> updateCommissionStatus(
+    int? commissionId,
+    _i2.CommissionStatus? status, {
+    String? notes,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #updateCommissionStatus,
+              [commissionId, status],
+              {#notes: notes},
+            ),
+            returnValue: _i4.Future<_i2.Commission>.value(
+              _FakeCommission_0(
+                this,
+                Invocation.method(
+                  #updateCommissionStatus,
+                  [commissionId, status],
+                  {#notes: notes},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Commission>);
 }

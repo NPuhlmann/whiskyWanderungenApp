@@ -26,6 +26,7 @@ import '../data/services/whisky/whisky_management_service.dart';
 import '../data/providers/whisky_management_provider.dart';
 import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
+import '../data/repositories/commission_repository.dart';
 import '../data/providers/team_provider.dart';
 import '../data/services/analytics/sales_analytics_service.dart';
 import '../data/services/analytics/customer_analytics_service.dart';
@@ -90,6 +91,10 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
         context.read<ConnectivityService>(),
       ),
     ),
+    Provider<CommissionRepository>(
+      create: (context) =>
+          CommissionRepository(context.read<CommissionService>()),
+    ),
     Provider<PaymentRepository>(
       create: (context) => PaymentRepositoryFactory.create(
         supabaseClient: null, // Will use default Supabase.instance.client
@@ -137,7 +142,7 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     ),
     ChangeNotifierProvider<CommissionProvider>(
       create: (context) => CommissionProvider(
-        commissionService: context.read<CommissionService>(),
+        commissionRepository: context.read<CommissionRepository>(),
       ),
     ),
     ChangeNotifierProvider<TeamProvider>(

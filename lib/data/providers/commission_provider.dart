@@ -1,17 +1,15 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/commission/commission_service.dart';
+import '../repositories/commission_repository.dart';
 import '../../domain/models/commission.dart';
 
 /// Provider für die Verwaltung von Provisionen im Admin-Bereich
 class CommissionProvider extends ChangeNotifier {
-  final CommissionService _commissionService;
+  final CommissionRepository _commissionRepository;
 
-  CommissionProvider({CommissionService? commissionService})
-    : _commissionService =
-          commissionService ?? CommissionService(Supabase.instance.client);
+  CommissionProvider({required CommissionRepository commissionRepository})
+    : _commissionRepository = commissionRepository;
 
   // State
   List<Commission> _commissions = [];
@@ -66,7 +64,7 @@ class CommissionProvider extends ChangeNotifier {
     setLoading(true);
 
     try {
-      final commissions = await _commissionService.getCommissionsForCompany(
+      final commissions = await _commissionRepository.getCommissionsForCompany(
         companyId,
       );
       _commissions = commissions;
@@ -106,7 +104,9 @@ class CommissionProvider extends ChangeNotifier {
   /// Load commission statistics for company
   Future<void> loadStatistics(String companyId) async {
     try {
-      final stats = await _commissionService.getCommissionStatistics(companyId);
+      final stats = await _commissionRepository.getCommissionStatistics(
+        companyId,
+      );
       _statistics = stats;
       notifyListeners();
     } catch (e) {
@@ -122,10 +122,8 @@ class CommissionProvider extends ChangeNotifier {
     CommissionStatus status,
   ) async {
     try {
-      final updatedCommission = await _commissionService.updateCommissionStatus(
-        commissionId,
-        status,
-      );
+      final updatedCommission = await _commissionRepository
+          .updateCommissionStatus(commissionId, status);
 
       // Update local commission list
       final index = _commissions.indexWhere((c) => c.id == commissionId);
@@ -143,7 +141,9 @@ class CommissionProvider extends ChangeNotifier {
   /// Load overdue commissions for company
   Future<void> loadOverdueCommissions(String companyId) async {
     try {
-      final overdue = await _commissionService.getOverdueCommissions(companyId);
+      final overdue = await _commissionRepository.getOverdueCommissions(
+        companyId,
+      );
       _overdueCommissions = overdue;
       notifyListeners();
     } catch (e) {

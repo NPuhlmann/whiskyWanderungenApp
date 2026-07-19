@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:whisky_hikes/data/services/commission/commission_service.dart';
+import 'package:provider/provider.dart';
+import 'package:whisky_hikes/data/repositories/commission_repository.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
 
 /// Widget to display commission information for an order
@@ -19,7 +19,6 @@ class CommissionInfoWidget extends StatefulWidget {
 }
 
 class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
-  late final CommissionService _commissionService;
   Commission? _commission;
   bool _isLoading = true;
   String? _errorMessage;
@@ -27,7 +26,6 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
   @override
   void initState() {
     super.initState();
-    _commissionService = CommissionService(Supabase.instance.client);
     _loadCommissionData();
   }
 
@@ -38,15 +36,17 @@ class _CommissionInfoWidgetState extends State<CommissionInfoWidget> {
         _errorMessage = null;
       });
 
-      final commission = await _commissionService.getCommissionByOrderId(
-        widget.orderId,
-      );
+      final commission = await context
+          .read<CommissionRepository>()
+          .getCommissionByOrderId(widget.orderId);
 
+      if (!mounted) return;
       setState(() {
         _commission = commission;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;

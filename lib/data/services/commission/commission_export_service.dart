@@ -3,14 +3,14 @@ import 'dart:developer';
 import 'package:csv/csv.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:whisky_hikes/data/services/commission/commission_service.dart';
+import 'package:whisky_hikes/data/repositories/commission_repository.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
 
 /// Service for exporting commission data to various formats (PDF, CSV)
 class CommissionExportService {
-  final CommissionService _commissionService;
+  final CommissionRepository _commissionRepository;
 
-  CommissionExportService(this._commissionService);
+  CommissionExportService(this._commissionRepository);
 
   /// Generate a PDF report for commissions
   Future<Uint8List> generateCommissionPDF({
@@ -34,13 +34,13 @@ class CommissionExportService {
       // Fetch commission data
       final List<Commission> commissions;
       if (startDate != null && endDate != null) {
-        commissions = await _commissionService.getCommissionsForDateRange(
+        commissions = await _commissionRepository.getCommissionsForDateRange(
           companyId,
           startDate,
           endDate,
         );
       } else {
-        commissions = await _commissionService.getCommissionsForCompany(
+        commissions = await _commissionRepository.getCommissionsForCompany(
           companyId,
         );
       }
@@ -48,7 +48,7 @@ class CommissionExportService {
       // Fetch statistics if requested
       Map<String, dynamic>? statistics;
       if (includeStatistics) {
-        statistics = await _commissionService.getCommissionStatistics(
+        statistics = await _commissionRepository.getCommissionStatistics(
           companyId,
         );
       }
@@ -142,13 +142,13 @@ class CommissionExportService {
       // Fetch commission data
       final List<Commission> commissions;
       if (startDate != null && endDate != null) {
-        commissions = await _commissionService.getCommissionsForDateRange(
+        commissions = await _commissionRepository.getCommissionsForDateRange(
           companyId,
           startDate,
           endDate,
         );
       } else {
-        commissions = await _commissionService.getCommissionsForCompany(
+        commissions = await _commissionRepository.getCommissionsForCompany(
           companyId,
         );
       }
