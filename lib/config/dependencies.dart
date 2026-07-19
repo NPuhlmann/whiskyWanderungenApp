@@ -26,7 +26,6 @@ import '../data/services/whisky/whisky_management_service.dart';
 import '../data/providers/whisky_management_provider.dart';
 import '../data/services/commission/commission_service.dart';
 import '../data/providers/commission_provider.dart';
-import '../data/services/team/team_management_service.dart';
 import '../data/providers/team_provider.dart';
 import '../data/services/analytics/sales_analytics_service.dart';
 import '../data/services/analytics/customer_analytics_service.dart';
@@ -56,7 +55,6 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
     Provider<CommissionService>(
       create: (_) => CommissionService(Supabase.instance.client),
     ),
-    Provider<TeamManagementService>(create: (_) => TeamManagementService()),
     Provider<SalesAnalyticsService>(
       create: (_) => SalesAnalyticsService(client: Supabase.instance.client),
     ),
@@ -143,10 +141,8 @@ List<SingleChildWidget> buildProviders(AgeGateService ageGateService) {
       ),
     ),
     ChangeNotifierProvider<TeamProvider>(
-      create: (context) => TeamProvider(
-        userRepository: context.read<UserRepository>(),
-        service: context.read<TeamManagementService>(),
-      ),
+      create: (context) =>
+          TeamProvider(userRepository: context.read<UserRepository>()),
     ),
     ChangeNotifierProvider<AnalyticsProvider>(
       create: (context) => AnalyticsProvider(

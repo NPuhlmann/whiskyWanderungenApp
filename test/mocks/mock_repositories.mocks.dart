@@ -436,6 +436,36 @@ class MockUserRepository extends _i1.Mock implements _i16.UserRepository {
           as _i10.Future<List<_i3.Account>>);
 
   @override
+  _i10.Future<_i3.Account> setUserRole({
+    required String? userId,
+    required String? newRole,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#setUserRole, [], {
+              #userId: userId,
+              #newRole: newRole,
+            }),
+            returnValue: _i10.Future<_i3.Account>.value(
+              _FakeAccount_1(
+                this,
+                Invocation.method(#setUserRole, [], {
+                  #userId: userId,
+                  #newRole: newRole,
+                }),
+              ),
+            ),
+          )
+          as _i10.Future<_i3.Account>);
+
+  @override
+  _i10.Future<bool> isCurrentUserAdmin() =>
+      (super.noSuchMethod(
+            Invocation.method(#isCurrentUserAdmin, []),
+            returnValue: _i10.Future<bool>.value(false),
+          )
+          as _i10.Future<bool>);
+
+  @override
   void addListener(_i17.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#addListener, [listener]),
     returnValueForMissingStub: null,

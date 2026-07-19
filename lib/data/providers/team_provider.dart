@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 
 import '../../domain/models/account.dart';
 import '../repositories/user_repository.dart';
-import '../services/team/team_management_service.dart';
 
 /// State-Management für die Team-Verwaltung (`/admin/team`).
 ///
@@ -12,13 +11,9 @@ import '../services/team/team_management_service.dart';
 /// bereits geladene Liste statt über eine erneute DB-Query.
 class TeamProvider extends ChangeNotifier {
   final UserRepository _userRepository;
-  final TeamManagementService _service;
 
-  TeamProvider({
-    required UserRepository userRepository,
-    TeamManagementService? service,
-  }) : _userRepository = userRepository,
-       _service = service ?? TeamManagementService();
+  TeamProvider({required UserRepository userRepository})
+    : _userRepository = userRepository;
 
   List<Account> _allAccounts = const [];
   List<Account> _accounts = const [];
@@ -88,7 +83,7 @@ class TeamProvider extends ChangeNotifier {
     required String newRole,
   }) async {
     try {
-      final updated = await _service.setUserRole(
+      final updated = await _userRepository.setUserRole(
         userId: userId,
         newRole: newRole,
       );
