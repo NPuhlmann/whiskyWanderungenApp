@@ -14,7 +14,6 @@ import '../../../domain/models/review.dart';
 import '../shipping/shipping_calculation_service.dart';
 import 'profile_service.dart';
 import 'hike_service.dart';
-import '../../models/pagination_result.dart';
 
 class BackendApiService {
   final SupabaseClient client;
@@ -44,12 +43,6 @@ class BackendApiService {
     return await _hikeService.fetchHikes();
   }
 
-  // get paginated hikes
-  Future<PaginationResult<Hike>> fetchHikesPaginated(
-    PaginationParams params,
-  ) async {
-    return await _hikeService.fetchHikesPaginated(params);
-  }
 
   // get a list of hikes purchased by a user
   Future<List<Hike>> fetchUserHikes(String userId) async {
