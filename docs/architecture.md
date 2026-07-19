@@ -143,7 +143,8 @@ Es bestehen zwei getrennte Caches:
 | `OfflineService` | Hikes, Waypoints, Tasting-Sets und Listen | `SharedPreferences`, Cache-Verzeichnis | Hikes 12 h, Waypoints 6 h, Orders 48 h, Bilder 7 Tage |
 
 `OfflineFirstHikeRepository` bietet `cacheFirst`, `networkFirst`,
-`cacheOnly`, `networkOnly` und `staleWhileRevalidate`. Die allgemeine
-`DataSyncService`-Queue kann Waypoint-Aktionen persistent verarbeiten, wird
-aber vom mobilen Einstieg aktuell nicht initialisiert. Offline-Aenderungen an
-Waypoints sind deshalb vor produktiver Nutzung end-to-end zu verifizieren.
+`cacheOnly`, `networkOnly` und `staleWhileRevalidate`. Schreibende
+Offline-Aenderungen werden aktuell nicht unterstuetzt: Die dafuer gedachte
+`DataSyncService`-Queue war nie verdrahtet und wurde mit #31 geloescht. Ein
+Offline-Write-Pfad wird bei Bedarf neu gegen die vertieften Repositories
+entworfen.
