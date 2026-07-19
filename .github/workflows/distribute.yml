@@ -21,8 +21,9 @@ permissions:
 env:
   FLUTTER_VERSION: '3.41.7'
   # Android applicationId (android/app/build.gradle) and iOS bundle id
-  # (ios/Runner.xcodeproj) are NOT the same string — keep them separate.
-  ANDROID_PACKAGE: 'com.example.whisky_hikes'
+  # (ios/Runner.xcodeproj). Same string today, but they are independent
+  # identifiers on independent stores — keep them as separate vars.
+  ANDROID_PACKAGE: 'com.puhlmann.whiskyHikes'
   IOS_BUNDLE_ID: 'com.puhlmann.whiskyHikes'
 
 # Required GitHub Secrets — add all of these in Settings → Secrets → Actions:
