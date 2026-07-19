@@ -1,30 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/data/providers/team_provider.dart';
-import 'package:whisky_hikes/data/services/team/team_management_service.dart';
 import 'package:whisky_hikes/domain/models/account.dart';
 
 import '../../mocks/mock_repositories.dart';
-
-/// Test-Double für [TeamManagementService] ohne Supabase-Abhängigkeit.
-/// Deckt nur `setUserRole` ab - das Laden der Liste läuft über
-/// [MockUserRepository.listAccounts].
-class _FakeTeamService implements TeamManagementService {
-  Object? setRoleError;
-  Account Function(String userId, String newRole)? roleUpdater;
-
-  @override
-  Future<Account> setUserRole({
-    required String userId,
-    required String newRole,
-  }) async {
-    if (setRoleError != null) throw setRoleError!;
-    final updater =
-        roleUpdater ??
-        (id, role) => Account(id: id, email: '$id@x', role: role);
-    return updater(userId, newRole);
-  }
-}
 
 Account _account(String id, String email, {String role = 'user'}) =>
     Account(id: id, email: email, role: role);
@@ -32,15 +11,13 @@ Account _account(String id, String email, {String role = 'user'}) =>
 void main() {
   group('TeamProvider', () {
     late MockUserRepository mockUserRepository;
-    late _FakeTeamService fakeService;
 
     setUp(() {
       mockUserRepository = MockUserRepository();
-      fakeService = _FakeTeamService();
     });
 
     TeamProvider buildProvider() =>
-        TeamProvider(userRepository: mockUserRepository, service: fakeService);
+        TeamProvider(userRepository: mockUserRepository);
 
     test('load() füllt profiles und berechnet Counts', () async {
       when(mockUserRepository.listAccounts()).thenAnswer(
@@ -103,6 +80,9 @@ void main() {
       when(
         mockUserRepository.listAccounts(),
       ).thenAnswer((_) async => [_account('a', 'a@x'), _account('b', 'b@x')]);
+      when(
+        mockUserRepository.setUserRole(userId: 'a', newRole: 'admin'),
+      ).thenAnswer((_) async => _account('a', 'a@x', role: 'admin'));
       final provider = buildProvider();
       await provider.load();
       expect(provider.adminCount, 0);
@@ -118,7 +98,9 @@ void main() {
       when(
         mockUserRepository.listAccounts(),
       ).thenAnswer((_) async => [_account('a', 'a@x')]);
-      fakeService.setRoleError = Exception('forbidden');
+      when(
+        mockUserRepository.setUserRole(userId: 'a', newRole: 'admin'),
+      ).thenThrow(Exception('forbidden'));
       final provider = buildProvider();
       await provider.load();
 

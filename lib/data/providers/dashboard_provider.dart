@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
-import 'package:whisky_hikes/data/services/admin/dashboard_metrics_service.dart';
+import 'package:whisky_hikes/data/repositories/metrics_repository.dart';
 
 class DashboardProvider extends ChangeNotifier {
-  final DashboardMetricsService _metricsService;
+  final MetricsRepository _metricsRepository;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -11,8 +11,8 @@ class DashboardProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _recentOrders = [];
   List<Map<String, dynamic>> _popularRoutes = [];
 
-  DashboardProvider({DashboardMetricsService? metricsService})
-    : _metricsService = metricsService ?? DashboardMetricsService();
+  DashboardProvider({required MetricsRepository metricsRepository})
+    : _metricsRepository = metricsRepository;
 
   // Getters
   bool get isLoading => _isLoading;
@@ -30,11 +30,11 @@ class DashboardProvider extends ChangeNotifier {
       (_metrics['monthlyRevenue'] as num?)?.toDouble() ?? 0.0;
 
   String get formattedDailyRevenue =>
-      _metricsService.formatCurrency(dailyRevenue);
+      _metricsRepository.formatCurrency(dailyRevenue);
   String get formattedWeeklyRevenue =>
-      _metricsService.formatCurrency(weeklyRevenue);
+      _metricsRepository.formatCurrency(weeklyRevenue);
   String get formattedMonthlyRevenue =>
-      _metricsService.formatCurrency(monthlyRevenue);
+      _metricsRepository.formatCurrency(monthlyRevenue);
 
   // Order Metrics
   int get totalActiveOrders => (_metrics['totalActiveOrders'] as int?) ?? 0;
@@ -97,7 +97,7 @@ class DashboardProvider extends ChangeNotifier {
     clearError();
 
     try {
-      final metricsData = await _metricsService.getDashboardMetrics();
+      final metricsData = await _metricsRepository.getDashboardMetrics();
 
       _metrics = metricsData;
       _recentOrders = List<Map<String, dynamic>>.from(

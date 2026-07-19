@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:whisky_hikes/data/services/commission/commission_service.dart';
+import 'package:whisky_hikes/data/repositories/commission_repository.dart';
 import 'package:whisky_hikes/domain/models/commission.dart';
 
 /// Enum for chart time periods
@@ -80,9 +80,9 @@ class HikeCommissionData {
 
 /// Service for generating commission chart data and analytics
 class CommissionChartService {
-  final CommissionService _commissionService;
+  final CommissionRepository _commissionRepository;
 
-  CommissionChartService(this._commissionService);
+  CommissionChartService(this._commissionRepository);
 
   /// Generate timeline chart data for commission development over time
   Future<CommissionTimelineData> getTimelineChartData({
@@ -123,11 +123,12 @@ class CommissionChartService {
           );
 
       // Fetch commission data
-      final commissions = await _commissionService.getCommissionsForDateRange(
-        companyId,
-        effectiveStartDate,
-        effectiveEndDate,
-      );
+      final commissions = await _commissionRepository
+          .getCommissionsForDateRange(
+            companyId,
+            effectiveStartDate,
+            effectiveEndDate,
+          );
 
       // Aggregate data by time period
       final Map<String, double> aggregatedAmounts;
@@ -202,13 +203,13 @@ class CommissionChartService {
       // Fetch commission data
       final List<Commission> commissions;
       if (startDate != null && endDate != null) {
-        commissions = await _commissionService.getCommissionsForDateRange(
+        commissions = await _commissionRepository.getCommissionsForDateRange(
           companyId,
           startDate,
           endDate,
         );
       } else {
-        commissions = await _commissionService.getCommissionsForCompany(
+        commissions = await _commissionRepository.getCommissionsForCompany(
           companyId,
         );
       }
@@ -253,7 +254,7 @@ class CommissionChartService {
       }
 
       // Fetch commission summary by hike
-      final hikeCommissions = await _commissionService
+      final hikeCommissions = await _commissionRepository
           .getCommissionSummaryByHike(
             companyId,
             startDate: startDate,

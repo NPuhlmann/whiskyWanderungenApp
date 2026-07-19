@@ -3,20 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:whisky_hikes/data/providers/order_management_provider.dart';
-import 'package:whisky_hikes/data/services/admin/order_management_service.dart';
+import 'package:whisky_hikes/data/repositories/order_admin_repository.dart';
 import '../test_helpers.dart';
 
-@GenerateMocks([OrderManagementService])
+@GenerateMocks([OrderAdminRepository])
 import 'order_management_provider_test.mocks.dart';
 
 void main() {
   group('OrderManagementProvider Tests', () {
     late OrderManagementProvider provider;
-    late MockOrderManagementService mockService;
+    late MockOrderAdminRepository mockService;
 
     setUp(() {
-      mockService = MockOrderManagementService();
-      provider = OrderManagementProvider(orderManagementService: mockService);
+      mockService = MockOrderAdminRepository();
+      provider = OrderManagementProvider(orderRepository: mockService);
     });
 
     group('State Management', () {

@@ -2,19 +2,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:whisky_hikes/data/providers/dashboard_provider.dart';
-import 'package:whisky_hikes/data/services/admin/dashboard_metrics_service.dart';
+import 'package:whisky_hikes/data/repositories/metrics_repository.dart';
 
-@GenerateMocks([DashboardMetricsService])
+@GenerateMocks([MetricsRepository])
 import 'dashboard_provider_test.mocks.dart';
 
 void main() {
   group('DashboardProvider Tests', () {
     late DashboardProvider provider;
-    late MockDashboardMetricsService mockService;
+    late MockMetricsRepository mockService;
 
     setUp(() {
-      mockService = MockDashboardMetricsService();
-      provider = DashboardProvider(metricsService: mockService);
+      mockService = MockMetricsRepository();
+      provider = DashboardProvider(metricsRepository: mockService);
     });
 
     group('Initial State', () {

@@ -14,7 +14,10 @@ class TastingSetSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => TastingSetSelectionViewModel(hike: hike),
+      create: (context) => TastingSetSelectionViewModel(
+        hike: hike,
+        tastingSetRepository: context.read(),
+      ),
       child: Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.tastingSet),

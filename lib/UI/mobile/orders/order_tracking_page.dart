@@ -26,6 +26,7 @@ class OrderTrackingPage extends StatelessWidget {
       create: (context) => OrderTrackingViewModel(
         orderId: orderId,
         useEnhancedOrder: useEnhancedOrder,
+        paymentRepository: context.read(),
       ),
       child: Scaffold(
         appBar: AppBar(

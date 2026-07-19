@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'UI/web/admin/admin_router.dart';
 import 'data/providers/admin_provider.dart';
+import 'data/repositories/metrics_repository.dart';
+import 'data/services/admin/admin_service.dart';
+import 'data/services/admin/dashboard_metrics_service.dart';
 import 'data/services/auth/auth_service.dart';
 
 /// Web-Admin-Version der App.
@@ -35,7 +38,13 @@ class WhiskyHikesWebApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (_) => AuthService()),
-        ChangeNotifierProvider(create: (_) => AdminProvider()),
+        Provider<MetricsRepository>(
+          create: (_) =>
+              MetricsRepository(AdminService(), DashboardMetricsService()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AdminProvider(metricsRepository: context.read()),
+        ),
       ],
       child: MaterialApp.router(
         title: 'Whisky Hikes - Web Admin',

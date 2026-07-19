@@ -6,7 +6,7 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:whisky_hikes/data/services/admin/order_management_service.dart'
+import 'package:whisky_hikes/data/repositories/order_admin_repository.dart'
     as _i2;
 
 // ignore_for_file: type=lint
@@ -24,12 +24,12 @@ import 'package:whisky_hikes/data/services/admin/order_management_service.dart'
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
-/// A class which mocks [OrderManagementService].
+/// A class which mocks [OrderAdminRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockOrderManagementService extends _i1.Mock
-    implements _i2.OrderManagementService {
-  MockOrderManagementService() {
+class MockOrderAdminRepository extends _i1.Mock
+    implements _i2.OrderAdminRepository {
+  MockOrderAdminRepository() {
     _i1.throwOnMissingStub(this);
   }
 
@@ -134,16 +134,6 @@ class MockOrderManagementService extends _i1.Mock
           as _i3.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i3.Future<List<Map<String, dynamic>>> getOrdersByUser(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getOrdersByUser, [userId]),
-            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
-          )
-          as _i3.Future<List<Map<String, dynamic>>>);
-
-  @override
   _i3.Future<Map<String, dynamic>> getOrderStatistics() =>
       (super.noSuchMethod(
             Invocation.method(#getOrderStatistics, []),
@@ -207,14 +197,6 @@ class MockOrderManagementService extends _i1.Mock
   bool isPendingStatus(String? status) =>
       (super.noSuchMethod(
             Invocation.method(#isPendingStatus, [status]),
-            returnValue: false,
-          )
-          as bool);
-
-  @override
-  bool isCancelledStatus(String? status) =>
-      (super.noSuchMethod(
-            Invocation.method(#isCancelledStatus, [status]),
             returnValue: false,
           )
           as bool);

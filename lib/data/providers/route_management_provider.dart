@@ -1,14 +1,13 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
-import '../services/admin/route_management_service.dart';
+import '../repositories/route_admin_repository.dart';
 
 /// Provider für die Verwaltung von Wanderrouten im Admin-Bereich
 class RouteManagementProvider extends ChangeNotifier {
-  final RouteManagementService _routeManagementService;
+  final RouteAdminRepository _routeRepository;
 
-  RouteManagementProvider({RouteManagementService? routeManagementService})
-    : _routeManagementService =
-          routeManagementService ?? RouteManagementService();
+  RouteManagementProvider({required RouteAdminRepository routeRepository})
+    : _routeRepository = routeRepository;
 
   // State
   List<Map<String, dynamic>> _routes = [];
@@ -61,7 +60,7 @@ class RouteManagementProvider extends ChangeNotifier {
 
     try {
       log('Loading routes...');
-      _routes = await _routeManagementService.getAllRoutesForAdmin();
+      _routes = await _routeRepository.getAllRoutesForAdmin();
       log('Loaded ${_routes.length} routes');
     } catch (e) {
       log('Error loading routes: $e');
@@ -80,11 +79,11 @@ class RouteManagementProvider extends ChangeNotifier {
       log('Creating new route: ${routeData['name']}');
 
       // Validiere Daten
-      if (!_routeManagementService.validateRouteData(routeData)) {
+      if (!_routeRepository.validateRouteData(routeData)) {
         throw Exception('Ungültige Route-Daten');
       }
 
-      await _routeManagementService.createRoute(routeData);
+      await _routeRepository.createRoute(routeData);
 
       // Lade Routen neu, um die neue Route anzuzeigen
       await loadRoutes();
@@ -106,7 +105,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Updating route $routeId');
 
-      await _routeManagementService.updateRoute(routeId, updateData);
+      await _routeRepository.updateRoute(routeId, updateData);
 
       // Lade Routen neu, um die Änderungen anzuzeigen
       await loadRoutes();
@@ -136,7 +135,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Deleting route $routeId');
 
-      await _routeManagementService.deleteRoute(routeId);
+      await _routeRepository.deleteRoute(routeId);
 
       // Entferne Route aus lokaler Liste
       _routes.removeWhere((route) => route['id'] == routeId);
@@ -186,7 +185,7 @@ class RouteManagementProvider extends ChangeNotifier {
 
     try {
       log('Loading waypoints for route $routeId');
-      _waypoints = await _routeManagementService.getRouteWaypoints(routeId);
+      _waypoints = await _routeRepository.getRouteWaypoints(routeId);
       log('Loaded ${_waypoints.length} waypoints');
     } catch (e) {
       log('Error loading waypoints: $e');
@@ -208,7 +207,7 @@ class RouteManagementProvider extends ChangeNotifier {
       log('Adding waypoint to route $routeId: ${waypointData['name']}');
 
       // Validiere Wegpunkt-Daten
-      if (!_routeManagementService.validateWaypointData(waypointData)) {
+      if (!_routeRepository.validateWaypointData(waypointData)) {
         throw Exception('Ungültige Wegpunkt-Daten');
       }
 
@@ -217,7 +216,7 @@ class RouteManagementProvider extends ChangeNotifier {
         waypointData['order_index'] = _waypoints.length + 1;
       }
 
-      await _routeManagementService.addWaypointToRoute(routeId, waypointData);
+      await _routeRepository.addWaypointToRoute(routeId, waypointData);
 
       // Lade Wegpunkte neu
       await loadWaypoints(routeId);
@@ -242,7 +241,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Updating waypoint $waypointId');
 
-      await _routeManagementService.updateWaypoint(waypointId, updateData);
+      await _routeRepository.updateWaypoint(waypointId, updateData);
 
       // Lade Wegpunkte neu falls eine Route ausgewählt ist
       if (_selectedRoute != null) {
@@ -266,10 +265,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Removing waypoint $waypointId from route $routeId');
 
-      await _routeManagementService.removeWaypointFromRoute(
-        routeId,
-        waypointId,
-      );
+      await _routeRepository.removeWaypointFromRoute(routeId, waypointId);
 
       // Entferne Wegpunkt aus lokaler Liste
       _waypoints.removeWhere(
@@ -296,7 +292,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Reordering waypoints for route $routeId');
 
-      await _routeManagementService.updateWaypointOrder(routeId, newOrder);
+      await _routeRepository.updateWaypointOrder(routeId, newOrder);
 
       // Lade Wegpunkte neu um die neue Reihenfolge anzuzeigen
       await loadWaypoints(routeId);
@@ -324,7 +320,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Uploading image for route $routeId: $fileName');
 
-      final imageUrl = await _routeManagementService.uploadRouteImage(
+      final imageUrl = await _routeRepository.uploadRouteImage(
         routeId,
         imageBytes,
         fileName,
@@ -348,7 +344,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Deleting image for route $routeId: $fileName');
 
-      await _routeManagementService.deleteRouteImage(routeId, fileName);
+      await _routeRepository.deleteRouteImage(routeId, fileName);
 
       log('Image deleted successfully');
     } catch (e) {
@@ -369,7 +365,7 @@ class RouteManagementProvider extends ChangeNotifier {
     try {
       log('Uploading image for waypoint $waypointId: $fileName');
 
-      final imageUrl = await _routeManagementService.uploadWaypointImage(
+      final imageUrl = await _routeRepository.uploadWaypointImage(
         waypointId,
         imageBytes,
         fileName,
@@ -514,7 +510,7 @@ class RouteManagementProvider extends ChangeNotifier {
     }
 
     try {
-      return await _routeManagementService.calculateRouteDistance(
+      return await _routeRepository.calculateRouteDistance(
         _selectedRoute!['id'],
       );
     } catch (e) {
@@ -530,7 +526,7 @@ class RouteManagementProvider extends ChangeNotifier {
     }
 
     try {
-      return await _routeManagementService.generateRoutePreviewUrl(
+      return await _routeRepository.generateRoutePreviewUrl(
         _selectedRoute!['id'],
       );
     } catch (e) {

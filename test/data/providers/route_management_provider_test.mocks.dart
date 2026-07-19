@@ -8,7 +8,7 @@ import 'dart:typed_data' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i5;
-import 'package:whisky_hikes/data/services/admin/route_management_service.dart'
+import 'package:whisky_hikes/data/repositories/route_admin_repository.dart'
     as _i2;
 
 // ignore_for_file: type=lint
@@ -26,21 +26,29 @@ import 'package:whisky_hikes/data/services/admin/route_management_service.dart'
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
-/// A class which mocks [RouteManagementService].
+/// A class which mocks [RouteAdminRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockRouteManagementService extends _i1.Mock
-    implements _i2.RouteManagementService {
-  MockRouteManagementService() {
+class MockRouteAdminRepository extends _i1.Mock
+    implements _i2.RouteAdminRepository {
+  MockRouteAdminRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<Map<String, dynamic>> createRoute(
-    Map<String, dynamic>? routeData,
-  ) =>
+  _i3.Future<List<Map<String, dynamic>>> getAllRoutesForAdmin() =>
       (super.noSuchMethod(
-            Invocation.method(#createRoute, [routeData]),
+            Invocation.method(#getAllRoutesForAdmin, []),
+            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+          )
+          as _i3.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i3.Future<Map<String, dynamic>> getRouteById(int? routeId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getRouteById, [routeId]),
             returnValue: _i3.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
@@ -48,9 +56,11 @@ class MockRouteManagementService extends _i1.Mock
           as _i3.Future<Map<String, dynamic>>);
 
   @override
-  _i3.Future<Map<String, dynamic>> getRouteById(int? routeId) =>
+  _i3.Future<Map<String, dynamic>> createRoute(
+    Map<String, dynamic>? routeData,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#getRouteById, [routeId]),
+            Invocation.method(#createRoute, [routeData]),
             returnValue: _i3.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
@@ -80,9 +90,9 @@ class MockRouteManagementService extends _i1.Mock
           as _i3.Future<void>);
 
   @override
-  _i3.Future<List<Map<String, dynamic>>> getAllRoutesForAdmin() =>
+  _i3.Future<List<Map<String, dynamic>>> getRouteWaypoints(int? routeId) =>
       (super.noSuchMethod(
-            Invocation.method(#getAllRoutesForAdmin, []),
+            Invocation.method(#getRouteWaypoints, [routeId]),
             returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
               <Map<String, dynamic>>[],
             ),
@@ -96,6 +106,19 @@ class MockRouteManagementService extends _i1.Mock
   ) =>
       (super.noSuchMethod(
             Invocation.method(#addWaypointToRoute, [routeId, waypointData]),
+            returnValue: _i3.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
+          )
+          as _i3.Future<Map<String, dynamic>>);
+
+  @override
+  _i3.Future<Map<String, dynamic>> updateWaypoint(
+    int? waypointId,
+    Map<String, dynamic>? updateData,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateWaypoint, [waypointId, updateData]),
             returnValue: _i3.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
@@ -122,29 +145,6 @@ class MockRouteManagementService extends _i1.Mock
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
-
-  @override
-  _i3.Future<List<Map<String, dynamic>>> getRouteWaypoints(int? routeId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getRouteWaypoints, [routeId]),
-            returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
-          )
-          as _i3.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i3.Future<Map<String, dynamic>> updateWaypoint(
-    int? waypointId,
-    Map<String, dynamic>? updateData,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateWaypoint, [waypointId, updateData]),
-            returnValue: _i3.Future<Map<String, dynamic>>.value(
-              <String, dynamic>{},
-            ),
-          )
-          as _i3.Future<Map<String, dynamic>>);
 
   @override
   _i3.Future<String> uploadRouteImage(

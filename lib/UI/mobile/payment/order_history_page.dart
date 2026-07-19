@@ -1,83 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/services/database/backend_api.dart';
+import '../../../data/repositories/payment_repository.dart';
+import '../../../data/repositories/user_repository.dart';
 import '../../../domain/models/basic_order.dart';
 import '../../../config/routing/routes.dart';
+import 'order_history_view_model.dart';
 
-/// Page displaying user's order history
-class OrderHistoryPage extends StatefulWidget {
+/// Page displaying user's order history.
+///
+/// Haelt selbst keinen Zustand und keine Datenquelle — laden, Fehler und
+/// Liste liegen im [OrderHistoryViewModel] (ADR-0004). Der Provider wird
+/// hier aufgespannt statt in der Route, damit das ViewModel nur lebt,
+/// solange die Seite sichtbar ist.
+class OrderHistoryPage extends StatelessWidget {
   const OrderHistoryPage({super.key});
 
   @override
-  State<OrderHistoryPage> createState() => _OrderHistoryPageState();
-}
-
-class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  List<BasicOrder> _orders = [];
-  bool _isLoading = true;
-  String? _errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadOrderHistory();
-  }
-
-  Future<void> _loadOrderHistory() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      final backendApi = context.read<BackendApiService>();
-      final currentUser = Supabase.instance.client.auth.currentUser;
-
-      if (currentUser == null) {
-        throw Exception('Benutzer nicht angemeldet');
-      }
-
-      final userId = currentUser.id;
-
-      final orders = await backendApi.fetchUserOrders(userId);
-
-      setState(() {
-        _orders = orders;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage =
-            'Fehler beim Laden der Bestellhistorie: ${e.toString()}';
-        _isLoading = false;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meine Bestellungen'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadOrderHistory,
-        child: _buildContent(),
+    return ChangeNotifierProvider<OrderHistoryViewModel>(
+      create: (context) => OrderHistoryViewModel(
+        paymentRepository: context.read<PaymentRepository>(),
+        userRepository: context.read<UserRepository>(),
+      )..load(),
+      child: Consumer<OrderHistoryViewModel>(
+        builder: (context, viewModel, _) => Scaffold(
+          appBar: AppBar(
+            title: const Text('Meine Bestellungen'),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
+          ),
+          body: RefreshIndicator(
+            onRefresh: viewModel.load,
+            child: _buildContent(context, viewModel),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
+  Widget _buildContent(BuildContext context, OrderHistoryViewModel viewModel) {
+    final orders = viewModel.orders;
+    if (viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_errorMessage != null) {
+    if (viewModel.errorMessage != null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -87,13 +56,13 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               const Icon(Icons.error_outline, size: 48, color: Colors.grey),
               const SizedBox(height: 16),
               Text(
-                _errorMessage!,
+                viewModel.errorMessage!,
                 style: const TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _loadOrderHistory,
+                onPressed: viewModel.load,
                 child: const Text('Erneut versuchen'),
               ),
             ],
@@ -102,7 +71,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       );
     }
 
-    if (_orders.isEmpty) {
+    if (orders.isEmpty) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(24.0),
@@ -130,19 +99,19 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _orders.length,
+      itemCount: orders.length,
       itemBuilder: (context, index) {
-        final order = _orders[index];
-        return _buildOrderCard(order);
+        final order = orders[index];
+        return _buildOrderCard(context, order);
       },
     );
   }
 
-  Widget _buildOrderCard(BasicOrder order) {
+  Widget _buildOrderCard(BuildContext context, BasicOrder order) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _navigateToOrderTracking(order.id),
+        onTap: () => _navigateToOrderTracking(context, order.id),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -251,7 +220,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton.icon(
-                    onPressed: () => _navigateToOrderTracking(order.id),
+                    onPressed: () =>
+                        _navigateToOrderTracking(context, order.id),
                     icon: const Icon(Icons.visibility, size: 16),
                     label: const Text('Details anzeigen'),
                     style: TextButton.styleFrom(
@@ -267,7 +237,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     );
   }
 
-  void _navigateToOrderTracking(int orderId) {
+  void _navigateToOrderTracking(BuildContext context, int orderId) {
     context.go('${Routes.orderTracking}/$orderId');
   }
 

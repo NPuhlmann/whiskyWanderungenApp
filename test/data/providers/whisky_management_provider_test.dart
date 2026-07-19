@@ -3,19 +3,19 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/data/providers/whisky_management_provider.dart';
-import 'package:whisky_hikes/data/services/whisky/whisky_management_service.dart';
+import 'package:whisky_hikes/data/repositories/tasting_set_repository.dart';
 import 'package:whisky_hikes/domain/models/tasting_set.dart';
 
 import '../../test_helpers.dart';
-import '../../mocks/mock_services.mocks.dart';
+import '../../mocks/mock_repositories.mocks.dart';
 
 void main() {
   group('WhiskyManagementProvider', () {
     late WhiskyManagementProvider provider;
-    late MockWhiskyManagementService mockService;
+    late MockTastingSetRepository mockService;
 
     setUp(() {
-      mockService = MockWhiskyManagementService();
+      mockService = MockTastingSetRepository();
       provider = WhiskyManagementProvider(mockService);
     });
 
