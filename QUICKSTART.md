@@ -69,17 +69,8 @@ flutter run
 ## 🔧 Häufige Befehle
 
 ```bash
-# Komplette Umgebung zurücksetzen
-make dev-reset
-
-# Nur Schema aktualisieren
-make schema
-
-# Custom SQL ausführen  
-make sql SQL="SELECT * FROM hikes;"
-
-# Backup erstellen
-make backup
+# Schema einspielen (einzige Schemaquelle: supabase/migrations/, ADR-0003)
+cd terraform-supabase && supabase db push
 
 # Hilfe anzeigen
 make help

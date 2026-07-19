@@ -568,8 +568,7 @@ flutter run --no-hot
 **Lösung**:
 ```bash
 cd terraform-supabase
-make schema    # Oder: ./complete_schema.sh
-make policies  # Oder: ./create_policies.sh
+supabase db push
 ```
 
 #### Problem: "Access denied" oder leere Daten

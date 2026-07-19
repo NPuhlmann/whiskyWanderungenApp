@@ -37,5 +37,5 @@ output "project_url" {
 
 output "deployment_status" {
   description = "Deployment completion status"
-  value       = "Supabase project created successfully - run 'make schema && make policies' to setup database"
+  value       = "Supabase project created successfully - run 'supabase db push' to apply the schema (ADR-0003)"
 }
