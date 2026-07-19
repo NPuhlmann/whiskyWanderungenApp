@@ -16,8 +16,13 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/*.mocks.dart"
     - "lib/config/l10n/app_localizations*.dart"
-    # Test suite remains excluded under the WHI-11 burn-down ticket — mocks
-    # and fixtures drifted against current production models (~500 errors).
+    # Test suite remains excluded under the burn-down tracked in #46-#51.
+    # Measured 2026-07-19: the whole tree COMPILES — `flutter test` reports
+    # 1078 pass / 152 fail with zero load errors. The failures are assertion
+    # failures, not the signature drift this exclude list was created for.
+    # Two files genuinely do not compile (private members removed by earlier
+    # refactors); see #46. Everything else here is excluded out of caution,
+    # not necessity.
     # Only the CI-critical test files (see ci.yml) plus their shared mocks
     # and helpers are analyzed. Fix a file, drop its exclude here and add it
     # to the CI include list, to grow coverage incrementally.

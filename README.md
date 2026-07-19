@@ -229,10 +229,21 @@ Alternativ kannst du Supabase über das Dashboard einrichten:
 
 CI (`.github/workflows/ci.yml`) gatet aktuell auf zwei Signale:
 
-- `flutter analyze --no-fatal-infos` (Warnings fatal, Infos nicht blockierend)
-- `flutter test test/widget_test.dart` (Adoption-Smoke-Test gegen das Freezed-`Hike`-Modell)
+- `flutter analyze` (aktuell grün — ein verbleibender `info`-Hinweis)
+- `dart format --set-exit-if-changed lib/`
+- `flutter test` gegen die Include-Liste in `.github/workflows/ci.yml` (9 Dateien, 173 Tests)
 
-Der breitere Testbaum (`test/UI/`, `test/data/`, `test/integration/`, `test/repositories/`, `test/services/`) ist gegen die aktuellen Produktions-Signaturen gedriftet — Mocks und Fixtures stammen aus früheren Refactors. Diese Bereiche sind aktuell aus `flutter analyze` ausgeschlossen (`analysis_options.yaml`) und werden im Follow-up-Burn-down-Ticket wieder reaktiviert.
+Der breitere Testbaum ist aus `flutter analyze` ausgeschlossen (`analysis_options.yaml`) und wird schrittweise reaktiviert — siehe #46–#51.
+
+**Messung vom 19.07.2026** (Flutter 3.44.6):
+
+| Kommando | Ergebnis | Dauer |
+| --- | --- | --- |
+| `flutter analyze` | grün, 1 `info` | 17 s |
+| `flutter test` (voll) | 1078 grün / 152 rot, **0 Kompilierfehler** | 38 s |
+| `flutter test` (CI-Liste) | 173 grün / 0 rot | 4 s |
+
+Der Baum **kompiliert vollständig**; die 152 Fehlschläge sind fachliche Assertion-Fehler, keine Signaturdrift. Die frühere Begründung „~500 Analysefehler durch gedriftete Mocks" traf einen älteren Stand und ist überholt. Die Zahlen schwanken leicht zwischen Läufen (ein zweiter Lauf ergab 1082/148) und taugen daher nicht als hartes Abnahmekriterium.
 
 ### Tests lokal ausführen
 
