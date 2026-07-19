@@ -1,67 +1,64 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:whisky_hikes/data/repositories/payment_repository.dart';
-import 'package:whisky_hikes/domain/models/basic_order.dart';
+import 'package:whisky_hikes/domain/models/delivery_address.dart';
 
 import '../mocks/mock_repositories.mocks.dart';
 
-// Focused unit tests for `PaymentRepository`. The wider checkout flow will
-// get end-to-end coverage from WHI-6 once the cart UI exists and can be
-// exercised against a seeded Supabase fixture; until then these tests pin
-// the non-DB invariants: argument validation on
-// `createOrder`. Purchase execution now lives in PurchaseIntakeRepository
-// and is covered by its own tests.
+// Focused unit tests for `PaymentRepository`. Plain orders are created
+// server-side by the `create-payment-intent` Edge Function (ADR-0006), so the
+// repository has no order-insert left to test; purchase execution lives in
+// PurchaseIntakeRepository and is covered by its own tests. What remains here
+// is the argument validation on `createEnhancedOrder`, which runs before any
+// Supabase call.
+const _address = DeliveryAddress(
+  firstName: 'Nico',
+  lastName: 'Puhlmann',
+  addressLine1: 'Hauptstraße 1',
+  city: 'Berlin',
+  postalCode: '10115',
+  countryCode: 'DE',
+  countryName: 'Deutschland',
+);
+
 void main() {
   group('PaymentRepository', () {
-    late MockSupabaseClient mockSupabaseClient;
-    late MockMultiPaymentService mockMultiPaymentService;
     late PaymentRepository paymentRepository;
 
     setUp(() {
-      mockSupabaseClient = MockSupabaseClient();
-      mockMultiPaymentService = MockMultiPaymentService();
-
       paymentRepository = PaymentRepository(
-        supabaseClient: mockSupabaseClient,
-        multiPaymentService: mockMultiPaymentService,
+        supabaseClient: MockSupabaseClient(),
+        multiPaymentService: MockMultiPaymentService(),
       );
     });
 
-    group('createOrder parameter validation', () {
-      test('rejects hikeId <= 0', () async {
-        expect(
-          () => paymentRepository.createOrder(
-            hikeId: 0,
-            userId: 'user_1',
-            amount: 25.0,
-            deliveryType: DeliveryType.pickup,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
+    group('createEnhancedOrder parameter validation', () {
+      Future<void> create({
+        int hikeId = 1,
+        String userId = 'user_1',
+        String companyId = 'company_1',
+        double baseAmount = 25.0,
+      }) => paymentRepository.createEnhancedOrder(
+        hikeId: hikeId,
+        userId: userId,
+        companyId: companyId,
+        baseAmount: baseAmount,
+        deliveryAddress: _address,
+      );
+
+      test('rejects hikeId <= 0', () {
+        expect(() => create(hikeId: 0), throwsA(isA<ArgumentError>()));
       });
 
-      test('rejects empty userId', () async {
-        expect(
-          () => paymentRepository.createOrder(
-            hikeId: 1,
-            userId: '',
-            amount: 25.0,
-            deliveryType: DeliveryType.pickup,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
+      test('rejects empty userId', () {
+        expect(() => create(userId: ''), throwsA(isA<ArgumentError>()));
       });
 
-      test('rejects amount <= 0', () async {
-        expect(
-          () => paymentRepository.createOrder(
-            hikeId: 1,
-            userId: 'user_1',
-            amount: 0,
-            deliveryType: DeliveryType.pickup,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
+      test('rejects empty companyId', () {
+        expect(() => create(companyId: ''), throwsA(isA<ArgumentError>()));
+      });
+
+      test('rejects baseAmount <= 0', () {
+        expect(() => create(baseAmount: 0), throwsA(isA<ArgumentError>()));
       });
     });
   });

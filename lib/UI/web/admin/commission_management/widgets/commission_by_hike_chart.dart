@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:whisky_hikes/data/services/commission/commission_chart_service.dart';
-import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 
 /// Widget für Bar Chart der Commission-Verteilung nach Hikes
 class CommissionByHikeChart extends StatefulWidget {

@@ -46,19 +46,12 @@ terraform-supabase/
 1. Copy [terraform.tfvars.example](mdc:terraform-supabase/terraform.tfvars.example) to `terraform.tfvars`
 2. Configure [.env](mdc:terraform-supabase/.env) with secrets from Supabase Vault
 3. Run `terraform init` to initialize
-4. Run `make plan` to review changes
-
-### Development Workflow
-1. Make changes to Terraform files or SQL scripts
-2. Test with `make plan`
-3. Apply with `make apply`
-4. Run database scripts as needed
 
 ### Database Changes
-1. Create new SQL files in [sql/](mdc:terraform-supabase/sql/) directory
-2. Update [main.tf](mdc:terraform-supabase/main.tf) if needed
-3. Test with `make sql SQL="YOUR_SQL_HERE"`
-4. Commit SQL files to version control
+There is no Makefile — the `make` targets this file used to list never existed.
+1. Create a new dated migration in [migrations/](mdc:terraform-supabase/supabase/migrations/)
+2. Apply it with `supabase db push` (ADR-0003 — the migration tree is the only schema authority)
+3. Commit the migration to version control
 
 ## Security Features
 
@@ -72,22 +65,8 @@ terraform-supabase/
 
 ```bash
 # Initialize Terraform
-make init
-
-# Review changes
-make plan
-
-# Deploy infrastructure
-make apply
-
-# Create database schema
-make schema
-
-# Apply security policies
-make policies
-
-# Insert sample data
-make sample-data
+supabase link --project-ref <ref>
+supabase db push
 
 # Execute custom SQL
 make sql SQL="CREATE TABLE test (id SERIAL);"

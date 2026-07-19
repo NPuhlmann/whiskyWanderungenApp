@@ -4,8 +4,10 @@ abstract final class Routes {
   static const signUp = '/signUp';
   static const profile = '/profile';
   static const myHikes = '/myHikes';
-  static const hikeDetails = '/hikeDetails';
-  static const hikeMap = '/hikeMap';
+  // Child routes only: GoRouter declares them relative to their parent, so
+  // they carry no leading slash.
+  static const hikeDetails = 'hikeDetails';
+  static const hikeMap = 'hikeMap';
 
   // Auth routes
   static const ageGate = '/age-gate';

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'UI/shared/responsive_layout.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'UI/web/admin/admin_router.dart';
 import 'data/providers/admin_provider.dart';
 import 'data/repositories/metrics_repository.dart';
@@ -9,10 +10,25 @@ import 'data/services/admin/admin_service.dart';
 import 'data/services/admin/dashboard_metrics_service.dart';
 import 'data/services/auth/auth_service.dart';
 
-/// Einfache Web-Version der App für Tests
-void main() {
+/// Web-Admin-Version der App.
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load();
+
+  // The admin routes are guarded by AdminGuard, which queries the database on
+  // the very first frame — without this the app dies on Supabase.instance.
+  await Supabase.initialize(
+    url: _ensureHttps(dotenv.env['SUPABASE_URL']!),
+    publishableKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
   runApp(const WhiskyHikesWebApp());
 }
+
+/// Ensures HTTPS is used for the Supabase URL.
+String _ensureHttps(String url) =>
+    url.startsWith('http://') ? url.replaceFirst('http://', 'https://') : url;
 
 class WhiskyHikesWebApp extends StatelessWidget {
   const WhiskyHikesWebApp({super.key});
@@ -43,140 +59,6 @@ class WhiskyHikesWebApp extends StatelessWidget {
             ...AdminRouter.getAdminRoutes(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Einfache Web-Startseite
-class WebHomePage extends StatelessWidget {
-  const WebHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobile: _buildMobileLayout(),
-      desktop: _buildDesktopLayout(),
-    );
-  }
-
-  Widget _buildMobileLayout() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Whisky Hikes Web'),
-        backgroundColor: Colors.amber[800],
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.hiking, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Whisky Hikes Web-App',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Mobile Layout'),
-            SizedBox(height: 32),
-            Text('Web-App läuft erfolgreich! 🎉'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDesktopLayout() {
-    return Scaffold(
-      body: Row(
-        children: [
-          // Sidebar
-          Container(
-            width: 250,
-            color: Colors.grey[100],
-            child: Column(
-              children: [
-                Container(
-                  height: 80,
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Icon(Icons.hiking, size: 32, color: Colors.amber[800]),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Whisky Hikes',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.dashboard),
-                        title: const Text('Dashboard'),
-                        onTap: () {
-                          debugPrint('Navigate to Dashboard');
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.map),
-                        title: const Text('Wanderrouten'),
-                        onTap: () {
-                          debugPrint('Navigate to Routes');
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.shopping_cart),
-                        title: const Text('Bestellungen'),
-                        onTap: () {
-                          debugPrint('Navigate to Orders');
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Main Content
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Willkommen bei Whisky Hikes',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Desktop Layout - Web-App läuft erfolgreich! 🎉',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 32),
-                  Text(
-                    'Features:',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 16),
-                  Text('✅ Flutter Web aktiviert'),
-                  Text('✅ Responsive Layout implementiert'),
-                  Text('✅ Admin-Dashboard erstellt'),
-                  Text('✅ Navigation implementiert'),
-                  Text('✅ Web-spezifische Dependencies hinzugefügt'),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

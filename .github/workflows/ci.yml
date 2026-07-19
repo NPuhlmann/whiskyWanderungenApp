@@ -4,22 +4,34 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+
+# CI only reads the repo. The one step that writes (SARIF upload) declares its
+# own job-level permissions.
+permissions:
+  contents: read
+
+# A newer push to the same ref makes the older run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
+  # Keep in sync with distribute.yml. GitHub has no cross-workflow env sharing,
+  # and a composite action for one string is not worth the indirection.
   FLUTTER_VERSION: '3.41.7'
 
 jobs:
   test:
     name: Flutter Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-        
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
@@ -28,7 +40,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Cache pub dependencies and build_runner output
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             ~/.pub-cache
@@ -41,18 +53,28 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build
+        # --delete-conflicting-outputs: a restored but stale .dart_tool/build
+        # cache otherwise aborts the build hard.
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Verify checked-in generated code is current
+        # 69 .g.dart/.freezed.dart/.mocks.dart files are committed. Without this
+        # a stale one passes CI silently, because the step above regenerates
+        # over it. Measured clean on 2026-07-19.
+        run: git diff --exit-code
 
       - name: Analyze code (lib/ strict; test/ scope in analysis_options.yaml)
+        # Not --fatal-infos yet: one deprecated_member_use info remains in
+        # lib/UI/.../waypoint_management_widget.dart. Arm it once that is gone.
         run: flutter analyze
 
-      - name: Verify lib/ formatting
-        run: dart format --set-exit-if-changed lib/
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib/ test/
 
       - name: Run critical tests
-        # Explicit include list, not the full suite (drifted mocks/fixtures
-        # under WHI-11 burn-down). Fix a file, add it here and drop its
-        # exclude in analysis_options.yaml, to grow coverage incrementally.
+        # Explicit include list, not the full suite (assertion failures under
+        # the #46-#51 burn-down). Fix a file, add it here and drop its exclude
+        # in analysis_options.yaml, to grow coverage incrementally.
         run: >
           flutter test
           test/widget_test.dart
@@ -71,41 +93,39 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       security-events: write
-      actions: read
       contents: read
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Trivy scan (SARIF for the Security tab)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
+          scanners: 'vuln,secret'
           format: 'sarif'
           output: 'trivy-results.sarif'
-          
+
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@b7351df727350dca84cb9d725d57dcf5bc82ba26 # v3.37.1
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
-          
-      - name: Alternative upload method (fallback)
-        if: always()
-        run: |
-          echo "Uploading SARIF file as artifact for manual review"
-          echo "File: trivy-results.sarif"
-        continue-on-error: true
-        
-      - name: Upload SARIF as artifact (fallback)
-        if: always()
-        uses: actions/upload-artifact@v4
+
+      - name: Fail on CRITICAL/HIGH findings
+        # The SARIF run above only reports; this one blocks. Measured
+        # 2026-07-19 with trivy 0.72: zero findings across pubspec.lock,
+        # ios/ and macos/ Podfile.lock and docs/requirements.txt.
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          name: trivy-security-results
-          path: trivy-results.sarif
-          retention-days: 30
+          scan-type: 'fs'
+          scan-ref: '.'
+          scanners: 'vuln,secret'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: '1'
 
   build-android:
     name: Android Build
@@ -114,10 +134,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
@@ -126,7 +146,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Cache pub dependencies and build_runner output
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             ~/.pub-cache
@@ -139,22 +159,22 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Android APK
         run: flutter build apk --debug
-        
+
       - name: Build Android App Bundle
         run: flutter build appbundle --debug
-        
+
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: android-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
-          
+
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: android-debug-aab
           path: build/app/outputs/bundle/debug/app-debug.aab
@@ -166,10 +186,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
@@ -178,7 +198,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Cache pub dependencies and build_runner output
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             ~/.pub-cache
@@ -191,13 +211,13 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build iOS
         run: flutter build ios --debug --no-codesign
-        
+
       - name: Upload iOS build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ios-debug-build
           path: build/ios/
@@ -209,10 +229,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
@@ -221,7 +241,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Cache pub dependencies and build_runner output
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             ~/.pub-cache
@@ -234,60 +254,15 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: dart run build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Web (admin entry)
         # lib/main.dart is the mobile entry; lib/main_web.dart is the admin
         # entry that actually exercises lib/UI/web/** in the compile graph.
         run: flutter build web --target lib/main_web.dart
-        
+
       - name: Upload Web build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: web-build
           path: build/web/
-
-  dependency-check:
-    name: Dependency Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
-
-      - name: Prepare dotenv
-        run: cp .env.example .env
-
-      - name: Check for outdated dependencies
-        run: flutter pub outdated
-
-      - name: Check for security vulnerabilities
-        run: flutter pub deps --style=tree
-
-  notify:
-    name: Notify Results
-    runs-on: ubuntu-latest
-    needs: [test, build-android, build-ios, build-web, security-scan, dependency-check]
-    if: always()
-    
-    steps:
-      - name: Notify Success
-        if: success()
-        run: |
-          echo "🎉 Alle CI-Tests erfolgreich!"
-          echo "✅ Tests bestanden"
-          echo "✅ Builds erfolgreich"
-          echo "✅ Security Scan abgeschlossen"
-          echo "✅ Dependencies geprüft"
-          
-      - name: Notify Failure
-        if: failure()
-        run: |
-          echo "❌ CI-Pipeline fehlgeschlagen!"
-          echo "Bitte überprüfe die GitHub Actions Logs."
