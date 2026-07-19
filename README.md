@@ -214,14 +214,27 @@ Wenn ein Supabase-Projekt bereits läuft, einfach `SUPABASE_URL` + `SUPABASE_ANO
    ./create_policies.sh
    ```
 
-### Manuelles Setup
-
-Alternativ kannst du Supabase über das Dashboard einrichten:
+### Bestehendes Supabase-Projekt verwenden
 
 1. Gehe zu [supabase.com](https://supabase.com)
 2. Erstelle ein neues Projekt
-3. Kopiere die API-Schlüssel in deine `.env` Datei
-4. Erstelle die Tabellen manuell (siehe `terraform-supabase/sql/`)
+3. Kopiere URL und Anon Key (Settings → API) in deine `.env` Datei
+4. Spiele das Schema per CLI ein:
+
+   ```bash
+   cd terraform-supabase
+   supabase link --project-ref <dein-ref>
+   supabase db push
+   supabase functions deploy create-payment-intent
+   supabase functions deploy calculate-shipping
+   ```
+
+> **Tabellen nicht von Hand anlegen.** Nach
+> [ADR-0003](docs/adr/0003-supabase-cli-migrations-as-schema-authority.md) sind
+> die Migrationen unter `terraform-supabase/supabase/migrations/` die alleinige
+> Schemaautorität. Das Verzeichnis `terraform-supabase/sql/` ist ein älterer
+> Spiegel und keine Vorlage für neue Projekte — siehe
+> [Bekannte Abweichungen](docs/known-deviations.md).
 
 ## 🧪 Testing
 

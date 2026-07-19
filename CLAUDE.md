@@ -149,22 +149,18 @@ The app uses these main Supabase tables:
 - Profile data cached for 24h, images for 7 days with 50MB size limit
 - Cache-first loading strategy with automatic background sync
 
-### Latest Updates (December 2024)
+### Dependency versions
 
-**Flutter Version:** 3.35.1 (Latest Stable)  
-**Dart SDK:** 3.9.0
+**`pubspec.yaml` is the only source of truth for versions — do not restate them
+here.** A pinned list in this file went stale within months and misled readers
+into coding against superseded APIs.
 
-#### Recent Major Dependency Updates (August 2024):
-- **flutter_map**: 6.1.0 → 8.2.1 (Breaking Changes - API updates required)
-- **go_router**: 14.6.2 → 16.2.0 (Breaking Changes - Route definitions updated)  
-- **geolocator**: 11.0.0 → 14.0.2 (Breaking Changes - Permission handling updated)
-- **freezed**: 2.5.7 → 3.2.0 (Breaking Changes - @unfreezed syntax updated)
-- **flutter_lints**: 5.0.0 → 6.0.0 (New lint rules active)
+Version constraints live in `pubspec.yaml`, the resolved graph in
+`pubspec.lock`. CI pins the Flutter version in `.github/workflows/*.yml`; note
+that it currently lags the version most developers run locally.
 
-#### Supabase Dependencies (December 2024):
-- **supabase_flutter**: 2.9.1
-- **gotrue**: 2.13.0 (Breaking Changes - API type changes)
-- **storage_client**: 2.4.0 (Breaking Changes - constructor parameters)
+The migration notes below are kept because they explain *why* the code looks the
+way it does, not because the versions are current.
 
 #### Known Issues After Updates:
 ✅ **Localization Issue**: Fixed - imports updated to use local l10n files  

@@ -18,6 +18,7 @@ nav:
   - Daten und Infrastruktur: backend.md
   - Entwicklung: development.md
   - Betrieb und Sicherheit: operations.md
+  - Bekannte Abweichungen: known-deviations.md
   - Architekturentscheidungen:
       - Uebersicht: adr/index.md
       - '0001 Supabase als Backend-Plattform': adr/0001-supabase-as-backend-platform.md
@@ -27,6 +28,9 @@ nav:
       - '0005 Tasting-Set und Hike': adr/0005-tasting-set-included-with-hike.md
       - '0006 Serverseitige Zahlungen': adr/0006-server-side-stripe-payment-intents.md
       - '0007 Befristetes CI-Smoke-Gate': adr/0007-ci-smoke-gate-during-test-suite-recovery.md
+      - '0008 Offline-First-Caching': adr/0008-offline-first-hike-caching.md
+      - '0009 Profile, Avatar und Account': adr/0009-split-profile-avatar-account-concepts.md
+      - '0010 E-Mail als Projektion': adr/0010-profiles-email-as-denormalized-projection.md
 
 markdown_extensions:
   - admonition

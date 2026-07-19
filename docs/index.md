@@ -21,6 +21,7 @@ den Betrieb gedacht.
 | Codegen, Tests und CI | [Entwicklung](development.md) |
 | Secrets, RLS und produktiver Betrieb | [Betrieb und Sicherheit](operations.md) |
 | Dauerhafte Architekturentscheidungen | [Architekturentscheidungen](adr/index.md) |
+| Wo der Code von den Entscheidungen abweicht | [Bekannte Abweichungen](known-deviations.md) |
 
 ## Systemueberblick
 

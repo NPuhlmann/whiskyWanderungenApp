@@ -74,7 +74,7 @@ Profil, Checkout und Karte werden lokal erzeugt.
 | `/` | Home-Branch der Bottom-Navigation |
 | `/myHikes` | gekaufte Wanderungen |
 | `/profile` | Nutzerprofil |
-| `/checkout` | Checkout, erwartet `BasicOrder` in `state.extra` |
+| `/checkout` | Checkout, erwartet `Hike` in `state.extra` |
 | `/payment-success`, `/payment-failed` | Payment-Ergebnis |
 | `/order-history`, `/order-tracking/:orderId` | Bestellansicht und Tracking |
 | `/admin/*` | Admin-Routen |
