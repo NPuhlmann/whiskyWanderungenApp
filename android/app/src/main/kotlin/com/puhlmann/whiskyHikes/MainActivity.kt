@@ -1,4 +1,4 @@
-package com.example.whisky_hikes
+package com.puhlmann.whiskyHikes
 
 import io.flutter.embedding.android.FlutterActivity
 

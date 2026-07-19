@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.whisky_hikes"
+    namespace = "com.puhlmann.whiskyHikes"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,8 +21,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.whisky_hikes"
+        // Matches the iOS bundle id (ios/Runner.xcodeproj). Immutable once
+        // the app exists in Play Console — do not change. See #53.
+        applicationId = "com.puhlmann.whiskyHikes"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
