@@ -404,7 +404,12 @@ class BackendApiService {
     }
   }
 
-  /// Record a successful hike purchase
+  /// Record a successful hike purchase.
+  ///
+  /// Since #93 `purchased_hikes` is read-only for clients — this insert is
+  /// always rejected by RLS and the method throws. Entitlements are written
+  /// server-side via service_role (#57). Do not wire this back into the
+  /// purchase flow.
   Future<void> recordHikePurchase(
     String userId,
     int hikeId,
