@@ -94,7 +94,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _handleInitialLink();
     _handleIncomingLinks();
     _initializeLifecycleManager();
   }
@@ -108,16 +107,6 @@ class _MyAppState extends State<MyApp> {
       Future.microtask(() => _lifecycleManager!.dispose());
     }
     super.dispose();
-  }
-
-  void _handleInitialLink() async {
-    try {
-      // Handle app opened by deep link when app was closed
-      // Initial link handling would go here if needed
-      if (_isDebugMode()) debugPrint('App initialized for deep link handling');
-    } catch (e) {
-      debugPrint('Error handling initial link: $e');
-    }
   }
 
   void _handleIncomingLinks() {
