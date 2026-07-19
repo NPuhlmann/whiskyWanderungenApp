@@ -41,8 +41,9 @@ class RouteCard extends StatelessWidget {
             _buildImageHeader(thumbnailUrl, isActive),
 
             // Content
+            // Scrollt, statt zu overflowen, wenn die Kachel zu niedrig ist
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,8 +83,6 @@ class RouteCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                     ],
-
-                    const Spacer(),
 
                     // Route-Details
                     _buildRouteDetails(price, distance, duration, context),
@@ -240,52 +239,56 @@ class RouteCard extends StatelessWidget {
     int duration,
     BuildContext context,
   ) {
-    return Column(
+    // Wrap statt Row: bricht um, statt bei schmalen Karten zu overflowen
+    return Wrap(
+      spacing: 16,
+      runSpacing: 4,
       children: [
-        Row(
-          children: [
-            Icon(Icons.euro, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(
-              '${price.toStringAsFixed(2)} €',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const Spacer(),
-            Icon(Icons.straighten, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(
-              '${distance.toStringAsFixed(1)} km',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+        _buildDetailItem(
+          context,
+          Icons.euro,
+          '${price.toStringAsFixed(2)} €',
+          bold: true,
         ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(
-              _formatDuration(duration),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const Spacer(),
-            Icon(Icons.group, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(
-              '${route['max_participants'] ?? 0} Pers.',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+        _buildDetailItem(
+          context,
+          Icons.straighten,
+          '${distance.toStringAsFixed(1)} km',
+        ),
+        _buildDetailItem(context, Icons.access_time, _formatDuration(duration)),
+        _buildDetailItem(
+          context,
+          Icons.group,
+          '${route['max_participants'] ?? 0} Pers.',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailItem(
+    BuildContext context,
+    IconData icon,
+    String text, {
+    bool bold = false,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: Colors.grey[600]),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontWeight: bold ? FontWeight.w600 : null,
+          ),
         ),
       ],
     );
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+    return Wrap(
+      alignment: WrapAlignment.end,
       children: [
         IconButton(
           onPressed: onTap,
