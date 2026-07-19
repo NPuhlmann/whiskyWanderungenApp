@@ -2,12 +2,12 @@ import '../services/admin/admin_service.dart';
 
 /// Repository für Admin-Kennzahlen (ADR-0004).
 ///
-/// Reiner Pass-through auf [AdminService]: die Query-Logik bleibt im Service.
+/// Pure pass-through to [AdminService]; the query logic stays in the service.
 ///
-/// ponytail: hielt bis #84 zusätzlich einen DashboardMetricsService — dessen
-/// beide Weiterleitungen bediente nur der DashboardProvider, der mit der
-/// zweiten Dashboard-Implementierung entfallen ist. Der Service selbst ist
-/// damit ohne Konsument; sein Abriss gehört zu #85/#114.
+/// ponytail: until #84 this also held a DashboardMetricsService, but its two
+/// forwarders were only ever called by DashboardProvider, which went with the
+/// duplicate dashboard. That leaves the service itself without a consumer —
+/// tearing it down belongs to #114.
 class MetricsRepository {
   final AdminService _adminService;
 

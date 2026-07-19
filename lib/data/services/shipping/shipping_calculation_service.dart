@@ -170,9 +170,9 @@ class ShippingCalculationService {
       'hikeId': ?hikeId,
     };
 
-    // functions.invoke baut URL, Content-Type und Authorization selbst und
-    // schickt dabei das Session-JWT statt des Anon-Keys, sobald ein User
-    // eingeloggt ist. Bei != 2xx wirft es FunctionException.
+    // functions.invoke builds the URL, Content-Type and Authorization itself,
+    // and sends the session JWT rather than the anon key once a user is logged
+    // in. It throws FunctionException on any non-2xx response.
     final response = await _backendApi.client.functions.invoke(
       'calculate-shipping',
       body: requestData,

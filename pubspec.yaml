@@ -33,10 +33,11 @@ dependencies:
     sdk: flutter
 
 
-  # Liefert die CupertinoIcons-Schrift. Kein `CupertinoIcons.`-Aufruf im
-  # Projekt, aber profile_page.dart baut CupertinoDatePicker und
-  # CupertinoActionSheet, die intern Glyphen daraus ziehen. Ohne das Paket
-  # warnt der Web-Build "Expected to find fonts for ... CupertinoIcons".
+  # Supplies the CupertinoIcons font. Nothing calls `CupertinoIcons.` directly,
+  # but profile_page.dart builds CupertinoDatePicker and CupertinoActionSheet,
+  # which pull glyphs from it internally. Dropping it makes `flutter build web`
+  # warn 'Expected to find fonts for ... CupertinoIcons', and with it present
+  # the font tree-shakes to 1472 retained bytes rather than zero.
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.13.0
   flutter_localizations:

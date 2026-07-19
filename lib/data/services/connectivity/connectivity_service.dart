@@ -113,13 +113,13 @@ class ConnectivityService {
     }
   }
 
-  /// Prüfe ob Internet-Verbindung verfügbar ist.
+  /// Whether the device currently has internet access.
   ///
-  /// ponytail: DNS-Auflösung statt eines HTTP-Requests — dieselbe Technik, die
-  /// canReachHost/canReachSupabase hier schon benutzen. Deckel: ein Netz, das
-  /// DNS beantwortet aber keinen Traffic durchlässt (Captive Portal), gilt
-  /// damit als online. Falls das auftritt, hier auf einen echten HEAD-Request
-  /// gegen die Supabase-URL hochrüsten, nicht auf ein weiteres Paket.
+  /// ponytail: DNS resolution rather than an HTTP request — the same technique
+  /// canReachHost/canReachSupabase in this file already use. Ceiling: a network
+  /// that answers DNS but passes no traffic (captive portal) still reads as
+  /// online. If that shows up, upgrade this to a real HEAD request against the
+  /// Supabase URL, not to another package.
   Future<bool> hasInternetConnection() => canReachHost('one.one.one.one');
 
   /// Prüfe spezifische Host-Erreichbarkeit

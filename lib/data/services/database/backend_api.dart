@@ -1,5 +1,4 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:typed_data';
 import 'dart:developer' as dev;
 
@@ -30,8 +29,6 @@ class BackendApiService {
   }
 
   // Getter für ShippingCalculationService
-  String get supabaseUrl => dotenv.env['SUPABASE_URL']!;
-  String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY']!;
 
   // get User Profile by id; null when no `profiles` row exists yet
   Future<Profile?> getUserProfileById(String id) async {
