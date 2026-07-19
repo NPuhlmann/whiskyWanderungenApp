@@ -241,4 +241,117 @@ void main() {
       expect(result.reason, 'error');
     });
   });
+
+  group('intakePurchase idempotency', () {
+    late List<Map<String, dynamic>> bodies;
+    late FakeConfirmAdapter adapter;
+    late PurchaseIntakeRepository repo;
+
+    setUp(() {
+      bodies = [];
+      adapter = FakeConfirmAdapter();
+      repo = PurchaseIntakeRepository(
+        confirmAdapter: adapter,
+        currentUserId: () => 'user-1',
+        invoker: (name, body) async {
+          bodies.add(body);
+          return {
+            'success': true,
+            'clientSecret': 'pi_${bodies.length}_secret',
+            'paymentIntentId': 'pi_${bodies.length}',
+            'orderId': 40 + bodies.length,
+            'orderNumber': 'WH-2026-000${bodies.length}',
+          };
+        },
+      );
+    });
+
+    Future<dynamic> buy({Hike? hike}) => repo.intakePurchase(
+      hike: hike ?? testHike(),
+      deliveryType: DeliveryType.standardShipping,
+      deliveryAddress: address,
+      paymentMethod: PaymentMethodType.card,
+    );
+
+    test('sends a non-empty idempotencyKey to the Edge Function', () async {
+      await buy();
+
+      expect(bodies.single['idempotencyKey'], isA<String>());
+      expect(bodies.single['idempotencyKey'], isNotEmpty);
+    });
+
+    test('reuses the pending order after a cancelled confirm', () async {
+      adapter.result = const ConfirmResult(
+        isSuccess: false,
+        wasCancelled: true,
+      );
+      final first = await buy();
+      expect(first.reason, 'cancelled');
+
+      adapter.result = const ConfirmResult(
+        isSuccess: true,
+        paymentIntentId: 'pi_1',
+      );
+      final second = await buy();
+
+      // No second order, no second PaymentIntent.
+      expect(bodies, hasLength(1));
+      expect(second.isSuccess, isTrue);
+      expect(second.orderId, 41);
+      expect(adapter.seenClientSecret, 'pi_1_secret');
+    });
+
+    test(
+      'keeps the idempotencyKey stable when the intent call fails',
+      () async {
+        final failing = <Map<String, dynamic>>[];
+        final failingRepo = PurchaseIntakeRepository(
+          confirmAdapter: adapter,
+          currentUserId: () => 'user-1',
+          invoker: (name, body) async {
+            failing.add(body);
+            return {'error': 'Stripe unreachable'};
+          },
+        );
+
+        Future<void> attempt() => failingRepo.intakePurchase(
+          hike: testHike(),
+          deliveryType: DeliveryType.pickup,
+          paymentMethod: PaymentMethodType.card,
+        );
+
+        await attempt();
+        await attempt();
+
+        expect(failing, hasLength(2));
+        expect(
+          failing[0]['idempotencyKey'],
+          equals(failing[1]['idempotencyKey']),
+        );
+      },
+    );
+
+    test('starts a fresh intent after a successful purchase', () async {
+      await buy();
+      await buy();
+
+      expect(bodies, hasLength(2));
+      expect(
+        bodies[0]['idempotencyKey'],
+        isNot(equals(bodies[1]['idempotencyKey'])),
+      );
+    });
+
+    test('does not reuse an intent across different hikes', () async {
+      adapter.result = const ConfirmResult(
+        isSuccess: false,
+        wasCancelled: true,
+      );
+
+      await buy();
+      await buy(hike: testHike().copyWith(id: 99));
+
+      expect(bodies, hasLength(2));
+    });
+  });
 }

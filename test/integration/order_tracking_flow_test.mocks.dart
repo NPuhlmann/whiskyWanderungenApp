@@ -78,37 +78,6 @@ class MockPaymentRepository extends _i1.Mock implements _i8.PaymentRepository {
   }
 
   @override
-  _i9.Future<_i2.BasicOrder> createOrder({
-    required int? hikeId,
-    required String? userId,
-    required double? amount,
-    required _i2.DeliveryType? deliveryType,
-    Map<String, dynamic>? deliveryAddress,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#createOrder, [], {
-              #hikeId: hikeId,
-              #userId: userId,
-              #amount: amount,
-              #deliveryType: deliveryType,
-              #deliveryAddress: deliveryAddress,
-            }),
-            returnValue: _i9.Future<_i2.BasicOrder>.value(
-              _FakeBasicOrder_0(
-                this,
-                Invocation.method(#createOrder, [], {
-                  #hikeId: hikeId,
-                  #userId: userId,
-                  #amount: amount,
-                  #deliveryType: deliveryType,
-                  #deliveryAddress: deliveryAddress,
-                }),
-              ),
-            ),
-          )
-          as _i9.Future<_i2.BasicOrder>);
-
-  @override
   _i9.Future<List<_i10.PaymentMethodType>> getAvailablePaymentMethods() =>
       (super.noSuchMethod(
             Invocation.method(#getAvailablePaymentMethods, []),

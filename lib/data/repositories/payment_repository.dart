@@ -10,6 +10,11 @@ import '../../domain/models/payment_intent.dart' show PaymentMethodType;
 
 /// Repository for handling payment-related database operations
 /// Integrates with MultiPaymentService for multiple payment methods and Supabase for data persistence
+///
+/// Deliberately read-only with respect to plain orders: orders are created
+/// server-side by the `create-payment-intent` Edge Function, which decides the
+/// price (ADR-0006). Anything that needs to create an order belongs there, not
+/// here.
 class PaymentRepository {
   final SupabaseClient _supabaseClient;
   final MultiPaymentService _multiPaymentService;
@@ -24,68 +29,6 @@ class PaymentRepository {
            multiPaymentService ?? MultiPaymentService.instance,
        _backendApiService =
            backendApiService ?? BackendApiService(client: supabaseClient);
-
-  /// Create a new order with order items
-  Future<BasicOrder> createOrder({
-    required int hikeId,
-    required String userId,
-    required double amount,
-    required DeliveryType deliveryType,
-    Map<String, dynamic>? deliveryAddress,
-  }) async {
-    try {
-      // Validate input parameters
-      _validateCreateOrderParams(hikeId, userId, amount);
-
-      // Generate unique order number
-      final orderNumber = _generateOrderNumber();
-
-      dev.log('🔄 Creating order $orderNumber for user $userId...');
-
-      // Create order record
-      final orderData = {
-        'order_number': orderNumber,
-        'hike_id': hikeId,
-        'user_id': userId,
-        'total_amount': amount,
-        'delivery_type': deliveryType.name,
-        'status': OrderStatus.pending.name,
-        'created_at': DateTime.now().toIso8601String(),
-        'delivery_address': ?deliveryAddress,
-      };
-
-      final orderResponse = await _supabaseClient
-          .from('orders')
-          .insert(orderData)
-          .select()
-          .single();
-
-      // Create order item (for now, simple 1:1 mapping with hikes)
-      final basePrice = deliveryType == DeliveryType.standardShipping
-          ? amount -
-                5.0 // Subtract shipping cost
-          : amount;
-
-      final orderItemData = {
-        'order_id': orderResponse['id'],
-        'hike_id': hikeId,
-        'quantity': 1,
-        'unit_price': basePrice,
-        'total_price': basePrice,
-      };
-
-      await _supabaseClient.from('order_items').insert(orderItemData);
-
-      dev.log('✅ Order $orderNumber created successfully');
-
-      return BasicOrder.fromJson(orderResponse);
-    } catch (e) {
-      dev.log('❌ Error creating order: $e');
-      if (e is PostgrestException) rethrow;
-      if (e is ArgumentError) rethrow;
-      throw Exception('Failed to create order: $e');
-    }
-  }
 
   /// Get available payment methods for the device
   Future<List<PaymentMethodType>> getAvailablePaymentMethods() async {
@@ -186,25 +129,6 @@ class PaymentRepository {
       8,
     ); // Last 5 digits
     return 'WH$year-$timestamp';
-  }
-
-  /// Validate create order parameters
-  void _validateCreateOrderParams(int hikeId, String userId, double amount) {
-    if (hikeId <= 0) {
-      throw ArgumentError('Hike ID must be greater than 0');
-    }
-
-    if (userId.isEmpty) {
-      throw ArgumentError('User ID cannot be empty');
-    }
-
-    if (amount <= 0) {
-      throw ArgumentError('Amount must be greater than 0');
-    }
-
-    if (amount > 999999.99) {
-      throw ArgumentError('Amount exceeds maximum limit');
-    }
   }
 
   // ================================
