@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:whisky_hikes/data/services/commission/commission_chart_service.dart';
 import 'package:whisky_hikes/data/services/commission/commission_service.dart';
-import 'package:whisky_hikes/UI/core/responsive_layout.dart';
+import 'package:whisky_hikes/UI/shared/responsive_layout.dart';
 import 'commission_timeline_chart.dart';
 import 'commission_status_chart.dart';
 import 'commission_by_hike_chart.dart';
