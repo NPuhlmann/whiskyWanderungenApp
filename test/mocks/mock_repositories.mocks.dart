@@ -370,6 +370,37 @@ class MockUserRepository extends _i1.Mock implements _i16.UserRepository {
           as _i10.Future<_i2.AuthResponse>);
 
   @override
+  _i10.Future<void> sendMagicLink(String? email) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendMagicLink, [email]),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
+          )
+          as _i10.Future<void>);
+
+  @override
+  _i10.Future<_i2.AuthResponse> verifyMagicLinkCode(
+    String? email,
+    String? code,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyMagicLinkCode, [email, code]),
+            returnValue: _i10.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_0(
+                this,
+                Invocation.method(#verifyMagicLinkCode, [email, code]),
+              ),
+            ),
+          )
+          as _i10.Future<_i2.AuthResponse>);
+
+  @override
+  void signalAuthChanged() => super.noSuchMethod(
+    Invocation.method(#signalAuthChanged, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
   bool isUserLoggedIn() =>
       (super.noSuchMethod(
             Invocation.method(#isUserLoggedIn, []),
@@ -796,6 +827,31 @@ class MockAuthService extends _i1.Mock implements _i22.AuthService {
             returnValueForMissingStub: _i10.Future<void>.value(),
           )
           as _i10.Future<void>);
+
+  @override
+  _i10.Future<void> sendMagicLink(String? email) =>
+      (super.noSuchMethod(
+            Invocation.method(#sendMagicLink, [email]),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
+          )
+          as _i10.Future<void>);
+
+  @override
+  _i10.Future<_i2.AuthResponse> verifyMagicLinkCode(
+    String? email,
+    String? token,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyMagicLinkCode, [email, token]),
+            returnValue: _i10.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_0(
+                this,
+                Invocation.method(#verifyMagicLinkCode, [email, token]),
+              ),
+            ),
+          )
+          as _i10.Future<_i2.AuthResponse>);
 
   @override
   _i10.Future<void> handleEmailConfirmation(String? token, String? type) =>

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:whisky_hikes/UI/mobile/auth/age_gate/age_gate_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/age_gate/age_gate_view_model.dart';
 import 'package:whisky_hikes/UI/mobile/auth/login/login_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/magic_link/magic_link_page.dart';
+import 'package:whisky_hikes/UI/mobile/auth/magic_link/magic_link_view_model.dart';
 import 'package:whisky_hikes/UI/mobile/auth/login/login_page_view_model.dart';
 import 'package:whisky_hikes/UI/mobile/auth/signup/signup_page.dart';
 import 'package:whisky_hikes/UI/mobile/hike_details/hike_details_page.dart';
@@ -15,8 +19,10 @@ import 'package:whisky_hikes/UI/mobile/payment/payment_success_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/payment_failed_page.dart';
 import 'package:whisky_hikes/UI/mobile/payment/order_history_page.dart';
 import 'package:whisky_hikes/UI/mobile/orders/order_tracking_page.dart';
+import 'package:whisky_hikes/config/routing/auth_redirect.dart';
 import 'package:whisky_hikes/config/routing/routes.dart';
 import 'package:whisky_hikes/data/repositories/user_repository.dart';
+import 'package:whisky_hikes/data/services/auth/age_gate_service.dart';
 import 'package:whisky_hikes/domain/models/hike.dart';
 
 import '../../UI/mobile/auth/signup/sign_up_page_view_model.dart';
@@ -26,12 +32,35 @@ import '../../UI/mobile/home/home_view_model.dart';
 import '../../UI/mobile/my_hikes/my_hikes_view_model.dart';
 import '../../UI/web/admin/admin_router.dart';
 
-GoRouter router(UserRepository authRepository) => GoRouter(
+GoRouter router(
+  UserRepository authRepository,
+  AgeGateService ageGateService,
+) => GoRouter(
   initialLocation: Routes.home,
   debugLogDiagnostics: true,
   redirect: _redirect,
-  refreshListenable: authRepository,
+  // Both must refresh the guard: the age declaration decides whether the user
+  // reaches auth at all.
+  refreshListenable: Listenable.merge([authRepository, ageGateService]),
   routes: [
+    GoRoute(
+      path: Routes.ageGate,
+      // ChangeNotifierProvider so the ViewModel's listener on AgeGateService
+      // is released when the route goes away.
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (context) => AgeGateViewModel(ageGateService: context.read()),
+        child: Consumer<AgeGateViewModel>(
+          builder: (context, viewModel, _) => AgeGatePage(viewModel: viewModel),
+        ),
+      ),
+    ),
+    GoRoute(
+      path: Routes.magicLink,
+      builder: (context, state) {
+        final viewModel = MagicLinkViewModel(userRepository: context.read());
+        return MagicLinkPage(viewModel: viewModel);
+      },
+    ),
     GoRoute(
       path: Routes.login,
       builder: (context, state) {
@@ -224,24 +253,12 @@ GoRouter router(UserRepository authRepository) => GoRouter(
   ],
 );
 
-// From https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart
+// Decision logic lives in resolveRedirect (auth_redirect.dart) so it can be
+// unit-tested without a BuildContext.
 Future<String?> _redirect(BuildContext context, GoRouterState state) async {
-  // if the user is not logged in, they need to login
-  final bool loggedIn = context.read<UserRepository>().isUserLoggedIn();
-  final bool loggingIn = state.matchedLocation == Routes.login;
-  final bool signingUp = state.matchedLocation == Routes.signUp;
-  if (!loggedIn && !signingUp) {
-    return Routes.login;
-  } else if (!loggedIn && signingUp) {
-    return Routes.signUp;
-  }
-
-  // if the user is logged in but still on the login page, send them to
-  // the home page
-  if (loggingIn) {
-    return Routes.home;
-  }
-
-  // no need to redirect at all
-  return null;
+  return resolveRedirect(
+    location: state.matchedLocation,
+    ageAllowed: context.read<AgeGateService>().isAllowed,
+    loggedIn: context.read<UserRepository>().isUserLoggedIn(),
+  );
 }

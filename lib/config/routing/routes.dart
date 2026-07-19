@@ -7,6 +7,10 @@ abstract final class Routes {
   static const hikeDetails = '/hikeDetails';
   static const hikeMap = '/hikeMap';
 
+  // Auth routes
+  static const ageGate = '/age-gate';
+  static const magicLink = '/magic-link';
+
   // Payment routes
   static const checkout = '/checkout';
   static const paymentSuccess = '/payment-success';

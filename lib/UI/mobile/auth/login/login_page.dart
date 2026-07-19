@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:whisky_hikes/config/routing/routes.dart';
 import 'login_page_view_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -79,8 +80,15 @@ class _LoginPageState extends State<LoginPage> {
 
           Center(
             child: TextButton(
+              onPressed: () => context.go(Routes.magicLink),
+              child: Text(AppLocalizations.of(context)!.signInWithMagicLink),
+            ),
+          ),
+
+          Center(
+            child: TextButton(
               onPressed: () {
-                context.go("/signUp");
+                context.go(Routes.signUp);
               },
               child: Text(AppLocalizations.of(context)!.signup),
             ),

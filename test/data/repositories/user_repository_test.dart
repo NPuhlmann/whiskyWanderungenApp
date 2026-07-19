@@ -345,5 +345,68 @@ void main() {
         verify(mockAuthService.getCurrentUserEmail()).called(1);
       });
     });
+
+    group('magic link', () {
+      test('sendMagicLink delegates without notifying', () async {
+        // Arrange — no session exists yet, so there is nothing for the router
+        // to react to.
+        when(mockAuthService.sendMagicLink(any)).thenAnswer((_) async {});
+        bool listenerCalled = false;
+        userRepository.addListener(() => listenerCalled = true);
+
+        // Act
+        await userRepository.sendMagicLink('user@example.com');
+
+        // Assert
+        verify(mockAuthService.sendMagicLink('user@example.com')).called(1);
+        expect(listenerCalled, false);
+      });
+
+      test('verifyMagicLinkCode notifies on success', () async {
+        // Arrange
+        when(
+          mockAuthService.verifyMagicLinkCode(any, any),
+        ).thenAnswer((_) async => AuthResponse(user: null, session: null));
+        bool listenerCalled = false;
+        userRepository.addListener(() => listenerCalled = true);
+
+        // Act
+        await userRepository.verifyMagicLinkCode('user@example.com', '123456');
+
+        // Assert
+        expect(listenerCalled, true);
+      });
+
+      // Regression: notifying on a rejected code refreshes the router, which
+      // rebuilds the magic-link route with a fresh ViewModel and throws the
+      // user back to the email step mid-flow.
+      test('verifyMagicLinkCode does not notify on failure', () async {
+        // Arrange
+        when(
+          mockAuthService.verifyMagicLinkCode(any, any),
+        ).thenThrow(Exception('invalid code'));
+        bool listenerCalled = false;
+        userRepository.addListener(() => listenerCalled = true);
+
+        // Act & Assert
+        await expectLater(
+          userRepository.verifyMagicLinkCode('user@example.com', '000000'),
+          throwsA(isA<Exception>()),
+        );
+        expect(listenerCalled, false);
+      });
+
+      test('signalAuthChanged notifies listeners', () {
+        // Arrange
+        bool listenerCalled = false;
+        userRepository.addListener(() => listenerCalled = true);
+
+        // Act
+        userRepository.signalAuthChanged();
+
+        // Assert
+        expect(listenerCalled, true);
+      });
+    });
   });
 }

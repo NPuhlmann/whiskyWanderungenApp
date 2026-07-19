@@ -582,4 +582,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeCta => 'Close';
+
+  @override
+  String get ageGateTitle => 'Are you of legal drinking age?';
+
+  @override
+  String get ageGateBody =>
+      'Whisky Hikes contains whisky and other alcohol-related content. You must be of legal drinking age in your country to continue.';
+
+  @override
+  String get ageGateDeny => 'No, I am not';
+
+  @override
+  String get ageGateDisclaimer =>
+      'By continuing you confirm this declaration is truthful.';
+
+  @override
+  String get ageBlockedTitle => 'Access restricted';
+
+  @override
+  String get ageBlockedBody =>
+      'Sorry — you must be of legal drinking age to use Whisky Hikes.';
+
+  @override
+  String get signInWithMagicLink => 'Sign in with a magic link';
+
+  @override
+  String get magicLinkIntro =>
+      'We\'ll email you a sign-in link and a 6-digit code. No password needed.';
+
+  @override
+  String get magicLinkSend => 'Email me a link';
+
+  @override
+  String magicLinkSentTo(String email) {
+    return 'We sent a link and a code to $email. Open the link, or type the code below.';
+  }
+
+  @override
+  String get magicLinkCodeLabel => '6-digit code';
+
+  @override
+  String get magicLinkVerify => 'Sign in';
+
+  @override
+  String get magicLinkUseDifferentEmail => 'Use a different email address';
+
+  @override
+  String get invalidEmailAddress => 'Enter a valid email address';
+
+  @override
+  String get enterCodeFromEmail => 'Enter the code from your email';
 }

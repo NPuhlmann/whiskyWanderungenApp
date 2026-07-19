@@ -589,4 +589,55 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get closeCta => 'Schließen';
+
+  @override
+  String get ageGateTitle => 'Bist du volljährig?';
+
+  @override
+  String get ageGateBody =>
+      'Whisky Wanderungen enthält Whisky- und andere alkoholbezogene Inhalte. Du musst in deinem Land volljährig sein, um fortzufahren.';
+
+  @override
+  String get ageGateDeny => 'Nein, bin ich nicht';
+
+  @override
+  String get ageGateDisclaimer =>
+      'Mit dem Fortfahren bestätigst du, dass diese Angabe wahrheitsgemäß ist.';
+
+  @override
+  String get ageBlockedTitle => 'Zugriff eingeschränkt';
+
+  @override
+  String get ageBlockedBody =>
+      'Leider musst du volljährig sein, um Whisky Wanderungen zu nutzen.';
+
+  @override
+  String get signInWithMagicLink => 'Mit Magic Link anmelden';
+
+  @override
+  String get magicLinkIntro =>
+      'Wir senden dir einen Anmeldelink und einen 6-stelligen Code per E-Mail. Kein Passwort nötig.';
+
+  @override
+  String get magicLinkSend => 'Link per E-Mail senden';
+
+  @override
+  String magicLinkSentTo(String email) {
+    return 'Wir haben einen Link und einen Code an $email gesendet. Öffne den Link oder gib den Code unten ein.';
+  }
+
+  @override
+  String get magicLinkCodeLabel => '6-stelliger Code';
+
+  @override
+  String get magicLinkVerify => 'Anmelden';
+
+  @override
+  String get magicLinkUseDifferentEmail => 'Andere E-Mail-Adresse verwenden';
+
+  @override
+  String get invalidEmailAddress => 'Gib eine gültige E-Mail-Adresse ein';
+
+  @override
+  String get enterCodeFromEmail => 'Gib den Code aus deiner E-Mail ein';
 }

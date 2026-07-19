@@ -1225,6 +1225,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get closeCta;
+
+  /// No description provided for @ageGateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you of legal drinking age?'**
+  String get ageGateTitle;
+
+  /// No description provided for @ageGateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Whisky Hikes contains whisky and other alcohol-related content. You must be of legal drinking age in your country to continue.'**
+  String get ageGateBody;
+
+  /// No description provided for @ageGateDeny.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I am not'**
+  String get ageGateDeny;
+
+  /// No description provided for @ageGateDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing you confirm this declaration is truthful.'**
+  String get ageGateDisclaimer;
+
+  /// No description provided for @ageBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access restricted'**
+  String get ageBlockedTitle;
+
+  /// No description provided for @ageBlockedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry — you must be of legal drinking age to use Whisky Hikes.'**
+  String get ageBlockedBody;
+
+  /// No description provided for @signInWithMagicLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with a magic link'**
+  String get signInWithMagicLink;
+
+  /// No description provided for @magicLinkIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll email you a sign-in link and a 6-digit code. No password needed.'**
+  String get magicLinkIntro;
+
+  /// No description provided for @magicLinkSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Email me a link'**
+  String get magicLinkSend;
+
+  /// No description provided for @magicLinkSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a link and a code to {email}. Open the link, or type the code below.'**
+  String magicLinkSentTo(String email);
+
+  /// No description provided for @magicLinkCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get magicLinkCodeLabel;
+
+  /// No description provided for @magicLinkVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get magicLinkVerify;
+
+  /// No description provided for @magicLinkUseDifferentEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different email address'**
+  String get magicLinkUseDifferentEmail;
+
+  /// No description provided for @invalidEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get invalidEmailAddress;
+
+  /// No description provided for @enterCodeFromEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code from your email'**
+  String get enterCodeFromEmail;
 }
 
 class _AppLocalizationsDelegate

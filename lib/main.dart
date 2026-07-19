@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:whisky_hikes/config/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,7 +12,9 @@ import 'config/theme/app_theme.dart';
 import 'config/lifecycle/app_lifecycle_manager.dart';
 import 'data/services/payment/multi_payment_service.dart';
 import 'data/services/offline/offline_service.dart';
+import 'data/services/auth/age_gate_service.dart';
 import 'data/services/cache/local_cache_service.dart';
+import 'data/repositories/user_repository.dart';
 import 'data/services/connectivity/connectivity_service.dart';
 
 void main() async {
@@ -38,7 +41,17 @@ void main() async {
     // Continue app startup even if payment initialization fails
   }
 
-  runApp(MultiProvider(providers: providers, child: const MyApp()));
+  // Loaded before runApp so the router redirect can read the age declaration
+  // synchronously on the first frame.
+  final ageGateService = AgeGateService();
+  await ageGateService.load();
+
+  runApp(
+    MultiProvider(
+      providers: buildProviders(ageGateService),
+      child: const MyApp(),
+    ),
+  );
 }
 
 /// Ensures HTTPS is used for Supabase URL
@@ -73,6 +86,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late StreamSubscription<AuthState> _linkSubscription;
   AppLifecycleManager? _lifecycleManager;
+
+  // Built once: the router owns a merged Listenable, so rebuilding it on every
+  // build would leak subscriptions and reset navigation state.
+  GoRouter? _router;
 
   @override
   void initState() {
@@ -109,9 +126,14 @@ class _MyAppState extends State<MyApp> {
       data,
     ) {
       final event = data.event;
-      if (event == AuthChangeEvent.signedIn) {
-        // User successfully signed in via email confirmation
-        if (_isDebugMode()) debugPrint('User confirmed email and signed in');
+      if (event == AuthChangeEvent.signedIn ||
+          event == AuthChangeEvent.signedOut) {
+        // The SDK resolves magic-link deep links into a session on its own,
+        // but the router only re-evaluates its guard when UserRepository
+        // notifies. Without this the user stays stranded on /login with a
+        // valid session.
+        if (mounted) context.read<UserRepository>().signalAuthChanged();
+        if (_isDebugMode()) debugPrint('Auth state changed: $event');
       }
     });
   }
@@ -141,7 +163,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: router(context.read()),
+      routerConfig: _router ??= router(context.read(), context.read()),
       title: 'Whisky Hikes',
       localizationsDelegates: const [
         AppLocalizations.delegate,
