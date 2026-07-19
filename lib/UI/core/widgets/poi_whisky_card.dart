@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../config/theme/app_tokens.dart';
 import '../../../domain/models/waypoint.dart';
 
@@ -174,11 +175,15 @@ class _HeroImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = imageUrl;
     if (url != null) {
-      return Image.network(
-        url,
-        fit: BoxFit.cover,
-        semanticLabel: waypointName,
-        errorBuilder: (context, error, stack) => _Placeholder(),
+      return Semantics(
+        label: waypointName,
+        image: true,
+        child: CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => _Placeholder(),
+          errorWidget: (context, url, error) => _Placeholder(),
+        ),
       );
     }
     return _Placeholder();

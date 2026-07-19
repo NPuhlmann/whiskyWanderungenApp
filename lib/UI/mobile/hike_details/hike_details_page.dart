@@ -153,8 +153,37 @@ class _HikeDetailsPageState extends State<HikeDetailsPage> {
                 // wenn keine Bilder vorhanden sind, soll ein Ladecircle angezeigt werden
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 3,
-                  child: widget.viewModel.hikeImages.isEmpty
+                  child: widget.viewModel.isLoading
                       ? Center(child: CircularProgressIndicator())
+                      : widget.viewModel.error != null
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error_outline, size: 48),
+                              const SizedBox(height: 8),
+                              Text(
+                                AppLocalizations.of(context)!.errorLoadingData,
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () => widget.viewModel.getHikeImages(
+                                  widget.hikeData.id,
+                                ),
+                                child: Text(
+                                  AppLocalizations.of(context)!.retry,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : widget.viewModel.hikeImages.isEmpty
+                      ? Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 48,
+                          ),
+                        )
                       : Stack(
                           children: [
                             PageView.builder(

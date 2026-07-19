@@ -24,6 +24,8 @@ void main() {
     checkoutExtra = null;
     mockViewModel = MockHikeDetailsPageViewModel();
     when(mockViewModel.hikeImages).thenReturn(<String>[]);
+    when(mockViewModel.isLoading).thenReturn(false);
+    when(mockViewModel.error).thenReturn(null);
     when(mockViewModel.getHikeImages(any)).thenAnswer((_) async {});
     when(
       mockViewModel.isHikeAvailableOffline(any),

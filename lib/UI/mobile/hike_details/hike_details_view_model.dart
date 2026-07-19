@@ -34,6 +34,16 @@ class HikeDetailsPageViewModel extends ChangeNotifier {
   // Cache for images to avoid repeated network requests
   final Map<int, List<String>> _imageCache = {};
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  Object? _error;
+  Object? get error => _error;
+
+  // Increments on every getHikeImages call so a stale response from an
+  // earlier call (VM is shared across Home/My-Hikes) can be discarded.
+  int _requestId = 0;
+
   // Method to clear images in UI without affecting cache
   void clearImagesForUI() {
     _hikeImages = [];
@@ -42,31 +52,50 @@ class HikeDetailsPageViewModel extends ChangeNotifier {
 
   /// Get hike images from repository by hike ID
   Future<void> getHikeImages(int hikeId) async {
+    final requestId = ++_requestId;
+    _isLoading = true;
+    _error = null;
+    Future.microtask(() => notifyListeners());
+
     // First check if images are already in cache
     if (_imageCache.containsKey(hikeId)) {
       _hikeImages = List<String>.from(
         _imageCache[hikeId]!,
       ); // Create copy to avoid reference issues
-      // Safe call to notifyListeners()
+      _isLoading = false;
       Future.microtask(() => notifyListeners());
       return;
     }
 
-    // If not in cache, fetch from repository
-    final images = await _hikeImagesRepository.getHikeImages(hikeId);
+    try {
+      // If not in cache, fetch from repository
+      final images = await _hikeImagesRepository.getHikeImages(hikeId);
+      // A newer call started while we were awaiting - discard this result.
+      if (requestId == _requestId) {
+        // Store in cache
+        _imageCache[hikeId] = List<String>.from(
+          images,
+        ); // Create copy to avoid reference issues
 
-    // Store in cache
-    _imageCache[hikeId] = List<String>.from(
-      images,
-    ); // Create copy to avoid reference issues
-
-    // Only update if hike ID is still current (could have changed during loading)
-    _hikeImages = List<String>.from(
-      images,
-    ); // Create copy to avoid reference issues
-
-    // Safe call to notifyListeners()
-    Future.microtask(() => notifyListeners());
+        _hikeImages = List<String>.from(
+          images,
+        ); // Create copy to avoid reference issues
+      }
+    } catch (e) {
+      if (requestId == _requestId) {
+        dev.log("Fehler beim Laden der Hike-Bilder: $e", error: e);
+        _error = e;
+        _hikeImages = [];
+      }
+    } finally {
+      // A discarded response must not touch isLoading - a newer call may
+      // still be in flight and owns that state.
+      if (requestId == _requestId) {
+        _isLoading = false;
+        // Safe call to notifyListeners()
+        Future.microtask(() => notifyListeners());
+      }
+    }
   }
 
   /// Clear cache when no longer needed

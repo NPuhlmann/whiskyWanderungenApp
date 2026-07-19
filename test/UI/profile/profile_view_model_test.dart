@@ -67,7 +67,7 @@ void main() {
         final result = await viewModel.loadProfile();
 
         // Assert
-        expect(result.id, testUserId);
+        expect(result!.id, testUserId);
         expect(result.firstName, 'John');
         expect(result.lastName, 'Doe');
         expect(result.imageUrl, 'https://example.com/profile.jpg');
@@ -97,54 +97,49 @@ void main() {
           final result = await viewModel.loadProfile();
 
           // Assert
-          expect(result.id, testUserId);
+          expect(result!.id, testUserId);
           expect(result.firstName, '');
           expect(result.lastName, '');
           expect(result.imageUrl, '');
           expect(viewModel.account.email, testEmail);
+          expect(viewModel.error, isNull);
         },
       );
 
-      test('should throw exception when user ID is null', () async {
+      test('should set error state when user ID is null', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(null);
 
-        // Act & Assert
+        // Act
+        final result = await viewModel.loadProfile();
+
+        // Assert
+        expect(result, isNull);
+        expect(viewModel.error, isNotNull);
         expect(
-          () => viewModel.loadProfile(),
-          throwsA(
-            predicate(
-              (e) =>
-                  e is Exception &&
-                  e.toString().contains(
-                    'Benutzer-ID konnte nicht ermittelt werden',
-                  ),
-            ),
-          ),
+          viewModel.error.toString(),
+          contains('Benutzer-ID konnte nicht ermittelt werden'),
         );
         expect(viewModel.isLoading, false);
       });
 
-      test('should handle profile repository errors', () async {
+      test('should set error state on profile repository errors', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
           mockProfileRepository.getUserProfileById(testUserId),
         ).thenThrow(Exception('Network error'));
 
-        // Act & Assert
-        expect(
-          () => viewModel.loadProfile(),
-          throwsA(
-            predicate(
-              (e) => e is Exception && e.toString().contains('Network error'),
-            ),
-          ),
-        );
+        // Act
+        final result = await viewModel.loadProfile();
+
+        // Assert
+        expect(result, isNull);
+        expect(viewModel.error.toString(), contains('Network error'));
         expect(viewModel.isLoading, false);
       });
 
-      test('should propagate error when account loading fails', () async {
+      test('should set error state when account loading fails', () async {
         // Arrange
         when(mockUserRepository.getUserId()).thenReturn(testUserId);
         when(
@@ -154,17 +149,12 @@ void main() {
           mockUserRepository.getAccount(),
         ).thenThrow(Exception('Account load failed'));
 
-        // Act & Assert
-        await expectLater(
-          viewModel.loadProfile(),
-          throwsA(
-            predicate(
-              (e) =>
-                  e is Exception &&
-                  e.toString().contains('Account load failed'),
-            ),
-          ),
-        );
+        // Act
+        final result = await viewModel.loadProfile();
+
+        // Assert
+        expect(result, isNull);
+        expect(viewModel.error.toString(), contains('Account load failed'));
         expect(viewModel.isLoading, false);
       });
 
@@ -746,7 +736,7 @@ void main() {
         final result = await viewModel.loadProfile();
 
         // Assert
-        expect(result.firstName, '');
+        expect(result!.firstName, '');
         expect(result.lastName, '');
         expect(result.imageUrl, '');
         expect(viewModel.account.email, '');

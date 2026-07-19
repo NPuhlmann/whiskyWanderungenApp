@@ -44,6 +44,11 @@ class MockHikeDetailsPageViewModel extends _i1.Mock
           as List<String>);
 
   @override
+  bool get isLoading =>
+      (super.noSuchMethod(Invocation.getter(#isLoading), returnValue: false)
+          as bool);
+
+  @override
   set hikeImages(List<String>? value) => super.noSuchMethod(
     Invocation.setter(#hikeImages, value),
     returnValueForMissingStub: null,

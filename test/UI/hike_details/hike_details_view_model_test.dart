@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -89,18 +90,44 @@ void main() {
         expect(viewModel.hikeImages, isEmpty);
       });
 
-      test('should handle repository errors', () async {
+      test('should set error state on repository errors', () async {
         // Arrange
         when(
           mockHikeImagesRepository.getHikeImages(testHikeId),
         ).thenThrow(Exception('Network error'));
 
-        // Act & Assert
-        expect(
-          () => viewModel.getHikeImages(testHikeId),
-          throwsA(isA<Exception>()),
-        );
+        // Act
+        await viewModel.getHikeImages(testHikeId);
+
+        // Assert
+        expect(viewModel.error, isNotNull);
+        expect(viewModel.isLoading, false);
+        expect(viewModel.hikeImages, isEmpty);
       });
+
+      test(
+        'discards a stale response from an earlier, slower call',
+        () async {
+          // Arrange - hike A's load is slow (still shared VM instance);
+          // hike B is requested afterwards and resolves first.
+          final hikeACompleter = Completer<List<String>>();
+          when(
+            mockHikeImagesRepository.getHikeImages(1),
+          ).thenAnswer((_) => hikeACompleter.future);
+          when(
+            mockHikeImagesRepository.getHikeImages(2),
+          ).thenAnswer((_) async => ['b.jpg']);
+
+          // Act
+          final hikeAFuture = viewModel.getHikeImages(1);
+          await viewModel.getHikeImages(2);
+          hikeACompleter.complete(['a.jpg']);
+          await hikeAFuture;
+
+          // Assert - hike A's late arrival must not clobber hike B's images
+          expect(viewModel.hikeImages, ['b.jpg']);
+        },
+      );
 
       test(
         'should create copies of image lists to avoid reference issues',
@@ -583,8 +610,8 @@ void main() {
         // Wait for microtask to complete
         await Future.microtask(() {});
 
-        // Assert
-        expect(notificationCount, 1);
+        // Assert - one notification for isLoading=true, one for the result
+        expect(notificationCount, 2);
       });
     });
 

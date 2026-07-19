@@ -386,6 +386,22 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, _) {
           if (widget.viewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
+          } else if (widget.viewModel.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48),
+                  const SizedBox(height: 8),
+                  Text(AppLocalizations.of(context)!.errorLoadingData),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => widget.viewModel.loadProfile(),
+                    child: Text(AppLocalizations.of(context)!.retry),
+                  ),
+                ],
+              ),
+            );
           } else {
             // Textfelder um Namen und Adresse des Users zu ändern
             return SingleChildScrollView(
