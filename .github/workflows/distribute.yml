@@ -1,0 +1,279 @@
+name: Distribute — TestFlight + Play Internal
+
+# Cuts a signed release build on manual dispatch and ships it to TestFlight
+# (internal group) and the Play Store internal testing track.
+# Run ci.yml green before triggering this workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release notes shown to testers'
+        required: false
+        default: 'Internal test build'
+        type: string
+
+env:
+  FLUTTER_VERSION: '3.41.7'
+  # Android applicationId (android/app/build.gradle) and iOS bundle id
+  # (ios/Runner.xcodeproj) are NOT the same string — keep them separate.
+  ANDROID_PACKAGE: 'com.example.whisky_hikes'
+  IOS_BUNDLE_ID: 'com.puhlmann.whiskyHikes'
+
+# Required GitHub Secrets — add all of these in Settings → Secrets → Actions:
+#
+# Android:
+#   ANDROID_KEYSTORE_BASE64          — upload keystore encoded as base64
+#   ANDROID_KEY_ALIAS                — key alias inside the keystore
+#   ANDROID_KEYSTORE_PASSWORD        — keystore store password
+#   ANDROID_KEY_PASSWORD             — key password
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON — Play Console service account JSON (plain text)
+#
+# iOS:
+#   IOS_P12_BASE64                   — Apple Distribution certificate (.p12) as base64
+#   IOS_P12_PASSWORD                 — password for the p12 file
+#   IOS_PROVISIONING_PROFILE_BASE64  — App Store distribution profile (.mobileprovision) as base64
+#   IOS_PROVISIONING_PROFILE_NAME    — profile name exactly as shown in Xcode / Apple Developer portal
+#   APPLE_TEAM_ID                    — 10-character Apple Developer Team ID
+#   APP_STORE_CONNECT_API_KEY_ID     — App Store Connect API key ID
+#   APP_STORE_CONNECT_API_KEY_ISSUER_ID — App Store Connect API issuer UUID
+#   APP_STORE_CONNECT_API_KEY_CONTENT   — .p8 private key content (including header/footer lines)
+
+jobs:
+  # ── Shared: compute a monotonically increasing build number ───────────────
+  build-number:
+    name: Compute Build Number
+    runs-on: ubuntu-latest
+    outputs:
+      build_number: ${{ steps.bn.outputs.build_number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: bn
+        run: echo "build_number=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+
+  # ── Android → Play Store internal track ──────────────────────────────────
+  distribute-android:
+    name: Android → Play Internal Track
+    runs-on: ubuntu-latest
+    needs: build-number
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Prepare dotenv
+        run: cp .env.example .env
+
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build
+
+      - name: Decode Android keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" \
+            | base64 --decode > "$RUNNER_TEMP/upload-keystore.jks"
+
+      - name: Build signed App Bundle
+        # android/app/build.gradle reads MYAPP_UPLOAD_* as *gradle project
+        # properties*, not from key.properties. ORG_GRADLE_PROJECT_<name> is
+        # how you set those without writing secrets to a file on disk.
+        env:
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_FILE: ${{ runner.temp }}/upload-keystore.jks
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          flutter build appbundle --release \
+            --build-number=${{ needs.build-number.outputs.build_number }}
+
+      - name: Verify the bundle is actually signed
+        # The signingConfig is a no-op when MYAPP_UPLOAD_STORE_FILE is unset,
+        # and gradle emits an unsigned AAB without failing. Play rejects it
+        # much later with an opaque error — fail here instead.
+        run: |
+          AAB=build/app/outputs/bundle/release/app-release.aab
+          if ! unzip -l "$AAB" | grep -qE 'META-INF/.*\.(RSA|EC|DSA)$'; then
+            echo "::error::$AAB is unsigned — check the ANDROID_* secrets."
+            exit 1
+          fi
+
+      - name: Write release notes
+        # Untrusted dispatch input — goes through env, never interpolated
+        # straight into the shell.
+        env:
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/whatsnew"
+          printf '%s' "$RELEASE_NOTES" > "$RUNNER_TEMP/whatsnew/whatsnew-en-US"
+
+      - name: Upload to Play Store internal track
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.ANDROID_PACKAGE }}
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+          releaseName: >-
+            ${{ github.ref_name }}-${{ needs.build-number.outputs.build_number }}
+          whatsNewDirectory: ${{ runner.temp }}/whatsnew
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 14
+
+  # ── iOS → TestFlight internal group ──────────────────────────────────────
+  distribute-ios:
+    name: iOS → TestFlight
+    runs-on: macos-latest
+    needs: build-number
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Prepare dotenv
+        run: cp .env.example .env
+
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build
+
+      - name: Import distribution certificate
+        uses: Apple-Actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+
+      - name: Install provisioning profile
+        run: |
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" \
+            | base64 --decode > "$PROFILES_DIR/dist.mobileprovision"
+
+      - name: Generate ExportOptions.plist
+        # Generated at runtime rather than using the checked-in
+        # ios-export-options.plist, so team ID / profile name come from secrets.
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${{ env.IOS_BUNDLE_ID }}</key>
+              <string>${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}</string>
+            </dict>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Build IPA
+        run: |
+          flutter build ipa --release \
+            --build-number=${{ needs.build-number.outputs.build_number }} \
+            --export-options-plist="$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Locate IPA
+        id: ipa
+        # Xcode names the IPA after the app's display name, not the package
+        # name — glob for it instead of hardcoding whisky_hikes.ipa.
+        run: |
+          IPA=$(find build/ios/ipa -name '*.ipa' -maxdepth 1 | head -1)
+          if [[ -z "$IPA" ]]; then
+            echo "::error::No .ipa produced by flutter build ipa."
+            exit 1
+          fi
+          echo "path=$IPA" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to TestFlight
+        uses: Apple-Actions/upload-testflight-build@v5
+        with:
+          app-path: ${{ steps.ipa.outputs.path }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          release-notes: ${{ inputs.release_notes }}
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 14
+
+  # ── Summary ───────────────────────────────────────────────────────────────
+  notify:
+    name: Distribution Summary
+    runs-on: ubuntu-latest
+    needs: [distribute-android, distribute-ios]
+    if: always()
+
+    steps:
+      - name: Report outcome
+        run: |
+          echo "Android job: ${{ needs.distribute-android.result }}"
+          echo "iOS job:     ${{ needs.distribute-ios.result }}"
+          if [[ "${{ needs.distribute-android.result }}" == "success" && \
+                "${{ needs.distribute-ios.result }}" == "success" ]]; then
+            echo "Both platforms distributed successfully."
+          else
+            echo "One or more distribution jobs failed — check logs above."
+            exit 1
+          fi
