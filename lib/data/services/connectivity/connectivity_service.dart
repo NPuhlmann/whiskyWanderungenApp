@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 /// Service für erweiterte Netzwerkkonnektivitätsprüfungen
 class ConnectivityService {
@@ -13,10 +12,8 @@ class ConnectivityService {
   ConnectivityService._internal();
 
   final Connectivity _connectivity = Connectivity();
-  final InternetConnection _internetChecker = InternetConnection();
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
-  StreamSubscription<InternetStatus>? _internetSubscription;
 
   final StreamController<NetworkStatus> _networkStatusController =
       StreamController<NetworkStatus>.broadcast();
@@ -51,13 +48,6 @@ class ConnectivityService {
             log("❌ Connectivity-Stream Fehler: $error", error: error),
       );
 
-      // Internet-Verbindung überwachen
-      _internetSubscription = _internetChecker.onStatusChange.listen(
-        _onInternetStatusChanged,
-        onError: (error) =>
-            log("❌ Internet-Status-Stream Fehler: $error", error: error),
-      );
-
       log("📡 ConnectivityService initialisiert - Status: $_currentStatus");
     } catch (e) {
       log("❌ Fehler bei ConnectivityService-Initialisierung: $e", error: e);
@@ -70,9 +60,6 @@ class ConnectivityService {
     try {
       await _connectivitySubscription?.cancel();
       _connectivitySubscription = null;
-
-      await _internetSubscription?.cancel();
-      _internetSubscription = null;
 
       if (!_networkStatusController.isClosed) {
         await _networkStatusController.close();
@@ -96,7 +83,7 @@ class ConnectivityService {
       }
 
       // 2. Tatsächliche Internet-Verbindung prüfen
-      final hasInternet = await _internetChecker.hasInternetAccess;
+      final hasInternet = await hasInternetConnection();
 
       if (!hasInternet) {
         return NetworkStatus.connectedNoInternet;
@@ -126,15 +113,14 @@ class ConnectivityService {
     }
   }
 
-  /// Prüfe ob Internet-Verbindung verfügbar ist
-  Future<bool> hasInternetConnection() async {
-    try {
-      return await _internetChecker.hasInternetAccess;
-    } catch (e) {
-      log("❌ Fehler bei Internet-Verbindungsprüfung: $e", error: e);
-      return false;
-    }
-  }
+  /// Prüfe ob Internet-Verbindung verfügbar ist.
+  ///
+  /// ponytail: DNS-Auflösung statt eines HTTP-Requests — dieselbe Technik, die
+  /// canReachHost/canReachSupabase hier schon benutzen. Deckel: ein Netz, das
+  /// DNS beantwortet aber keinen Traffic durchlässt (Captive Portal), gilt
+  /// damit als online. Falls das auftritt, hier auf einen echten HEAD-Request
+  /// gegen die Supabase-URL hochrüsten, nicht auf ein weiteres Paket.
+  Future<bool> hasInternetConnection() => canReachHost('one.one.one.one');
 
   /// Prüfe spezifische Host-Erreichbarkeit
   Future<bool> canReachHost(String host) async {
@@ -196,16 +182,6 @@ class ConnectivityService {
       _updateNetworkStatus(newStatus);
     } catch (e) {
       log("❌ Fehler bei Connectivity-Change-Behandlung: $e", error: e);
-    }
-  }
-
-  /// Event-Handler für Internet-Status-Änderungen
-  void _onInternetStatusChanged(InternetStatus status) async {
-    try {
-      final newNetworkStatus = await checkNetworkStatus();
-      _updateNetworkStatus(newNetworkStatus);
-    } catch (e) {
-      log("❌ Fehler bei Internet-Status-Change-Behandlung: $e", error: e);
     }
   }
 

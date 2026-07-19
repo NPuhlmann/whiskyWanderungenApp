@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:developer' as dev;
-import 'package:http/http.dart' as http;
 
 import '../../../domain/models/delivery_address.dart';
 import '../database/backend_api.dart';
@@ -155,9 +153,6 @@ class ShippingCalculationService {
     required double orderValue,
     int? hikeId,
   }) async {
-    final supabaseUrl = _backendApi.supabaseUrl;
-    final edgeFunctionUrl = '$supabaseUrl/functions/v1/calculate-shipping';
-
     final requestData = {
       'companyId': companyId,
       'deliveryAddress': {
@@ -175,22 +170,15 @@ class ShippingCalculationService {
       'hikeId': ?hikeId,
     };
 
-    final response = await http.post(
-      Uri.parse(edgeFunctionUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${_backendApi.supabaseAnonKey}',
-      },
-      body: json.encode(requestData),
+    // functions.invoke baut URL, Content-Type und Authorization selbst und
+    // schickt dabei das Session-JWT statt des Anon-Keys, sobald ein User
+    // eingeloggt ist. Bei != 2xx wirft es FunctionException.
+    final response = await _backendApi.client.functions.invoke(
+      'calculate-shipping',
+      body: requestData,
     );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Edge function returned status ${response.statusCode}: ${response.body}',
-      );
-    }
-
-    final responseData = json.decode(response.body);
+    final responseData = response.data as Map<String, dynamic>;
 
     if (responseData['success'] != true) {
       throw Exception('Edge function error: ${responseData['error']}');
