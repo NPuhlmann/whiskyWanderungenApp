@@ -4,10 +4,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i9;
-import 'dart:typed_data' as _i14;
+import 'dart:typed_data' as _i13;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i11;
+import 'package:mockito/src/dummies.dart' as _i14;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i3;
 import 'package:whisky_hikes/data/services/commission/commission_service.dart'
     as _i8;
@@ -20,9 +20,9 @@ import 'package:whisky_hikes/domain/models/basic_order.dart' as _i4;
 import 'package:whisky_hikes/domain/models/commission.dart' as _i2;
 import 'package:whisky_hikes/domain/models/delivery_address.dart' as _i16;
 import 'package:whisky_hikes/domain/models/enhanced_order.dart' as _i6;
-import 'package:whisky_hikes/domain/models/hike.dart' as _i13;
+import 'package:whisky_hikes/domain/models/hike.dart' as _i12;
 import 'package:whisky_hikes/domain/models/notification_model.dart' as _i18;
-import 'package:whisky_hikes/domain/models/profile.dart' as _i12;
+import 'package:whisky_hikes/domain/models/profile.dart' as _i11;
 import 'package:whisky_hikes/domain/models/review.dart' as _i7;
 import 'package:whisky_hikes/domain/models/tasting_set.dart' as _i5;
 import 'package:whisky_hikes/domain/models/waypoint.dart' as _i15;
@@ -333,50 +333,28 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
           as _i3.SupabaseClient);
 
   @override
-  String get supabaseUrl =>
-      (super.noSuchMethod(
-            Invocation.getter(#supabaseUrl),
-            returnValue: _i11.dummyValue<String>(
-              this,
-              Invocation.getter(#supabaseUrl),
-            ),
-          )
-          as String);
-
-  @override
-  String get supabaseAnonKey =>
-      (super.noSuchMethod(
-            Invocation.getter(#supabaseAnonKey),
-            returnValue: _i11.dummyValue<String>(
-              this,
-              Invocation.getter(#supabaseAnonKey),
-            ),
-          )
-          as String);
-
-  @override
-  _i9.Future<_i12.Profile?> getUserProfileById(String? id) =>
+  _i9.Future<_i11.Profile?> getUserProfileById(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#getUserProfileById, [id]),
-            returnValue: _i9.Future<_i12.Profile?>.value(),
+            returnValue: _i9.Future<_i11.Profile?>.value(),
           )
-          as _i9.Future<_i12.Profile?>);
+          as _i9.Future<_i11.Profile?>);
 
   @override
-  _i9.Future<List<_i13.Hike>> fetchHikes() =>
+  _i9.Future<List<_i12.Hike>> fetchHikes() =>
       (super.noSuchMethod(
             Invocation.method(#fetchHikes, []),
-            returnValue: _i9.Future<List<_i13.Hike>>.value(<_i13.Hike>[]),
+            returnValue: _i9.Future<List<_i12.Hike>>.value(<_i12.Hike>[]),
           )
-          as _i9.Future<List<_i13.Hike>>);
+          as _i9.Future<List<_i12.Hike>>);
 
   @override
-  _i9.Future<List<_i13.Hike>> fetchUserHikes(String? userId) =>
+  _i9.Future<List<_i12.Hike>> fetchUserHikes(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#fetchUserHikes, [userId]),
-            returnValue: _i9.Future<List<_i13.Hike>>.value(<_i13.Hike>[]),
+            returnValue: _i9.Future<List<_i12.Hike>>.value(<_i12.Hike>[]),
           )
-          as _i9.Future<List<_i13.Hike>>);
+          as _i9.Future<List<_i12.Hike>>);
 
   @override
   _i9.Future<void> deleteHike(int? hikeId) =>
@@ -405,7 +383,7 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<void> updateUserProfile(_i12.Profile? profile) =>
+  _i9.Future<void> updateUserProfile(_i11.Profile? profile) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserProfile, [profile]),
             returnValue: _i9.Future<void>.value(),
@@ -416,7 +394,7 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
   @override
   _i9.Future<String> uploadProfileImage(
     String? userId,
-    _i14.Uint8List? fileBytes,
+    _i13.Uint8List? fileBytes,
     String? fileExt,
   ) =>
       (super.noSuchMethod(
@@ -426,7 +404,7 @@ class MockBackendApiService extends _i1.Mock implements _i10.BackendApiService {
               fileExt,
             ]),
             returnValue: _i9.Future<String>.value(
-              _i11.dummyValue<String>(
+              _i14.dummyValue<String>(
                 this,
                 Invocation.method(#uploadProfileImage, [
                   userId,

@@ -428,6 +428,14 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
   );
 
   @override
+  _i3.Future<_i2.Session?> getSession() =>
+      (super.noSuchMethod(
+            Invocation.method(#getSession, []),
+            returnValue: _i3.Future<_i2.Session?>.value(),
+          )
+          as _i3.Future<_i2.Session?>);
+
+  @override
   _i3.Future<_i2.AuthResponse> signInAnonymously({
     Map<String, dynamic>? data,
     String? captchaToken,
@@ -581,6 +589,34 @@ class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
                   #idToken: idToken,
                   #accessToken: accessToken,
                   #nonce: nonce,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i2.AuthResponse>);
+
+  @override
+  _i3.Future<_i2.AuthResponse> signInWithWeb3({
+    required _i2.Web3Chain? chain,
+    required String? message,
+    required String? signature,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithWeb3, [], {
+              #chain: chain,
+              #message: message,
+              #signature: signature,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i3.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#signInWithWeb3, [], {
+                  #chain: chain,
+                  #message: message,
+                  #signature: signature,
                   #captchaToken: captchaToken,
                 }),
               ),
@@ -1106,6 +1142,14 @@ class MockSession extends _i1.Mock implements _i2.Session {
   @override
   bool get isExpired =>
       (super.noSuchMethod(Invocation.getter(#isExpired), returnValue: false)
+          as bool);
+
+  @override
+  bool get isExpiredWithoutMargin =>
+      (super.noSuchMethod(
+            Invocation.getter(#isExpiredWithoutMargin),
+            returnValue: false,
+          )
           as bool);
 
   @override
