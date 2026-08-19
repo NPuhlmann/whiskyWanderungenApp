@@ -1187,28 +1187,6 @@ class MockBackendApiService extends _i1.Mock implements _i26.BackendApiService {
           as _i2.SupabaseClient);
 
   @override
-  String get supabaseUrl =>
-      (super.noSuchMethod(
-            Invocation.getter(#supabaseUrl),
-            returnValue: _i14.dummyValue<String>(
-              this,
-              Invocation.getter(#supabaseUrl),
-            ),
-          )
-          as String);
-
-  @override
-  String get supabaseAnonKey =>
-      (super.noSuchMethod(
-            Invocation.getter(#supabaseAnonKey),
-            returnValue: _i14.dummyValue<String>(
-              this,
-              Invocation.getter(#supabaseAnonKey),
-            ),
-          )
-          as String);
-
-  @override
   _i9.Future<_i12.Profile?> getUserProfileById(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#getUserProfileById, [id]),

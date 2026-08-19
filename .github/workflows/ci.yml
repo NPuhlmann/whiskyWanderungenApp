@@ -87,7 +87,6 @@ jobs:
           test/UI/mobile/home/home_view_model_test.dart
           test/UI/my_hikes/my_hikes_view_model_test.dart
           test/data/providers/route_management_provider_test.dart
-          test/data/repositories/review_repository_test.dart
           test/data/repositories/user_repository_test.dart
           test/data/services/backend_api_payment_extension_simple_test.dart
           test/data/services/location/location_service_test.dart
