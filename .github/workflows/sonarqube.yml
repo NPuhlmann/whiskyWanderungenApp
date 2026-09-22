@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # Keep in sync with ci.yml and distribute.yml. GitHub has no cross-workflow
+  # env sharing, and a composite action for one string is not worth it.
+  FLUTTER_VERSION: '3.41.7'
+
 jobs:
   build:
     name: Build and analyze
@@ -18,6 +23,65 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0 # shallow clones reduce analysis relevancy
+
+      - name: Setup Flutter
+        # The Sonar Flutter plugin shells out to `flutter analyze` on the runner
+        # itself. Without the SDK its Dart analysis sensor aborts the whole scan
+        # with "Cannot run program flutter".
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Prepare dotenv (CI uses .env.example template)
+        run: cp .env.example .env
+
+      - name: Cache pub dependencies and build_runner output
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        # The analyzer resolves imports of generated files; without this every
+        # .g.dart/.freezed.dart/.mocks.dart reference is an analyzer error.
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run critical tests with coverage
+        # Same explicit include list as ci.yml — keep in sync. --machine writes
+        # the JSON report that sonar.flutter.tests.reportPath picks up.
+        # continue-on-error: a failing test must still reach SonarQube as a
+        # failing test, not swallow the whole analysis.
+        continue-on-error: true
+        run: >
+          flutter test --coverage --machine
+          test/widget_test.dart
+          test/data/services/auth_service_test.dart
+          test/data/repositories/profile_repository_test.dart
+          test/data/repositories/offline_first_waypoint_repository_test.dart
+          test/UI/hike_details/hike_details_view_model_test.dart
+          test/UI/checkout/checkout_view_model_test.dart
+          test/UI/mobile/home/home_page_test.dart
+          test/UI/mobile/home/home_view_model_test.dart
+          test/UI/my_hikes/my_hikes_view_model_test.dart
+          test/data/providers/route_management_provider_test.dart
+          test/data/repositories/review_repository_test.dart
+          test/data/repositories/user_repository_test.dart
+          test/data/services/backend_api_payment_extension_simple_test.dart
+          test/data/services/location/location_service_test.dart
+          test/UI/core/scaffold_with_navigation_bar_test.dart
+          test/UI/mobile/home/widgets/hike_card_test.dart
+          test/UI/mobile/payment/order_history_view_model_test.dart
+          test/UI/shared/responsive_layout_test.dart
+          test/UI/web/admin/commission_management/widgets/commission_status_chip_test.dart
+          > tests.output
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
